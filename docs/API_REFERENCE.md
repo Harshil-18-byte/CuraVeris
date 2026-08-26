@@ -14,18 +14,21 @@
   }
 }
 ---
+
 # CuraVeris REST API Reference
 
 All requests must be made to:
 
 ```text
 http://127.0.0.1:8000/api/v1
+
 ```
 
 Unless stated otherwise, requests with JSON payloads must supply the header `Content-Type: application/json`. Protected endpoints require a valid JWT token supplied in the header:
 
 ```text
 Authorization: Bearer <access_token>
+
 ```
 
 ---
@@ -47,6 +50,7 @@ Creates a new patient or auditor user account.
   "full_name": "Dr. Ramesh Sharma",
   "phone": "+919876543210"
 }
+
 ```
 
 - **Response**: `200 OK`
@@ -59,6 +63,7 @@ Creates a new patient or auditor user account.
   "is_active": true,
   "created_at": "2026-08-26T11:45:00Z"
 }
+
 ```
 
 ---
@@ -74,6 +79,7 @@ Authenticates credentials and returns a Bearer access token.
 
 ```text
 username=auditor@curaveris.org&password=SecurePassword123
+
 ```
 
 - **Response**: `200 OK`
@@ -83,6 +89,7 @@ username=auditor@curaveris.org&password=SecurePassword123
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "bearer"
 }
+
 ```
 
 ---
@@ -103,6 +110,7 @@ Executes statutory right to erasure under Section 12 of the DPDP Act 2023. Perma
   "pseudonym": "DPDP_Anonymized_Patient_c3ab8ff14a22",
   "anonymized_at": "2026-08-26T11:45:10Z"
 }
+
 ```
 
 ---
@@ -133,6 +141,7 @@ curl -X POST "http://127.0.0.1:8000/api/v1/bills/upload" \
   -F "patient_age=64" \
   -F "days_admitted=4" \
   -F "diagnosis=Acute STEMI"
+
 ```
 
 - **Response**: `200 OK`
@@ -172,6 +181,7 @@ curl -X POST "http://127.0.0.1:8000/api/v1/bills/upload" \
     }
   ]
 }
+
 ```
 
 ---
@@ -199,6 +209,7 @@ Decomposes the composite risk score into individual additive feature contributio
     { "feature": "NABH Accreditation Tariff Allowance", "attribution": -4.00, "direction": "decrease" }
   ]
 }
+
 ```
 
 ---
@@ -240,6 +251,7 @@ Generates a multi-axis cross-sectional matrix evaluating line items against five
   "total_items_analyzed": 6,
   "critical_items_count": 2
 }
+
 ```
 
 ---
@@ -267,6 +279,7 @@ Seals the completed audit into an immutable cryptographic block hash with digita
   "signature": "3c9909287ae88eef098a87679808af...",
   "legal_certification": "Section 65B Indian Evidence Act / BNS Sec 61 Electronic Record Admissibility"
 }
+
 ```
 
 ---
@@ -288,6 +301,7 @@ Verifies whether a certificate was modified since the audit took place.
   "block_index": 14,
   "verified_at": "2026-08-26T11:46:30Z"
 }
+
 ```
 
 ---
@@ -305,6 +319,7 @@ Translates clinical notes into standard WHO ICD-10 and SNOMED ontologies, auditi
   "diagnostic_text": "Severe bilateral osteoarthritis knee for TKR",
   "days_in_hospital": 10
 }
+
 ```
 
 - **Response**: `200 OK`
@@ -324,6 +339,7 @@ Translates clinical notes into standard WHO ICD-10 and SNOMED ontologies, auditi
   "alos_compliance": "EXCESSIVE_STAY_FLAG",
   "alos_finding": "Patient admitted for 10 days vs typical ALOS benchmark of 4 days. Potential unwarranted bed-blocking / artificial bill inflation detected."
 }
+
 ```
 
 ---
@@ -343,6 +359,7 @@ Cross-references hospital bills against PM-JAY HBP 2.2 rates, detects illegal ca
   "cash_demanded_inr": 35000.00,
   "patient_pmjay_id": "PMJAY-DEL-984129"
 }
+
 ```
 
 - **Response**: `200 OK`
@@ -359,6 +376,7 @@ Cross-references hospital bills against PM-JAY HBP 2.2 rates, detects illegal ca
   "recommended_penalty_inr": 175000.00,
   "sha_complaint_body": "FORMAL STATUTORY COMPLAINT TO STATE HEALTH AGENCY (SHA) & NHA:\nHospital 'Care Super Speciality Hospital' has illegally demanded and collected INR 35,000.00 in out-of-pocket cash from Ayushman Bharat beneficiary (PMJAY-DEL-984129)..."
 }
+
 ```
 
 ---
@@ -383,6 +401,7 @@ Drafts an immediate legal notice compelling physical release of a detained patie
   "disputed_amount_inr": 85000.00,
   "patient_bed_or_room": "ICU Bed 04"
 }
+
 ```
 
 - **Response**: `200 OK`
@@ -400,4 +419,5 @@ Drafts an immediate legal notice compelling physical release of a detained patie
   ],
   "notice_markdown": "EMERGENCY STATUTORY LEGAL NOTICE — DEMAND FOR IMMEDIATE PHYSICAL RELEASE..."
 }
+
 ```
