@@ -1,19 +1,3 @@
----
-{
-  "id": "file_w9qlrjjd",
-  "filetype": "document",
-  "filename": "CHANGELOG",
-  "created_at": "2026-08-26T16:48:12.302Z",
-  "updated_at": "2026-08-26T16:48:14.670Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Changelog
 
 All notable changes to this project are documented in this file.
