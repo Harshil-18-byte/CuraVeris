@@ -1,0 +1,104 @@
+{
+  "bill_id": "REAL_COURT_SCDRC_DELHI_2021_02",
+  "case_citation": "Dr. R.K. Aggarwal vs Max Super Speciality Hospital (Delhi State Commission CC/142/2021)",
+  "hospital_name": "Max Super Speciality Hospital",
+  "city": "Shalimar Bagh, New Delhi",
+  "state": "Delhi",
+  "tier": 1,
+  "is_nabh": true,
+  "admission_date": "2021-04-18",
+  "discharge_date": "2021-04-26",
+  "days_admitted": 8,
+  "diagnosis": "Coronary Artery Disease - Acute Coronary Syndrome with Double Vessel Stenting",
+  "icd10_code": "I25.10",
+  "total_billed": 485000.0,
+  "source_type": "real_court_case",
+  "provenance_notes": "Court finding: Hospital billed guide wire and balloon catheter separately despite NPPA S.O. 1335(E) inclusive delivery system rule",
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "PTCA Angioplasty Primary Package Rate",
+      "category": "procedure",
+      "quantity": 1.0,
+      "unit_price": 85000.0,
+      "total_amount": 85000.0,
+      "labels": {
+        "rate_anomaly": 0,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Coronary Stent - Drug Eluting (Xience Sierra DES)",
+      "category": "implant",
+      "quantity": 2.0,
+      "unit_price": 38260.0,
+      "total_amount": 76520.0,
+      "labels": {
+        "nppa_ceiling_violation": 0,
+        "rate_anomaly": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "PTCA Guide Catheter & Balloon Delivery Accessory (Unbundled)",
+      "category": "consumable",
+      "quantity": 2.0,
+      "unit_price": 18500.0,
+      "total_amount": 37000.0,
+      "labels": {
+        "nppa_ceiling_violation": 1,
+        "rate_anomaly": 1,
+        "consumable_unbundled": 1,
+        "above_mrp": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 1
+      }
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Cardiac ICU Bed Charges (3 days)",
+      "category": "room_nursing",
+      "quantity": 3.0,
+      "unit_price": 9500.0,
+      "total_amount": 28500.0,
+      "labels": {
+        "rate_anomaly": 0,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Specialist Interventional Cardiologist Procedure Fee",
+      "category": "consultation",
+      "quantity": 1.0,
+      "unit_price": 65000.0,
+      "total_amount": 65000.0,
+      "labels": {
+        "rate_anomaly": 0,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    }
+  ]
+}
