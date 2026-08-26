@@ -1,5 +1,309 @@
 [
   {
+    "run_id": "run_66f1038e",
+    "seed": 42,
+    "learning_rate": 0.08,
+    "timestamp_iso": "2026-08-26T16:20:02.487534+00:00",
+    "timestamp_human": "26 Aug 2026, 09:50:02 PM IST",
+    "num_samples": 2500,
+    "train_samples": 2000,
+    "test_samples": 500,
+    "macro_f1": 0.5547,
+    "macro_precision": 0.7662,
+    "macro_recall": 0.4556,
+    "status_tag": "Stable",
+    "status_label": "\u2713 Stable",
+    "per_class": {
+      "above_mrp": {
+        "precision": 0.6667,
+        "recall": 0.1818,
+        "f1_score": 0.2857,
+        "support": 22
+      },
+      "nppa_ceiling_violation": {
+        "precision": 0.9091,
+        "recall": 0.3704,
+        "f1_score": 0.5263,
+        "support": 27
+      },
+      "cghs_excess": {
+        "precision": 0.9032,
+        "recall": 0.5385,
+        "f1_score": 0.6747,
+        "support": 52
+      },
+      "duplicate_charge": {
+        "precision": 0.7037,
+        "recall": 0.4318,
+        "f1_score": 0.5352,
+        "support": 44
+      },
+      "room_rent_ratio_violation": {
+        "precision": 1.0,
+        "recall": 0.7692,
+        "f1_score": 0.8696,
+        "support": 26
+      },
+      "gst_on_exempt": {
+        "precision": 0.375,
+        "recall": 0.1538,
+        "f1_score": 0.2182,
+        "support": 39
+      },
+      "consumable_unbundled": {
+        "precision": 0.8056,
+        "recall": 0.7436,
+        "f1_score": 0.7733,
+        "support": 78
+      }
+    },
+    "feature_importances": {
+      "rate_vs_cghs_ratio": 0.0634,
+      "rate_vs_mrp_ratio": 0.0552,
+      "qty_zscore": 0.037,
+      "days_in_hospital": 0.0359,
+      "consumable_pct": 0.0419,
+      "is_package_item": 0.0344,
+      "has_icd_code": 0.0327,
+      "amount_percentile": 0.0453,
+      "description_similarity_max": 0.0618,
+      "cat_pharmacy": 0.0649,
+      "cat_procedure": 0.1007,
+      "cat_diagnostic": 0.0878,
+      "cat_room_nursing": 0.1014,
+      "cat_consumable": 0.1418,
+      "cat_tax_gst": 0.0958
+    }
+  },
+  {
+    "run_id": "run_dc832ff0",
+    "seed": 42,
+    "learning_rate": 0.08,
+    "timestamp_iso": "2026-08-26T16:09:36.984430+00:00",
+    "timestamp_human": "26 Aug 2026, 09:39:36 PM IST",
+    "num_samples": 2500,
+    "train_samples": 2000,
+    "test_samples": 500,
+    "macro_f1": 0.5547,
+    "macro_precision": 0.7662,
+    "macro_recall": 0.4556,
+    "status_tag": "Stable",
+    "status_label": "\u2713 Stable",
+    "per_class": {
+      "above_mrp": {
+        "precision": 0.6667,
+        "recall": 0.1818,
+        "f1_score": 0.2857,
+        "support": 22
+      },
+      "nppa_ceiling_violation": {
+        "precision": 0.9091,
+        "recall": 0.3704,
+        "f1_score": 0.5263,
+        "support": 27
+      },
+      "cghs_excess": {
+        "precision": 0.9032,
+        "recall": 0.5385,
+        "f1_score": 0.6747,
+        "support": 52
+      },
+      "duplicate_charge": {
+        "precision": 0.7037,
+        "recall": 0.4318,
+        "f1_score": 0.5352,
+        "support": 44
+      },
+      "room_rent_ratio_violation": {
+        "precision": 1.0,
+        "recall": 0.7692,
+        "f1_score": 0.8696,
+        "support": 26
+      },
+      "gst_on_exempt": {
+        "precision": 0.375,
+        "recall": 0.1538,
+        "f1_score": 0.2182,
+        "support": 39
+      },
+      "consumable_unbundled": {
+        "precision": 0.8056,
+        "recall": 0.7436,
+        "f1_score": 0.7733,
+        "support": 78
+      }
+    },
+    "feature_importances": {
+      "rate_vs_cghs_ratio": 0.0634,
+      "rate_vs_mrp_ratio": 0.0552,
+      "qty_zscore": 0.037,
+      "days_in_hospital": 0.0359,
+      "consumable_pct": 0.0419,
+      "is_package_item": 0.0344,
+      "has_icd_code": 0.0327,
+      "amount_percentile": 0.0453,
+      "description_similarity_max": 0.0618,
+      "cat_pharmacy": 0.0649,
+      "cat_procedure": 0.1007,
+      "cat_diagnostic": 0.0878,
+      "cat_room_nursing": 0.1014,
+      "cat_consumable": 0.1418,
+      "cat_tax_gst": 0.0958
+    }
+  },
+  {
+    "run_id": "run_b1789cd6",
+    "seed": 42,
+    "learning_rate": 0.08,
+    "timestamp_iso": "2026-08-26T16:07:53.385351+00:00",
+    "timestamp_human": "26 Aug 2026, 09:37:53 PM IST",
+    "num_samples": 2500,
+    "train_samples": 2000,
+    "test_samples": 500,
+    "macro_f1": 0.5547,
+    "macro_precision": 0.7662,
+    "macro_recall": 0.4556,
+    "status_tag": "Stable",
+    "status_label": "\u2713 Stable",
+    "per_class": {
+      "above_mrp": {
+        "precision": 0.6667,
+        "recall": 0.1818,
+        "f1_score": 0.2857,
+        "support": 22
+      },
+      "nppa_ceiling_violation": {
+        "precision": 0.9091,
+        "recall": 0.3704,
+        "f1_score": 0.5263,
+        "support": 27
+      },
+      "cghs_excess": {
+        "precision": 0.9032,
+        "recall": 0.5385,
+        "f1_score": 0.6747,
+        "support": 52
+      },
+      "duplicate_charge": {
+        "precision": 0.7037,
+        "recall": 0.4318,
+        "f1_score": 0.5352,
+        "support": 44
+      },
+      "room_rent_ratio_violation": {
+        "precision": 1.0,
+        "recall": 0.7692,
+        "f1_score": 0.8696,
+        "support": 26
+      },
+      "gst_on_exempt": {
+        "precision": 0.375,
+        "recall": 0.1538,
+        "f1_score": 0.2182,
+        "support": 39
+      },
+      "consumable_unbundled": {
+        "precision": 0.8056,
+        "recall": 0.7436,
+        "f1_score": 0.7733,
+        "support": 78
+      }
+    },
+    "feature_importances": {
+      "rate_vs_cghs_ratio": 0.0634,
+      "rate_vs_mrp_ratio": 0.0552,
+      "qty_zscore": 0.037,
+      "days_in_hospital": 0.0359,
+      "consumable_pct": 0.0419,
+      "is_package_item": 0.0344,
+      "has_icd_code": 0.0327,
+      "amount_percentile": 0.0453,
+      "description_similarity_max": 0.0618,
+      "cat_pharmacy": 0.0649,
+      "cat_procedure": 0.1007,
+      "cat_diagnostic": 0.0878,
+      "cat_room_nursing": 0.1014,
+      "cat_consumable": 0.1418,
+      "cat_tax_gst": 0.0958
+    }
+  },
+  {
+    "run_id": "run_019f8598",
+    "seed": 42,
+    "learning_rate": 0.08,
+    "timestamp_iso": "2026-08-26T16:06:51.314695+00:00",
+    "timestamp_human": "26 Aug 2026, 09:36:51 PM IST",
+    "num_samples": 2500,
+    "train_samples": 2000,
+    "test_samples": 500,
+    "macro_f1": 0.5547,
+    "macro_precision": 0.7662,
+    "macro_recall": 0.4556,
+    "status_tag": "Stable",
+    "status_label": "\u2713 Stable",
+    "per_class": {
+      "above_mrp": {
+        "precision": 0.6667,
+        "recall": 0.1818,
+        "f1_score": 0.2857,
+        "support": 22
+      },
+      "nppa_ceiling_violation": {
+        "precision": 0.9091,
+        "recall": 0.3704,
+        "f1_score": 0.5263,
+        "support": 27
+      },
+      "cghs_excess": {
+        "precision": 0.9032,
+        "recall": 0.5385,
+        "f1_score": 0.6747,
+        "support": 52
+      },
+      "duplicate_charge": {
+        "precision": 0.7037,
+        "recall": 0.4318,
+        "f1_score": 0.5352,
+        "support": 44
+      },
+      "room_rent_ratio_violation": {
+        "precision": 1.0,
+        "recall": 0.7692,
+        "f1_score": 0.8696,
+        "support": 26
+      },
+      "gst_on_exempt": {
+        "precision": 0.375,
+        "recall": 0.1538,
+        "f1_score": 0.2182,
+        "support": 39
+      },
+      "consumable_unbundled": {
+        "precision": 0.8056,
+        "recall": 0.7436,
+        "f1_score": 0.7733,
+        "support": 78
+      }
+    },
+    "feature_importances": {
+      "rate_vs_cghs_ratio": 0.0634,
+      "rate_vs_mrp_ratio": 0.0552,
+      "qty_zscore": 0.037,
+      "days_in_hospital": 0.0359,
+      "consumable_pct": 0.0419,
+      "is_package_item": 0.0344,
+      "has_icd_code": 0.0327,
+      "amount_percentile": 0.0453,
+      "description_similarity_max": 0.0618,
+      "cat_pharmacy": 0.0649,
+      "cat_procedure": 0.1007,
+      "cat_diagnostic": 0.0878,
+      "cat_room_nursing": 0.1014,
+      "cat_consumable": 0.1418,
+      "cat_tax_gst": 0.0958
+    }
+  },
+  {
     "run_id": "run_a93d57c8",
     "seed": 248964,
     "learning_rate": 0.08,
