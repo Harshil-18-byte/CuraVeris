@@ -94,7 +94,8 @@ class MultiLabelXGBoostRiskClassifier:
                 if k_neighbors >= 1:
                     try:
                         smote = SMOTE(k_neighbors=k_neighbors, random_state=42)
-                        X_resampled, y_resampled = smote.fit_resample(X_train, y_col)
+                        resampled = smote.fit_resample(X_train, y_col)
+                        X_resampled, y_resampled = resampled[0], resampled[1]
                     except Exception:
                         pass
 
@@ -206,7 +207,7 @@ class RiskClassifier:
 
         q_mean = float(np.mean(all_quantities)) if all_quantities else 1.0
         q_std = float(np.std(all_quantities)) if all_quantities else 1.0
-        qty_zscore = float((item.quantity - q_mean) / (q_std or 1.0))
+        qty_zscore = (item.quantity - q_mean) / (q_std or 1.0)
 
         cat_enc = float(CATEGORY_MAP.get(item.category.lower(), 6))
         amt_percentile = float(np.mean(np.array(all_amounts) <= item.total_amount)) if all_amounts else 0.5

@@ -30,7 +30,7 @@ import joblib
 import threading
 import argparse
 import numpy as np
-from typing import List, Dict, Any, Optional, Generator, Tuple
+from typing import List, Dict, Any, Optional, Generator, Tuple, cast
 
 # Path resolution
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -532,7 +532,7 @@ class ChromaIndexer:
                 unique_ids = [f"{i}_{time.time_ns()}" for i in self.buffer_ids]
                 coll.add(
                     documents=self.buffer_texts,
-                    metadatas=self.buffer_metas,
+                    metadatas=cast(Any, self.buffer_metas),
                     ids=unique_ids
                 )
             except Exception:

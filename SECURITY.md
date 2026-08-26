@@ -2,10 +2,10 @@
 
 ## Supported Versions
 
-| Version | Supported |
-|---|---|
-| 1.2.x (current) | Yes |
-| < 1.2 | No |
+| Version         | Supported |
+| --------------- | --------- |
+| 1.2.x (current) | Yes       |
+| < 1.2           | No        |
 
 ## Reporting a Vulnerability
 
@@ -13,7 +13,7 @@
 
 To disclose a vulnerability confidentially, email:
 
-```
+```text
 security@curaveris.ai
 ```
 
@@ -26,12 +26,12 @@ security@curaveris.ai
 
 ### Our commitments
 
-| SLA | Target |
-|---|---|
-| Acknowledgement | Within 48 hours |
-| Severity assessment | Within 5 business days |
-| Critical fix timeline | Within 7 business days |
-| High fix timeline | Within 30 business days |
+| SLA                    | Target                 |
+| ---------------------- | ---------------------- |
+| Acknowledgement        | Within 48 hours        |
+| Severity assessment    | Within 5 business days |
+| Critical fix timeline  | Within 7 business days |
+| High fix timeline      | Within 30 business days|
 
 ### What qualifies as a security issue
 
