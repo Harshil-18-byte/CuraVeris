@@ -92,12 +92,12 @@ flowchart TD
   F --> E
   Stage3 --> Stage4
 
-  style Stage1 fill:#f8fafc,stroke:#cbd5e1,stroke-width:2px
-  style Stage2 fill:#f1f5f9,stroke:#94a3b8,stroke-width:2px
-  style Legal fill:#eff6ff,stroke:#60a5fa,stroke-width:1px
-  style ML fill:#f5f3ff,stroke:#a78bfa,stroke-width:1px
-  style Stage3 fill:#f0fdf4,stroke:#86efac,stroke-width:2px
-  style Stage4 fill:#fffbeb,stroke:#fcd34d,stroke-width:2px
+  style Stage1 fill:#1e3a5f,stroke:#3b82f6,stroke-width:2px,color:#e2e8f0
+  style Stage2 fill:#1a1f3a,stroke:#6366f1,stroke-width:2px,color:#e2e8f0
+  style Legal fill:#162032,stroke:#3b82f6,stroke-width:1.5px,color:#bfdbfe
+  style ML fill:#1a1030,stroke:#a78bfa,stroke-width:1.5px,color:#ddd6fe
+  style Stage3 fill:#0d2a1f,stroke:#34d399,stroke-width:2px,color:#e2e8f0
+  style Stage4 fill:#2a1a00,stroke:#f59e0b,stroke-width:2px,color:#e2e8f0
 ```
 
 ### Operational Pipeline
