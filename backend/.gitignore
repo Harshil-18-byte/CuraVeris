@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+curaveris.db
+*.sqlite3
+app/ml/weights/*.joblib
+.pytest_cache/
+.coverage
+htmlcov/
