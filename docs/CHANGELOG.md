@@ -1,3 +1,19 @@
+---
+{
+  "id": "file_w9qlrjjd",
+  "filetype": "document",
+  "filename": "CHANGELOG",
+  "created_at": "2026-08-26T16:48:12.302Z",
+  "updated_at": "2026-08-26T16:48:14.670Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris Changelog
 
 All notable changes to this project are documented in this file.
@@ -10,20 +26,20 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## [1.4.0] — 2026-08-26
+## \[1.4.0\] — 2026-08-26
 
 ### Added
 
-- **Temporal Gazette & Statutory Registry Store (`app/db/temporal_gazette_store.py`)**: Time-versioned NPPA device caps, DPCO essential drug ceilings, and CGHS benchmarks with `effective_from`, `effective_to`, and gazette `S.O.` numbers to evaluate compliance strictly on the date of medical service.
-- **Layer 2 Clinical Pathway Scenario Generator (`ml_training/generators/clinical_scenario_generator.py`)**: Clinically realistic inpatient bill simulation across 4 clinical pathways (STEMI / Primary PCI, Total Knee Arthroplasty, Laparoscopic Cholecystectomy, Triple Vessel CABG) with authentic ALOS, diagnostics, pharmacy, and implants.
-- **Layer 3 Controlled Counterfactual Perturbation Generator (`ml_training/generators/counterfactual_generator.py`)**: Single-variable perturbation engine generating price surge, duplicate line, consumable unbundling, unlawful GST surcharge, and OCR character corruption variants with ground-truth delta labels.
-- **Layer 4 Hard Negative Generator (`ml_training/generators/hard_negative_generator.py`)**: Generates complex, high-magnitude, 100% compliant hospital bills (multi-vessel twin stents, prolonged ICU ventilation, revision arthroplasty, oncology biologics) to eliminate the "unusual = fraud" shortcut.
-- **Decoupled Multi-Task Dataset Partitioning Engine (`ml_training/generators/dataset_partitioner.py`)**: Exports scaled master corpus into 6 specialized task datasets (Task A: LayoutLMv3 spatial parsing, Task B: Clinical normalizer, Task C: Statutory RAG retrieval, Task D: Tabular anomaly classifier, Task E: Deterministic math audit, Task F: Legal advocacy SFT chat format).
+- **Temporal Gazette & Statutory Registry Store (**`app/db/temporal_gazette_store.py`**)**: Time-versioned NPPA device caps, DPCO essential drug ceilings, and CGHS benchmarks with `effective_from`, `effective_to`, and gazette `S.O.` numbers to evaluate compliance strictly on the date of medical service.
+- **Layer 2 Clinical Pathway Scenario Generator (**`ml_training/generators/clinical_scenario_generator.py`**)**: Clinically realistic inpatient bill simulation across 4 clinical pathways (STEMI / Primary PCI, Total Knee Arthroplasty, Laparoscopic Cholecystectomy, Triple Vessel CABG) with authentic ALOS, diagnostics, pharmacy, and implants.
+- **Layer 3 Controlled Counterfactual Perturbation Generator (**`ml_training/generators/counterfactual_generator.py`**)**: Single-variable perturbation engine generating price surge, duplicate line, consumable unbundling, unlawful GST surcharge, and OCR character corruption variants with ground-truth delta labels.
+- **Layer 4 Hard Negative Generator (**`ml_training/generators/hard_negative_generator.py`**)**: Generates complex, high-magnitude, 100% compliant hospital bills (multi-vessel twin stents, prolonged ICU ventilation, revision arthroplasty, oncology biologics) to eliminate the "unusual = fraud" shortcut.
+- **Decoupled Multi-Task Dataset Partitioning Engine (**`ml_training/generators/dataset_partitioner.py`**)**: Exports scaled master corpus into 6 specialized task datasets (Task A: LayoutLMv3 spatial parsing, Task B: Clinical normalizer, Task C: Statutory RAG retrieval, Task D: Tabular anomaly classifier, Task E: Deterministic math audit, Task F: Legal advocacy SFT chat format).
 - **Master Test Suite Expansion**: Added `tests/test_scaled_generators.py` expanding test coverage to **46/46 tests (100% passing)**.
 
 ---
 
-## [1.3.0] — 2026-08-26
+## \[1.3.0\] — 2026-08-26
 
 ### Added
 
