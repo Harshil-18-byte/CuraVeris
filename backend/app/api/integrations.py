@@ -2,11 +2,10 @@ from typing import Optional, Dict, Any
 from fastapi import APIRouter, Request, HTTPException, Query, Response, status
 from app.engine.extractor import parse_bill_text
 from app.engine.risk_engine import risk_engine
+from app.core.credentials import credentials
 from app.core.logging import logger
 
 router = APIRouter(prefix="/integrations", tags=["Third-Party Integrations"])
-
-DEFAULT_VERIFY_TOKEN = "curaveris_whatsapp_verify_token_2026"
 
 
 @router.get("/whatsapp/webhook")
@@ -19,9 +18,11 @@ async def verify_whatsapp_webhook(
     Meta WhatsApp Cloud API Webhook Handshake Verification.
     Validates hub.verify_token and echoes back hub.challenge as required by Meta.
     """
-    if hub_mode == "subscribe" and hub_verify_token in [DEFAULT_VERIFY_TOKEN, "curaveris_token"]:
+    valid_tokens = [credentials.integrations.whatsapp_verify_token, "curaveris_token", "curaveris_whatsapp_verify_token_2026"]
+    if hub_mode == "subscribe" and hub_verify_token in valid_tokens:
         logger.info("Meta WhatsApp webhook challenge verified successfully.")
         return Response(content=str(hub_challenge), media_type="text/plain")
+
 
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
