@@ -206,7 +206,9 @@ credentials/
 
 # Decoupled Task Datasets & Temporal SQLite DB
 backend/ml_training/data/processed/decoupled_tasks/
+backend/ml_training/data/raw/
 backend/reference_data/temporal_gazette.db
-data/
+/data/
+
 
 
