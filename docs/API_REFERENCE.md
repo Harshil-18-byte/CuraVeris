@@ -468,3 +468,85 @@ Executes the unified 7-pipeline ML audit pipeline returning structured UI cards,
 }
 ```
 
+---
+
+## 5. Model Observability & Security Endpoints
+
+### 5.1 CuraVeris-4B Model Telemetry & Architecture Registry
+
+Returns real-time architecture dimensions, parameters, training losses, and multi-task prediction heads for the 4.07B custom transformer.
+
+- **Method**: `GET`
+- **Path**: `/api/v1/dev/curaveris-4b`
+- **Response**: `200 OK`
+
+```json
+{
+  "model_name": "CuraVeris-4B-Audit-Transformer",
+  "architecture": "Dense Decoder Transformer with RoPE + SwiGLU + GQA (24 Query Heads, 4 KV Heads)",
+  "parameter_count": 4074276864,
+  "parameter_count_formatted": "4.07 Billion",
+  "layers": 36,
+  "hidden_size": 3072,
+  "intermediate_size": 8704,
+  "num_attention_heads": 24,
+  "num_kv_heads": 4,
+  "vocab_size": 64000,
+  "max_seq_len": 8192,
+  "multi_task_heads": ["Causal LM (64k)", "Anomaly Risk Classification (7-class)", "Restitution Regression (₹)"],
+  "training_objective": "L_total = L_LM + 0.5 * L_Focal + 0.1 * L_Huber",
+  "status": "Trained and Active",
+  "checkpoint_format": "PyTorch (.pt) + Quantized INT8 (.pt, .onnx)"
+}
+```
+
+---
+
+### 5.2 CuraVeris-1B Model Telemetry
+
+Returns specifications and mobile export details for the 1.05B custom transformer.
+
+- **Method**: `GET`
+- **Path**: `/api/v1/dev/curaveris-1b`
+- **Response**: `200 OK`
+
+```json
+{
+  "model_name": "CuraVeris-1B-Audit-Transformer",
+  "architecture": "Dense Decoder Transformer with RoPE + SwiGLU + GQA (14 Query Heads, 2 KV Heads)",
+  "parameter_count": 1054057216,
+  "parameter_count_formatted": "1.05 Billion",
+  "layers": 24,
+  "hidden_size": 1792,
+  "intermediate_size": 4864,
+  "status": "Trained and Active",
+  "checkpoint_format": "Dynamic INT8 Quantized (.pt, .onnx)"
+}
+```
+
+---
+
+### 5.3 System Security Posture & Compliance Report
+
+Returns real-time defense-in-depth security posture, HSTS, rate limiting, and magic bytes file upload enforcement status.
+
+- **Method**: `GET`
+- **Path**: `/api/v1/dev/security-status`
+- **Response**: `200 OK`
+
+```json
+{
+  "status": "HARDENED",
+  "tls_enforcement": "HSTS Enabled (max-age=31536000; includeSubDomains)",
+  "rate_limiting": "Active (SlowAPI Token Bucket)",
+  "cors_policy": "Strict Whitelist (Credentials Allowed with Explicit Origins)",
+  "content_security_policy": "Restricted (OWASP Baseline)",
+  "file_upload_defense": {
+    "max_size_mb": 25,
+    "magic_bytes_inspection": true,
+    "path_traversal_sanitizer": true
+  },
+  "data_at_rest_encryption": "AES-256 GCM (ABHA / PHR payload compliant)",
+  "audit_trail_integrity": "SHA-256 Tamper-Proof Chain"
+}
+```
