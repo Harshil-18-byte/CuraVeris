@@ -1,0 +1,8 @@
+{
+  "macro_f1": 0.942,
+  "macro_auc_roc": 0.988,
+  "recall_overcharge": 0.994,
+  "precision": 0.935,
+  "training_samples": 25000,
+  "feature_count": 15
+}
