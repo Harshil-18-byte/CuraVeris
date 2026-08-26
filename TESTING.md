@@ -39,16 +39,20 @@ All tests live under `backend/tests/`. The suite uses **pytest** with an in-memo
 ```text
 backend/
   tests/
-    conftest.py                       <- Shared fixtures (test client, DB, auth tokens)
-    test_api.py                       <- Auth and bill CRUD integration tests
-    test_risk_engine.py               <- Deterministic statutory rule engine unit tests
-    test_reference_data.py            <- CGHS/NPPA/DPCO rate lookup tests
-    test_enhancements.py              <- ABHA/FHIR, Razorpay, WhatsApp, financial toxicity tests
-    test_advanced_features.py         <- ICD-10 coding, SHAP explainability, implant registry tests
-    test_advanced_hardening.py        <- Security: rate limiting, JWT validation, brute-force lockout
-    test_security.py                  <- PII encryption/decryption, Merkle audit ledger tests
-    test_deep_learning_and_ledger.py  <- Deep MLP, hybrid ensemble, and Merkle chain tests
-    test_mobile_pipeline.py           <- Modular ML pipelines (7 pipelines) & mobile latency tests
+    conftest.py                           <- Shared fixtures (test client, DB, auth tokens)
+    test_api.py                           <- Auth and bill CRUD integration tests
+    test_risk_engine.py                   <- Deterministic statutory rule engine unit tests
+    test_reference_data.py                <- CGHS/NPPA/DPCO rate lookup tests
+    test_enhancements.py                  <- ABHA/FHIR, Razorpay, WhatsApp, financial toxicity tests
+    test_advanced_features.py             <- ICD-10 coding, SHAP explainability, implant registry tests
+    test_advanced_hardening.py            <- Security: rate limiting, JWT validation, brute-force lockout
+    test_security.py                      <- PII encryption/decryption, Merkle audit ledger tests
+    test_deep_learning_and_ledger.py      <- Deep MLP, hybrid ensemble, and Merkle chain tests
+    test_mobile_pipeline.py               <- Modular ML pipelines (7 pipelines) & mobile latency tests
+    test_multi_task_architecture.py       <- Spatial attention heatmaps, SHAP waterfall, challenge suite
+    test_curaveris_1b_model.py            <- CuraVeris-1B parameter scaling, RoPE, GQA, multi-task loss
+    test_curaveris_4b_model.py            <- CuraVeris-4B parameter scaling, 36 layers, Huber restitution
+    test_security_and_4b_telemetry.py     <- Magic bytes validation, path traversal, 4B/1B observability
 ```
 
 ---
@@ -65,7 +69,7 @@ cd backend
 pytest --tb=short -q
 ```
 
-Expected: **46+ tests, 0 failures (100% pass rate)**.
+Expected: **62+ tests, 0 failures (100% pass rate)**.
 
 ### Single file
 
