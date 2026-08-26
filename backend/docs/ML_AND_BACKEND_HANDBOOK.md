@@ -241,7 +241,7 @@ After introducing continuous overlapping Gaussian distributions, legitimate repe
 
 ### Composite Patient Risk Score Formula (0 to 100)
 
-$$\text{Risk Score} = (W_{\text{rate}} \times 0.35) + (W_{\text{dup}} \times 0.25) + (W_{\text{consumables}} \times 0.15) + (W_{\text{gst}} \times 0.10) + (W_{\text{gap}} \times 0.15) + \text{EMI\_Stress}$$
+$$\text{Risk Score} = (W_{\text{rate}} \times 0.35) + (W_{\text{dup}} \times 0.25) + (W_{\text{consumables}} \times 0.15) + (W_{\text{gst}} \times 0.10) + (W_{\text{gap}} \times 0.15) + \text{EMI-Stress}$$
 
 *   **0 – 30 (Low)**: Minor variance; compliant with statutory limits.
 *   **30 – 60 (Moderate)**: Unbundled routine consumables; procedure slightly above CGHS benchmark.
@@ -738,10 +738,10 @@ During claims inference, the hybrid ensemble conducts $K = 10$ stochastic pertur
 ### 11.4 Cryptographic Merkle Audit Ledger
 
 Secures hospital bill audit outcomes under **Section 65B of the Indian Evidence Act** and Bharatiya Sakshya Adhiniyam Section 61:
-* **Merkle Leaf Hashes**: Each item is hashed: $\text{Leaf}_i = \text{SHA256}(\text{raw\_text} \mid \text{rate} \mid \text{qty} \mid \text{overcharge})$.
+* **Merkle Leaf Hashes**: Each item is hashed: $\text{Leaf}_i = \text{SHA-256}(\text{RawText} \parallel \text{Rate} \parallel \text{Quantity} \parallel \text{Overcharge})$.
 * **Merkle Root**: Leaves are combined recursively into a single 32-byte hexadecimal Merkle Root.
 * **Chained Block Hash**:
-  $$\text{Block}_n = \text{SHA256}(n \mid \text{Timestamp} \mid \text{BillID} \mid \text{TotalBilled} \mid \text{Overcharge} \mid \text{RiskScore} \mid \text{MerkleRoot} \mid \text{PrevHash})$$
+  $$\text{Block}_n = \text{SHA-256}(n \parallel \text{Timestamp} \parallel \text{BillID} \parallel \text{TotalBilled} \parallel \text{Overcharge} \parallel \text{RiskScore} \parallel \text{MerkleRoot} \parallel \text{PrevHash})$$
 * **Endpoints**:
   * `GET /api/v1/bills/{bill_id}/audit-certificate`: Returns signed certificate block.
   * `POST /api/v1/bills/verify-ledger`: Cryptographically verifies whether submitted evidence was modified.
