@@ -18,6 +18,7 @@ class User(Base):
     full_name = Column(String, nullable=False)
     role = Column(String, default="patient")  # patient | hospital_admin | super_admin
     encrypted_phone = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     bills = relationship("Bill", back_populates="owner", cascade="all, delete-orphan")
