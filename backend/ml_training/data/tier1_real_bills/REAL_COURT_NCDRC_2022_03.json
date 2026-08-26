@@ -1,0 +1,87 @@
+{
+  "bill_id": "REAL_COURT_NCDRC_2022_03",
+  "case_citation": "V. K. Sharma vs Apollo Hospitals Enterprise Ltd (NCDRC RP No. 1820/2022)",
+  "hospital_name": "Indraprastha Apollo Hospitals",
+  "city": "Sarita Vihar, New Delhi",
+  "state": "Delhi",
+  "tier": 1,
+  "is_nabh": true,
+  "admission_date": "2022-02-10",
+  "discharge_date": "2022-02-16",
+  "days_admitted": 6,
+  "diagnosis": "Bilateral Advanced Knee Osteoarthritis for Bilateral TKR",
+  "icd10_code": "M17.0",
+  "total_billed": 625000.0,
+  "source_type": "real_court_case",
+  "provenance_notes": "Court finding: Knee implant systems billed at \u20b91,15,000 each exceeding the NPPA gazette ceiling of \u20b971,000 for Posterior Stabilized systems",
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Bilateral Total Knee Replacement Surgery Tariff",
+      "category": "procedure",
+      "quantity": 1.0,
+      "unit_price": 165000.0,
+      "total_amount": 165000.0,
+      "labels": {
+        "rate_anomaly": 0,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Knee Implant System - Left Knee (Posterior Stabilized)",
+      "category": "implant",
+      "quantity": 1.0,
+      "unit_price": 115000.0,
+      "total_amount": 115000.0,
+      "labels": {
+        "nppa_ceiling_violation": 1,
+        "rate_anomaly": 1,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Knee Implant System - Right Knee (Posterior Stabilized)",
+      "category": "implant",
+      "quantity": 1.0,
+      "unit_price": 115000.0,
+      "total_amount": 115000.0,
+      "labels": {
+        "nppa_ceiling_violation": 1,
+        "rate_anomaly": 1,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Single Deluxe Private Room Rent (6 days)",
+      "category": "room_nursing",
+      "quantity": 6.0,
+      "unit_price": 6500.0,
+      "total_amount": 39000.0,
+      "labels": {
+        "rate_anomaly": 0,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    }
+  ]
+}
