@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "markdown-collab": {
+      "type": "http",
+      "url": "${MARKDOWN_COLLAB_MCP_URL:-http://127.0.0.1:61942/mcp}",
+      "headers": {
+        "Authorization": "Bearer ${MARKDOWN_COLLAB_MCP_TOKEN}"
+      }
+    },
+    "gpdoc": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "c:\\Users\\harsh\\.antigravity-ide\\extensions\\repetere.gpdoc-3.14.2-universal\\out\\mcp-server.js"
+      ]
+    }
+  }
+}
