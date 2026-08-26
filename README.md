@@ -1,3 +1,19 @@
+---
+{
+  "id": "file_zndeqvlc",
+  "filetype": "document",
+  "filename": "README",
+  "created_at": "2026-08-26T17:25:13.964Z",
+  "updated_at": "2026-08-26T17:25:16.716Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris
 
 **An automated medical billing audit and patient financial advocacy engine for the Indian healthcare system — built with FastAPI, PostgreSQL, XGBoost, and a hybrid deep neural network ensemble.**
@@ -551,6 +567,67 @@ python ml_training/train_all_models.py --models A C
 # 4. Train LayoutLMv3 document transformer:
 python ml_training/train_all_models.py --models B
 ```
+
+---
+
+## CuraVeris-4B & CuraVeris-1B Custom Transformer Models
+
+CuraVeris includes native custom dense decoder Transformers built and trained from scratch specifically for the Indian healthcare statutory billing domain:
+
+### Architecture Matrix
+
+| Specification | CuraVeris-4B | CuraVeris-1B |
+| :--- | :--- | :--- |
+| **Parameter Count** | **~4.07 Billion (4,074,276,864)** | **~1.05 Billion (1,054,057,216)** |
+| **Layers ($N_{\text{layers}}$)** | 36 Transformer Blocks | 24 Transformer Blocks |
+| **Hidden Size ($d_{\text{model}}$)** | 3,072 | 1,792 |
+| **Intermediate Size (SwiGLU)** | 8,704 | 4,864 |
+| **Attention Mechanism** | Grouped Query Attention (GQA) | Grouped Query Attention (GQA) |
+| **Attention Heads / KV Heads** | 24 Query / 4 Key-Value (6x Compression) | 14 Query / 2 Key-Value (7x Compression) |
+| **Positional Encoding** | Rotary Position Embeddings (RoPE $\theta=10000.0$) | Rotary Position Embeddings (RoPE $\theta=10000.0$) |
+| **Context Window** | 8,192 tokens | 8,192 tokens |
+| **Vocabulary Size** | 64,000 (Clinical, Pharma, Gazette tokens) | 64,000 (Clinical, Pharma, Gazette tokens) |
+| **Multi-Task Heads** | Causal LM + 7-Class Anomaly + ₹ Restitution | Causal LM + 7-Class Anomaly + ₹ Restitution |
+| **Quantized Formats** | Dynamic INT8 (`.pt`), ONNX Runtime (`.onnx`) | Dynamic INT8 (`.pt`), ONNX Runtime (`.onnx`) |
+
+### Multi-Task Scratch Training Objective
+
+$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{LM}} + 0.5 \cdot \mathcal{L}_{\text{Focal}} + 0.1 \cdot \mathcal{L}_{\text{Huber}}$$
+
+1. **Causal Language Modeling ($\mathcal{L}_{\text{LM}}$)**: Next-token cross-entropy over statutory gazette citations, forensic reasoning, and Section 65B legal dispute letters.
+2. **Multi-Label Focal Loss ($\mathcal{L}_{\text{Focal}}$)**:
+   $$\mathcal{L}_{\text{Focal}} = -(1 - p_t)^\gamma \log(p_t) \quad (\gamma=2.0, \alpha=0.25)$$
+   Mitigates severe class imbalance across the 7 hospital billing violation categories.
+3. **Continuous Restitution Huber Loss ($\mathcal{L}_{\text{Huber}}$)**: Smooth L1 regression for exact rupee overcharge difference prediction.
+
+---
+
+## Two-Track Hybrid Production Architecture
+
+```text
+TRACK A: Model Specialization
+Qwen / CuraVeris-4B -> Domain Adaptation -> Multi-Task SFT -> DPO Preference Tuning
+
+TRACK B: Reliable Audit System
+Bill -> Document Understanding (LayoutLM / OCR) -> Structured Representation ->
+Temporal Reference RAG -> Deterministic Rule Engine -> 4B Model Reasoning ->
+Evidence Verification -> Calibrated Confidence Gate -> Certified Audit Report
+```
+
+- **Track A (Model Specialization)**: Domain-adapted 4B transformer providing nuanced clinical rationale, item categorization, and statutory justification.
+- **Track B (Reliable Auditing Core)**: Zero-hallucination code-based calculation engine ($Q \times R_{\text{charged}} - Q \times R_{\text{allowed}}$), BM25 + Bi-Encoder dense retrieval, cross-encoder temporal reranker, and calibrated confidence routing ($\ge 0.95$ clear finding, $0.70-0.95$ enhanced review, $< 0.70$ human review).
+
+---
+
+## Enterprise Security Hardening
+
+CuraVeris enforces defense-in-depth security controls across the entire platform:
+
+- **File Upload Protection**: Magic bytes header inspection (`%PDF`, `\x89PNG`, `\xff\xd8\xff`, `RIFF`), max payload size limit (25MB), and recursive path traversal sanitization (`../`, `..\`, null bytes `\x00`).
+- **Cryptographic Audit Integrity**: Deterministic SHA-256 hashing on all uploaded bills and findings, sealed with HMAC-SHA256 signatures in a Merkle tree ledger.
+- **Transport & Web Security**: HTTP Strict Transport Security (HSTS `max-age=31536000; includeSubDomains`), Content Security Policy (CSP baseline), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`.
+- **Rate Limiting & Anti-DDoS**: Token bucket rate limiting via SlowAPI on `/auth`, `/audit`, `/upload`, and `/api/v1/dev` endpoints.
+- **Observability APIs**: Real-time endpoints at `/api/v1/dev/curaveris-4b`, `/api/v1/dev/curaveris-1b`, and `/api/v1/dev/security-status`.
 
 ---
 
