@@ -92,7 +92,12 @@ backend/app/ml/weights/*.onnx
 *.mmap
 *.bin
 *.pickle
-models/
+/models/
+backend/ml_training/models/adapters/
+backend/ml_training/models/base/
+backend/ml_training/models/merged/
+backend/ml_training/models/quantized/*.pt
+backend/ml_training/models/quantized/*.onnx
 backend/data/chroma_db/
 backend/ml_training/tmp/
 backend/ml_training/data/processed/features/
