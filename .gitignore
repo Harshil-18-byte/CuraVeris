@@ -1,0 +1,40 @@
+# Python Bytecode and Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*/.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environments
+venv/
+*/venv/
+env/
+*/env/
+ENV/
+
+# Local Environment Variables
+.env
+*/.env
+.env.local
+
+# Local Databases (excluding bundled reference master)
+*.sqlite3
+curaveris.db
+backend/curaveris.db
+test_curaveris.db
+backend/test_curaveris.db
+
+# Heavy Machine Learning Weights
+backend/app/ml/weights/*.joblib
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Specific
+.DS_Store
+Thumbs.db
