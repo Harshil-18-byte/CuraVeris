@@ -10,7 +10,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## [1.2.0] — 2026-08-26
+## \[1.2.0\] — 2026-08-26
 
 ### Added
 
@@ -26,7 +26,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 ### Changed
 
 - **Database engine**: Migrated from SQLite to PostgreSQL (asyncpg + SQLAlchemy async) across all production data persistence. SQLite retained only for the read-only statutory reference store.
-- **Comprehensive `.gitignore`**: Expanded to cover Python bytecode, virtual environments, ML weights, databases, IDE files, OS artifacts, Node modules, Docker overrides, and secrets.
+- **Comprehensive** `.gitignore`: Expanded to cover Python bytecode, virtual environments, ML weights, databases, IDE files, OS artifacts, Node modules, Docker overrides, and secrets.
 
 ### Documentation
 
@@ -40,7 +40,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## [1.1.0] — 2026-08-26
+## \[1.1.0\] — 2026-08-26
 
 ### Added
 
@@ -64,7 +64,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## [1.0.0] — 2026-08-26
+## \[1.0.0\] — 2026-08-26
 
 Initial release.
 
