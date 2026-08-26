@@ -93,6 +93,7 @@ backend/app/ml/weights/*.onnx
 *.bin
 *.pickle
 /models/
+backend/models/base/
 backend/ml_training/models/adapters/
 backend/ml_training/models/base/
 backend/ml_training/models/merged/
