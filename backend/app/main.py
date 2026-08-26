@@ -33,7 +33,14 @@ async def lifespan(app: FastAPI):
     # 3. Populate statutory reference rates (CGHS, NPPA, DPCO, IRDAI)
     init_reference_db()
 
-    # 4. Load or train ML risk classification model
+    # 4. Initialize ChromaDB statutory vector collections
+    try:
+        from app.db.chroma_client import init_chroma_collections
+        init_chroma_collections()
+    except Exception as exc:
+        logger.warning(f"ChromaDB startup init deferred: {exc}")
+
+    # 5. Load or train ML risk classification model
     model_path = os.path.join(os.path.dirname(__file__), "ml", "weights", "risk_model.joblib")
     if not os.path.exists(model_path):
         logger.info("ML model weights not found. Training now (this takes ~30s)...")
