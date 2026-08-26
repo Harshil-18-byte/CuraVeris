@@ -1,19 +1,3 @@
----
-{
-  "id": "file_ez5qkze6",
-  "filetype": "document",
-  "filename": "GOVERNMENT_DATA_COLLECTION",
-  "created_at": "2026-08-26T17:00:44.169Z",
-  "updated_at": "2026-08-26T17:00:44.169Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # Government Data Collection — CGHS / NPPA / DPCO
 
 ## Purpose
