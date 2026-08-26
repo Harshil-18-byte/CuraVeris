@@ -4,7 +4,7 @@ import os
 import sys
 import json
 import math
-from typing import List, Dict, Any, Tuple
+from typing import Optional, List, Dict, Any, Tuple
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
