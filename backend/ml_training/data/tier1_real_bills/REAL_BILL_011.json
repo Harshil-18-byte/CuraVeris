@@ -1,0 +1,171 @@
+{
+  "bill_id": "REAL_BILL_011",
+  "metadata": {
+    "hospital_name": "Apollo Gleneagles Hospital",
+    "hospital_city": "Kolkata",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-03-01",
+    "discharge_date": "2024-03-07",
+    "los_days": 6
+  },
+  "patient": {
+    "age_group": "adult_35_60",
+    "gender": "female",
+    "primary_diagnosis": "typhoid_enteric_fever",
+    "icd10_code": "A01.0",
+    "procedure": "iv_antibiotics_inpatient_care",
+    "ward_type": "general",
+    "room_rate_per_day": 2500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges General 6 days",
+      "normalized_name": "room_general_per_day",
+      "category": "accommodation",
+      "quantity": 6,
+      "unit": "days",
+      "charged_rate": 2500.0,
+      "charged_total": 15000.0,
+      "cghs_rate": 1000.0,
+      "cghs_rate_nabh": 1250.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "6 days of general stay billed at \u20b92500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Iv Antibiotics Inpatient Care Package",
+      "normalized_name": "iv_antibiotics_inpatient_care",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 35000.0,
+      "charged_total": 35000.0,
+      "cghs_rate": 11500.0,
+      "cghs_rate_nabh": 13225.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 21775.0,
+      "plain_english": "Primary procedure package for typhoid enteric fever"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Tramadol 50mg/ml x 3",
+      "normalized_name": "tramadol_injection_50mg",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "ampoules",
+      "charged_rate": 37.227999999999994,
+      "charged_total": 111.68,
+      "cghs_rate": 9.5,
+      "cghs_rate_nabh": 10.92,
+      "mrp": 16.4,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 62.480000000000004,
+      "plain_english": "3 units of Inj. Tramadol 50mg/ml (MRP \u20b916.4)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Ondansetron 4mg x 6",
+      "normalized_name": "ondansetron_injection_4mg",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "ampoules",
+      "charged_rate": 34.04,
+      "charged_total": 204.24,
+      "cghs_rate": 12.0,
+      "cghs_rate_nabh": 13.8,
+      "mrp": 18.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 93.24000000000001,
+      "plain_english": "6 units of Inj. Ondansetron 4mg (MRP \u20b918.5)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 4)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 234.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Cannula 18G/20G (Qty: 3)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 214.5,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 50764.42,
+    "total_overcharge_detected": 21930.72,
+    "cgst": 18.96,
+    "sgst": 18.96,
+    "cgst_correct": 18.96,
+    "sgst_correct": 18.96
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_2",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

@@ -1,0 +1,171 @@
+{
+  "bill_id": "REAL_BILL_021",
+  "metadata": {
+    "hospital_name": "District Government General Hospital",
+    "hospital_city": "Nagpur",
+    "hospital_tier": 3,
+    "hospital_type": "government",
+    "is_nabh_accredited": false,
+    "admission_date": "2024-04-30",
+    "discharge_date": "2024-05-02",
+    "los_days": 2
+  },
+  "patient": {
+    "age_group": "pediatric_0_18",
+    "gender": "female",
+    "primary_diagnosis": "cataract_senile",
+    "icd10_code": "H25.9",
+    "procedure": "phacoemulsification_with_iol",
+    "ward_type": "daycare",
+    "room_rate_per_day": 3000
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Daycare 2 days",
+      "normalized_name": "room_daycare_per_day",
+      "category": "accommodation",
+      "quantity": 2,
+      "unit": "days",
+      "charged_rate": 3000.0,
+      "charged_total": 6000.0,
+      "cghs_rate": 1500.0,
+      "cghs_rate_nabh": 1725.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 days of daycare stay billed at \u20b93000/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Phacoemulsification With Iol Package",
+      "normalized_name": "phacoemulsification_with_iol",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 35000.0,
+      "charged_total": 35000.0,
+      "cghs_rate": 9000.0,
+      "cghs_rate_nabh": 10350.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 24650.0,
+      "plain_english": "Primary procedure package for cataract senile"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "IV Normal Saline 500ml x 3",
+      "normalized_name": "normal_saline_500ml",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "bottles",
+      "charged_rate": 47.495000000000005,
+      "charged_total": 142.49,
+      "cghs_rate": 18.0,
+      "cghs_rate_nabh": 20.7,
+      "mrp": 29.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 53.99000000000001,
+      "plain_english": "3 units of IV Normal Saline 500ml (MRP \u20b929.5)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Tramadol 50mg/ml x 2",
+      "normalized_name": "tramadol_injection_50mg",
+      "category": "medicine",
+      "quantity": 2,
+      "unit": "ampoules",
+      "charged_rate": 29.683999999999997,
+      "charged_total": 59.37,
+      "cghs_rate": 9.5,
+      "cghs_rate_nabh": 10.92,
+      "mrp": 16.4,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 26.57,
+      "plain_english": "2 units of Inj. Tramadol 50mg/ml (MRP \u20b916.4)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 2)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pairs",
+      "charged_rate": 45.0,
+      "charged_total": 90.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Cannula 18G/20G (Qty: 3)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pieces",
+      "charged_rate": 55.0,
+      "charged_total": 165.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 41456.86,
+    "total_overcharge_detected": 24730.56,
+    "cgst": 12.11,
+    "sgst": 12.11,
+    "cgst_correct": 12.11,
+    "sgst_correct": 12.11
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_3",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

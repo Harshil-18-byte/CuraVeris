@@ -1,0 +1,192 @@
+{
+  "bill_id": "REAL_BILL_033",
+  "metadata": {
+    "hospital_name": "District Government General Hospital",
+    "hospital_city": "Nagpur",
+    "hospital_tier": 3,
+    "hospital_type": "government",
+    "is_nabh_accredited": false,
+    "admission_date": "2024-07-11",
+    "discharge_date": "2024-07-13",
+    "los_days": 2
+  },
+  "patient": {
+    "age_group": "pediatric_0_18",
+    "gender": "female",
+    "primary_diagnosis": "cataract_senile",
+    "icd10_code": "H25.9",
+    "procedure": "phacoemulsification_with_iol",
+    "ward_type": "daycare",
+    "room_rate_per_day": 3000
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Daycare 2 days",
+      "normalized_name": "room_daycare_per_day",
+      "category": "accommodation",
+      "quantity": 2,
+      "unit": "days",
+      "charged_rate": 3000.0,
+      "charged_total": 6000.0,
+      "cghs_rate": 1500.0,
+      "cghs_rate_nabh": 1725.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 days of daycare stay billed at \u20b93000/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Phacoemulsification With Iol Package",
+      "normalized_name": "phacoemulsification_with_iol",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 35000.0,
+      "charged_total": 35000.0,
+      "cghs_rate": 9000.0,
+      "cghs_rate_nabh": 10350.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 24650.0,
+      "plain_english": "Primary procedure package for cataract senile"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Meropenem 1gm x 2",
+      "normalized_name": "meropenem_injection_1gm",
+      "category": "medicine",
+      "quantity": 2,
+      "unit": "vials",
+      "charged_rate": 1567.7999999999997,
+      "charged_total": 3135.6,
+      "cghs_rate": 450.0,
+      "cghs_rate_nabh": 517.5,
+      "mrp": 780.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 1575.6,
+      "plain_english": "2 units of Inj. Meropenem 1gm (MRP \u20b9780.0)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Ceftriaxone 1gm x 6",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "vials",
+      "charged_rate": 148.0,
+      "charged_total": 888.0,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 532.8,
+      "plain_english": "6 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Inj. Pantoprazole 40mg x 2",
+      "normalized_name": "pantoprazole_injection_40mg",
+      "category": "medicine",
+      "quantity": 2,
+      "unit": "vials",
+      "charged_rate": 178.88,
+      "charged_total": 357.76,
+      "cghs_rate": 62.0,
+      "cghs_rate_nabh": 71.3,
+      "mrp": 86.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 185.76,
+      "plain_english": "2 units of Inj. Pantoprazole 40mg (MRP \u20b986.0)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 4)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pairs",
+      "charged_rate": 45.0,
+      "charged_total": 180.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "IV Cannula 18G/20G (Qty: 3)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pieces",
+      "charged_rate": 55.0,
+      "charged_total": 165.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 45726.36,
+    "total_overcharge_detected": 26944.16,
+    "cgst": 262.88,
+    "sgst": 262.88,
+    "cgst_correct": 262.88,
+    "sgst_correct": 262.88
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_3",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

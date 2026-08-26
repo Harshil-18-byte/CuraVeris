@@ -1,0 +1,213 @@
+{
+  "bill_id": "REAL_BILL_056",
+  "metadata": {
+    "hospital_name": "AIIMS Ansari Nagar",
+    "hospital_city": "Delhi",
+    "hospital_tier": 1,
+    "hospital_type": "government",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-11-26",
+    "discharge_date": "2024-12-02",
+    "los_days": 6
+  },
+  "patient": {
+    "age_group": "senior_60_plus",
+    "gender": "male",
+    "primary_diagnosis": "femur_neck_fracture",
+    "icd10_code": "S72.0",
+    "procedure": "open_reduction_internal_fixation_dhs",
+    "ward_type": "semi_private",
+    "room_rate_per_day": 4200
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Semi Private 6 days",
+      "normalized_name": "room_semi_private_per_day",
+      "category": "accommodation",
+      "quantity": 6,
+      "unit": "days",
+      "charged_rate": 4200.0,
+      "charged_total": 25200.0,
+      "cghs_rate": 2000.0,
+      "cghs_rate_nabh": 2300.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "6 days of semi private stay billed at \u20b94200/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Open Reduction Internal Fixation Dhs Package",
+      "normalized_name": "open_reduction_internal_fixation_dhs",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 122500.0,
+      "charged_total": 122500.0,
+      "cghs_rate": 38000.0,
+      "cghs_rate_nabh": 43700.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 78800.0,
+      "plain_english": "Primary procedure package for femur neck fracture"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Pantoprazole 40mg x 3",
+      "normalized_name": "pantoprazole_injection_40mg",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "vials",
+      "charged_rate": 151.36,
+      "charged_total": 454.08,
+      "cghs_rate": 62.0,
+      "cghs_rate_nabh": 71.3,
+      "mrp": 86.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 196.07999999999998,
+      "plain_english": "3 units of Inj. Pantoprazole 40mg (MRP \u20b986.0)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Paracetamol IV Infusion 100ml x 6",
+      "normalized_name": "paracetamol_iv_100ml",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "bottles",
+      "charged_rate": 90.9,
+      "charged_total": 545.4,
+      "cghs_rate": 25.0,
+      "cghs_rate_nabh": 28.75,
+      "mrp": 45.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 275.4,
+      "plain_english": "6 units of Paracetamol IV Infusion 100ml (MRP \u20b945.0)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Inj. Meropenem 1gm x 6",
+      "normalized_name": "meropenem_injection_1gm",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "vials",
+      "charged_rate": 1419.6000000000001,
+      "charged_total": 8517.6,
+      "cghs_rate": 450.0,
+      "cghs_rate_nabh": 517.5,
+      "mrp": 780.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 3837.6000000000004,
+      "plain_english": "6 units of Inj. Meropenem 1gm (MRP \u20b9780.0)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Normal Saline 500ml x 2",
+      "normalized_name": "normal_saline_500ml",
+      "category": "medicine",
+      "quantity": 2,
+      "unit": "bottles",
+      "charged_rate": 59.294999999999995,
+      "charged_total": 118.59,
+      "cghs_rate": 18.0,
+      "cghs_rate_nabh": 20.7,
+      "mrp": 29.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 59.59,
+      "plain_english": "2 units of IV Normal Saline 500ml (MRP \u20b929.5)"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 3)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 175.5,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_008",
+      "raw_text": "IV Cannula 18G/20G (Qty: 4)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 286.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 157797.17,
+    "total_overcharge_detected": 83168.67,
+    "cgst": 578.14,
+    "sgst": 578.14,
+    "cgst_correct": 578.14,
+    "sgst_correct": 578.14
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_2",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

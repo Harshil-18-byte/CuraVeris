@@ -1,0 +1,171 @@
+{
+  "bill_id": "REAL_BILL_066",
+  "metadata": {
+    "hospital_name": "Sahyadri Super Speciality Hospital",
+    "hospital_city": "Pune",
+    "hospital_tier": 2,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2025-01-25",
+    "discharge_date": "2025-01-29",
+    "los_days": 4
+  },
+  "patient": {
+    "age_group": "young_adult_19_35",
+    "gender": "male",
+    "primary_diagnosis": "cesarean_delivery_lscs",
+    "icd10_code": "O82.0",
+    "procedure": "lower_segment_cesarean_section",
+    "ward_type": "single_private",
+    "room_rate_per_day": 5500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Single Private 4 days",
+      "normalized_name": "room_single_private_per_day",
+      "category": "accommodation",
+      "quantity": 4,
+      "unit": "days",
+      "charged_rate": 5500.0,
+      "charged_total": 22000.0,
+      "cghs_rate": 3000.0,
+      "cghs_rate_nabh": 3450.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 days of single private stay billed at \u20b95500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Lower Segment Cesarean Section Package",
+      "normalized_name": "lower_segment_cesarean_section",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 65000.0,
+      "charged_total": 65000.0,
+      "cghs_rate": 18500.0,
+      "cghs_rate_nabh": 21275.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 43725.0,
+      "plain_english": "Primary procedure package for cesarean delivery lscs"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Meropenem 1gm x 4",
+      "normalized_name": "meropenem_injection_1gm",
+      "category": "medicine",
+      "quantity": 4,
+      "unit": "vials",
+      "charged_rate": 1786.2,
+      "charged_total": 7144.8,
+      "cghs_rate": 450.0,
+      "cghs_rate_nabh": 517.5,
+      "mrp": 780.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 4024.8,
+      "plain_english": "4 units of Inj. Meropenem 1gm (MRP \u20b9780.0)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Ceftriaxone 1gm x 5",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "vials",
+      "charged_rate": 109.52000000000001,
+      "charged_total": 547.6,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 251.60000000000002,
+      "plain_english": "5 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 3)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pairs",
+      "charged_rate": 45.0,
+      "charged_total": 135.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Cannula 18G/20G (Qty: 3)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pieces",
+      "charged_rate": 55.0,
+      "charged_total": 165.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 94992.4,
+    "total_overcharge_detected": 48001.4,
+    "cgst": 461.54,
+    "sgst": 461.54,
+    "cgst_correct": 461.54,
+    "sgst_correct": 461.54
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_3",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

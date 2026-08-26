@@ -1,0 +1,110 @@
+{
+  "total_items": 10,
+  "matched_items": 8,
+  "total_potential_overcharge": 33445.5,
+  "items_above_threshold": 8,
+  "threshold": 0.72,
+  "top_k": 3,
+  "item_results": [
+    {
+      "item_id": "T01",
+      "item_name": "Laparoscopic Cholecystectomy Surgery",
+      "num_matches": 2,
+      "best_similarity": 0.8112,
+      "best_collection": "cghs_collection",
+      "applicable_benchmark": 24500.0,
+      "is_overcharged": true,
+      "overcharge_amount": 27500.0
+    },
+    {
+      "item_id": "T02",
+      "item_name": "CT Scan Abdomen with Contrast",
+      "num_matches": 2,
+      "best_similarity": 0.9468,
+      "best_collection": "cghs_collection",
+      "applicable_benchmark": 3100.0,
+      "is_overcharged": true,
+      "overcharge_amount": 2100.0
+    },
+    {
+      "item_id": "T03",
+      "item_name": "ICU Charges with Ventilator per day",
+      "num_matches": 3,
+      "best_similarity": 1.0,
+      "best_collection": "cghs_collection",
+      "applicable_benchmark": 7500.0,
+      "is_overcharged": true,
+      "overcharge_amount": 3000.0
+    },
+    {
+      "item_id": "T04",
+      "item_name": "Complete Blood Count CBC Hemogram",
+      "num_matches": 2,
+      "best_similarity": 0.9651,
+      "best_collection": "cghs_collection",
+      "applicable_benchmark": 155.0,
+      "is_overcharged": true,
+      "overcharge_amount": 250.0
+    },
+    {
+      "item_id": "T05",
+      "item_name": "Specialist Consultation MD",
+      "num_matches": 3,
+      "best_similarity": 0.9484,
+      "best_collection": "cghs_collection",
+      "applicable_benchmark": 600.0,
+      "is_overcharged": true,
+      "overcharge_amount": 50.0
+    },
+    {
+      "item_id": "T06",
+      "item_name": "Coronary Drug Eluting Stent DES Implant",
+      "num_matches": 0,
+      "best_similarity": 0.0,
+      "best_collection": null,
+      "applicable_benchmark": null,
+      "is_overcharged": false,
+      "overcharge_amount": 0.0
+    },
+    {
+      "item_id": "T07",
+      "item_name": "Total Knee Replacement Implant",
+      "num_matches": 0,
+      "best_similarity": 0.0,
+      "best_collection": null,
+      "applicable_benchmark": null,
+      "is_overcharged": false,
+      "overcharge_amount": 0.0
+    },
+    {
+      "item_id": "T08",
+      "item_name": "Pantoprazole Injection 40mg",
+      "num_matches": 1,
+      "best_similarity": 0.8502,
+      "best_collection": "dpco_collection",
+      "applicable_benchmark": 50.45,
+      "is_overcharged": true,
+      "overcharge_amount": 378.2
+    },
+    {
+      "item_id": "T09",
+      "item_name": "Ceftriaxone Injection 1gm",
+      "num_matches": 2,
+      "best_similarity": 0.7626,
+      "best_collection": "dpco_collection",
+      "applicable_benchmark": 38.5,
+      "is_overcharged": true,
+      "overcharge_amount": 139.5
+    },
+    {
+      "item_id": "T10",
+      "item_name": "Paracetamol Tablet 500mg",
+      "num_matches": 3,
+      "best_similarity": 0.847,
+      "best_collection": "dpco_collection",
+      "applicable_benchmark": 0.72,
+      "is_overcharged": true,
+      "overcharge_amount": 27.8
+    }
+  ]
+}

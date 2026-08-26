@@ -1,0 +1,171 @@
+{
+  "bill_id": "REAL_BILL_046",
+  "metadata": {
+    "hospital_name": "Care Hospitals Banjara Hills",
+    "hospital_city": "Hyderabad",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-09-27",
+    "discharge_date": "2024-09-29",
+    "los_days": 2
+  },
+  "patient": {
+    "age_group": "young_adult_19_35",
+    "gender": "male",
+    "primary_diagnosis": "kidney_disease_esrd",
+    "icd10_code": "N18.5",
+    "procedure": "maintenance_hemodialysis_monitoring",
+    "ward_type": "dialysis_unit",
+    "room_rate_per_day": 3500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Dialysis Unit 2 days",
+      "normalized_name": "room_dialysis_unit_per_day",
+      "category": "accommodation",
+      "quantity": 2,
+      "unit": "days",
+      "charged_rate": 3500.0,
+      "charged_total": 7000.0,
+      "cghs_rate": 1800.0,
+      "cghs_rate_nabh": 2070.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 days of dialysis unit stay billed at \u20b93500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Maintenance Hemodialysis Monitoring Package",
+      "normalized_name": "maintenance_hemodialysis_monitoring",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 22500.0,
+      "charged_total": 22500.0,
+      "cghs_rate": 6500.0,
+      "cghs_rate_nabh": 7475.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 15025.0,
+      "plain_english": "Primary procedure package for kidney disease esrd"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Pantoprazole 40mg x 3",
+      "normalized_name": "pantoprazole_injection_40mg",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "vials",
+      "charged_rate": 168.56,
+      "charged_total": 505.68,
+      "cghs_rate": 62.0,
+      "cghs_rate_nabh": 71.3,
+      "mrp": 86.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 247.68,
+      "plain_english": "3 units of Inj. Pantoprazole 40mg (MRP \u20b986.0)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Enoxaparin 40mg/0.4ml x 4",
+      "normalized_name": "enoxaparin_injection_40mg",
+      "category": "medicine",
+      "quantity": 4,
+      "unit": "prefilled_syringes",
+      "charged_rate": 999.5999999999999,
+      "charged_total": 3998.4,
+      "cghs_rate": 280.0,
+      "cghs_rate_nabh": 322.0,
+      "mrp": 420.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 2318.4,
+      "plain_english": "4 units of Inj. Enoxaparin 40mg/0.4ml (MRP \u20b9420.0)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 3)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 175.5,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Cannula 18G/20G (Qty: 3)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 214.5,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 34394.08,
+    "total_overcharge_detected": 17591.08,
+    "cgst": 270.24,
+    "sgst": 270.24,
+    "cgst_correct": 270.24,
+    "sgst_correct": 270.24
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_1",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

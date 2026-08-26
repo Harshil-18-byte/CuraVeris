@@ -1,0 +1,192 @@
+{
+  "bill_id": "REAL_BILL_073",
+  "metadata": {
+    "hospital_name": "Apollo Hospitals Bangalore",
+    "hospital_city": "Bangalore",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2025-03-08",
+    "discharge_date": "2025-03-12",
+    "los_days": 4
+  },
+  "patient": {
+    "age_group": "pediatric_0_18",
+    "gender": "female",
+    "primary_diagnosis": "appendicitis_acute",
+    "icd10_code": "K35.89",
+    "procedure": "laparoscopic_appendectomy",
+    "ward_type": "general",
+    "room_rate_per_day": 2500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges General 4 days",
+      "normalized_name": "room_general_per_day",
+      "category": "accommodation",
+      "quantity": 4,
+      "unit": "days",
+      "charged_rate": 2500.0,
+      "charged_total": 10000.0,
+      "cghs_rate": 1000.0,
+      "cghs_rate_nabh": 1250.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 days of general stay billed at \u20b92500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Laparoscopic Appendectomy Package",
+      "normalized_name": "laparoscopic_appendectomy",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 52500.0,
+      "charged_total": 52500.0,
+      "cghs_rate": 22000.0,
+      "cghs_rate_nabh": 25300.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 27200.0,
+      "plain_english": "Primary procedure package for appendicitis acute"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Ondansetron 4mg x 5",
+      "normalized_name": "ondansetron_injection_4mg",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "ampoules",
+      "charged_rate": 41.440000000000005,
+      "charged_total": 207.2,
+      "cghs_rate": 12.0,
+      "cghs_rate_nabh": 13.8,
+      "mrp": 18.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 114.69999999999999,
+      "plain_english": "5 units of Inj. Ondansetron 4mg (MRP \u20b918.5)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "IV Normal Saline 500ml x 5",
+      "normalized_name": "normal_saline_500ml",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "bottles",
+      "charged_rate": 51.92,
+      "charged_total": 259.6,
+      "cghs_rate": 18.0,
+      "cghs_rate_nabh": 20.7,
+      "mrp": 29.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 112.10000000000002,
+      "plain_english": "5 units of IV Normal Saline 500ml (MRP \u20b929.5)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Inj. Ceftriaxone 1gm x 6",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "vials",
+      "charged_rate": 146.22400000000002,
+      "charged_total": 877.34,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 522.1400000000001,
+      "plain_english": "6 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 3)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 175.5,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "IV Cannula 18G/20G (Qty: 4)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 286.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 64305.64,
+    "total_overcharge_detected": 27948.94,
+    "cgst": 80.65,
+    "sgst": 80.65,
+    "cgst_correct": 80.65,
+    "sgst_correct": 80.65
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_1",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

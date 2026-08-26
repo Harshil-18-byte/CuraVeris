@@ -1,0 +1,171 @@
+{
+  "bill_id": "REAL_BILL_083",
+  "metadata": {
+    "hospital_name": "Apollo Gleneagles Hospital",
+    "hospital_city": "Kolkata",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2025-05-07",
+    "discharge_date": "2025-05-13",
+    "los_days": 6
+  },
+  "patient": {
+    "age_group": "adult_35_60",
+    "gender": "female",
+    "primary_diagnosis": "typhoid_enteric_fever",
+    "icd10_code": "A01.0",
+    "procedure": "iv_antibiotics_inpatient_care",
+    "ward_type": "general",
+    "room_rate_per_day": 2500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges General 6 days",
+      "normalized_name": "room_general_per_day",
+      "category": "accommodation",
+      "quantity": 6,
+      "unit": "days",
+      "charged_rate": 2500.0,
+      "charged_total": 15000.0,
+      "cghs_rate": 1000.0,
+      "cghs_rate_nabh": 1250.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "6 days of general stay billed at \u20b92500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Iv Antibiotics Inpatient Care Package",
+      "normalized_name": "iv_antibiotics_inpatient_care",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 35000.0,
+      "charged_total": 35000.0,
+      "cghs_rate": 11500.0,
+      "cghs_rate_nabh": 13225.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 21775.0,
+      "plain_english": "Primary procedure package for typhoid enteric fever"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Ceftriaxone 1gm x 2",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 2,
+      "unit": "vials",
+      "charged_rate": 146.816,
+      "charged_total": 293.63,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 175.23,
+      "plain_english": "2 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Meropenem 1gm x 6",
+      "normalized_name": "meropenem_injection_1gm",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "vials",
+      "charged_rate": 1450.8000000000002,
+      "charged_total": 8704.8,
+      "cghs_rate": 450.0,
+      "cghs_rate_nabh": 517.5,
+      "mrp": 780.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 4024.7999999999993,
+      "plain_english": "6 units of Inj. Meropenem 1gm (MRP \u20b9780.0)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 2)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 117.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Cannula 18G/20G (Qty: 4)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 286.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 59401.43,
+    "total_overcharge_detected": 25975.03,
+    "cgst": 539.91,
+    "sgst": 539.91,
+    "cgst_correct": 539.91,
+    "sgst_correct": 539.91
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_2",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

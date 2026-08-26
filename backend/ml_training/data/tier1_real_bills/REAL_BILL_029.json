@@ -1,0 +1,209 @@
+{
+  "bill_id": "REAL_BILL_029",
+  "metadata": {
+    "hospital_name": "Sir Ganga Ram Hospital",
+    "hospital_city": "Delhi",
+    "hospital_tier": 1,
+    "hospital_type": "trust",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-06-17",
+    "discharge_date": "2024-06-21",
+    "los_days": 4
+  },
+  "patient": {
+    "age_group": "pediatric_0_18",
+    "gender": "female",
+    "primary_diagnosis": "cholelithiasis_acute",
+    "icd10_code": "K80.0",
+    "procedure": "laparoscopic_cholecystectomy",
+    "ward_type": "semi_private",
+    "room_rate_per_day": 4200
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Semi Private 4 days",
+      "normalized_name": "room_semi_private_per_day",
+      "category": "accommodation",
+      "quantity": 4,
+      "unit": "days",
+      "charged_rate": 4200.0,
+      "charged_total": 16800.0,
+      "cghs_rate": 2000.0,
+      "cghs_rate_nabh": 2300.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 days of semi private stay billed at \u20b94200/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Laparoscopic Cholecystectomy Package",
+      "normalized_name": "laparoscopic_cholecystectomy",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 65000.0,
+      "charged_total": 65000.0,
+      "cghs_rate": 24500.0,
+      "cghs_rate_nabh": 28175.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 36825.0,
+      "plain_english": "Primary procedure package for cholelithiasis acute"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Meropenem 1gm x 3",
+      "normalized_name": "meropenem_injection_1gm",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "vials",
+      "charged_rate": 780.0,
+      "charged_total": 2340.0,
+      "cghs_rate": 450.0,
+      "cghs_rate_nabh": 517.5,
+      "mrp": 780.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Inj. Meropenem 1gm (MRP \u20b9780.0)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Ondansetron 4mg x 2",
+      "normalized_name": "ondansetron_injection_4mg",
+      "category": "medicine",
+      "quantity": 2,
+      "unit": "ampoules",
+      "charged_rate": 18.5,
+      "charged_total": 37.0,
+      "cghs_rate": 12.0,
+      "cghs_rate_nabh": 13.8,
+      "mrp": 18.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of Inj. Ondansetron 4mg (MRP \u20b918.5)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Paracetamol IV Infusion 100ml x 6",
+      "normalized_name": "paracetamol_iv_100ml",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "bottles",
+      "charged_rate": 45.0,
+      "charged_total": 270.0,
+      "cghs_rate": 25.0,
+      "cghs_rate_nabh": 28.75,
+      "mrp": 45.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "6 units of Paracetamol IV Infusion 100ml (MRP \u20b945.0)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Inj. Ceftriaxone 1gm x 6",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "vials",
+      "charged_rate": 59.2,
+      "charged_total": 355.2,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "6 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 2)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 117.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 18,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "gst_violation"
+      ],
+      "overcharge_amount": 21.06,
+      "plain_english": "2 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_008",
+      "raw_text": "IV Cannula 18G/20G (Qty: 4)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 286.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 18,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "gst_violation"
+      ],
+      "overcharge_amount": 51.48,
+      "plain_english": "4 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 85205.2,
+    "total_overcharge_detected": 36897.54,
+    "cgst": 216.4,
+    "sgst": 216.4,
+    "cgst_correct": 180.13,
+    "sgst_correct": 180.13
+  },
+  "risk_assessment": {
+    "risk_score": 55,
+    "risk_category": "medium",
+    "risk_flags": [
+      "gst_violation",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "gst_violation",
+    "recommended_actions": [
+      "demand_itemized_bill",
+      "contest_illegal_gst_under_cpa2019"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_2",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

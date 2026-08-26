@@ -1,0 +1,195 @@
+{
+  "bill_id": "REAL_BILL_086",
+  "metadata": {
+    "hospital_name": "Fortis Hospital Mulund",
+    "hospital_city": "Mumbai",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2025-05-25",
+    "discharge_date": "2025-05-29",
+    "los_days": 4
+  },
+  "patient": {
+    "age_group": "young_adult_19_35",
+    "gender": "male",
+    "primary_diagnosis": "cardiac_stemi_cad",
+    "icd10_code": "I21.9",
+    "procedure": "ptca_with_des_stent",
+    "ward_type": "icu_cardiac",
+    "room_rate_per_day": 9500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Icu Cardiac 4 days",
+      "normalized_name": "room_icu_cardiac_per_day",
+      "category": "accommodation",
+      "quantity": 4,
+      "unit": "days",
+      "charged_rate": 9500.0,
+      "charged_total": 38000.0,
+      "cghs_rate": 5400.0,
+      "cghs_rate_nabh": 6210.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 days of icu cardiac stay billed at \u20b99500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Ptca With Des Stent Package",
+      "normalized_name": "ptca_with_des_stent",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 206250.0,
+      "charged_total": 206250.0,
+      "cghs_rate": 78000.0,
+      "cghs_rate_nabh": 89700.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 116550.0,
+      "plain_english": "Primary procedure package for cardiac stemi cad"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Coronary Drug Eluting Stent (DES) Capped Implant",
+      "normalized_name": "coronary_drug_eluting_stent_(des)",
+      "category": "implant",
+      "quantity": 1,
+      "unit": "implant",
+      "charged_rate": 48500.0,
+      "charged_total": 48500.0,
+      "cghs_rate": 38260.0,
+      "cghs_rate_nabh": 38260.0,
+      "mrp": 38260.0,
+      "nppa_ceiling": 38260.0,
+      "gst_rate_charged": 5,
+      "correct_gst_rate": 5,
+      "risk_flags": [
+        "above_mrp",
+        "nppa_ceiling_exceeded"
+      ],
+      "overcharge_amount": 10240.0,
+      "plain_english": "Implant billed at \u20b948,500.00 against statutory NPPA price cap of \u20b938,260.00"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Pantoprazole 40mg x 3",
+      "normalized_name": "pantoprazole_injection_40mg",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "vials",
+      "charged_rate": 200.38,
+      "charged_total": 601.14,
+      "cghs_rate": 62.0,
+      "cghs_rate_nabh": 71.3,
+      "mrp": 86.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 343.14,
+      "plain_english": "3 units of Inj. Pantoprazole 40mg (MRP \u20b986.0)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Inj. Ondansetron 4mg x 4",
+      "normalized_name": "ondansetron_injection_4mg",
+      "category": "medicine",
+      "quantity": 4,
+      "unit": "ampoules",
+      "charged_rate": 31.08,
+      "charged_total": 124.32,
+      "cghs_rate": 12.0,
+      "cghs_rate_nabh": 13.8,
+      "mrp": 18.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 50.31999999999999,
+      "plain_english": "4 units of Inj. Ondansetron 4mg (MRP \u20b918.5)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 2)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 117.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "IV Cannula 18G/20G (Qty: 2)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 143.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 293735.46,
+    "total_overcharge_detected": 127183.46,
+    "cgst": 1256.03,
+    "sgst": 1256.03,
+    "cgst_correct": 1256.03,
+    "sgst_correct": 1256.03
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "nppa_ceiling_exceeded",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "nppa_ceiling_exceeded",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "file_nppa_overcharging_complaint",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_2",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

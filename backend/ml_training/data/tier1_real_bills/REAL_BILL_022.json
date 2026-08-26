@@ -1,0 +1,171 @@
+{
+  "bill_id": "REAL_BILL_022",
+  "metadata": {
+    "hospital_name": "Care Hospitals Banjara Hills",
+    "hospital_city": "Hyderabad",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-05-06",
+    "discharge_date": "2024-05-08",
+    "los_days": 2
+  },
+  "patient": {
+    "age_group": "young_adult_19_35",
+    "gender": "male",
+    "primary_diagnosis": "kidney_disease_esrd",
+    "icd10_code": "N18.5",
+    "procedure": "maintenance_hemodialysis_monitoring",
+    "ward_type": "dialysis_unit",
+    "room_rate_per_day": 3500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Dialysis Unit 2 days",
+      "normalized_name": "room_dialysis_unit_per_day",
+      "category": "accommodation",
+      "quantity": 2,
+      "unit": "days",
+      "charged_rate": 3500.0,
+      "charged_total": 7000.0,
+      "cghs_rate": 1800.0,
+      "cghs_rate_nabh": 2070.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 days of dialysis unit stay billed at \u20b93500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Maintenance Hemodialysis Monitoring Package",
+      "normalized_name": "maintenance_hemodialysis_monitoring",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 22500.0,
+      "charged_total": 22500.0,
+      "cghs_rate": 6500.0,
+      "cghs_rate_nabh": 7475.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 15025.0,
+      "plain_english": "Primary procedure package for kidney disease esrd"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "IV Normal Saline 500ml x 5",
+      "normalized_name": "normal_saline_500ml",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "bottles",
+      "charged_rate": 29.5,
+      "charged_total": 147.5,
+      "cghs_rate": 18.0,
+      "cghs_rate_nabh": 20.7,
+      "mrp": 29.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "5 units of IV Normal Saline 500ml (MRP \u20b929.5)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Ceftriaxone 1gm x 3",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "vials",
+      "charged_rate": 59.2,
+      "charged_total": 177.6,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 4)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 234.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 18,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "gst_violation"
+      ],
+      "overcharge_amount": 42.12,
+      "plain_english": "4 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Cannula 18G/20G (Qty: 2)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 143.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 18,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "gst_violation"
+      ],
+      "overcharge_amount": 25.74,
+      "plain_english": "2 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 30202.1,
+    "total_overcharge_detected": 15092.86,
+    "cgst": 53.44,
+    "sgst": 53.44,
+    "cgst_correct": 19.51,
+    "sgst_correct": 19.51
+  },
+  "risk_assessment": {
+    "risk_score": 55,
+    "risk_category": "medium",
+    "risk_flags": [
+      "gst_violation",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "gst_violation",
+    "recommended_actions": [
+      "demand_itemized_bill",
+      "contest_illegal_gst_under_cpa2019"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_1",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

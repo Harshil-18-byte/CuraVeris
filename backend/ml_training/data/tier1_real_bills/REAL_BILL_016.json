@@ -1,0 +1,216 @@
+{
+  "bill_id": "REAL_BILL_016",
+  "metadata": {
+    "hospital_name": "Manipal Hospital Old Airport Road",
+    "hospital_city": "Bangalore",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-03-31",
+    "discharge_date": "2024-04-05",
+    "los_days": 5
+  },
+  "patient": {
+    "age_group": "senior_60_plus",
+    "gender": "male",
+    "primary_diagnosis": "knee_osteoarthritis_severe",
+    "icd10_code": "M17.0",
+    "procedure": "total_knee_replacement_unilateral",
+    "ward_type": "private_deluxe",
+    "room_rate_per_day": 6500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Private Deluxe 5 days",
+      "normalized_name": "room_private_deluxe_per_day",
+      "category": "accommodation",
+      "quantity": 5,
+      "unit": "days",
+      "charged_rate": 6500.0,
+      "charged_total": 32500.0,
+      "cghs_rate": 3000.0,
+      "cghs_rate_nabh": 3450.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "5 days of private deluxe stay billed at \u20b96500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Total Knee Replacement Unilateral Package",
+      "normalized_name": "total_knee_replacement_unilateral",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 262500.0,
+      "charged_total": 262500.0,
+      "cghs_rate": 92000.0,
+      "cghs_rate_nabh": 105800.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 156700.0,
+      "plain_english": "Primary procedure package for knee osteoarthritis severe"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Primary Knee Femoral/Tibial Implant System Capped Implant",
+      "normalized_name": "primary_knee_femoral/tibial_implant_system",
+      "category": "implant",
+      "quantity": 1,
+      "unit": "implant",
+      "charged_rate": 84000.0,
+      "charged_total": 84000.0,
+      "cghs_rate": 62770.0,
+      "cghs_rate_nabh": 62770.0,
+      "mrp": 62770.0,
+      "nppa_ceiling": 62770.0,
+      "gst_rate_charged": 5,
+      "correct_gst_rate": 5,
+      "risk_flags": [
+        "above_mrp",
+        "nppa_ceiling_exceeded"
+      ],
+      "overcharge_amount": 21230.0,
+      "plain_english": "Implant billed at \u20b984,000.00 against statutory NPPA price cap of \u20b962,770.00"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "IV Normal Saline 500ml x 3",
+      "normalized_name": "normal_saline_500ml",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "bottles",
+      "charged_rate": 61.654999999999994,
+      "charged_total": 184.96,
+      "cghs_rate": 18.0,
+      "cghs_rate_nabh": 20.7,
+      "mrp": 29.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 96.46000000000001,
+      "plain_english": "3 units of IV Normal Saline 500ml (MRP \u20b929.5)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Inj. Ondansetron 4mg x 6",
+      "normalized_name": "ondansetron_injection_4mg",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "ampoules",
+      "charged_rate": 44.955000000000005,
+      "charged_total": 269.73,
+      "cghs_rate": 12.0,
+      "cghs_rate_nabh": 13.8,
+      "mrp": 18.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 158.73000000000002,
+      "plain_english": "6 units of Inj. Ondansetron 4mg (MRP \u20b918.5)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Inj. Ceftriaxone 1gm x 6",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "vials",
+      "charged_rate": 111.888,
+      "charged_total": 671.33,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 316.13000000000005,
+      "plain_english": "6 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 2)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 117.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_008",
+      "raw_text": "IV Cannula 18G/20G (Qty: 2)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 143.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 380386.02,
+    "total_overcharge_detected": 178501.32,
+    "cgst": 2167.56,
+    "sgst": 2167.56,
+    "cgst_correct": 2167.56,
+    "sgst_correct": 2167.56
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "nppa_ceiling_exceeded",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "nppa_ceiling_exceeded",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "file_nppa_overcharging_complaint",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_1",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

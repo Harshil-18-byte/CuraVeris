@@ -1,0 +1,192 @@
+{
+  "bill_id": "REAL_BILL_061",
+  "metadata": {
+    "hospital_name": "Apollo Hospitals Bangalore",
+    "hospital_city": "Bangalore",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-12-26",
+    "discharge_date": "2024-12-30",
+    "los_days": 4
+  },
+  "patient": {
+    "age_group": "pediatric_0_18",
+    "gender": "female",
+    "primary_diagnosis": "appendicitis_acute",
+    "icd10_code": "K35.89",
+    "procedure": "laparoscopic_appendectomy",
+    "ward_type": "general",
+    "room_rate_per_day": 2500
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges General 4 days",
+      "normalized_name": "room_general_per_day",
+      "category": "accommodation",
+      "quantity": 4,
+      "unit": "days",
+      "charged_rate": 2500.0,
+      "charged_total": 10000.0,
+      "cghs_rate": 1000.0,
+      "cghs_rate_nabh": 1250.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 days of general stay billed at \u20b92500/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Laparoscopic Appendectomy Package",
+      "normalized_name": "laparoscopic_appendectomy",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 52500.0,
+      "charged_total": 52500.0,
+      "cghs_rate": 22000.0,
+      "cghs_rate_nabh": 25300.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 27200.0,
+      "plain_english": "Primary procedure package for appendicitis acute"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Inj. Enoxaparin 40mg/0.4ml x 5",
+      "normalized_name": "enoxaparin_injection_40mg",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "prefilled_syringes",
+      "charged_rate": 697.1999999999999,
+      "charged_total": 3486.0,
+      "cghs_rate": 280.0,
+      "cghs_rate_nabh": 322.0,
+      "mrp": 420.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 1386.0,
+      "plain_english": "5 units of Inj. Enoxaparin 40mg/0.4ml (MRP \u20b9420.0)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Tramadol 50mg/ml x 5",
+      "normalized_name": "tramadol_injection_50mg",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "ampoules",
+      "charged_rate": 31.979999999999997,
+      "charged_total": 159.9,
+      "cghs_rate": 9.5,
+      "cghs_rate_nabh": 10.92,
+      "mrp": 16.4,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 77.9,
+      "plain_english": "5 units of Inj. Tramadol 50mg/ml (MRP \u20b916.4)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "IV Normal Saline 500ml x 6",
+      "normalized_name": "normal_saline_500ml",
+      "category": "medicine",
+      "quantity": 6,
+      "unit": "bottles",
+      "charged_rate": 72.275,
+      "charged_total": 433.65,
+      "cghs_rate": 18.0,
+      "cghs_rate_nabh": 20.7,
+      "mrp": 29.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 256.65,
+      "plain_english": "6 units of IV Normal Saline 500ml (MRP \u20b929.5)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 2)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 117.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "IV Cannula 18G/20G (Qty: 4)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 286.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 66982.55,
+    "total_overcharge_detected": 28920.55,
+    "cgst": 244.77,
+    "sgst": 244.77,
+    "cgst_correct": 244.77,
+    "sgst_correct": 244.77
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_1",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

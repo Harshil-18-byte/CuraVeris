@@ -1,0 +1,213 @@
+{
+  "bill_id": "REAL_BILL_063",
+  "metadata": {
+    "hospital_name": "Max Super Speciality Hospital Saket",
+    "hospital_city": "Delhi",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2025-01-07",
+    "discharge_date": "2025-01-12",
+    "los_days": 5
+  },
+  "patient": {
+    "age_group": "adult_35_60",
+    "gender": "female",
+    "primary_diagnosis": "dengue_thrombocytopenia",
+    "icd10_code": "A91",
+    "procedure": "iv_fluid_platelet_support",
+    "ward_type": "semi_private",
+    "room_rate_per_day": 4200
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Semi Private 5 days",
+      "normalized_name": "room_semi_private_per_day",
+      "category": "accommodation",
+      "quantity": 5,
+      "unit": "days",
+      "charged_rate": 4200.0,
+      "charged_total": 21000.0,
+      "cghs_rate": 2000.0,
+      "cghs_rate_nabh": 2300.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "5 days of semi private stay billed at \u20b94200/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Iv Fluid Platelet Support Package",
+      "normalized_name": "iv_fluid_platelet_support",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 47500.0,
+      "charged_total": 47500.0,
+      "cghs_rate": 16000.0,
+      "cghs_rate_nabh": 18400.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 29100.0,
+      "plain_english": "Primary procedure package for dengue thrombocytopenia"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "IV Normal Saline 500ml x 5",
+      "normalized_name": "normal_saline_500ml",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "bottles",
+      "charged_rate": 60.18,
+      "charged_total": 300.9,
+      "cghs_rate": 18.0,
+      "cghs_rate_nabh": 20.7,
+      "mrp": 29.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 153.39999999999998,
+      "plain_english": "5 units of IV Normal Saline 500ml (MRP \u20b929.5)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Meropenem 1gm x 5",
+      "normalized_name": "meropenem_injection_1gm",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "vials",
+      "charged_rate": 1482.0,
+      "charged_total": 7410.0,
+      "cghs_rate": 450.0,
+      "cghs_rate_nabh": 517.5,
+      "mrp": 780.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 3510.0,
+      "plain_english": "5 units of Inj. Meropenem 1gm (MRP \u20b9780.0)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Inj. Ondansetron 4mg x 5",
+      "normalized_name": "ondansetron_injection_4mg",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "ampoules",
+      "charged_rate": 41.625,
+      "charged_total": 208.12,
+      "cghs_rate": 12.0,
+      "cghs_rate_nabh": 13.8,
+      "mrp": 18.5,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 115.62,
+      "plain_english": "5 units of Inj. Ondansetron 4mg (MRP \u20b918.5)"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Inj. Ceftriaxone 1gm x 5",
+      "normalized_name": "ceftriaxone_injection_1gm",
+      "category": "medicine",
+      "quantity": 5,
+      "unit": "vials",
+      "charged_rate": 143.85600000000002,
+      "charged_total": 719.28,
+      "cghs_rate": 38.0,
+      "cghs_rate_nabh": 43.7,
+      "mrp": 59.2,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [
+        "above_mrp"
+      ],
+      "overcharge_amount": 423.28,
+      "plain_english": "5 units of Inj. Ceftriaxone 1gm (MRP \u20b959.2)"
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 4)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 234.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_008",
+      "raw_text": "IV Cannula 18G/20G (Qty: 4)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 4,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 286.0,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "4 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 77658.3,
+    "total_overcharge_detected": 33302.3,
+    "cgst": 518.3,
+    "sgst": 518.3,
+    "cgst_correct": 518.3,
+    "sgst_correct": 518.3
+  },
+  "risk_assessment": {
+    "risk_score": 85,
+    "risk_category": "critical",
+    "risk_flags": [
+      "above_mrp",
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "above_mrp",
+    "recommended_actions": [
+      "demand_dpco_mrp_refund",
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_3",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}

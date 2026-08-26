@@ -1,0 +1,48 @@
+{
+  "markup_ratio_mean": 3.97,
+  "markup_ratio_std": 1.98,
+  "markup_ratio_p25": 2.61,
+  "markup_ratio_p75": 4.84,
+  "markup_ratio_p95": 7.79,
+  "category_markup_factors": {
+    "procedure": 3.65,
+    "diagnostic": 2.85,
+    "medicine": 2.45,
+    "room_nursing": 3.1,
+    "consultation": 2.2
+  },
+  "drg_mappings": {
+    "470 - MAJOR JOINT REPLACEMENT OR REATTACHMENT OF LOWER EXTREMITY": {
+      "icd10": "M17.0",
+      "cghs_code": "1603",
+      "indian_procedure": "Unilateral Total Knee Replacement (TKR)",
+      "cghs_rate_non_nabh": 78200.0,
+      "cghs_rate_nabh": 92000.0,
+      "private_avg_charge": 185000.0
+    },
+    "287 - CIRCULATORY DISORDERS W/O CC": {
+      "icd10": "I21.9",
+      "cghs_code": "1512",
+      "indian_procedure": "Percutaneous Transluminal Coronary Angioplasty (PTCA)",
+      "cghs_rate_non_nabh": 52700.0,
+      "cghs_rate_nabh": 62000.0,
+      "private_avg_charge": 145000.0
+    },
+    "392 - ESOPHAGITIS, GASTROENT & MISC DIGEST DISORDERS W/O MCC": {
+      "icd10": "A09",
+      "cghs_code": "1120",
+      "indian_procedure": "Acute Gastroenteritis Inpatient Management",
+      "cghs_rate_non_nabh": 12000.0,
+      "cghs_rate_nabh": 14500.0,
+      "private_avg_charge": 38000.0
+    },
+    "743 - UTERINE & ADNEXA PROC FOR NON-MALIGNANCY W/O CC/MCC": {
+      "icd10": "N81.4",
+      "cghs_code": "1840",
+      "indian_procedure": "Total Laparoscopic Hysterectomy (TLH)",
+      "cghs_rate_non_nabh": 26000.0,
+      "cghs_rate_nabh": 31000.0,
+      "private_avg_charge": 75000.0
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "bill_id": "REAL_BILL_060",
+  "metadata": {
+    "hospital_name": "SIMS Hospital Vadapalani",
+    "hospital_city": "Chennai",
+    "hospital_tier": 1,
+    "hospital_type": "private_corporate",
+    "is_nabh_accredited": true,
+    "admission_date": "2024-12-20",
+    "discharge_date": "2024-12-25",
+    "los_days": 5
+  },
+  "patient": {
+    "age_group": "senior_60_plus",
+    "gender": "male",
+    "primary_diagnosis": "pneumonia_community_acquired",
+    "icd10_code": "J18.9",
+    "procedure": "pulmonary_inpatient_respiratory_care",
+    "ward_type": "semi_private",
+    "room_rate_per_day": 4200
+  },
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "Room charges Semi Private 5 days",
+      "normalized_name": "room_semi_private_per_day",
+      "category": "accommodation",
+      "quantity": 5,
+      "unit": "days",
+      "charged_rate": 4200.0,
+      "charged_total": 21000.0,
+      "cghs_rate": 2000.0,
+      "cghs_rate_nabh": 2300.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "5 days of semi private stay billed at \u20b94200/day"
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Pulmonary Inpatient Respiratory Care Package",
+      "normalized_name": "pulmonary_inpatient_respiratory_care",
+      "category": "procedure",
+      "quantity": 1,
+      "unit": "package",
+      "charged_rate": 56250.0,
+      "charged_total": 56250.0,
+      "cghs_rate": 17000.0,
+      "cghs_rate_nabh": 19550.0,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [
+        "rate_anomaly"
+      ],
+      "overcharge_amount": 36700.0,
+      "plain_english": "Primary procedure package for pneumonia community acquired"
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Paracetamol IV Infusion 100ml x 3",
+      "normalized_name": "paracetamol_iv_100ml",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "bottles",
+      "charged_rate": 45.0,
+      "charged_total": 135.0,
+      "cghs_rate": 25.0,
+      "cghs_rate_nabh": 28.75,
+      "mrp": 45.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Paracetamol IV Infusion 100ml (MRP \u20b945.0)"
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Enoxaparin 40mg/0.4ml x 3",
+      "normalized_name": "enoxaparin_injection_40mg",
+      "category": "medicine",
+      "quantity": 3,
+      "unit": "prefilled_syringes",
+      "charged_rate": 420.0,
+      "charged_total": 1260.0,
+      "cghs_rate": 280.0,
+      "cghs_rate_nabh": 322.0,
+      "mrp": 420.0,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 12,
+      "correct_gst_rate": 12,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of Inj. Enoxaparin 40mg/0.4ml (MRP \u20b9420.0)"
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Surgical Gloves Sterile Pair (Qty: 2)",
+      "normalized_name": "surgical_gloves_sterile",
+      "category": "consumable",
+      "quantity": 2,
+      "unit": "pairs",
+      "charged_rate": 58.5,
+      "charged_total": 117.0,
+      "cghs_rate": 30.0,
+      "cghs_rate_nabh": 34.5,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "2 units of Surgical Gloves Sterile Pair"
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "IV Cannula 18G/20G (Qty: 3)",
+      "normalized_name": "iv_cannula_with_port",
+      "category": "consumable",
+      "quantity": 3,
+      "unit": "pieces",
+      "charged_rate": 71.5,
+      "charged_total": 214.5,
+      "cghs_rate": 35.0,
+      "cghs_rate_nabh": 40.25,
+      "mrp": null,
+      "nppa_ceiling": null,
+      "gst_rate_charged": 0,
+      "correct_gst_rate": 0,
+      "risk_flags": [],
+      "overcharge_amount": 0.0,
+      "plain_english": "3 units of IV Cannula 18G/20G"
+    }
+  ],
+  "bill_totals": {
+    "total_billed": 78976.5,
+    "total_overcharge_detected": 36700.0,
+    "cgst": 83.7,
+    "sgst": 83.7,
+    "cgst_correct": 83.7,
+    "sgst_correct": 83.7
+  },
+  "risk_assessment": {
+    "risk_score": 40,
+    "risk_category": "medium",
+    "risk_flags": [
+      "rate_anomaly"
+    ],
+    "most_impactful_flag": "rate_anomaly",
+    "recommended_actions": [
+      "demand_itemized_bill"
+    ]
+  },
+  "annotation_metadata": {
+    "annotator": "medbill_expert_3",
+    "annotation_date": "2026-08-01",
+    "confidence": "high",
+    "source": "patient_contributed_and_consumer_forum_anonymized"
+  }
+}
