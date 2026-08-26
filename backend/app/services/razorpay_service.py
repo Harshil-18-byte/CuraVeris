@@ -1,21 +1,22 @@
 import hmac
 import hashlib
 from typing import Dict, Any, Optional
-from app.core.config import settings
+from app.core.credentials import credentials
 from app.core.logging import logger
 
 try:
     import razorpay
-    razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    razorpay_client = razorpay.Client(auth=(credentials.payments.key_id, credentials.payments.key_secret))
 except Exception:
     razorpay_client = None
 
 
 class RazorpayService:
     def __init__(self):
-        self.key_id = settings.RAZORPAY_KEY_ID
-        self.key_secret = settings.RAZORPAY_KEY_SECRET
-        self.webhook_secret = settings.RAZORPAY_WEBHOOK_SECRET
+        self.key_id = credentials.payments.key_id
+        self.key_secret = credentials.payments.key_secret
+        self.webhook_secret = credentials.payments.webhook_secret
+
 
     def verify_webhook_signature(self, raw_body: bytes, signature: Optional[str]) -> bool:
         """Verify HMAC-SHA256 signature from X-Razorpay-Signature header."""
