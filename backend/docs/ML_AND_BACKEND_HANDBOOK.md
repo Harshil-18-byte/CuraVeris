@@ -48,6 +48,7 @@ CuraVeris utilizes a **hybrid computing architecture** designed to run lightweig
 CuraVeris deploys three distinct ML methodologies depending on the audit layer:
 
 ```
+
 ┌──────────────────────────────────────────────────────────────────────────────────────────┐
 │                                CuraVeris ML Architecture                                 │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
@@ -63,6 +64,7 @@ CuraVeris deploys three distinct ML methodologies depending on the audit layer:
 │ • 7 violation flags       │  │   token classification    │  │ • Plain English & Hindi   │
 │ • Runs locally on CPU     │  │ • Trained on Colab GPU    │  │ • OpenAI / Mistral APIs   │
 └───────────────────────────┘  └───────────────────────────┘  └───────────────────────────┘
+
 ```
 
 ---
@@ -84,11 +86,13 @@ CuraVeris deploys three distinct ML methodologies depending on the audit layer:
     10–15. One-hot category vector: `cat_medicine`, `cat_consumable`, `cat_diagnostic`, `cat_procedure`, `cat_room_rent`, `cat_service`.
 
 #### 3 Ways to Retrain Method 1:
+
 1. **Interactive Web Dashboard**: Navigate to `http://127.0.0.1:8000/dev` and click **"Retrain Risk Model"**.
 2. **Terminal CLI**:
    ```powershell
    .\venv\Scripts\python.exe app\ml\train_risk_model.py
    ```
+
 3. **REST API**:
    ```bash
    curl -X POST "http://127.0.0.1:8000/api/v1/dev/train-risk-model?num_samples=2500"
@@ -103,6 +107,7 @@ CuraVeris deploys three distinct ML methodologies depending on the audit layer:
 *   **Notebook Path**: [`backend/notebooks/CuraVeris_LayoutLMv3_Colab_Training.ipynb`](file:///j:/Dev/PROJECTS/CuraVeris/backend/notebooks/CuraVeris_LayoutLMv3_Colab_Training.ipynb)
 
 #### How to Run on Google Colab:
+
 1. Open [Google Colab](https://colab.research.google.com/).
 2. Select **Upload** and upload `CuraVeris_LayoutLMv3_Colab_Training.ipynb`.
 3. In Colab top menu: **Runtime → Change runtime type → Hardware accelerator: T4 GPU**.
@@ -119,6 +124,7 @@ CuraVeris deploys three distinct ML methodologies depending on the audit layer:
 *   **Download Endpoint**: `GET http://127.0.0.1:8000/api/v1/dev/download-fine-tuning-dataset`
 
 #### JSONL Training Pair Schema:
+
 ```json
 {
   "messages": [
@@ -136,18 +142,23 @@ CuraVeris deploys three distinct ML methodologies depending on the audit layer:
     }
   ]
 }
+
 ```
 
 #### Launching Fine-Tuning on OpenAI CLI:
+
 ```powershell
 pip install openai
 $env:OPENAI_API_KEY="your-api-key"
 
 # 1. Upload dataset
+
 openai api files.create -f data/curaveris_llm_finetuning.jsonl -p fine-tune
 
 # 2. Launch fine-tune job (e.g. gpt-4o-mini or gpt-3.5-turbo)
+
 openai api fine_tuning.jobs.create -t file-xyz123 -m gpt-4o-mini-2024-07-18
+
 ```
 
 ---
@@ -157,6 +168,7 @@ openai api fine_tuning.jobs.create -t file-xyz123 -m gpt-4o-mini-2024-07-18
 In compliance with the **Zero Mock / Hardcoded Data Directive**, CuraVeris does not use fake or ungrounded data. Every record generated for training is mapped directly to published Indian gazettes and statutory catalogs:
 
 ```
+
                                ┌────────────────────────────────────────┐
                                │     Official Government Registries     │
                                └────────────────────────────────────────┘
@@ -174,9 +186,11 @@ In compliance with the **Zero Mock / Hardcoded Data Directive**, CuraVeris does 
                                │   reference_data/medical_rates.db      │
                                │   (Populated SQLite Authority DB)      │
                                └────────────────────────────────────────┘
+
 ```
 
 ### Key Catalog References:
+
 1. **National Clinical Disease Registry** ([`disease_registry.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/db/disease_registry.py)):
    *   16 specialties: Cardiology, Oncology, Orthopedics, Nephrology, Neurology, GI, OB-GYN, etc.
    *   Maps ICD-10 codes (e.g. `I25.1`, `O82.0`, `M17.0`) to PM-JAY HBP 2.2 packages and clinical Average Length of Stay (ALOS).
@@ -196,6 +210,7 @@ In compliance with the **Zero Mock / Hardcoded Data Directive**, CuraVeris does 
 
 *   **Macro Precision**: $\frac{\sum \text{Precision}_i}{N}$. Measures whether flagged violations are genuine statutory breaches. High precision guarantees hospitals are never falsely accused of fraud.
 *   **Macro Recall**: $\frac{\sum \text{Recall}_i}{N}$. Measures the fraction of actual hidden overcharges successfully detected. High recall ensures maximum patient financial recovery.
+
 ### Why 100% Accuracy is an Anti-Pattern in Healthcare ML
 
 In initial toy models, generating synthetic data with hard non-overlapping thresholds (e.g. `if violation: rate_vs_mrp > 1.25 else < 1.00`) creates **artificial separability**. A simple decision tree easily finds the threshold and outputs an unrealistic **100% (1.000) F1 score**. 
@@ -242,12 +257,15 @@ import os
 import secrets
 
 # Generate a cryptographically secure random seed for this run
+
 production_seed = secrets.randbelow(1_000_000)
 print(f"Current Training Run Seed: {production_seed}")  # Log this to your observability backend
 
 # Use this dynamic seed across your pipeline
+
 train_test_split(X, Y, test_size=0.20, random_state=production_seed)
 xgb.XGBClassifier(random_state=production_seed)
+
 ```
 
 **Why is this critical?** If Run 10 suddenly drops from 55% F1 to an unacceptable 35% F1 score, engineers can pull the logged seed from the Developer Dashboard, plug it back into their local environment (`?seed=643014`), and replicate the exact failure locally for debugging.
@@ -306,6 +324,7 @@ The Developer Dashboard (`http://127.0.0.1:8000/dev`) includes a **Live Multi-Ru
 ## 5. Advanced Patient Protection & Regulatory Engines
 
 ### 1. Financial Toxicity (FRM) Engine
+
 *   **Location**: [`backend/app/engine/financial_toxicity.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/engine/financial_toxicity.py)
 *   **Endpoint**: `POST /api/v1/bills/financial-toxicity`
 *   **FRM Formula**: Combines **Income Shock** ($\frac{\text{Payable}}{\text{Annual Income}}$), **Coverage Gap** ($\frac{\text{Billed} - \text{Approved}}{\text{Billed}}$), **EMI Distress Factor**, **Savings Runway Depletion**, and **DSTI** (Debt Service to Income ratio amortized at 18% over 24 months).
@@ -316,21 +335,25 @@ The Developer Dashboard (`http://127.0.0.1:8000/dev`) includes a **Live Multi-Ru
     *   **Corporate CSR Healthcare Emergency Aid**: Pre-filled documentation for catastrophic illness.
 
 ### 2. Real-Time Admission Monitor & Interim Bill Forecaster
+
 *   **Location**: [`backend/app/engine/admission_monitor.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/engine/admission_monitor.py)
 *   **Endpoint**: `POST /api/v1/bills/interim-admission-check`
 *   **Function**: Computes daily burn rate during active hospital stay. If daily burn exceeds benchmark by $> 30\%$, it triggers an immediate **WhatsApp / SMS Advisory** citing the patient's statutory right under Section 12 of the Clinical Establishments Act to receive an itemized interim statement before discharge.
 
 ### 3. Shadow Bill & GST Invoice Mismatch Detector
+
 *   **Location**: [`backend/app/engine/shadow_bill_detector.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/engine/shadow_bill_detector.py)
 *   **Endpoint**: `POST /api/v1/bills/gst-shadow-check`
 *   **Function**: Enforces Notification No. 12/2017 healthcare exemption and Notification 04/2022 room rent thresholds. Detects dual-accounting where the patient bill differs from the hospital's declared GST portal turnover by $> 5\%$. Also scans drug batch numbers against the **CDSCO National Drug Safety Recall Registry**.
 
 ### 4. Surgical Implant Registry & Patient Card Generator
+
 *   **Location**: [`backend/app/engine/implant_registry.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/engine/implant_registry.py)
 *   **Endpoint**: `POST /api/v1/bills/implant-card`
 *   **Function**: Audits cardiac stents, knee/hip implants, and intraocular lenses against NPPA ceilings and auto-generates the official **Government of India Statutory Patient Implant Card** containing UDI, lot numbers, MRI compatibility disclosures, and manufacturer warranty terms (10–15 years / Lifetime).
 
 ### 5. Mental Health & Geriatric Protection Layers
+
 *   **Location**: [`backend/app/engine/risk_engine.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/engine/risk_engine.py)
 *   **Mental Healthcare Act 2017 Sec 21(4)**: Automatically flags and drafts Insurance Ombudsman complaints when TPAs illegally reject claims under psychiatric exclusion clauses.
 *   **Geriatric Arbitrary Surcharge Rule**: Flags unbundled soft charges ("fall risk monitoring", "confusion assessment", "elderly supervision charges") levied on senior citizens ($\ge 60$) under Consumer Protection Act 2019 Section 2(47).
@@ -342,6 +365,7 @@ The Developer Dashboard (`http://127.0.0.1:8000/dev`) includes a **Live Multi-Ru
 CuraVeris integrates directly with Razorpay to transform payment events into patient protection checkpoints:
 
 ```
+
 Hospital Bill Issued
         │
         ▼
@@ -352,6 +376,7 @@ Razorpay Payment Webhook / Fetch
         ├─► Billed vs Paid Gap ────────► Uncovers TPA Shortfall or Disputed Advance
         │
         └─► Overcharge Flagged? ──────► Generate Razorpay Refund Payment Link for Hospital
+
 ```
 
 *   **Service File**: [`backend/app/services/razorpay_service.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/services/razorpay_service.py)
@@ -404,9 +429,11 @@ graph TD
     class TPA tpa;
     class AI ai;
     class P pat;
+
 ```
 
 #### Core Mathematical Formula
+
 $$\text{Legitimate Patient Liability} = \max\left(0, (\text{Total Hospital Billed} - \text{Illegal Overcharge}) - \text{Insurance Approved}\right)$$
 
 *   **Three Parties, Three Conflicting Truths**:
@@ -447,9 +474,11 @@ graph TD
 
     class HUB hub;
     class DPCO,CEA,NPPA,CPA,IRDAI,STATE,FORUMS,NMC legal;
+
 ```
 
 #### Regulatory Grounding Table
+
 | Regulatory Body / Act | Statutory Section / Mandate | Legal Protection | Backend Implementation |
 | :--- | :--- | :--- | :--- |
 | **DPCO 2013** | Essential Commodities Act Sec 3 | Ceiling prices on 384 NLEM scheduled formulations; prohibits charging above MRP | [`backend/app/engine/risk_engine.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/engine/risk_engine.py) (`dpco_drugs` SQLite table) |
@@ -474,12 +503,15 @@ graph LR
 
     classDef stage fill:#0f172a,stroke:#38bdf8,color:#e2e8f0,stroke-width:2px;
     class S1,S2,S3,S4,S5 stage;
+
 ```
 
 #### The CuraVeris Difference
+
 > **"Your AI system covers all 5 stages — most tools cover only discharge"**
 
 #### 3 Critical Industry Gaps Filled by CuraVeris
+
 1.  **Real-Time Monitoring**:
     *   *The Gap*: Existing apps wait until discharge when the patient is stranded in the hospital lobby.
     *   *CuraVeris Solution*: Interim admission tracking (`POST /api/v1/bills/interim-admission-check`). Computes daily expenditure burn rates against procedural benchmarks and alerts patients to escalating charges before discharge.
@@ -560,9 +592,11 @@ graph TD
     class OUT1 outGreen;
     class OUT2 outRed;
     class OUT3 outSky;
+
 ```
 
 #### Color Mapping Legend:
+
 *   **Purple**: Razorpay payment telemetry & refund mechanics.
 *   **Coral / Rose**: Claude AI agent & central risk engine.
 *   **Red**: Risk score, financial toxicity index, and fraud detectors.
@@ -574,15 +608,18 @@ graph TD
 ## 9. Production Enhancements: PostgreSQL, Vector Search, Async Worker, ABDM & WhatsApp
 
 ### 9.1 PostgreSQL Enterprise Database Pipeline
+
 The storage layer utilizes **PostgreSQL** (`asyncpg` for non-blocking asynchronous FastAPI concurrency, and `psycopg2-binary` for background seeders and transactional bulk operations).
 * **Resilient Engine Initialization**: The application dynamically connects to PostgreSQL on port `5432` (`postgresql+asyncpg://postgres:postgres@localhost:5432/curaveris`). If credentials or external services fail, the engine provides an automated fallback to the local engine without taking down the server.
 * **Schema**: Houses `users`, `bills`, `bill_items`, `reconciliations`, `dispute_letters`, `audit_logs`, and statutory reference caches.
 
 ### 9.2 Semantic Vector Search Engine for Procedural Codes
+
 To handle colloquial terms used by patients and confusing hospital line items, the system deploys an in-memory n-gram TF-IDF vectorizer (`TfidfVectorizer(ngram_range=(1, 3), sublinear_tf=True)`) calculating cosine similarity against statutory rate schedules:
 $$\text{Cosine Similarity}(Q, D) = \frac{\vec{V}_Q \cdot \vec{V}_D}{\|\vec{V}_Q\| \|\vec{V}_D\|}$$
 
 #### Benchmark Mappings:
+
 | Patient Expression | Statutory Clinical Benchmark | Authority / Code | Confidence |
 | :--- | :--- | :--- | :--- |
 | **"stomach camera test"** | Upper GI Endoscopy (Diagnostic Gastro) | CGHS Code 049 | 99.5% |
@@ -595,6 +632,7 @@ $$\text{Cosine Similarity}(Q, D) = \frac{\vec{V}_Q \cdot \vec{V}_D}{\|\vec{V}_Q\
 * **Input**: `{"query": "stomach camera test", "top_k": 3}`
 
 ### 9.3 Asynchronous Background OCR Worker & SSE Progress Streaming
+
 Offloads heavy OCR extraction and multi-page auditing to non-blocking background workers:
 * **Stage 1 (15%)**: PDF Ingestion & Token Extraction
 * **Stage 2 (40%)**: Medical Service Line-Item & Quantity Parsing
@@ -607,6 +645,7 @@ Offloads heavy OCR extraction and multi-page auditing to non-blocking background
   * `GET /api/v1/bills/jobs/{job_id}/stream`: Real-time Server-Sent Events (`text/event-stream`).
 
 ### 9.4 Ayushman Bharat Digital Mission (ABDM) Milestone 1 Sandbox & FHIR Bundle
+
 Integrates India's national digital health infrastructure:
 * **14-Digit ABHA Validation**: Validates formatted (`XX-XXXX-XXXX-XXXX`) or raw 14-digit ABHA numbers with Mod-10 checksum validation.
 * **M1 Sandbox OTP Flow**: Simulates NHA ABDM OTP generation (`123456` sandbox passcode) and authentication session tokens.
@@ -617,6 +656,7 @@ Integrates India's national digital health infrastructure:
   * `POST /api/v1/abha/link-record`: Generates and returns compliant FHIR JSON bundle.
 
 ### 9.5 Inbound WhatsApp Webhook (Meta Cloud API / Twilio)
+
 Enables patients and families in Tier 2/3 cities to audit bills directly via WhatsApp without app installation:
 * **Meta Handshake Verification**: `GET /api/v1/integrations/whatsapp/webhook` handles `hub.mode == 'subscribe'` and echoes `hub.challenge`.
 * **Inbound Message Auditing**: `POST /api/v1/integrations/whatsapp/webhook` accepts pasted bill text, itemized lists, or forwarded hospital invoices.
@@ -627,12 +667,14 @@ Enables patients and families in Tier 2/3 cities to audit bills directly via Wha
 ## 10. Advanced Enterprise Hardening & Statutory Safeguards
 
 ### 10.1 Digital Personal Data Protection (DPDP) Act 2023 Compliance
+
 Enforces statutory patient data sovereignty under Section 12 (Right to Erasure / Anonymization):
 * **User Anonymization (`POST /api/v1/auth/anonymize-me`)**: Permanently purges user's full name, email, and encrypted phone from active tables, substituting them with an irreversible cryptographic pseudonym (`DPDP_Anonymized_Patient_<SHA256_12_HASH>`).
 * **Claims Record Redaction (`POST /api/v1/bills/{bill_id}/redact-pii`)**: Scrubs patient identifiers and raw OCR transcripts from specific hospital claims while preserving itemized financial data for medical fraud research.
 * **Anti-Malware File Ingestion**: Validates binary magic bytes signatures (`%PDF` for PDFs, `\x89PNG` for PNG, `\xFF\xD8\xFF` for JPEG) to block polyglot malware uploads.
 
 ### 10.2 ML Model Interpretability: SHAP Feature Attribution Waterfall
+
 Solves the black-box AI dilemma in consumer court and insurance dispute hearings:
 $$\text{Explained Risk Score} = \text{Baseline Risk} (15.0) + \sum_{i} \text{Contribution}_i$$
 * **Risk Increasers**:
@@ -647,6 +689,7 @@ $$\text{Explained Risk Score} = \text{Baseline Risk} (15.0) + \sum_{i} \text{Con
 * **Endpoint**: `GET /api/v1/bills/{bill_id}/explainability`
 
 ### 10.3 Emergency Anti-Detention Requisition Generator
+
 Direct statutory countermeasure against the illegal practice of hospitals detaining patients or withholding discharge papers/dead bodies for disputed billing arrears:
 * **Constitutional Precedent**: Cites Bombay High Court in *Association of Medical Consultants vs Union of India* and Delhi High Court directives.
 * **Criminal Penalty**: Cites Section 127 of the Bharatiya Nyaya Sanhita (BNS) 2023 (formerly IPC Section 340/342 Wrongful Confinement) and Article 21 of the Constitution.
@@ -654,6 +697,7 @@ Direct statutory countermeasure against the illegal practice of hospitals detain
 * **Endpoint**: `POST /api/v1/reports/emergency-detention-notice`
 
 ### 10.4 Ayushman Bharat PM-JAY "Zero Out-of-Pocket" Compliance Audit
+
 Enforces National Health Authority (NHA) Operational Guidelines Section 3.2:
 * **Statutory Mandate**: Empanelled private and public hospitals are strictly barred from demanding any cash balance from Ayushman Bharat beneficiaries for 1,949 covered packages.
 * **Automated Penalty Calculation**: Computes the mandatory 5x cash refund penalty and pre-fills an official complaint to the State Health Agency (SHA) and NHA.
@@ -664,6 +708,7 @@ Enforces National Health Authority (NHA) Operational Guidelines Section 3.2:
 ## 11. Deep Neural Networks, Hybrid Stacking Ensemble & Cryptographic Merkle Ledger
 
 ### 11.1 Deep Neural Network Multi-Label Classifier
+
 To model complex non-linear interactions across continuous medical ratios (e.g. `rate_vs_cghs * days_in_hospital * consumable_pct`), CuraVeris deploys a deep Multi-Layer Perceptron architecture:
 $$\text{Input}(15) \longrightarrow \text{Dense}(128, \text{ReLU}) \longrightarrow \text{Dense}(64, \text{ReLU}) \longrightarrow \text{Dense}(32, \text{ReLU}) \longrightarrow \text{Output}(7, \text{Sigmoid})$$
 * **Optimizer**: Adam with initial learning rate $\eta = 0.003$ and adaptive step decay.
@@ -671,6 +716,7 @@ $$\text{Input}(15) \longrightarrow \text{Dense}(128, \text{ReLU}) \longrightarro
 * **Weights Saved At**: `backend/app/ml/weights/deep_risk_model.joblib`.
 
 ### 11.2 Hybrid Stacking Ensemble (Neural Network + XGBoost)
+
 Combines the continuous representation power of deep neural nets with the sharp statutory decision boundaries of gradient boosted decision trees:
 $$P_{\text{hybrid}} = 0.45 \cdot P_{\text{NeuralNet}} + 0.55 \cdot P_{\text{XGBoost}}$$
 * **Benchmark Results (Seed 364658)**:
@@ -681,6 +727,7 @@ $$P_{\text{hybrid}} = 0.45 \cdot P_{\text{NeuralNet}} + 0.55 \cdot P_{\text{XGBo
 * **Weights Saved At**: `backend/app/ml/weights/hybrid_ensemble.joblib`.
 
 ### 11.3 Epistemic Uncertainty Estimation (Monte Carlo Stochastic Perturbation)
+
 During claims inference, the hybrid ensemble conducts $K = 10$ stochastic perturbation passes simulating OCR measurement ambiguity:
 * Computes mean probability $\mu_j$ and epistemic standard deviation $\sigma_j$ for each statutory violation flag $j \in \{1 \dots 7\}$.
 * Classifies flags into actionable certainty tiers:
@@ -689,6 +736,7 @@ During claims inference, the hybrid ensemble conducts $K = 10$ stochastic pertur
   * `CONFIDENT_COMPLIANT`: $\mu < 0.35, \sigma \le 0.04$ (Fully compliant billing item)
 
 ### 11.4 Cryptographic Merkle Audit Ledger
+
 Secures hospital bill audit outcomes under **Section 65B of the Indian Evidence Act** and Bharatiya Sakshya Adhiniyam Section 61:
 * **Merkle Leaf Hashes**: Each item is hashed: $\text{Leaf}_i = \text{SHA256}(\text{raw\_text} \mid \text{rate} \mid \text{qty} \mid \text{overcharge})$.
 * **Merkle Root**: Leaves are combined recursively into a single 32-byte hexadecimal Merkle Root.
@@ -699,11 +747,13 @@ Secures hospital bill audit outcomes under **Section 65B of the Indian Evidence 
   * `POST /api/v1/bills/verify-ledger`: Cryptographically verifies whether submitted evidence was modified.
 
 ### 11.5 Automated ICD-10 & SNOMED-CT Clinical Coding Engine
+
 * Maps free-text diagnostic notes and discharge summaries to standardized international codes (`I21.09` for STEMI, `M17.11` for Knee Osteoarthritis, `K80.00` for Cholecystitis).
 * **Length of Stay (ALOS) Audit**: Compares active stay against clinical norms. If stay exceeds $2 \times \text{ALOS}$, flags `EXCESSIVE_STAY_FLAG` for potential hospital ICU/bed blocking.
 * **Endpoint**: `POST /api/v1/bills/resolve-icd10`.
 
 ### 11.6 2D Multi-Axis Fraud Risk Heatmap Matrix
+
 Decomposes each billed item across the 5 core violation vectors:
 1. `Statutory Rate Breach`
 2. `Consumable Unbundling`
@@ -711,7 +761,3 @@ Decomposes each billed item across the 5 core violation vectors:
 4. `Tax & GST Anomaly`
 5. `Clinical Procedural Discordance`
 * **Endpoint**: `GET /api/v1/bills/{bill_id}/heatmap`.
-
-
-
-
