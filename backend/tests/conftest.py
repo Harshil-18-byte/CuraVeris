@@ -24,9 +24,17 @@ def setup_test_environment():
     init_reference_db()
     yield
 
+
+@pytest_asyncio.fixture(autouse=True)
+async def auto_init_db():
+    """Ensure database tables exist before any test runs."""
+    await init_db()
+    yield
+
+
 @pytest_asyncio.fixture
 async def async_client():
-    await init_db()
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
+
