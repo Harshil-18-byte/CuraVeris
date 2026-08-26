@@ -95,10 +95,15 @@ def main():
     hn_syn = HardNegativeSynthesizer(random_seed=args.seed)
     hn_bills = []
     for i in range(args.hard_negative):
-        if i % 2 == 0:
+        mod = i % 4
+        if mod == 0:
             hn_bills.append(hn_syn.synthesize_twin_stents(i + 1))
-        else:
+        elif mod == 1:
             hn_bills.append(hn_syn.synthesize_prolonged_icu(i + 1))
+        elif mod == 2:
+            hn_bills.append(hn_syn.synthesize_revision_tkr(i + 1))
+        else:
+            hn_bills.append(hn_syn.synthesize_onco_immunotherapy(i + 1))
     print(f"  -> Generated {len(hn_bills)} compliant hard negatives")
 
     # Combined master dataset
