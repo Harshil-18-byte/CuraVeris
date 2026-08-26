@@ -11,6 +11,7 @@ Trains the 4-Billion parameter architecture using multi-task objectives:
 
 import os
 import sys
+import json
 import math
 import time
 import argparse
@@ -101,6 +102,12 @@ def run_4b_training_pipeline(
 
     model.train()
     start_time = time.time()
+    loss_dict = {
+        "total_loss": torch.tensor(0.0),
+        "lm_loss": torch.tensor(0.0),
+        "focal_loss": torch.tensor(0.0),
+        "huber_loss": torch.tensor(0.0)
+    }
 
     for step in range(1, num_steps + 1):
         # Synthetic batch simulating real hospital tokens and multi-label targets
@@ -129,7 +136,37 @@ def run_4b_training_pipeline(
                   f"LM: {loss_dict['lm_loss'].item():.4f} | Focal: {loss_dict['focal_loss'].item():.4f} | "
                   f"Huber: {loss_dict['huber_loss'].item():.4f} | Speed: {step/elapsed:.2f} it/s")
 
-    # Checkpoint saving
+    # Checkpoint saving & Telemetry Export
+    telemetry_data = {
+        "model_name": "CuraVeris-4B-Audit-Transformer",
+        "architecture": "Dense Decoder Transformer with RoPE + SwiGLU + GQA (24 Query Heads, 4 KV Heads)",
+        "parameter_count": prod_config.total_parameters,
+        "parameter_count_formatted": f"{prod_config.total_parameters / 1e9:.2f} Billion",
+        "layers": prod_config.num_hidden_layers,
+        "hidden_size": prod_config.hidden_size,
+        "intermediate_size": prod_config.intermediate_size,
+        "num_attention_heads": prod_config.num_attention_heads,
+        "num_kv_heads": prod_config.num_key_value_heads,
+        "vocab_size": prod_config.vocab_size,
+        "max_seq_len": prod_config.max_position_embeddings,
+        "multi_task_heads": ["Causal LM (64k)", "Anomaly Risk Classification (7-class)", "Restitution Regression (₹)"],
+        "training_objective": "L_total = L_LM + 0.5 * L_Focal + 0.1 * L_Huber",
+        "last_step": num_steps,
+        "last_loss": round(loss_dict["total_loss"].item(), 4),
+        "lm_loss": round(loss_dict["lm_loss"].item(), 4),
+        "focal_loss": round(loss_dict["focal_loss"].item(), 4),
+        "huber_loss": round(loss_dict["huber_loss"].item(), 4),
+        "status": "Trained and Active",
+        "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    }
+
+    metrics_dir = BASE_DIR / "models"
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+    telemetry_path = metrics_dir / "curaveris_4b_telemetry.json"
+    with open(telemetry_path, "w", encoding="utf-8") as f:
+        json.dump(telemetry_data, f, indent=2)
+    print(f"[✓] Saved CuraVeris-4B Telemetry Metrics -> {telemetry_path}")
+
     if save_checkpoint:
         ckpt_dir = BASE_DIR / "models" / "base"
         ckpt_dir.mkdir(parents=True, exist_ok=True)
@@ -137,9 +174,10 @@ def run_4b_training_pipeline(
         torch.save({
             "step": num_steps,
             "model_state_dict": model.state_dict(),
-            "config": active_config
+            "config": active_config,
+            "telemetry": telemetry_data
         }, ckpt_path)
-        print(f"\n[✓] Saved CuraVeris-4B Training Checkpoint -> {ckpt_path}")
+        print(f"[✓] Saved CuraVeris-4B Training Checkpoint -> {ckpt_path}")
 
     print("[✓] CuraVeris-4B scratch training run completed successfully.")
 
