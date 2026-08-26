@@ -49,15 +49,66 @@ CuraVeris resolves all five problems as first-class platform features.
 ## Product Model
 
 ```mermaid
-flowchart LR
-  A[Patient or Advocate] --> B[Upload Invoice PDF or Image]
-  B --> C[OCR and Extraction Engine]
-  C --> D[Statutory Reference Cross-Check]
-  D --> E[Hybrid ML Ensemble Audit]
-  E --> F[Risk Score and Overcharge Tally]
-  F --> G[Legal Dispute Letters and Merkle Certificate]
-  G --> H[Consumer Forum or Ombudsman Filing]
+flowchart TD
+  subgraph Stage1 ["Stage 1: Multi-Modal Ingestion & Preprocessing"]
+    direction TB
+    A["Raw Medical Bill<br/><i>(PDF, Scan, Image, or Raw Text)</i>"] --> B["Extraction & Parser Pipeline<br/>• Magic Bytes Validation<br/>• Itemization & OCR Cleaning<br/>• Clinical Entity Normalization"]
+  end
+
+  subgraph Stage2 ["Stage 2: Dual Forensic Engine"]
+    direction TB
+    subgraph Legal ["Deterministic Statutory Audit"]
+      C1["NPPA Device Price Caps<br/><i>(Stent S.O. 1335(E) • Knee S.O. 2668(E))</i>"]
+      C2["DPCO 2013 Drug Ceiling Caps"]
+      C3["CGHS Benchmark Multipliers"]
+      C4["IRDAI 199 Non-Payable Items"]
+      C5["GST Healthcare Exemption (Entry 74)"]
+    end
+
+    subgraph ML ["Hybrid Machine Learning Ensemble"]
+      D1["Multi-Output XGBoost Classifier<br/><i>(Statutory Boundaries & Tree Splits)</i>"]
+      D2["Deep MLP Neural Network<br/><i>(Non-Linear Financial Interactions)</i>"]
+      D3["Monte Carlo Uncertainty Estimation<br/><i>(K=10 Perturbation Passes)</i>"]
+      D1 & D2 --> D3
+    end
+  end
+
+  subgraph Stage3 ["Stage 3: Risk Synthesis & Financial Hardship"]
+    direction TB
+    E["Composite Forensic Assessment<br/>• Line-by-Line Overcharge Tally<br/>• Composite Risk Score (0–100)<br/>• SHAP Waterfall Attribution"]
+    F["Financial Risk Management (FRM)<br/>• Razorpay Payment Gap Reconciliation<br/>• DSTI Hardship & Income Shock Index"]
+  end
+
+  subgraph Stage4 ["Stage 4: Admissible Evidence & Patient Advocacy"]
+    direction TB
+    G1["Section 65B Cryptographic Certificate<br/><i>(SHA-256 Merkle Block & HMAC Signature)</i>"]
+    G2["Statutory Legal Dispute Petitions<br/><i>(Ombudsman, Consumer Forum & Anti-Detention Notice)</i>"]
+  end
+
+  Stage1 --> Stage2
+  Legal --> E
+  ML --> E
+  B -.-> F
+  F --> E
+  Stage3 --> Stage4
+
+  style Stage1 fill:#f8fafc,stroke:#cbd5e1,stroke-width:2px
+  style Stage2 fill:#f1f5f9,stroke:#94a3b8,stroke-width:2px
+  style Legal fill:#eff6ff,stroke:#60a5fa,stroke-width:1px
+  style ML fill:#f5f3ff,stroke:#a78bfa,stroke-width:1px
+  style Stage3 fill:#f0fdf4,stroke:#86efac,stroke-width:2px
+  style Stage4 fill:#fffbeb,stroke:#fcd34d,stroke-width:2px
 ```
+
+### Operational Pipeline
+
+| Stage | Subsystem | Functionality & Statutory Backing |
+| :--- | :--- | :--- |
+| **1. Ingestion** | `extractor.py` | Magic bytes check, Unicode normalization, monetary number correction, and item segmentation. |
+| **2. Deterministic Audit** | `risk_engine.py` | Line-by-line validation against NPPA implant ceilings, DPCO drug MRPs, CGHS tariffs, and IRDAI unbundling rules. |
+| **3. ML Ensemble** | `deep_risk_network.py` | Soft voting blend of XGBoost + 3-layer MLP neural network with Monte Carlo epistemic uncertainty bounds. |
+| **4. Toxicity & Gap** | `financial_toxicity.py` | Razorpay webhook verification, co-pay shortfall reconciliation, and Debt Service-to-Income (DSTI) distress calculation. |
+| **5. Legal Redress** | `merkle_audit_ledger.py` | Tamper-evident Merkle tree block hashing and HMAC origin sealing under Section 65B of the Indian Evidence Act. |
 
 ---
 
@@ -455,15 +506,15 @@ Each completed audit is sealed in a chained cryptographic block for court admiss
 
 **Leaf hash**:
 
-$$\text{Leaf}_i = \text{SHA256}(\text{raw\_text} \mid \text{rate} \mid \text{quantity} \mid \text{overcharge})$$
+$$\text{Leaf}_i = \text{SHA-256}(\text{RawText} \parallel \text{ChargedRate} \parallel \text{Quantity} \parallel \text{Overcharge})$$
 
 **Block hash**:
 
-$$\text{Block}_n = \text{SHA256}(n \mid \text{timestamp} \mid \text{bill\_id} \mid \text{total\_billed} \mid \text{overcharge} \mid \text{risk\_score} \mid \text{merkle\_root} \mid \text{prev\_hash})$$
+$$\text{Block}_n = \text{SHA-256}(n \parallel \text{Timestamp} \parallel \text{BillID} \parallel \text{TotalBilled} \parallel \text{Overcharge} \parallel \text{RiskScore} \parallel \text{MerkleRoot} \parallel \text{PrevHash})$$
 
 **Origin signature**:
 
-$$\text{Signature} = \text{HMAC\_SHA256}(k_{\text{secret}}, \text{Block}_n)$$
+$$\text{Signature} = \text{HMAC-SHA256}(k_{\text{secret}}, \text{Block}_n)$$
 
 See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for the full ledger specification.
 
