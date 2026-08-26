@@ -37,11 +37,14 @@ class RiskAuditEngine:
                 logger.warning(f"Could not load ML model: {e}")
                 self.model_artifact = None
 
-        ensemble_path = os.path.join(os.path.dirname(MODEL_PATH), "hybrid_ensemble.joblib")
+        ensemble_path = os.path.join(os.path.dirname(MODEL_PATH), "reference_hybrid_ensemble.joblib")
+        if not os.path.exists(ensemble_path):
+            ensemble_path = os.path.join(os.path.dirname(MODEL_PATH), "hybrid_ensemble.joblib")
+
         if os.path.exists(ensemble_path):
             try:
                 self.hybrid_ensemble = joblib.load(ensemble_path)
-                logger.info(f"Loaded Hybrid Stacking Ensemble (XGBoost + Deep NN) from {ensemble_path}")
+                logger.info(f"Loaded Hybrid Stacking Ensemble from {ensemble_path}")
             except Exception as e:
                 logger.warning(f"Could not load hybrid ensemble: {e}")
 
@@ -58,23 +61,31 @@ class RiskAuditEngine:
         Runs inference through the Hybrid Stacking Ensemble with Monte Carlo uncertainty estimation.
         """
         if self.hybrid_ensemble is not None:
-            probas = self.hybrid_ensemble.predict_proba(X)
-            preds = (probas >= 0.5).astype(int)
-            uncertainty = self.hybrid_ensemble.estimate_uncertainty(X)
-            return {
-                "engine": "Hybrid Stacking Ensemble (Deep Neural Network + XGBoost)",
-                "probabilities": probas,
-                "predictions": preds,
-                "uncertainty_analysis": uncertainty
-            }
-        elif self.model_artifact and "model" in self.model_artifact:
-            model = self.model_artifact["model"]
-            preds = model.predict(X)
-            return {
-                "engine": "Standard MultiOutput Classifier",
-                "predictions": preds,
-                "uncertainty_analysis": None
-            }
+            try:
+                probas = self.hybrid_ensemble.predict_proba(X)
+                preds = (probas >= 0.5).astype(int)
+                uncertainty = self.hybrid_ensemble.estimate_uncertainty(X)
+                return {
+                    "engine": "Hybrid Stacking Ensemble (Deep Neural Network + XGBoost)",
+                    "probabilities": probas,
+                    "predictions": preds,
+                    "uncertainty_analysis": uncertainty
+                }
+            except Exception as e:
+                logger.warning(f"Hybrid ensemble prediction fallback: {e}")
+
+        if self.model_artifact and "model" in self.model_artifact:
+            try:
+                model = self.model_artifact["model"]
+                preds = model.predict(X)
+                return {
+                    "engine": "Standard MultiOutput Classifier",
+                    "predictions": preds,
+                    "uncertainty_analysis": None
+                }
+            except Exception as e:
+                logger.warning(f"Model artifact prediction fallback: {e}")
+
         return {
             "engine": "Rule-Based Deterministic Fallback",
             "predictions": np.zeros((X.shape[0], 7), dtype=int),

@@ -75,8 +75,13 @@ class HybridRiskEnsemble:
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         # Get Tree model probabilities
         if hasattr(self.tree_model, "predict_proba"):
-            tree_probas_list = self.tree_model.predict_proba(X)
-            tree_probas = np.column_stack([p[:, 1] if p.shape[1] > 1 else np.zeros(X.shape[0]) for p in tree_probas_list])
+            tree_res = self.tree_model.predict_proba(X)
+            if isinstance(tree_res, list):
+                tree_probas = np.column_stack([p[:, 1] if p.ndim > 1 and p.shape[1] > 1 else (p[:, 0] if p.ndim > 1 else p) for p in tree_res])
+            elif isinstance(tree_res, np.ndarray):
+                tree_probas = tree_res
+            else:
+                tree_probas = np.array(tree_res)
         else:
             tree_probas = self.tree_model.predict(X).astype(float)
 
@@ -110,9 +115,13 @@ class HybridRiskEnsemble:
         uncertainty_std = np.std(stacked, axis=0)
 
         results = []
+        labels = getattr(self.tree_model, "label_names", None) or getattr(self.nn_model, "label_names", None) or FLAG_NAMES
+        num_cols = mean_probas.shape[1]
+
         for i in range(X.shape[0]):
             sample_uncertainty = {}
-            for idx, flag in enumerate(FLAG_NAMES):
+            for idx in range(num_cols):
+                flag = labels[idx] if idx < len(labels) else f"flag_{idx}"
                 mean_p = float(mean_probas[i, idx])
                 sigma = float(uncertainty_std[i, idx])
 

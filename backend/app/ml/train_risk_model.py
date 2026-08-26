@@ -255,7 +255,7 @@ def train_and_evaluate(
     
     # Save standalone hybrid ensemble and deep NN artifacts
     deep_save_path = os.path.join(os.path.dirname(MODEL_SAVE_PATH), "deep_risk_model.joblib")
-    ensemble_save_path = os.path.join(os.path.dirname(MODEL_SAVE_PATH), "hybrid_ensemble.joblib")
+    ensemble_save_path = os.path.join(os.path.dirname(MODEL_SAVE_PATH), "reference_hybrid_ensemble.joblib")
     joblib.dump(deep_nn, deep_save_path)
     joblib.dump(hybrid_ensemble, ensemble_save_path)
 

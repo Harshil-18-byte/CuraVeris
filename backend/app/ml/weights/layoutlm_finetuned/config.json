@@ -1,0 +1,45 @@
+{
+  "model_type": "layoutlmv3",
+  "architectures": [
+    "LayoutLMv3ForTokenClassification"
+  ],
+  "num_labels": 14,
+  "id2label": {
+    "0": "O",
+    "1": "B-ITEM",
+    "2": "I-ITEM",
+    "3": "B-QTY",
+    "4": "I-QTY",
+    "5": "B-RATE",
+    "6": "I-RATE",
+    "7": "B-AMOUNT",
+    "8": "I-AMOUNT",
+    "9": "B-DATE",
+    "10": "B-DOCTOR",
+    "11": "I-DOCTOR",
+    "12": "B-TOTAL",
+    "13": "I-TOTAL"
+  },
+  "label2id": {
+    "O": 0,
+    "B-ITEM": 1,
+    "I-ITEM": 2,
+    "B-QTY": 3,
+    "I-QTY": 4,
+    "B-RATE": 5,
+    "I-RATE": 6,
+    "B-AMOUNT": 7,
+    "I-AMOUNT": 8,
+    "B-DATE": 9,
+    "B-DOCTOR": 10,
+    "I-DOCTOR": 11,
+    "B-TOTAL": 12,
+    "I-TOTAL": 13
+  },
+  "max_position_embeddings": 512,
+  "coordinate_size": 128,
+  "shape_size": 128,
+  "input_size": 224,
+  "samples_collected": 350,
+  "status": "ready_for_gpu_training"
+}

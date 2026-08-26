@@ -58,21 +58,38 @@ LABEL_NAMES = [
 
 
 class MultiLabelXGBoostRiskClassifier:
-    """Ensemble of XGBoost binary classifiers for multi-label risk detection."""
+    """Ensemble of tuned XGBoost binary classifiers for multi-label risk detection."""
 
-    def __init__(self, label_names: Optional[List[str]] = None, feature_names: Optional[List[str]] = None):
+    def __init__(
+        self,
+        label_names: Optional[List[str]] = None,
+        feature_names: Optional[List[str]] = None,
+        n_estimators: int = 300,
+        max_depth: int = 6,
+        learning_rate: float = 0.05,
+        subsample: float = 0.8,
+        colsample_bytree: float = 0.8,
+    ):
         self.label_names = label_names or LABEL_NAMES
         self.feature_names = feature_names or []
+        self.n_estimators = n_estimators
+        self.max_depth = max_depth
+        self.learning_rate = learning_rate
+        self.subsample = subsample
+        self.colsample_bytree = colsample_bytree
         self.models: Dict[str, Any] = {}
+        self.thresholds: Dict[str, float] = {lbl: 0.40 for lbl in self.label_names}
 
-    def fit(self, X_train: np.ndarray, Y_train: np.ndarray):
+    def fit(self, X_train: np.ndarray, y_train: np.ndarray, X_val: Optional[np.ndarray] = None, y_val: Optional[np.ndarray] = None):
         from imblearn.over_sampling import SMOTE
         for idx, lbl in enumerate(self.label_names):
-            y_col = Y_train[:, idx]
+            y_col = y_train[:, idx]
             pos_count = int(np.sum(y_col == 1))
             neg_count = int(np.sum(y_col == 0))
+
             X_resampled, y_resampled = X_train, y_col
-            if pos_count >= 5 and pos_count < neg_count:
+
+            if pos_count >= 6 and pos_count < neg_count:
                 k_neighbors = min(pos_count - 1, 5)
                 if k_neighbors >= 1:
                     try:
@@ -80,24 +97,44 @@ class MultiLabelXGBoostRiskClassifier:
                         X_resampled, y_resampled = smote.fit_resample(X_train, y_col)
                     except Exception:
                         pass
-            scale_pos_weight = (len(y_resampled) - sum(y_resampled)) / max(sum(y_resampled), 1)
+
+            pos_res = max(int(np.sum(y_resampled == 1)), 1)
+            neg_res = int(np.sum(y_resampled == 0))
+            scale_pos_weight = min(neg_res / pos_res, 10.0)
+
             model = xgb.XGBClassifier(
-                n_estimators=80,
-                max_depth=4,
-                learning_rate=0.1,
-                subsample=0.85,
-                colsample_bytree=0.85,
-                scale_pos_weight=min(scale_pos_weight, 10.0),
+                n_estimators=self.n_estimators,
+                max_depth=self.max_depth,
+                learning_rate=self.learning_rate,
+                subsample=self.subsample,
+                colsample_bytree=self.colsample_bytree,
+                scale_pos_weight=scale_pos_weight,
                 eval_metric="logloss",
                 random_state=42,
                 n_jobs=1,
             )
-            model.fit(X_resampled, y_resampled)
+
+            if X_val is not None and y_val is not None:
+                val_col = y_val[:, idx]
+                model.fit(
+                    X_resampled,
+                    y_resampled,
+                    eval_set=[(X_resampled, y_resampled), (X_val, val_col)],
+                    verbose=False,
+                )
+            else:
+                model.fit(X_resampled, y_resampled)
+
             self.models[lbl] = model
 
-    def predict(self, X: np.ndarray, threshold: float = 0.40) -> np.ndarray:
+    def predict(self, X: np.ndarray, thresholds: Optional[Dict[str, float]] = None) -> np.ndarray:
         probs = self.predict_proba(X)
-        return (probs >= threshold).astype(np.int32)
+        th_dict = thresholds or self.thresholds
+        preds = np.zeros_like(probs, dtype=np.int32)
+        for idx, lbl in enumerate(self.label_names):
+            t = th_dict.get(lbl, 0.40)
+            preds[:, idx] = (probs[:, idx] >= t).astype(np.int32)
+        return preds
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         prob_cols = []
@@ -114,21 +151,44 @@ class RiskClassifier:
     def __init__(self, model_path: Optional[str] = None):
         self.model_path = model_path or getattr(settings, "RISK_CLASSIFIER_PATH", DEFAULT_MODEL_PATH)
         self.model = None
+        self.thresholds = {lbl: 0.40 for lbl in LABEL_NAMES}
         self._load_model()
 
     def _load_model(self):
+        # Ensure MultiLabelXGBoostRiskClassifier is available in __main__ for unpickling
+        import sys
+        sys.modules.setdefault("__main__", sys.modules[__name__])
+        if not hasattr(sys.modules["__main__"], "MultiLabelXGBoostRiskClassifier"):
+            setattr(sys.modules["__main__"], "MultiLabelXGBoostRiskClassifier", MultiLabelXGBoostRiskClassifier)
+
         if os.path.exists(self.model_path):
             try:
-                import sys
-                main_mod = sys.modules.get("__main__")
-                if main_mod and not hasattr(main_mod, "MultiLabelXGBoostRiskClassifier"):
-                    setattr(main_mod, "MultiLabelXGBoostRiskClassifier", MultiLabelXGBoostRiskClassifier)
                 self.model = joblib.load(self.model_path)
                 logger.info(f"Loaded trained risk classifier from {self.model_path}")
             except Exception as exc:
-                logger.warning(f"Failed loading model: {exc}")
+                logger.warning(f"Failed loading model from {self.model_path}: {exc}")
         else:
-            logger.info(f"Model file not found at {self.model_path}")
+            # Fallback to backend runtime weights
+            fallback_path = os.path.join(os.path.dirname(__file__), "weights", "risk_classifier.pkl")
+            if os.path.exists(fallback_path):
+                try:
+                    self.model = joblib.load(fallback_path)
+                    logger.info(f"Loaded trained risk classifier from fallback {fallback_path}")
+                except Exception as exc:
+                    logger.warning(f"Failed loading fallback model: {exc}")
+
+        # Load optimal thresholds if present
+        th_path = os.path.join(os.path.dirname(self.model_path), "optimal_thresholds.json")
+        if not os.path.exists(th_path):
+            th_path = os.path.join(os.path.dirname(__file__), "weights", "optimal_thresholds.json")
+        if os.path.exists(th_path):
+            try:
+                import json
+                with open(th_path, "r") as f:
+                    raw_th = json.load(f)
+                    self.thresholds = raw_th.get("optimal_thresholds", raw_th)
+            except Exception:
+                pass
 
     def extract_features(
         self,
