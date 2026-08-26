@@ -52,3 +52,22 @@ This policy covers the CuraVeris backend (`backend/` directory) and its deployed
 ## Security Architecture Summary
 
 See [docs/SECURITY.md](docs/SECURITY.md) for a detailed breakdown of the cryptographic controls, authentication hardening, DPDP compliance controls, and regulatory framework implemented in CuraVeris.
+
+## Defense-in-Depth Hardening Controls
+
+1. **Multi-Layer File Upload Defense**:
+   - Magic byte header inspection (`%PDF`, `\x89PNG`, `\xff\xd8\xff`, `RIFF`).
+   - File size strict enforcement ($\le 25\text{MB}$).
+   - Path traversal and shell injection sanitization (`os.path.basename` normalized with backslash stripping and null-byte elimination).
+
+2. **Tamper-Evident Ledger Integrity**:
+   - Deterministic SHA-256 leaf and block hashing.
+   - HMAC-SHA256 origin validation under Section 65B of the Indian Evidence Act.
+
+3. **HTTP & Web Security**:
+   - Strict Transport Security (HSTS `max-age=31536000; includeSubDomains`).
+   - Restrictive Content Security Policy (CSP baseline) & `X-Frame-Options: DENY`.
+   - Token-bucket Rate Limiting via SlowAPI.
+
+4. **Live Security Telemetry**:
+   - Security health endpoint: `GET /api/v1/dev/security-status`
