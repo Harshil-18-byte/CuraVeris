@@ -37,6 +37,10 @@ class Settings(BaseSettings):
         default="./reference_data/medical_rates.db",
         env="REFERENCE_DB_PATH"
     )
+    CHROMA_PERSIST_DIRECTORY: str = Field(
+        default="data/chroma_db",
+        env="CHROMA_PERSIST_DIRECTORY"
+    )
 
     # Security & Auth
     # In production / staging: must be set via environment variable to a strong random value.
