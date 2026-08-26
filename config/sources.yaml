@@ -1,0 +1,79 @@
+# Official Government Sources Discovery & Ingestion Targets
+
+sources:
+  nppa_stents:
+    authority: "National Pharmaceutical Pricing Authority (NPPA)"
+    ministry: "Ministry of Chemicals and Fertilizers"
+    target_url: "https://www.nppaindia.nic.in/en/utilities/ceiling-price/"
+    document_type: "gazette_so"
+    active_so: "S.O. 1335(E)"
+    effective_date: "2023-03-25"
+    domain: "cardiac_stents"
+    items:
+      - canonical_name: "Coronary Stent - Drug Eluting (DES)"
+        ceiling_inr: 38260.00
+        gst_pct: 5.0
+      - canonical_name: "Coronary Stent - Bare Metal (BMS)"
+        ceiling_inr: 10509.00
+        gst_pct: 5.0
+
+  nppa_orthopedic:
+    authority: "National Pharmaceutical Pricing Authority (NPPA)"
+    ministry: "Ministry of Chemicals and Fertilizers"
+    target_url: "https://www.nppaindia.nic.in/en/utilities/orthopedic-implants/"
+    document_type: "gazette_so"
+    active_so: "S.O. 2668(E)"
+    effective_date: "2023-08-16"
+    domain: "orthopedic_implants"
+    items:
+      - canonical_name: "Primary TKR (Cruciate Retaining)"
+        ceiling_inr: 63800.00
+        gst_pct: 5.0
+      - canonical_name: "Primary TKR (Posterior Stabilized)"
+        ceiling_inr: 71000.00
+        gst_pct: 5.0
+      - canonical_name: "Revision TKR System"
+        ceiling_inr: 128480.00
+        gst_pct: 5.0
+
+  dpco_nlem:
+    authority: "Department of Pharmaceuticals / NPPA"
+    ministry: "Ministry of Chemicals and Fertilizers"
+    target_url: "https://www.nppaindia.nic.in/en/utilities/nlem-2022/"
+    document_type: "gazette_so"
+    active_so: "S.O. 1480(E)"
+    effective_date: "2023-03-31"
+    domain: "essential_medicines"
+    sample_drugs:
+      - name: "Pantoprazole 40mg Injection"
+        ceiling_inr: 54.20
+        formulation: "Inj. 40mg vial"
+      - name: "Ceftriaxone 1g Injection"
+        ceiling_inr: 62.40
+        formulation: "Inj. 1g vial"
+      - name: "Meropenem 1g Injection"
+        ceiling_inr: 950.00
+        formulation: "Inj. 1g vial"
+      - name: "Enoxaparin 40mg / 0.4ml PFS"
+        ceiling_inr: 420.00
+        formulation: "Inj. 40mg PFS"
+      - name: "Atorvastatin 20mg Tablet"
+        ceiling_inr: 14.50
+        formulation: "Tab 20mg"
+
+  cghs_rates:
+    authority: "Central Government Health Scheme (CGHS)"
+    ministry: "Ministry of Health and Family Welfare (MoHFW)"
+    target_url: "https://cghs.nic.in/rates/"
+    document_type: "office_memorandum"
+    active_om: "OM No. Z.15025/117/2017/DIR/CGHS"
+    effective_date: "2023-04-12"
+    domain: "hospital_packages"
+
+  irdai_master_circular:
+    authority: "Insurance Regulatory and Development Authority of India (IRDAI)"
+    target_url: "https://irdai.gov.in/master-circulars/"
+    document_type: "master_circular"
+    active_circular: "IRDAI/HLT/CIR/2024/05"
+    effective_date: "2024-05-29"
+    domain: "insurance_standardization"

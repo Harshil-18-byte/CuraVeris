@@ -1,0 +1,63 @@
+# Scenario and Anomaly Taxonomy for Medical Bill Synthesis
+
+scenarios:
+  - id: "SCEN_CARDIAC_PCI"
+    name: "Acute Myocardial Infarction with Percutaneous Coronary Intervention"
+    icd10: "I21.09"
+    department: "Cardiology"
+    alos_range: [3, 5]
+    icu_range: [1, 2]
+    primary_proc: "Percutaneous Transluminal Coronary Angioplasty (PTCA)"
+    regulated_implants: ["NPPA_DES", "NPPA_BALLOON"]
+
+  - id: "SCEN_ORTHO_TKR"
+    name: "Total Knee Arthroplasty for Severe Osteoarthritis"
+    icd10: "M17.11"
+    department: "Orthopedics"
+    alos_range: [4, 6]
+    icu_range: [0, 1]
+    primary_proc: "Total Knee Replacement (TKR) Unilateral"
+    regulated_implants: ["NPPA_KNEE_CR", "NPPA_BONE_CEMENT"]
+
+  - id: "SCEN_GASTRO_CHOLE"
+    name: "Laparoscopic Cholecystectomy for Symptomatic Cholelithiasis"
+    icd10: "K80.20"
+    department: "General Surgery"
+    alos_range: [2, 3]
+    icu_range: [0, 0]
+    primary_proc: "Laparoscopic Cholecystectomy"
+    regulated_implants: []
+
+  - id: "SCEN_CARDIAC_CABG"
+    name: "Coronary Artery Bypass Grafting for Triple Vessel CAD"
+    icd10: "I25.10"
+    department: "Cardiothoracic Surgery"
+    alos_range: [7, 10]
+    icu_range: [3, 5]
+    primary_proc: "Coronary Artery Bypass Graft (CABG)"
+    regulated_implants: ["STERNAL_WIRES"]
+
+anomaly_taxonomy:
+  - flag: "nppa_ceiling_violation"
+    description: "Implant or regulated device billed in excess of active NPPA notification"
+    statutory_act: "Essential Commodities Act 1955 Sec 3/7"
+
+  - flag: "above_mrp"
+    description: "Scheduled drug priced above DPCO ceiling or formulation MRP"
+    statutory_act: "Drugs (Prices Control) Order 2013"
+
+  - flag: "consumable_unbundled"
+    description: "Prohibited PPE, gloves, or nursing kit unbundled outside procedure package"
+    statutory_act: "IRDAI Master Circular 2024 Non-Payables Schedule"
+
+  - flag: "duplicate_charge"
+    description: "Identical line item or service billed multiple times on same date"
+    statutory_act: "Consumer Protection Act 2019 Unfair Trade Practice"
+
+  - flag: "gst_on_exempt"
+    description: "18% GST erroneously applied to exempt room rent under ₹5,000 or doctor fee"
+    statutory_act: "GST Council Notification 12/2017 Central Tax Rate"
+
+  - flag: "rate_anomaly"
+    description: "Charge exceeding 95th percentile benchmark without clinical justification"
+    statutory_act: "Clinical Establishments Act 2010 Standard Rate Charter"
