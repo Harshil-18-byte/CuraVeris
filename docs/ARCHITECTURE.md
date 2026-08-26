@@ -291,15 +291,15 @@ graph TD
 
 **Leaf hash**:
 
-$$\text{Leaf}_i = \text{SHA256}(\text{raw\_text} \mid \text{charged\_rate} \mid \text{quantity} \mid \text{overcharge\_amount})$$
+$$\text{Leaf}_i = \text{SHA-256}(\text{RawText} \parallel \text{ChargedRate} \parallel \text{Quantity} \parallel \text{OverchargeAmount})$$
 
 **Block hash**:
 
-$$\text{Block}_n = \text{SHA256}(n \mid \text{timestamp} \mid \text{bill\_id} \mid \text{total\_billed} \mid \text{overcharge} \mid \text{risk\_score} \mid \text{merkle\_root} \mid \text{prev\_hash})$$
+$$\text{Block}_n = \text{SHA-256}(n \parallel \text{Timestamp} \parallel \text{BillID} \parallel \text{TotalBilled} \parallel \text{Overcharge} \parallel \text{RiskScore} \parallel \text{MerkleRoot} \parallel \text{PrevHash})$$
 
 **Origin signature**:
 
-$$\text{Signature} = \text{HMAC\_SHA256}(k_{\text{secret}},\; \text{Block}_n)$$
+$$\text{Signature} = \text{HMAC-SHA256}(k_{\text{secret}},\; \text{Block}_n)$$
 
 ### 5.2 Tamper Detection
 
