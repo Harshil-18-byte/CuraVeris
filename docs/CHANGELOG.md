@@ -26,7 +26,21 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.4.0\] — 2026-08-26
+## [1.5.0] — 2026-08-26
+
+### Added
+
+- **CuraVeris-4B & CuraVeris-1B Custom Transformer Models (`ml_training/models/curaveris_4b.py`, `curaveris_1b.py`)**: Custom 4.07B and 1.05B dense decoder Transformers written and trained from scratch with RoPE ($\theta=10000.0$), SwiGLU feed-forward networks, and Grouped Query Attention (GQA).
+- **Multi-Task Scratch Training Pipelines (`ml_training/training/train_4b_from_scratch.py`, `train_1b_from_scratch.py`)**: Joint training objective combining Causal LM cross-entropy, 7-class Multi-Label Focal Loss ($\gamma=2.0, \alpha=0.25$), and continuous restitution Huber regression.
+- **Dynamic INT8 & ONNX Runtime Mobile Exporters (`ml_training/models/export_4b_quantized.py`, `export_1b_quantized.py`)**: Post-training quantization for low-latency mobile and server inference.
+- **Two-Track Hybrid Pipeline (`ml_training/inference/audit_pipeline.py`)**: Track A (Specialized 4B transformer reasoning) + Track B (Zero-hallucination deterministic symbolic rule engine, BM25 + Bi-Encoder retrieval, and temporal cross-encoder reranker).
+- **Enterprise Security Hardening Engine (`app/core/security_hardening.py`)**: Magic bytes header inspection (`%PDF`, `\x89PNG`, `\xff\xd8\xff`, `RIFF`), payload size limit enforcement ($\le 25\text{MB}$), path traversal sanitization, and deterministic SHA-256 tamper-evident integrity hashing.
+- **Developer Observability & Model Registry APIs (`app/api/dev.py`)**: Real-time endpoints for `/api/v1/dev/curaveris-4b`, `/api/v1/dev/curaveris-1b`, and `/api/v1/dev/security-status`.
+- **Master Test Suite Expansion**: Added `tests/test_curaveris_1b_model.py`, `tests/test_curaveris_4b_model.py`, and `tests/test_security_and_4b_telemetry.py` expanding test coverage to **62/62 tests (100% passing)**.
+
+---
+
+## [1.4.0] — 2026-08-26
 
 ### Added
 
