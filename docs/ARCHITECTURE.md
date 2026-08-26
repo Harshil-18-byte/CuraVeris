@@ -14,6 +14,7 @@
   }
 }
 ---
+
 # CuraVeris Technical Architecture Specification
 
 This document details the systems design, data pipelines, database models, machine learning ensemble, and cryptographic protocols of the CuraVeris platform.
@@ -52,6 +53,7 @@ graph TD
         EnsembleEngine --> ModelWeights[(Serialized Model Weights: .joblib)]
         BillRouter --> PostgresDB[(Relational DB: PostgreSQL / SQLite)]
     end
+
 ```
 
 ---
@@ -123,9 +125,11 @@ erDiagram
         json details
         datetime timestamp
     }
+
 ```
 
 ### 2.1 Table Definitions
+
 - **`users`**: Manages credentials and contact numbers. Contact numbers are stored encrypted using AES-256-GCM. Anonymization under DPDP Act 2023 replaces personal details with pseudonymous hashes.
 - **`bills`**: Root entity for an audit session. Stores gross financial totals, composite risk scores, and patient demographic indicators.
 - **`bill_items`**: Atomic line items extracted from the bill. Retains comparisons against statutory rate schedules, specific violation flags, and granular overcharge sums.
@@ -168,6 +172,7 @@ sequenceDiagram
     Router->>Engine: audit_bill(metadata, items)
     Engine-->>Router: AuditedItems, Overcharge, RiskScore
     Router-->>User: Complete Audit Response (JSON)
+
 ```
 
 ---
@@ -208,9 +213,11 @@ flowchart TD
 
     MeanProb --> DecisionThreshold[Decision Boundary >= 0.50]
     DecisionThreshold --> MultiLabelOutput[Predicted Violation Flags]
+
 ```
 
 ### 4.1 Feature Definitions
+
 1. **`rate_vs_cghs_ratio`**: Ratio of billed rate to statutory CGHS benchmark rate.
 2. **`rate_vs_mrp_ratio`**: Ratio of billed rate to statutory DPCO/MRP ceiling.
 3. **`qty_zscore`**: Z-score of charged quantity relative to standard clinical item consumption.
@@ -225,9 +232,11 @@ flowchart TD
 ### 4.2 Mathematical Formulas
 
 #### Soft Voting Equation:
+
 $$P_j = 0.45 \cdot P_{\text{NN}, j} + 0.55 \cdot P_{\text{XGB}, j} \quad \forall j \in \{1 \dots 7\}$$
 
 #### Monte Carlo Epistemic Uncertainty:
+
 $$\mu_j = \frac{1}{K} \sum_{k=1}^{K} P_{j}^{(k)}, \quad \sigma_j = \sqrt{\frac{1}{K} \sum_{k=1}^{K} \left(P_{j}^{(k)} - \mu_j\right)^2}$$
 Where $K = 10$ passes with stochastic input perturbation.
 
@@ -265,9 +274,11 @@ graph TD
         Payload --> BlockHash
         BlockHash --> HMAC
     end
+
 ```
 
 ### 5.1 Algorithmic Guarantees
+
 - **Tamper Evident**: Modifying an item amount from ₹3,500 to ₹1,500 alters Leaf Hash 3, propagating to Pair Hash 3+4, which invalidates the Merkle Root and causes `verify_integrity()` to fail.
 - **Authenticity Guaranteed**: Origin signature is computed via HMAC-SHA256 using the platform's root key.
 
@@ -286,6 +297,7 @@ stateDiagram-v2
 
     COMPLETED --> [*] : Polling GET returns full audit data
     FAILED --> [*] : Polling GET returns error description
+
 ```
 
 ---
