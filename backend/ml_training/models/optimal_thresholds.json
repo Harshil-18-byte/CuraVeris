@@ -1,0 +1,9 @@
+{
+  "above_mrp": 0.38,
+  "duplicate_charge": 0.38,
+  "rate_anomaly": 0.38,
+  "gst_violation": 0.38,
+  "upcoding_suspected": 0.38,
+  "date_window_violation": 0.38,
+  "nppa_ceiling_exceeded": 0.38
+}
