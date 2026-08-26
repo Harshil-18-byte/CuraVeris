@@ -1,40 +1,198 @@
-# Python Bytecode and Cache
+# =============================================================================
+# Python
+# =============================================================================
+
+# Bytecode
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
+
+# Distribution and packaging
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+.eggs/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env_dir/
+ENV/
+env.bak/
+venv.bak/
+*/venv/
+*/.venv/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =============================================================================
+# Testing and coverage
+# =============================================================================
+
 .pytest_cache/
 */.pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
 
-# Virtual Environments
-venv/
-*/venv/
-env/
-*/env/
-ENV/
+# =============================================================================
+# Environment variables and secrets
+# =============================================================================
 
-# Local Environment Variables
 .env
-*/.env
 .env.local
+.env.*.local
+.env.production
+.env.staging
+.env.development
+*/.env
+*.env
 
-# Local Databases (excluding bundled reference master)
+# =============================================================================
+# Databases (local runtime, not bundled reference data)
+# =============================================================================
+
 *.sqlite3
+*.sqlite
+*.db
 curaveris.db
-backend/curaveris.db
 test_curaveris.db
+backend/curaveris.db
 backend/test_curaveris.db
+*.duckdb
 
-# Heavy Machine Learning Weights
+# =============================================================================
+# Machine learning model weights (large binary files)
+# =============================================================================
+
 backend/app/ml/weights/*.joblib
+backend/app/ml/weights/*.pkl
+backend/app/ml/weights/*.h5
+backend/app/ml/weights/*.pt
+backend/app/ml/weights/*.pth
+backend/app/ml/weights/*.onnx
+*.joblib
+*.pkl
 
-# IDE & Editor Settings
+# =============================================================================
+# Logs
+# =============================================================================
+
+*.log
+logs/
+log/
+*.out
+
+# =============================================================================
+# IDE and editor settings
+# =============================================================================
+
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+.spyproject
+.spyderproject.cfg
+.ropeproject
 
-# OS Specific
+# =============================================================================
+# OS specific
+# =============================================================================
+
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# =============================================================================
+# Node.js (frontend)
+# =============================================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Frontend build output
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/out/
+
+# =============================================================================
+# Docker
+# =============================================================================
+
+.docker/
+docker-compose.override.yml
+
+# =============================================================================
+# Temporary files
+# =============================================================================
+
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# =============================================================================
+# Jupyter notebooks checkpoints
+# =============================================================================
+
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# =============================================================================
+# Type checking caches
+# =============================================================================
+
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+.pyre/
+
+# =============================================================================
+# Security
+# =============================================================================
+
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
