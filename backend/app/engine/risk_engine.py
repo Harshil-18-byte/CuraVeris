@@ -85,23 +85,33 @@ class RiskAuditEngine:
     def audit_bill(self, metadata: Dict[str, Any], items: List[Dict[str, Any]], razorpay_gap_info: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Comprehensive hybrid audit:
-        1. Feature extraction per item
-        2. Regulatory benchmark lookup (CGHS, NPPA, DPCO, IRDAI)
-        3. Multi-label ML prediction
-        4. Statutory compliance verification
-        5. Composite weighted risk score calculation
+        1. Bill-level feature pre-computation (fixes train/inference skew)
+        2. Per-item regulatory benchmark lookup (CGHS, NPPA, DPCO, IRDAI)
+        3. Deterministic multi-label statutory compliance checks
+        4. ML inference on bill-level feature matrix (hybrid XGBoost + MLP ensemble)
+        5. Composite weighted risk score (deterministic 90% + ML 10%)
         """
+        from app.ml.dataset_generator import CATEGORIES, FLAG_NAMES
+
         audited_items = []
         total_billed = sum(i["charged_amount"] for i in items)
-        total_overcharge = 0.0
         total_fair_estimate = 0.0
+        total_overcharge = 0.0
 
         consumable_total = sum(i["charged_amount"] for i in items if i["category"] == "consumable")
         consumable_pct = consumable_total / max(total_billed, 1.0)
         days = metadata.get("days_admitted", 1)
 
-        # 1. First pass: detect duplicate items within the bill
         n = len(items)
+        amounts = [i["charged_amount"] for i in items]
+        sorted_amounts = sorted(amounts)
+
+        # -----------------------------------------------------------------------
+        # Bill-level feature pre-computation — must match training feature schema
+        # to eliminate the train/inference skew on description_similarity_max and
+        # amount_percentile.
+        # -----------------------------------------------------------------------
+        # description_similarity_max[i] = highest similarity between item i and any other item
         max_similarities = [0.0] * n
         is_duplicate = [False] * n
 
@@ -112,13 +122,79 @@ class RiskAuditEngine:
                     max_similarities[i] = sim
                 if sim > max_similarities[j]:
                     max_similarities[j] = sim
-                
-                # Check for duplicates: identical or near-identical item charged again
                 if sim >= 0.88 and items[i]["category"] == items[j]["category"] and items[i]["category"] != "tax_gst":
-                    # Flag the subsequent occurrence
                     is_duplicate[j] = True
 
-        # 2. Second pass: item-by-item benchmark check & ML feature calculation
+        # amount_percentile[i] = percentile rank of charged_amount within this bill
+        amount_percentiles = []
+        for amt in amounts:
+            rank = sum(1 for a in sorted_amounts if a <= amt)
+            amount_percentiles.append(rank / max(n, 1))
+
+        # Reference lookups per item (needed for ML features and rule checks)
+        item_refs = []
+        for item in items:
+            norm_name = item["normalized_name"]
+            cghs_info = query_cghs_rate(norm_name)
+            dpco_info = query_dpco_drug(norm_name)
+            nppa_info = query_nppa_device(norm_name)
+            cghs_rate = None
+            if cghs_info:
+                cghs_rate = cghs_info["rate_nabh"] if metadata.get("is_nabh", True) else cghs_info["rate_non_nabh"]
+            mrp = dpco_info["ceiling_price_per_unit"] if dpco_info else None
+            nppa_ceiling = nppa_info["ceiling_price_inr"] if nppa_info else None
+            item_refs.append({"cghs_rate": cghs_rate, "mrp": mrp, "nppa_ceiling": nppa_ceiling,
+                               "cghs_info": cghs_info, "dpco_info": dpco_info, "nppa_info": nppa_info})
+
+        # -----------------------------------------------------------------------
+        # Build ML feature matrix X — same schema as prepare_features() in
+        # train_risk_model.py to eliminate train/inference feature skew.
+        # -----------------------------------------------------------------------
+        X_rows = []
+        for idx, item in enumerate(items):
+            refs = item_refs[idx]
+            charged_rate = item["charged_rate"]
+            qty = max(item["quantity"], 1.0)
+
+            rate_vs_cghs = charged_rate / max(refs["cghs_rate"] or charged_rate, 1.0)
+            rate_vs_mrp = charged_rate / max(refs["mrp"] or charged_rate, 1.0)
+
+            # Quantity z-score within this bill
+            all_qtys = [i["quantity"] for i in items]
+            qty_mean = sum(all_qtys) / max(len(all_qtys), 1)
+            qty_std = (sum((q - qty_mean) ** 2 for q in all_qtys) / max(len(all_qtys), 1)) ** 0.5
+            qty_zscore = (qty - qty_mean) / max(qty_std, 1e-6)
+
+            cat = item["category"]
+            cat_vector = [1 if cat == c else 0 for c in CATEGORIES]
+
+            feature_row = [
+                rate_vs_cghs,
+                rate_vs_mrp,
+                qty_zscore,
+                float(days),
+                consumable_pct,
+                float(metadata.get("is_package", 0)),
+                float(1 if metadata.get("icd_10") else 0),
+                amount_percentiles[idx],           # Bill-level context — no longer zeroed
+                max_similarities[idx],             # Bill-level context — no longer zeroed
+            ] + cat_vector
+            X_rows.append(feature_row)
+
+        X = np.array(X_rows, dtype=np.float32)
+
+        # Run ML inference — result is advisory; deterministic rules are authoritative
+        ml_result = self.predict_hybrid_risk_with_uncertainty(X)
+        ml_probas = ml_result.get("probabilities")
+        ml_preds = ml_result.get("predictions")
+        ml_uncertainty = ml_result.get("uncertainty_analysis")
+
+        # Average ML violation probability across all items and labels → aggregate ML risk signal
+        if ml_probas is not None:
+            ml_mean_proba = float(np.mean(ml_probas))  # 0.0–1.0 scale
+        else:
+            ml_mean_proba = 0.0
+
         flag_counts = {
             "above_mrp": 0,
             "nppa_ceiling_violation": 0,
@@ -129,6 +205,7 @@ class RiskAuditEngine:
             "consumable_unbundled": 0
         }
         flag_impacts = {k: 0.0 for k in flag_counts}
+
 
         for idx, item in enumerate(items):
             raw_text = item["raw_text"]
@@ -145,23 +222,15 @@ class RiskAuditEngine:
             item_overcharge = 0.0
             fair_rate = charged_rate
 
-            mrp = None
-            cghs_rate = None
-            nppa_ceiling = None
-
-            # Reference lookups
-            cghs_info = query_cghs_rate(norm_name)
-            if cghs_info:
-                cghs_rate = cghs_info["rate_nabh"] if metadata.get("is_nabh", True) else cghs_info["rate_non_nabh"]
-
-            dpco_info = query_dpco_drug(norm_name)
-            if dpco_info:
-                mrp = dpco_info["ceiling_price_per_unit"]
-
-            nppa_info = query_nppa_device(norm_name)
-            if nppa_info:
-                nppa_ceiling = nppa_info["ceiling_price_inr"]
-
+            # Use pre-computed reference data (avoids duplicate DB queries and
+            # ensures the item loop and the ML feature matrix use the same values)
+            refs = item_refs[idx]
+            mrp = refs["mrp"]
+            cghs_rate = refs["cghs_rate"]
+            nppa_ceiling = refs["nppa_ceiling"]
+            cghs_info = refs["cghs_info"]
+            nppa_info = refs["nppa_info"]
+            dpco_info = refs["dpco_info"]
             irdai_item = is_irdai_non_payable(norm_name)
 
             # Rule A: NPPA Device Ceiling Violation
@@ -296,10 +365,19 @@ class RiskAuditEngine:
             }
             audited_items.append(audited_item)
 
-        # 3. Calculate Composite Risk Score (0 - 100) using Guide Formula
-        # risk_score = (rate_flag_weight * 0.35) + (duplicate_weight * 0.25)
-        #            + (consumable_ratio_weight * 0.15) + (gst_weight * 0.10)
-        #            + (razorpay_gap_weight * 0.15)
+        # 3. Calculate Composite Risk Score (0 – 100)
+        #
+        # Deterministic rules (authoritative):  90% weight total
+        #   - Rate overcharge signal:            31.5% (= 0.35 * 0.9)
+        #   - Duplicate charge:                  22.5% (= 0.25 * 0.9)
+        #   - Consumable unbundling ratio:        13.5% (= 0.15 * 0.9)
+        #   - GST on exempt services:             9.0%  (= 0.10 * 0.9)
+        #   - Razorpay payment gap:              13.5%  (= 0.15 * 0.9)
+        # ML ensemble signal (advisory):         10% weight
+        #   - ml_mean_proba * 100 -> 0–100 signal
+        #
+        # The 90/10 split deliberately keeps deterministic rules dominant.
+        # ML output is labeled 'indicative' because the model is synthetically trained.
 
         overcharge_ratio = total_overcharge / max(total_billed, 1.0)
         rate_flag_weight = min(overcharge_ratio * 100 * 2.0, 100.0)
@@ -312,7 +390,7 @@ class RiskAuditEngine:
             gap_ratio = razorpay_gap_info["patient_unjust_gap"] / max(total_billed, 1.0)
             razorpay_gap_weight = min(gap_ratio * 100 * 2.5, 100.0)
 
-        composite_risk = (
+        deterministic_risk = (
             (rate_flag_weight * 0.35) +
             (duplicate_weight * 0.25) +
             (consumable_ratio_weight * 0.15) +
@@ -320,7 +398,14 @@ class RiskAuditEngine:
             (razorpay_gap_weight * 0.15)
         )
 
-        # Razorpay EMI Stress adjustment (+10 risk points for financial distress)
+        # ML signal contribution (indicative — synthetically trained model)
+        ml_risk_contribution = ml_mean_proba * 100.0 * 0.10
+
+        # Statutory rules are authoritative: deterministic violations are never diluted
+        composite_risk = max(deterministic_risk, 0.90 * deterministic_risk + ml_risk_contribution)
+
+
+        # EMI stress adjustment (+10 risk points — financial distress signal)
         if razorpay_gap_info and razorpay_gap_info.get("is_emi"):
             composite_risk += 10.0
 
@@ -377,7 +462,15 @@ class RiskAuditEngine:
             "risk_score": composite_risk,
             "risk_level": risk_level,
             "flags_summary": flags_summary,
-            "items": audited_items
+            "items": audited_items,
+            # ML inference metadata — advisory signal, not authoritative
+            "ml_inference": {
+                "engine": ml_result.get("engine", "Rule-Based Deterministic Fallback"),
+                "mean_violation_probability": round(ml_mean_proba, 4),
+                "risk_contribution_points": round(ml_risk_contribution, 2),
+                "uncertainty_analysis": ml_uncertainty,
+                "note": "Indicative only. Model trained on synthetic data; deterministic statutory rules are authoritative.",
+            },
         }
 
 
