@@ -1,0 +1,15 @@
+{
+  "date": "2026-08-26",
+  "network_note": "Direct outbound HTTP from this runtime is unavailable; the crawler is provided for execution in a network-enabled environment.",
+  "verified_sources": {
+    "nppa_medical_devices_index": "https://www.nppa.gov.in/en/medicaldevices-2",
+    "nppa_retail_price_till_date": "https://nppa.gov.in/en/retailpricetilldate",
+    "nppa_cp_notifications": "https://www.nppa.gov.in/en/cpnotifications",
+    "nppa_other_docs": "https://www.nppa.gov.in/en/otherdocs",
+    "nppa_proactive_disclosure": "https://www.nppa.gov.in/en/proactivedisclosure",
+    "nppa_circulars": "https://www.nppa.gov.in/en/view_more?id=4",
+    "legacy_nppa_dpco2013": "https://nppaindia.nic.in/dpco2013",
+    "legacy_nppa_dpco1995": "https://nppaindia.nic.in/dpco1995",
+    "cghs": "https://cghs.mohfw.gov.in/"
+  }
+}
