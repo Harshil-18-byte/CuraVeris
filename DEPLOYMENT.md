@@ -156,6 +156,9 @@ from app.db.reference_data import init_reference_db
 asyncio.run(init_db())
 init_reference_db()
 "
+
+# Train production ML models & ChromaDB vector store
+docker compose exec api python ml_training/train_all_models.py
 ```
 
 ---

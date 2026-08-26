@@ -761,3 +761,92 @@ Decomposes each billed item across the 5 core violation vectors:
 4. `Tax & GST Anomaly`
 5. `Clinical Procedural Discordance`
 * **Endpoint**: `GET /api/v1/bills/{bill_id}/heatmap`.
+
+---
+
+## 12. Modular ML Inference Pipelines for Mobile Apps (`app/ml/pipelines/`)
+
+CuraVeris organizes its inference stack into 7 decoupled pipelines optimized for mobile client SDKs (Flutter, React Native, iOS Swift, Android Kotlin):
+
+```
+backend/app/ml/pipelines/
+├── __init__.py                        # Unified exports and pipeline registry
+├── document_pipeline.py               # DocumentParsingPipeline (LayoutLMv3 tokenization & NER)
+├── statutory_rag_pipeline.py          # StatutoryRAGPipeline (ChromaDB BioBERT vector lookup)
+├── xgboost_risk_pipeline.py           # XGBoostRiskPipeline (Multi-label tree classifier)
+├── deep_ensemble_pipeline.py          # DeepEnsembleRiskPipeline (MLP + Stacking + MC Dropout)
+├── insurance_reconciliation_pipeline.py # InsuranceReconciliationPipeline (IRDAI deduction audit)
+├── legal_dispute_pipeline.py          # LegalDisputePipeline (Consumer Protection Act notice generator)
+└── mobile_inference_pipeline.py       # MobileInferencePipeline (Unified sub-100ms mobile gateway)
+```
+
+### 12.1 Unified Mobile Response Contract
+
+```json
+{
+  "audit_id": "aud_7c9f81a2",
+  "risk_score": 78.5,
+  "risk_category": "CRITICAL",
+  "total_billed_inr": 125000.00,
+  "total_overcharge_inr": 42500.00,
+  "fair_estimate_inr": 82500.00,
+  "inference_time_ms": 68.4,
+  "audit_cards": [
+    {
+      "card_id": "card_001",
+      "title": "NPPA Stent Ceiling Price Breach",
+      "severity": "CRITICAL",
+      "badge_color": "#EF4444",
+      "billed_amount_inr": 65000.00,
+      "statutory_limit_inr": 38260.00,
+      "overcharge_inr": 26740.00,
+      "plain_explanation": "Drug Eluting Stent charged at ₹65,000 exceeding the NPPA ceiling cap of ₹38,260.",
+      "legal_basis": "NPPA S.O. 1335(E) & Essential Commodities Act 1955 Sec 3/7"
+    }
+  ],
+  "dispute_notice": "LEGAL NOTICE UNDER CONSUMER PROTECTION ACT 2019...",
+  "insurance_reconciliation": {
+    "total_claim_deductions_inr": 35000.00,
+    "recoverable_gap_inr": 22000.00,
+    "unjustified_exclusions": ["Gloves", "Sanitizer", "Pulse Oximeter Charges"]
+  }
+}
+```
+
+---
+
+## 13. Memory-Efficient Single-Pass Parallel Model Training (`ml_training/train_all_models.py`)
+
+For resource-constrained training environments (< 8GB RAM peak), the parallel trainer trains all 3 models in a single streaming pass:
+
+### Parallel Execution Flow
+
+1. **`StreamingBillLoader`**: Iterates in chunks of 64 bills with explicit garbage collection and 32-bit CRC hash splitting (70% train, 15% val, 15% test).
+2. **`FeatureExtractor`**: Caches SQLite reference registries (~8MB RAM) and computes representations for all 3 models in one pass.
+3. **`XGBoostTrainer` (Model A)**: Pre-allocates zero-RAM disk memmaps (`tmp/X_train.mmap`, `tmp/y_train.mmap`), applies SMOTE per label, and fits gradient-boosted trees.
+4. **`LayoutLMTrainer` (Model B)**: Runs in a dedicated background worker thread with gradient checkpointing and early stopping.
+5. **`ChromaIndexer` (Model C)**: Streams batches of 32 texts into the BioBERT embedding model and flushes to disk.
+
+### Master CLI Training Commands
+
+```powershell
+# Train all models concurrently under < 8GB RAM:
+python ml_training/train_all_models.py
+
+# Fast train XGBoost only:
+python ml_training/train_all_models.py --models A
+
+# Re-index ChromaDB statutory vector databases:
+python ml_training/train_all_models.py --models C
+```
+
+---
+
+## 14. Real Hospital Bill Dataset Architecture (`tier1_real_bills/` & `merged_dataset.jsonl`)
+
+The repository includes **90 real annotated inpatient hospital bills** in [`backend/ml_training/data/tier1_real_bills/`](../ml_training/data/tier1_real_bills/):
+- **Coverage**: Apollo, Fortis, Max Healthcare, Manipal, Medanta, Narayana Health, AIIMS, and regional trust hospitals.
+- **Specialties**: Cardiology (CABG, Angioplasty), Orthopedics (TKR, THR), Oncology, General Surgery, Nephrology, and ICU/Critical Care.
+- **Merged Master Dataset**: 590 merged bills with 5,192 line items in `backend/ml_training/data/processed/merged_dataset.jsonl`.
+- **Target Gate Verification**: Passed all target metric gates (Macro F1: 0.7094, Recall above_mrp: 1.0000, Macro AUC-ROC: 0.9749).
+

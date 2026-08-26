@@ -237,3 +237,51 @@ When a user exercises their right to erasure under DPDP Act 2023 Section 12 via 
 6. An `ANONYMIZED` record is appended to `audit_logs` with the timestamp.
 
 Bill records and audit logs are retained. The financial audit data does not constitute personal data under the DPDP Act because it cannot be re-linked to the individual after anonymization.
+
+---
+
+## 7. Vector Collections and JSONL Schemas
+
+### 7.1 ChromaDB Statutory Vector Collections
+
+| Collection | Dimensions | Embeddings Model | Indexed Entities |
+| :--- | :--- | :--- | :--- |
+| `cghs_collection` | 768 | BioBERT (`dmis-lab/biobert-v1.1`) | 65,155 CGHS procedure rates and descriptions |
+| `nppa_collection` | 768 | BioBERT (`dmis-lab/biobert-v1.1`) | 908 formulations + 11 notified medical devices |
+| `dpco_collection` | 768 | BioBERT (`dmis-lab/biobert-v1.1`) | 959 essential medicines with statutory MRP ceilings |
+
+### 7.2 Fine-Tuning and Inpatient Bill JSONL Schema (`merged_dataset.jsonl`)
+
+```json
+{
+  "bill_id": "BILL_042",
+  "hospital_name": "Fortis Escorts Heart Institute",
+  "city": "New Delhi",
+  "state": "Delhi",
+  "tier": 1,
+  "admission_date": "2026-04-12",
+  "discharge_date": "2026-04-18",
+  "diagnosis": "Acute Coronary Syndrome with PCI",
+  "icd10_code": "I21.09",
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "DRUG ELUTING CORONARY STENT",
+      "category": "implant",
+      "quantity": 1.0,
+      "unit_price": 58000.0,
+      "total_amount": 58000.0,
+      "labels": {
+        "nppa_ceiling_violation": 1,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "rate_anomaly": 1,
+        "package_unbundled": 0
+      }
+    }
+  ]
+}
+```
+

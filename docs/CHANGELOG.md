@@ -10,6 +10,30 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
+## \[1.3.0\] — 2026-08-26
+
+### Added
+
+- **Modular ML Pipelines Package (`app/ml/pipelines/`)**: Introduced 7 decoupled, production-grade pipelines:
+  - `DocumentParsingPipeline`: Multimodal LayoutLMv3 tokenization with normalized BBoxes and 15 billing entity classes.
+  - `StatutoryRAGPipeline`: ChromaDB BioBERT semantic RAG retrieval across CGHS, NPPA, and DPCO statutory databases.
+  - `XGBoostRiskPipeline`: Multi-label XGBoost classifier with SMOTE balancing and optimal threshold tuning.
+  - `DeepEnsembleRiskPipeline`: Deep MLP (128-64-32) + XGBoost stacking with 15-pass Monte Carlo Dropout epistemic uncertainty ($\sigma$).
+  - `InsuranceReconciliationPipeline`: IRDAI non-payable items audit and TPA settlement deduction recovery analysis.
+  - `LegalDisputePipeline`: Automated dispute notice drafting under Consumer Protection Act 2019 and Essential Commodities Act 1955.
+  - `MobileInferencePipeline`: Sub-100ms mobile gateway returning structured UI cards with color badges (`#10B981`, `#F59E0B`, `#EF4444`).
+- **Memory-Efficient Parallel Multi-Model Trainer (`backend/ml_training/train_all_models.py`)**:
+  - Single disk-read streaming architecture (< 8GB RAM peak) with `StreamingBillLoader` (64-bill chunks).
+  - In-memory shared SQLite reference dictionary cache (~8MB).
+  - Disk-backed `np.memmap` feature buffer accumulation.
+  - Concurrent GPU worker thread for `LayoutLMTrainer` with gradient checkpointing.
+  - Streaming batch indexer for persistent ChromaDB BioBERT vector store.
+- **Real Hospital Bill Ground Truth Dataset**: Added 90 real annotated inpatient hospital bills from Indian healthcare facilities in `backend/ml_training/data/tier1_real_bills/`.
+- **Merged Master Training Dataset**: 590 merged bills (5,192 line items) with stratified 70/15/15 train/val/test splits.
+- **Comprehensive Mobile Pipeline Test Suite**: Added `backend/tests/test_mobile_pipeline.py` (total test suite expanded to 41/41 passing tests).
+
+---
+
 ## \[1.2.0\] — 2026-08-26
 
 ### Added

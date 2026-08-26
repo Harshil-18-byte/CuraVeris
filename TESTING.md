@@ -20,7 +20,7 @@ This document describes the test architecture, how to run the test suite, how to
 
 All tests live under `backend/tests/`. The suite uses **pytest** with an in-memory **SQLite** database via `aiosqlite` so no PostgreSQL instance is required for local testing.
 
-```
+```text
 backend/
   tests/
     conftest.py                       <- Shared fixtures (test client, DB, auth tokens)
@@ -32,6 +32,7 @@ backend/
     test_advanced_hardening.py        <- Security: rate limiting, JWT validation, brute-force lockout
     test_security.py                  <- PII encryption/decryption, Merkle audit ledger tests
     test_deep_learning_and_ledger.py  <- Deep MLP, hybrid ensemble, and Merkle chain tests
+    test_mobile_pipeline.py           <- Modular ML pipelines (7 pipelines) & mobile latency tests
 ```
 
 ---
@@ -48,7 +49,7 @@ cd backend
 pytest --tb=short -q
 ```
 
-Expected: **34+ tests, 0 failures**.
+Expected: **41+ tests, 0 failures (100% pass rate)**.
 
 ### Single file
 
@@ -203,11 +204,11 @@ def test_my_endpoint(client, auth_headers):
 
 `conftest.py` provides:
 
-| Fixture | Scope | Purpose |
-|---|---|---|
-| `client` | function | FastAPI `TestClient` with SQLite in-memory DB |
+| Fixture        | Scope    | Purpose                                                   |
+| -------------- | -------- | --------------------------------------------------------- |
+| `client`       | function | FastAPI `TestClient` with SQLite in-memory DB             |
 | `auth_headers` | function | Pre-authenticated JWT `Authorization: Bearer ...` headers |
-| `test_bill_id` | function | Creates a seeded test bill and returns its UUID |
+| `test_bill_id` | function | Creates a seeded test bill and returns its UUID           |
 
 ### Adding a new fixture
 
@@ -224,13 +225,14 @@ def my_fixture():
 
 ## Coverage Requirements
 
-| Area | Minimum Coverage |
-|---|---|
-| `app/engine/risk_engine.py` | 85% |
-| `app/core/security.py` | 90% |
-| `app/api/*.py` (all routers) | 80% |
-| `app/engine/extractor.py` | 75% |
-| `app/ml/*.py` | 70% |
+| Area                           | Minimum Coverage |
+| ------------------------------ | ---------------- |
+| `app/engine/risk_engine.py`    | 85%              |
+| `app/core/security.py`         | 90%              |
+| `app/api/*.py` (all routers)   | 80%              |
+| `app/engine/extractor.py`      | 75%              |
+| `app/ml/*.py`                  | 70%              |
+| `app/ml/pipelines/*.py`        | 85%              |
 
 PRs that drop any area below the minimum threshold will not be merged.
 

@@ -251,6 +251,42 @@ $$\mu_j = \frac{1}{K} \sum_{k=1}^{K} P_{j}^{(k)}, \qquad \sigma_j = \sqrt{\frac{
 | `AMBIGUOUS_BORDERLINE_REVIEW` | $\mu \ge 0.40$, $\sigma > 0.06$ |
 | `CONFIDENT_COMPLIANT` | $\mu < 0.35$, $\sigma \le 0.04$ |
 
+### 4.3 Modular Production ML Pipelines (`app/ml/pipelines/`)
+
+The platform structures ML and audit processing into 7 modular, decoupled pipelines for sub-100ms mobile client inference:
+
+1. **`DocumentParsingPipeline`**:
+   - LayoutLMv3 multimodal token classification on bounding boxes normalized to $[0, 1000]$.
+   - Extracts 15 NER billing entities (`HOSPITAL_NAME`, `BILL_DATE`, `ITEM_NAME`, `QTY`, `UNIT_PRICE`, `TOTAL_AMOUNT`, `GST_AMOUNT`, etc.).
+2. **`StatutoryRAGPipeline`**:
+   - ChromaDB BioBERT semantic vector store (768 dimensions) querying statutory tables: `cghs_collection`, `nppa_collection`, `dpco_collection`.
+   - Threshold-gated retrieval (cosine similarity $> 0.72$) for exact schedule matching.
+3. **`XGBoostRiskPipeline`**:
+   - Multi-label gradient boosted trees on 10 canonical features.
+   - SMOTE minority oversampling and calibrated decision thresholds (`optimal_thresholds.json`).
+4. **`DeepEnsembleRiskPipeline`**:
+   - 3-layer deep MLP combined with XGBoost via soft stacking.
+   - 15-pass Monte Carlo Dropout epistemic uncertainty scoring ($\sigma$).
+5. **`InsuranceReconciliationPipeline`**:
+   - Analyzes TPA claim settlement deductions against IRDAI 2016/2019 Master Circular schedules.
+   - Categorizes non-payable items into mandatory exclusions vs recoverable medical charges.
+6. **`LegalDisputePipeline`**:
+   - Compiles statutory violation findings into legally binding dispute letters citing the Consumer Protection Act 2019, DPCO 2013, and Essential Commodities Act 1955.
+7. **`MobileInferencePipeline`**:
+   - Unified mobile gateway returning compact, high-speed JSON payloads with UI color badges (`#10B981`, `#F59E0B`, `#EF4444`), risk scores (0–100), and downloadable legal notices.
+
+---
+
+### 4.4 Memory-Efficient Single-Pass Parallel Model Training (`backend/ml_training/train_all_models.py`)
+
+For multi-model training under tight memory limits (< 8GB RAM peak), the parallel trainer executes a single-pass streaming architecture:
+
+- **`StreamingBillLoader`**: Iterates through `merged_dataset.jsonl` in 64-bill chunks with explicit garbage collection and 32-bit CRC hash splitting (70% train, 15% val, 15% test).
+- **`FeatureExtractor`**: Pre-loads lightweight SQLite lookup dictionaries (~8MB RAM) and processes each bill once for all 3 models simultaneously.
+- **`XGBoostTrainer` (Model A)**: Memory-maps feature arrays to disk (`tmp/X_train.mmap`, `tmp/y_train.mmap`), applies SMOTE per label, and fits multi-label classifiers without RAM exhaustion.
+- **`LayoutLMTrainer` (Model B)**: Background worker thread with bounded task queue (`queue.Queue(maxsize=100)`), gradient checkpointing, and early stopping.
+- **`ChromaIndexer` (Model C)**: Buffers text in 32-item batches, embeds with BioBERT, and writes directly to persistent ChromaDB vector storage.
+
 ---
 
 ## 5. Cryptographic Merkle Audit Ledger Specification

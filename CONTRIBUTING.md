@@ -177,20 +177,24 @@ backend/
 
 ## ML Model Contributions
 
-```
+```text
 app/ml/
-  train_risk_model.py   <- Primary GBM trainer
-  deep_risk_model.py    <- Deep MLP neural network
-  hybrid_ensemble.py    <- Stacking ensemble (XGBoost + MLP + meta-learner)
-  weights/              <- Saved .joblib artifacts (gitignored)
+  pipelines/            <- 7 modular inference pipelines (Document, RAG, XGBoost, Deep, Insurance, Legal, Mobile)
+  risk_classifier.py    <- Multi-label XGBoost classifier
+  deep_risk_network.py  <- Deep MLP neural network (128-64-32)
+  train_risk_model.py   <- Reference baseline trainer
+  weights/              <- Saved weight artifacts (gitignored)
+ml_training/
+  train_all_models.py   <- Single-pass parallel multi-model trainer (< 8GB RAM)
 ```
 
 When contributing ML changes:
 
-1. Run `train_and_evaluate()` and report precision/recall/F1 in the PR.
-2. The model must achieve **F1 >= 0.85** on the test split before merging.
-3. Do **not** commit `.joblib` model weight files — they are generated at deploy time.
-4. SHAP explainability must remain functional after any architecture change.
+1. Run `python ml_training/train_all_models.py` or `pytest tests/test_mobile_pipeline.py -v`.
+2. Ensure Macro F1 >= 0.70 and Recall for statutory ceiling violations >= 0.78 on the held-out test split.
+3. Do **not** commit large binary `.pkl` or `.joblib` model weight files — they are generated dynamically during training.
+4. Keep inference latency for `MobileInferencePipeline` strictly under 100ms.
+5. SHAP explainability must remain functional after any architecture change.
 
 ---
 

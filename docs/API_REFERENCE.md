@@ -402,5 +402,69 @@ Drafts an immediate legal notice compelling physical release of a detained patie
   ],
   "notice_markdown": "EMERGENCY STATUTORY LEGAL NOTICE — DEMAND FOR IMMEDIATE PHYSICAL RELEASE..."
 }
-
 ```
+
+---
+
+## 4. Mobile Inference Gateway Endpoints
+
+### 4.1 Low-Latency Mobile Forensic Audit
+
+Executes the unified 7-pipeline ML audit pipeline returning structured UI cards, risk badges, and downloadable dispute letters for iOS and Android native applications.
+
+- **Method**: `POST`
+- **Path**: `/bills/mobile-audit`
+- **Request Body**:
+
+```json
+{
+  "bill_id": "bill_8f2a10",
+  "patient_name": "Ramesh Kumar Sharma",
+  "hospital_name": "Apollo Super Speciality Hospital",
+  "total_billed": 145000.00,
+  "line_items": [
+    {
+      "item_id": "item_01",
+      "raw_text": "DRUG ELUTING STENT (XIENCE)",
+      "category": "implant",
+      "unit_price": 65000.00,
+      "quantity": 1.0,
+      "total_amount": 65000.00
+    }
+  ]
+}
+```
+
+- **Response**: `200 OK`
+
+```json
+{
+  "audit_id": "aud_7c9f81a2",
+  "risk_score": 82.0,
+  "risk_category": "CRITICAL",
+  "total_billed_inr": 145000.00,
+  "total_overcharge_inr": 26740.00,
+  "fair_estimate_inr": 118260.00,
+  "inference_time_ms": 72.5,
+  "audit_cards": [
+    {
+      "card_id": "card_001",
+      "title": "NPPA Stent Ceiling Price Breach",
+      "severity": "CRITICAL",
+      "badge_color": "#EF4444",
+      "billed_amount_inr": 65000.00,
+      "statutory_limit_inr": 38260.00,
+      "overcharge_inr": 26740.00,
+      "plain_explanation": "Drug Eluting Stent charged at ₹65,000 exceeding the NPPA ceiling cap of ₹38,260.",
+      "legal_basis": "NPPA S.O. 1335(E) & Essential Commodities Act 1955 Sec 3/7"
+    }
+  ],
+  "dispute_notice": "LEGAL NOTICE UNDER CONSUMER PROTECTION ACT 2019...",
+  "insurance_reconciliation": {
+    "total_claim_deductions_inr": 0.0,
+    "recoverable_gap_inr": 0.0,
+    "unjustified_exclusions": []
+  }
+}
+```
+

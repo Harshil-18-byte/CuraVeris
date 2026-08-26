@@ -23,6 +23,8 @@ CuraVeris eliminates the information asymmetry between patients and hospitals at
 - [Security](#security)
 - [API Reference](#api-reference)
 - [Machine Learning Ensemble](#machine-learning-ensemble)
+- [Modular ML Pipelines for Mobile](#modular-ml-pipelines-for-mobile-apps-android--ios)
+- [Memory-Efficient Multi-Model Parallel Training](#memory-efficient-multi-model-parallel-training)
 - [Cryptographic Ledger](#cryptographic-ledger)
 - [Statutory Framework](#statutory-framework)
 - [Comparative Positioning](#comparative-positioning)
@@ -235,7 +237,7 @@ See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) and [`docs/DATA_MODEL.md`](
 - SHAP waterfall attribution decomposing each contributing feature's additive impact on the final score.
 - Shadow bill detection — identifies duplicate line items and unlawful GST surcharges on exempt healthcare services.
 
-### Machine Learning Ensemble
+### Forensic ML Ensemble Architecture
 
 - Hybrid stacking of an XGBoost multi-output classifier and a three-layer MLP (Dense 128 → 64 → 32) across 7 violation labels simultaneously.
 - Soft probability blending: $P_{\text{blended}} = 0.45 \cdot P_{\text{NN}} + 0.55 \cdot P_{\text{XGB}}$.
@@ -497,6 +499,58 @@ $$\mu_j = \frac{1}{K}\sum_{k=1}^{K} P_j^{(k)}, \quad \sigma_j = \sqrt{\frac{1}{K
 | Macro Precision | — | — | 0.7875 |
 | Macro Recall | — | — | 0.4820 |
 | Macro F1 | 0.5881 | 0.5540 | 0.5836 |
+
+---
+
+## Modular ML Pipelines for Mobile Apps (Android & iOS)
+
+CuraVeris provides 7 production-grade ML pipelines in `backend/app/ml/pipelines/` engineered for low-latency (< 100ms) mobile app consumption:
+
+1. **`DocumentParsingPipeline`**: Multimodal LayoutLMv3 tokenization, normalized 2D bounding boxes ($[0, 1000]$), 15 NER entity labels, and tabular row-column association.
+2. **`StatutoryRAGPipeline`**: ChromaDB BioBERT semantic vector lookup across CGHS, NPPA, and DPCO statutory registries ($> 0.72$ threshold gating).
+3. **`XGBoostRiskPipeline`**: 10-feature multi-label gradient boosted trees with SMOTE class balancing and optimal decision threshold calibration.
+4. **`DeepEnsembleRiskPipeline`**: Deep MLP (128-64-32 with Adam) + XGBoost stacking + 15-pass Monte Carlo Dropout epistemic uncertainty ($\sigma$).
+5. **`InsuranceReconciliationPipeline`**: IRDAI non-payable items audit (199 schedule items) and TPA settlement gap recovery analysis.
+6. **`LegalDisputePipeline`**: Automated legal notice generator under Consumer Protection Act 2019 and Essential Commodities Act 1955.
+7. **`MobileInferencePipeline`**: Unified mobile gateway returning structured UI cards with color badges (`#10B981`, `#F59E0B`, `#EF4444`), 0–100 risk score, and downloadable dispute letters.
+
+---
+
+## Memory-Efficient Multi-Model Parallel Training
+
+To train all models under strict memory budgets (< 8GB RAM peak), [`backend/ml_training/train_all_models.py`](./backend/ml_training/train_all_models.py) executes a single-pass streaming architecture:
+
+```mermaid
+graph TD
+    Data["590 Merged Bills (merged_dataset.jsonl)"] --> Stream["StreamingBillLoader (64 bills/chunk, CRC32 70/15/15 Split)"]
+    Stream --> Feat["Shared FeatureExtractor (~8MB SQLite Cache: CGHS, NPPA, DPCO)"]
+    
+    subgraph ParallelPipe ["Single Disk-Read Pass (< 200MB Streaming RAM)"]
+        Feat -->|"xgb_X, xgb_y"| ModelA["Model A: XGBoost Multi-Label (np.memmap on disk + SMOTE)"]
+        Feat -->|"tokens, bboxes"| ModelB["Model B: LayoutLMv3 (Worker Thread + Gradient Checkpointing)"]
+        Feat -->|"texts, metadata"| ModelC["Model C: ChromaDB BioBERT Indexer (32-batch flush)"]
+    end
+
+    ModelA --> OutA["models/risk_classifier.pkl"]
+    ModelB --> OutB["models/layoutlm_finetuned/"]
+    ModelC --> OutC["ChromaDB Vector Store"]
+```
+
+### CLI Training Commands
+
+```bash
+# 1. Train all models in a single parallel streaming pass:
+python ml_training/train_all_models.py
+
+# 2. Train only XGBoost classifier (fastest):
+python ml_training/train_all_models.py --models A
+
+# 3. Train XGBoost + rebuild ChromaDB statutory vector index:
+python ml_training/train_all_models.py --models A C
+
+# 4. Train LayoutLMv3 document transformer:
+python ml_training/train_all_models.py --models B
+```
 
 ---
 
