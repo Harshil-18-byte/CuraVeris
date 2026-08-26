@@ -1,19 +1,3 @@
----
-{
-  "id": "file_nsm6ol8y",
-  "filetype": "document",
-  "filename": "TESTING",
-  "created_at": "2026-08-26T16:48:12.137Z",
-  "updated_at": "2026-08-26T16:48:17.491Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Testing Guide
 
 This document describes the test architecture, how to run the test suite, how to write new tests, and the test coverage requirements for the CuraVeris platform.
