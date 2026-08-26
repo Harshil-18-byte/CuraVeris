@@ -1,19 +1,3 @@
-﻿---
-{
-  "id": "file_vchiyqor",
-  "filetype": "document",
-  "filename": "SECURITY",
-  "created_at": "2026-08-26T07:22:43.881Z",
-  "updated_at": "2026-08-26T07:22:58.015Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # Security Policy
 
 ## Supported Versions

@@ -1,19 +1,3 @@
----
-{
-  "id": "file_ihu1rpop",
-  "filetype": "document",
-  "filename": "ML_AND_BACKEND_HANDBOOK",
-  "created_at": "2026-08-26T07:08:18.269Z",
-  "updated_at": "2026-08-26T07:08:21.725Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris — ML Model Training, Dataset & Backend Developer Handbook
 
 Welcome to the definitive developer handbook for **CuraVeris (MedBill AI)**. This document provides an exhaustive reference for system installation, multi-model machine learning training, dataset architecture, scoring and accuracy metrics, statutory compliance engines, and Razorpay payment-aware integrations.

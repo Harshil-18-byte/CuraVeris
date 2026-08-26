@@ -1,19 +1,3 @@
-﻿---
-{
-  "id": "file_lx02re49",
-  "filetype": "document",
-  "filename": "DEPLOYMENT",
-  "created_at": "2026-08-26T07:22:45.126Z",
-  "updated_at": "2026-08-26T07:22:47.887Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Deployment Guide
 
 This document covers production deployment of the CuraVeris backend on Ubuntu 22.04 / Debian 12, Docker, and cloud platforms (AWS, GCP, Azure).
