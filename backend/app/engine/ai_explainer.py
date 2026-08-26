@@ -1,8 +1,10 @@
 import json
 import asyncio
 from typing import Dict, Any, List, AsyncGenerator
+from app.core.credentials import credentials
 from app.core.config import settings
 from app.core.logging import logger
+
 
 MASTER_SYSTEM_PROMPT = """
 You are MedBill AI (CuraVeris), India's premier expert in Indian hospital billing audits, medical coding, healthcare law, and patient rights.
@@ -34,9 +36,10 @@ Return concise, actionable, authoritative advice.
 
 class AIExplainer:
     def __init__(self):
-        self.has_anthropic = bool(settings.ANTHROPIC_API_KEY)
-        self.has_gemini = bool(settings.GEMINI_API_KEY)
-        self.has_openai = bool(settings.OPENAI_API_KEY)
+        self.has_anthropic = bool(credentials.llm.anthropic_api_key)
+        self.has_gemini = bool(credentials.llm.gemini_api_key)
+        self.has_openai = bool(credentials.llm.openai_api_key)
+
 
     def generate_plain_summary(self, audit_result: Dict[str, Any], metadata: Dict[str, Any]) -> str:
         """
