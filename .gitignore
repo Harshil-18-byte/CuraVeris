@@ -203,3 +203,8 @@ dmypy.json
 *.pfx
 secrets/
 credentials/
+
+# Decoupled Task Datasets & Temporal SQLite DB
+backend/ml_training/data/processed/decoupled_tasks/
+backend/reference_data/temporal_gazette.db
+

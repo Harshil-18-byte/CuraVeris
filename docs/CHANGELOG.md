@@ -10,11 +10,24 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.3.0\] — 2026-08-26
+## [1.4.0] — 2026-08-26
 
 ### Added
 
-- **Modular ML Pipelines Package (`app/ml/pipelines/`)**: Introduced 7 decoupled, production-grade pipelines:
+- **Temporal Gazette & Statutory Registry Store (`app/db/temporal_gazette_store.py`)**: Time-versioned NPPA device caps, DPCO essential drug ceilings, and CGHS benchmarks with `effective_from`, `effective_to`, and gazette `S.O.` numbers to evaluate compliance strictly on the date of medical service.
+- **Layer 2 Clinical Pathway Scenario Generator (`ml_training/generators/clinical_scenario_generator.py`)**: Clinically realistic inpatient bill simulation across 4 clinical pathways (STEMI / Primary PCI, Total Knee Arthroplasty, Laparoscopic Cholecystectomy, Triple Vessel CABG) with authentic ALOS, diagnostics, pharmacy, and implants.
+- **Layer 3 Controlled Counterfactual Perturbation Generator (`ml_training/generators/counterfactual_generator.py`)**: Single-variable perturbation engine generating price surge, duplicate line, consumable unbundling, unlawful GST surcharge, and OCR character corruption variants with ground-truth delta labels.
+- **Layer 4 Hard Negative Generator (`ml_training/generators/hard_negative_generator.py`)**: Generates complex, high-magnitude, 100% compliant hospital bills (multi-vessel twin stents, prolonged ICU ventilation, revision arthroplasty, oncology biologics) to eliminate the "unusual = fraud" shortcut.
+- **Decoupled Multi-Task Dataset Partitioning Engine (`ml_training/generators/dataset_partitioner.py`)**: Exports scaled master corpus into 6 specialized task datasets (Task A: LayoutLMv3 spatial parsing, Task B: Clinical normalizer, Task C: Statutory RAG retrieval, Task D: Tabular anomaly classifier, Task E: Deterministic math audit, Task F: Legal advocacy SFT chat format).
+- **Master Test Suite Expansion**: Added `tests/test_scaled_generators.py` expanding test coverage to **46/46 tests (100% passing)**.
+
+---
+
+## [1.3.0] — 2026-08-26
+
+### Added
+
+- **Modular ML Pipelines Package (**`app/ml/pipelines/`**)**: Introduced 7 decoupled, production-grade pipelines:
   - `DocumentParsingPipeline`: Multimodal LayoutLMv3 tokenization with normalized BBoxes and 15 billing entity classes.
   - `StatutoryRAGPipeline`: ChromaDB BioBERT semantic RAG retrieval across CGHS, NPPA, and DPCO statutory databases.
   - `XGBoostRiskPipeline`: Multi-label XGBoost classifier with SMOTE balancing and optimal threshold tuning.
@@ -22,9 +35,9 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
   - `InsuranceReconciliationPipeline`: IRDAI non-payable items audit and TPA settlement deduction recovery analysis.
   - `LegalDisputePipeline`: Automated dispute notice drafting under Consumer Protection Act 2019 and Essential Commodities Act 1955.
   - `MobileInferencePipeline`: Sub-100ms mobile gateway returning structured UI cards with color badges (`#10B981`, `#F59E0B`, `#EF4444`).
-- **Memory-Efficient Parallel Multi-Model Trainer (`backend/ml_training/train_all_models.py`)**:
-  - Single disk-read streaming architecture (< 8GB RAM peak) with `StreamingBillLoader` (64-bill chunks).
-  - In-memory shared SQLite reference dictionary cache (~8MB).
+- **Memory-Efficient Parallel Multi-Model Trainer (**`backend/ml_training/train_all_models.py`**)**:
+  - Single disk-read streaming architecture (&lt; 8GB RAM peak) with `StreamingBillLoader` (64-bill chunks).
+  - In-memory shared SQLite reference dictionary cache (\~8MB).
   - Disk-backed `np.memmap` feature buffer accumulation.
   - Concurrent GPU worker thread for `LayoutLMTrainer` with gradient checkpointing.
   - Streaming batch indexer for persistent ChromaDB BioBERT vector store.

@@ -49,7 +49,7 @@ cd backend
 pytest --tb=short -q
 ```
 
-Expected: **41+ tests, 0 failures (100% pass rate)**.
+Expected: **46+ tests, 0 failures (100% pass rate)**.
 
 ### Single file
 
@@ -146,13 +146,13 @@ Unit tests for the deterministic audit pipeline:
 - Invalid ciphertext decryption returns `None` (no crash)
 - Merkle hash chain tamper detection
 
-### `test_deep_learning_and_ledger.py` — ML and Cryptographic Tests
+### `test_scaled_generators.py` — Scaled Generators & Decoupled Task Datasets
 
-- Deep MLP model training convergence
-- Hybrid stacking ensemble prediction output
-- Monte Carlo dropout uncertainty estimation
-- Merkle audit ledger append and verification
-- Chain tamper detection and evidence of tampering
+- Temporal Gazette rate queries with historical date filters (`app/db/temporal_gazette_store.py`)
+- Clinical Pathway scenario generation across STEMI, TKR, Lap Chole, and CABG (`ClinicalScenarioGenerator`)
+- Controlled single-variable counterfactual perturbations with delta ground-truth labels (`CounterfactualGenerator`)
+- Hard negative generation for complex, 100% compliant ICU and twin-stent cases (`HardNegativeGenerator`)
+- Decoupled multi-task dataset partitioning into Tasks A through F (`MultiTaskDatasetPartitioner`)
 
 ---
 

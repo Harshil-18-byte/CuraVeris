@@ -1,3 +1,19 @@
+---
+{
+  "id": "file_ff11vuls",
+  "filetype": "document",
+  "filename": "CONTRIBUTING",
+  "created_at": "2026-08-26T16:38:16.983Z",
+  "updated_at": "2026-08-26T16:38:19.113Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # Contributing to CuraVeris
 
 Thank you for your interest in contributing to CuraVeris — India's open-source hospital bill audit and patient protection platform. This document explains how to contribute code, documentation, statutory data, and bug reports.
