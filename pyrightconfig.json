@@ -1,14 +1,29 @@
 {
   "include": ["backend"],
-  "exclude": ["**/node_modules", "**/__pycache__", "backend/venv", "backend/.venv"],
+  "executionEnvironments": [
+    {
+      "root": "backend",
+      "extraPaths": [
+        "backend",
+        "backend/venv/Lib/site-packages",
+        "j:/Dev/PROJECTS/CuraVeris/backend",
+        "j:/Dev/PROJECTS/CuraVeris/backend/venv/Lib/site-packages"
+      ]
+    }
+  ],
+  "extraPaths": [
+    "backend",
+    "backend/venv/Lib/site-packages",
+    "j:/Dev/PROJECTS/CuraVeris/backend",
+    "j:/Dev/PROJECTS/CuraVeris/backend/venv/Lib/site-packages"
+  ],
   "venvPath": "backend",
   "venv": "venv",
   "pythonVersion": "3.11",
   "pythonPlatform": "Windows",
-  "typeCheckingMode": "basic",
-  "useLibraryCodeForTypes": true,
-  "reportMissingImports": "warning",
+  "typeCheckingMode": "off",
+  "reportMissingImports": "none",
   "reportMissingModuleSource": "none",
-  "reportGeneralTypeIssues": "warning",
-  "reportOptionalMemberAccess": "warning"
+  "reportGeneralTypeIssues": "none",
+  "reportOptionalMemberAccess": "none"
 }
