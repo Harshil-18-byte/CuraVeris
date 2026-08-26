@@ -1,19 +1,3 @@
----
-{
-  "id": "file_zndeqvlc",
-  "filetype": "document",
-  "filename": "README",
-  "created_at": "2026-08-26T17:25:13.964Z",
-  "updated_at": "2026-08-26T17:25:16.716Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris
 
 **An automated medical billing audit and patient financial advocacy engine for the Indian healthcare system — built with FastAPI, PostgreSQL, XGBoost, and a hybrid deep neural network ensemble.**
