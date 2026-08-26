@@ -3,7 +3,22 @@ import unicodedata
 from typing import List, Dict, Any, Tuple, Optional
 from pypdf import PdfReader
 from io import BytesIO
+from fastapi import HTTPException
 from app.core.logging import logger
+
+
+def enforce_file_size(file_bytes: bytes, max_mb: int = 20) -> None:
+    """
+    Reject files exceeding the configured size limit before any content processing.
+    Raises HTTP 413 if the file is too large.
+    """
+    max_bytes = max_mb * 1024 * 1024
+    if len(file_bytes) > max_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File size {len(file_bytes) // (1024 * 1024):.1f} MB exceeds the "
+                   f"{max_mb} MB maximum allowed size.",
+        )
 
 
 def validate_file_magic_bytes(file_bytes: bytes, filename: str) -> bool:
