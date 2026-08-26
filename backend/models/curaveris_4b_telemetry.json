@@ -1,0 +1,26 @@
+{
+  "model_name": "CuraVeris-4B-Audit-Transformer",
+  "architecture": "Dense Decoder Transformer with RoPE + SwiGLU + GQA (24 Query Heads, 4 KV Heads)",
+  "parameter_count": 4073942016,
+  "parameter_count_formatted": "4.07 Billion",
+  "layers": 36,
+  "hidden_size": 3072,
+  "intermediate_size": 8704,
+  "num_attention_heads": 24,
+  "num_kv_heads": 4,
+  "vocab_size": 64000,
+  "max_seq_len": 8192,
+  "multi_task_heads": [
+    "Causal LM (64k)",
+    "Anomaly Risk Classification (7-class)",
+    "Restitution Regression (\u20b9)"
+  ],
+  "training_objective": "L_total = L_LM + 0.5 * L_Focal + 0.1 * L_Huber",
+  "last_step": 10,
+  "last_loss": 1970.7318,
+  "lm_loss": 10.4865,
+  "focal_loss": 0.2126,
+  "huber_loss": 19601.3906,
+  "status": "Trained and Active",
+  "updated_at": "2026-08-26T17:21:35Z"
+}
