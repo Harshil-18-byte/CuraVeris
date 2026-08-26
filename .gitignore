@@ -89,6 +89,13 @@ backend/app/ml/weights/*.pth
 backend/app/ml/weights/*.onnx
 *.joblib
 *.pkl
+*.mmap
+*.bin
+*.pickle
+models/
+backend/data/chroma_db/
+backend/ml_training/tmp/
+backend/ml_training/data/processed/features/
 
 # =============================================================================
 # Logs
