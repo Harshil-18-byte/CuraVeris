@@ -1,0 +1,62 @@
+[
+  {
+    "record_id": "REF_1A504596EC05",
+    "document_id": "GOVT_NOTICE",
+    "source": "NPPA",
+    "domain": "cardiac_stents",
+    "item_name": "Drug Eluting Coronary Stent (DES)",
+    "normalized_name": "drug_eluting_coronary_stent_(des)",
+    "allowed_ceiling_inr": 38260.0,
+    "gst_rate_pct": 0.0,
+    "effective_from": "2023-01-01",
+    "effective_to": null,
+    "citation": "NPPA S.O. 1335(E)",
+    "sha256": "1a504596ec05610b59cbc1aeb53b8462cf0789c5f409e852951d7ba4b3dd221d",
+    "retrieved_at": "2026-08-26T17:41:22.008228"
+  },
+  {
+    "record_id": "REF_77EE9006C639",
+    "document_id": "GOVT_NOTICE",
+    "source": "NPPA",
+    "domain": "cardiac_stents",
+    "item_name": "Bare Metal Stent (BMS)",
+    "normalized_name": "bare_metal_stent_(bms)",
+    "allowed_ceiling_inr": 10509.0,
+    "gst_rate_pct": 0.0,
+    "effective_from": "2023-01-01",
+    "effective_to": null,
+    "citation": "NPPA S.O. 1335(E)",
+    "sha256": "77ee9006c6392464fe7da28f743ab4ae316a8c513d8d0b5c5f094b3c9d7aadac",
+    "retrieved_at": "2026-08-26T17:41:22.008228"
+  },
+  {
+    "record_id": "REF_FC9A4C49C002",
+    "document_id": "GOVT_NOTICE",
+    "source": "NPPA",
+    "domain": "orthopedic_implants",
+    "item_name": "Primary Knee System (Posterior Stabilized)",
+    "normalized_name": "primary_knee_system_(posterior_stabilized)",
+    "allowed_ceiling_inr": 71000.0,
+    "gst_rate_pct": 0.0,
+    "effective_from": "2023-01-01",
+    "effective_to": null,
+    "citation": "NPPA S.O. 2668(E)",
+    "sha256": "fc9a4c49c00282b5d7892530ea0ca1461690ababacc1caa4f2957b6bd840efbc",
+    "retrieved_at": "2026-08-26T17:41:22.008228"
+  },
+  {
+    "record_id": "REF_D5E204D80AAF",
+    "document_id": "GOVT_NOTICE",
+    "source": "NPPA",
+    "domain": "essential_medicines",
+    "item_name": "Inj. Meropenem 1g IV",
+    "normalized_name": "inj._meropenem_1g_iv",
+    "allowed_ceiling_inr": 950.0,
+    "gst_rate_pct": 0.0,
+    "effective_from": "2023-01-01",
+    "effective_to": null,
+    "citation": "DPCO 2013 / NLEM 2022",
+    "sha256": "d5e204d80aaf9d8c311752cb8b084c1393cdaa74c401c80aadd103e659f6cb69",
+    "retrieved_at": "2026-08-26T17:41:22.008228"
+  }
+]
