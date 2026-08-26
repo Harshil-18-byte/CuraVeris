@@ -14,6 +14,7 @@
   }
 }
 ---
+
 # CuraVeris
 
 Automated Medical Billing Audit and Patient Financial Advocacy Engine.
@@ -39,6 +40,7 @@ graph TD
     P[Patient] -->|Payment Receipt| C
     C -->|Audit Breakdown & Risk Score| P
     P -->|Pays Residual Balance| H
+
 ```
 
 ![Claim Settlement Flow](docs/images/claim_settlement_flow.png)
@@ -95,22 +97,26 @@ flowchart TD
     C3 --> D2
     C3 --> D3
     C3 --> D4
+
 ```
 
 ![Data Pipeline Architecture](docs/images/data_pipeline_architecture.png)
 
 ### 2.1 Ingestion and Optical Character Recognition
+
 - Accepts PDF, PNG, and JPEG formats.
 - Pre-ingestion validation executes file signature inspection (magic bytes) to prevent polyglot payload execution (`%PDF-`, `\x89PNG`, `\xFF\xD8\xFF`).
 - Text extraction standardizes multi-column hospital line items: description, batch, quantity, billed unit rate, and total line amount.
 
 ### 2.2 Payment Gateway Reconciliation
+
 - Connects directly to payment APIs (e.g., Razorpay orders and payments).
 - Calculates the Patient Payment Gap:
   $$\text{Payment Gap} = \text{Gross Hospital Bill} - \text{TPA Approved Amount}$$
 - Identifies credit/debit EMI arrangements as quantitative distress markers indicating household liquidity exhaustion.
 
 ### 2.3 Reference Tariff Cross-Referencing
+
 - Embeds standardized government benchmark datasets into local indexing structures:
   - Central Government Health Scheme (CGHS) 2024 revised tariff master (1,900+ procedures across NABH and non-NABH tiers).
   - National Pharmaceutical Pricing Authority (NPPA) Gazette orders for ceiling prices on coronary stents and orthopedic knee implants.
@@ -134,11 +140,13 @@ graph TD
     MHA[Mental Healthcare Act 2017<br/>Sec 21 4 Parity Mandate] --> PR
     BNS[Bharatiya Nyaya Sanhita 2023<br/>Sec 127 Wrongful Confinement] --> PR
     NHA[Ayushman Bharat PM-JAY<br/>HBP 2.2 Zero Cash Policy] --> PR
+
 ```
 
 ![Statutory Patient Rights](docs/images/statutory_patient_rights.png)
 
 ### 3.1 Primary Statutory Citations Implemented in Code
+
 - **NPPA Implants & Stents**: S.O. 1335(E) and S.O. 2668(E). Drug-Eluting Stents (DES) capped at ₹38,260 + GST; bare-metal stents capped at ₹10,509 + GST; primary knee implants capped at ₹63,800 + GST.
 - **DPCO 2013 & Essential Commodities Act 1955**: Paragraph 24 prohibits charging more than the government-mandated Maximum Retail Price (MRP) for scheduled formulations. Violations are punishable under Section 7 of the ECA 1955.
 - **GST Exemption on Healthcare**: Ministry of Finance Notification No. 12/2017-Central Tax (Rate), Entry 74 explicitly exempts healthcare services by clinical establishments and medical practitioners from GST.
@@ -158,6 +166,7 @@ flowchart LR
     S2 --> S3[3. Discharge<br/>Audit Breakdown & Payment Reconciliation]
     S3 --> S4[4. Post-Discharge<br/>TPA Shortfall Claim & FRM Recovery]
     S4 --> S5[5. Legal Action<br/>Ombudsman & Anti-Detention Requisitions]
+
 ```
 
 ![Patient Journey Stages](docs/images/patient_journey_stages.png)
@@ -220,11 +229,13 @@ graph LR
     XGB --> V
     V --> MC
     MC --> MultiLabels
+
 ```
 
 ![Model Training Dashboard](docs/images/model_training_dashboard.png)
 
 ### 5.1 Architecture Details
+
 - **Neural Network Architecture**: `backend/app/ml/deep_risk_network.py`
   $$\text{Input}(15) \longrightarrow \text{Dense}(128, \text{ReLU}) \longrightarrow \text{Dense}(64, \text{ReLU}) \longrightarrow \text{Dense}(32, \text{ReLU}) \longrightarrow \text{Output}(7, \text{Sigmoid})$$
   - Optimizer: Adam ($\eta = 0.003$ with adaptive step decay).
@@ -239,12 +250,14 @@ graph LR
   - **Hybrid Ensemble Macro F1**: 0.5836
 
 ### 5.2 Epistemic Uncertainty Estimation
+
 Inference incorporates $K = 10$ stochastic perturbation passes to compute epistemic standard deviation ($\sigma$) across all predicted probabilities:
 - `HIGH_CONFIDENCE_VIOLATION`: $\mu \ge 0.55, \sigma \le 0.04$
 - `AMBIGUOUS_BORDERLINE_REVIEW`: $\mu \ge 0.40, \sigma > 0.06$ (dispatched for human clinical auditor verification)
 - `CONFIDENT_COMPLIANT`: $\mu < 0.35, \sigma \le 0.04$
 
 ### 5.3 Deterministic Production Seed Logging
+
 To ensure reproducibility in enterprise deployments, the training script dynamically logs cryptographically generated run seeds (`secrets.randbelow(1_000_000)`) directly to the model metadata artifact and `training_history.json`.
 
 ---
@@ -287,6 +300,7 @@ graph TD
     B_FIN --> B_HASH
     B_MR --> B_HASH
     B_HASH --> B_SIG
+
 ```
 
 - **Leaf Hashes**: $\text{Leaf}_i = \text{SHA256}(\text{raw\_text} \mid \text{charged\_rate} \mid \text{quantity} \mid \text{overcharge\_amount})$
@@ -319,53 +333,92 @@ graph TD
 CuraVeris/
 ├── docs/
 │   ├── ARCHITECTURE.md                  # Comprehensive architectural specification
+
 │   ├── API_REFERENCE.md                 # REST API schemas, payloads, and examples
+
 │   ├── STATUTORY_FRAMEWORK.md           # Legal citations, gazette notifications, and case law
+
 │   └── images/                          # High-resolution architectural flow diagrams
+
 ├── backend/
 │   ├── app/
 │   │   ├── api/
 │   │   │   ├── auth.py                  # JWT authentication and DPDP anonymization routes
+
 │   │   │   ├── bills.py                 # Core bill upload, audit, heatmap, and ledger endpoints
+
 │   │   │   ├── dev.py                   # Interactive architecture node inspector and dataset downloads
+
 │   │   │   ├── payments.py              # Razorpay webhook and payment verification routes
+
 │   │   │   └── reports.py               # Dispute letters and emergency detention notice generator
+
 │   │   ├── core/
 │   │   │   ├── config.py                # Environment configuration and validation
+
 │   │   │   ├── database.py              # PostgreSQL async SQLAlchemy session engine
+
 │   │   │   ├── logging.py               # Structured log formatting
+
 │   │   │   ├── merkle_audit_ledger.py   # Cryptographic Merkle tree audit ledger
+
 │   │   │   └── security.py              # AES-256 PII encryption, JWT, and password hashing
+
 │   │   ├── db/
 │   │   │   ├── disease_registry.py      # ICD-10 and PM-JAY package definitions
+
 │   │   │   ├── hospital_registry.py     # Registry of hospitals and NABH accreditation tiers
+
 │   │   │   ├── models.py                # SQLAlchemy ORM models (Bill, BillItem, User, AuditLog)
+
 │   │   │   └── reference_data.py        # CGHS, NPPA, DPCO, and IRDAI lookup queries
+
 │   │   ├── engine/
 │   │   │   ├── admission_monitor.py     # Inpatient burn rate and bed-blocking audit
+
 │   │   │   ├── extractor.py             # File signature validation and OCR pipeline
+
 │   │   │   ├── financial_toxicity.py    # FRM financial toxicity calculations
+
 │   │   │   ├── icd10_coding_engine.py   # Automated ICD-10 & SNOMED-CT clinical coding
+
 │   │   │   ├── risk_engine.py           # Regulatory audit rules and composite scoring
+
 │   │   │   ├── semantic_search.py       # In-memory TF-IDF and BM25 search over procedures
+
 │   │   │   ├── shadow_bill_detector.py  # GST anomaly and duplicate invoice detector
+
 │   │   │   └── shap_explainer.py        # Additive feature attribution waterfall
+
 │   │   ├── ml/
 │   │   │   ├── deep_risk_network.py     # Multi-layer perceptron neural network and ensemble
+
 │   │   │   ├── fine_tuning_generator.py # 500-sample JSONL training dataset generator
+
 │   │   │   ├── train_risk_model.py      # Model training script with dynamic seed logging
+
 │   │   │   └── weights/                 # Serialized model artifacts (.joblib)
+
 │   │   ├── services/
 │   │   │   └── dispute_service.py       # Legal notice generator citing High Court case law
+
 │   │   └── main.py                      # FastAPI application entrypoint and middleware
+
 │   ├── reference_data/
 │   │   └── medical_rates.db             # Pre-seeded SQLite database of statutory rates
+
 │   ├── tests/                           # 34 automated unit and integration tests
+
 │   ├── pytest.ini                       # Test configuration
+
 │   └── requirements.txt                 # Backend Python package dependencies
+
 ├── .mcp.json                            # Model Context Protocol configuration
+
 ├── LICENSE                              # MIT License
+
 └── README.md                            # Primary documentation entrypoint
+
 ```
 
 ---
@@ -373,30 +426,39 @@ CuraVeris/
 ## 9. Installation and Local Setup
 
 ### 9.1 Prerequisites
+
 - Python 3.11 or higher
 - PostgreSQL 14+ (or default fallback to local SQLite for rapid prototyping)
 - Git
 
 ### 9.2 Clone Repository and Configure Virtual Environment
+
 ```bash
 git clone https://github.com/Harshil-18-byte/CuraVeris.git
 cd CuraVeris/backend
 
 # Create virtual environment
+
 python -m venv venv
 
 # Activate virtual environment (Windows PowerShell)
+
 .\venv\Scripts\Activate.ps1
 
 # Activate virtual environment (Linux / macOS)
+
 source venv/bin/activate
 
 # Install required dependencies
+
 pip install -r requirements.txt
+
 ```
 
 ### 9.3 Configure Environment Variables
+
 Create a `.env` file inside `backend/`:
+
 ```env
 PROJECT_NAME="CuraVeris"
 SECRET_KEY="curaveris_production_grade_secret_key_change_in_prod"
@@ -404,29 +466,41 @@ ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 
 # Database Connection (PostgreSQL)
+
 DATABASE_URL="postgresql+asyncpg://postgres:postgres@localhost:5432/curaveris_db"
 
 # Optional External API Credentials
+
 RAZORPAY_KEY_ID="rzp_test_placeholder"
 RAZORPAY_KEY_SECRET="rzp_secret_placeholder"
+
 ```
 
 ### 9.4 Initialize Reference Database and Seed Rates
+
 CuraVeris automatically initializes and indexes statutory rate tables upon application startup:
+
 ```bash
 python -c "from app.db.reference_data import initialize_reference_database; initialize_reference_database()"
+
 ```
 
 ### 9.5 Retrain Machine Learning Models (Optional)
+
 To train the neural network and XGBoost ensemble from scratch with a fresh production seed:
+
 ```bash
 python app/ml/train_risk_model.py
+
 ```
 
 ### 9.6 Run the Application Server
+
 ```bash
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+
 ```
+
 The interactive OpenAPI documentation is accessible at `http://127.0.0.1:8000/docs`.
 
 ---
@@ -436,11 +510,14 @@ The interactive OpenAPI documentation is accessible at `http://127.0.0.1:8000/do
 The backend includes 34 unit and integration tests covering security, reference database queries, machine learning inference, Merkle ledger hashing, and API routes.
 
 Execute the test suite with verbose output:
+
 ```bash
 pytest -v
+
 ```
 
 Expected test run summary:
+
 ```text
 tests/test_advanced_features.py::test_financial_toxicity_scoring PASSED
 tests/test_advanced_features.py::test_interim_admission_burn_rate PASSED
@@ -478,6 +555,7 @@ tests/test_security.py::test_pii_encryption PASSED
 tests/test_security.py::test_razorpay_hmac_verification PASSED
 
 ======================= 34 passed in 9.05s =======================
+
 ```
 
 ---
