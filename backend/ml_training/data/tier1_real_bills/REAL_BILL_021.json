@@ -17,7 +17,7 @@
     "icd10_code": "H25.9",
     "procedure": "phacoemulsification_with_iol",
     "ward_type": "daycare",
-    "room_rate_per_day": 3000
+    "room_rate_per_day": 3000.0
   },
   "line_items": [
     {
@@ -37,7 +37,7 @@
       "correct_gst_rate": 0,
       "risk_flags": [],
       "overcharge_amount": 0.0,
-      "plain_english": "2 days of daycare stay billed at \u20b93000/day"
+      "plain_english": "2 days of daycare stay billed at \u20b93000.0/day"
     },
     {
       "item_id": "LI_002",
@@ -122,7 +122,7 @@
       "plain_english": "2 units of Surgical Gloves Sterile Pair"
     },
     {
-      "item_id": "LI_006",
+      "item_id": "LI_007",
       "raw_text": "IV Cannula 18G/20G (Qty: 3)",
       "normalized_name": "iv_cannula_with_port",
       "category": "consumable",

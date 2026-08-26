@@ -17,7 +17,7 @@
     "icd10_code": "K35.89",
     "procedure": "laparoscopic_appendectomy",
     "ward_type": "general",
-    "room_rate_per_day": 2500
+    "room_rate_per_day": 2500.0
   },
   "line_items": [
     {
@@ -37,7 +37,7 @@
       "correct_gst_rate": 0,
       "risk_flags": [],
       "overcharge_amount": 0.0,
-      "plain_english": "4 days of general stay billed at \u20b92500/day"
+      "plain_english": "4 days of general stay billed at \u20b92500.0/day"
     },
     {
       "item_id": "LI_002",
@@ -166,7 +166,7 @@
       "plain_english": "2 units of Surgical Gloves Sterile Pair"
     },
     {
-      "item_id": "LI_008",
+      "item_id": "LI_009",
       "raw_text": "IV Cannula 18G/20G (Qty: 2)",
       "normalized_name": "iv_cannula_with_port",
       "category": "consumable",
@@ -189,7 +189,7 @@
   ],
   "bill_totals": {
     "total_billed": 67956.1,
-    "total_overcharge_detected": 29399.4,
+    "total_overcharge_detected": 29446.2,
     "cgst": 335.17,
     "sgst": 335.17,
     "cgst_correct": 311.77,

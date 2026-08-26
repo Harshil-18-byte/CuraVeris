@@ -17,7 +17,7 @@
     "icd10_code": "M17.0",
     "procedure": "total_knee_replacement_unilateral",
     "ward_type": "private_deluxe",
-    "room_rate_per_day": 6500
+    "room_rate_per_day": 6500.0
   },
   "line_items": [
     {
@@ -37,7 +37,7 @@
       "correct_gst_rate": 0,
       "risk_flags": [],
       "overcharge_amount": 0.0,
-      "plain_english": "5 days of private deluxe stay billed at \u20b96500/day"
+      "plain_english": "5 days of private deluxe stay billed at \u20b96500.0/day"
     },
     {
       "item_id": "LI_002",
@@ -140,7 +140,7 @@
       "plain_english": "4 units of Surgical Gloves Sterile Pair"
     },
     {
-      "item_id": "LI_007",
+      "item_id": "LI_008",
       "raw_text": "IV Cannula 18G/20G (Qty: 4)",
       "normalized_name": "iv_cannula_with_port",
       "category": "consumable",
