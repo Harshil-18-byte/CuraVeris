@@ -4,6 +4,10 @@ import time
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 from app.core.logging import logger
+from app.core.credentials import credentials
+
+# ABDM gateway base URL from centralized credentials
+ABDM_GATEWAY_URL = credentials.abdm.gateway_url
 
 # Active ABDM sandbox transaction cache
 _SANDBOX_TXNS: Dict[str, Dict[str, Any]] = {}
