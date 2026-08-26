@@ -144,3 +144,128 @@ class HardNegativeSynthesizer:
             generation_seed=42,
             validation_status="VALIDATED"
         )
+
+    def synthesize_revision_tkr(self, idx: int) -> BillRecord:
+        """Complex revision total knee arthroplasty with constrained implant at statutory cap."""
+        items = [
+            BillItem(
+                item_id="LI_001",
+                raw_text="Revision Total Knee Arthroplasty (Major Complex)",
+                category="procedure",
+                quantity=1.0,
+                unit_price=125000.0,
+                total_amount=125000.0,
+                labels=AnomalyLabels()
+            ),
+            BillItem(
+                item_id="LI_002",
+                raw_text="Revision Knee System (Constrained Condylar System at NPPA Cap)",
+                category="implant",
+                quantity=1.0,
+                unit_price=113959.0,
+                total_amount=113959.0,
+                labels=AnomalyLabels()
+            ),
+            BillItem(
+                item_id="LI_003",
+                raw_text="Tibial & Femoral Modular Augment Wedge Blocks",
+                category="implant",
+                quantity=2.0,
+                unit_price=12000.0,
+                total_amount=24000.0,
+                labels=AnomalyLabels()
+            ),
+            BillItem(
+                item_id="LI_004",
+                raw_text="High-Viscosity Vancomycin Bone Cement (40g x2)",
+                category="pharmacy",
+                quantity=2.0,
+                unit_price=4200.0,
+                total_amount=8400.0,
+                labels=AnomalyLabels()
+            )
+        ]
+        total = round(sum(i.total_amount for i in items), 2)
+        return BillRecord(
+            bill_id=f"HARD_NEG_REVISION_{idx:05d}",
+            family_id=f"FAM_HN_{idx:05d}",
+            hospital_name="Kokilaben Dhirubhai Ambani Hospital",
+            city="Mumbai",
+            state="Maharashtra",
+            tier=1,
+            is_nabh=True,
+            admission_date="2026-02-12",
+            discharge_date="2026-02-18",
+            days_admitted=6,
+            diagnosis="Aseptic Loosening of Primary Knee Prosthesis for Revision TKA",
+            icd10_code="T84.040A",
+            total_billed=total,
+            line_items=items,
+            source_type="hard_negative",
+            scenario_id="HARD_NEG_REVISION_TKR",
+            generation_seed=42,
+            validation_status="VALIDATED"
+        )
+
+    def synthesize_onco_immunotherapy(self, idx: int) -> BillRecord:
+        """High-cost oncology biologic therapy 100% compliant with statutory pricing."""
+        items = [
+            BillItem(
+                item_id="LI_001",
+                raw_text="Specialized Oncology Daycare Bed with Chemo Nursing",
+                category="room_nursing",
+                quantity=1.0,
+                unit_price=3500.0,
+                total_amount=3500.0,
+                labels=AnomalyLabels()
+            ),
+            BillItem(
+                item_id="LI_002",
+                raw_text="Inj. Pembrolizumab 100mg IV Infusion (Single Dose)",
+                category="pharmacy",
+                quantity=1.0,
+                unit_price=195000.0,
+                total_amount=195000.0,
+                labels=AnomalyLabels()
+            ),
+            BillItem(
+                item_id="LI_003",
+                raw_text="Chemo Admin Port Access Kit & 0.2 Micron In-Line Filter",
+                category="consumable",
+                quantity=1.0,
+                unit_price=1250.0,
+                total_amount=1250.0,
+                labels=AnomalyLabels()
+            ),
+            BillItem(
+                item_id="LI_004",
+                raw_text="Medical Oncologist Super-Specialist Consultation",
+                category="consultation",
+                quantity=1.0,
+                unit_price=2500.0,
+                total_amount=2500.0,
+                labels=AnomalyLabels()
+            )
+        ]
+        total = round(sum(i.total_amount for i in items), 2)
+        return BillRecord(
+            bill_id=f"HARD_NEG_ONCO_{idx:05d}",
+            family_id=f"FAM_HN_{idx:05d}",
+            hospital_name="Tata Memorial Centre / ACTREC",
+            city="Navi Mumbai",
+            state="Maharashtra",
+            tier=1,
+            is_nabh=True,
+            admission_date="2026-05-14",
+            discharge_date="2026-05-15",
+            days_admitted=1,
+            diagnosis="Metastatic Non-Small Cell Lung Carcinoma (PD-L1 Positive)",
+            icd10_code="C34.90",
+            total_billed=total,
+            line_items=items,
+            source_type="hard_negative",
+            scenario_id="HARD_NEG_ONCO_IMMUNO",
+            generation_seed=42,
+            validation_status="VALIDATED"
+        )
+
