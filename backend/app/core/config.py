@@ -3,12 +3,14 @@ from typing import List
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
+from app.core.credentials import credentials
 
 # Sentinel values that signal the key was never set in the environment.
 # Any value equal to these will trigger a startup failure in non-dev envs.
 _UNSET_SECRET = ""
 _DEV_SECRET_KEY = "curaveris-dev-only-secret-key-replace-before-any-deployment-2026"
 _DEV_ENCRYPTION_KEY = "Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA=="  # 32-byte base64
+
 
 
 class Settings(BaseSettings):
