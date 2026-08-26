@@ -1,3 +1,4 @@
+import uuid
 import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
@@ -73,11 +74,12 @@ def test_shap_standalone_waterfall_engine():
 @pytest.mark.asyncio
 async def test_dpdp_user_anonymization_api():
     """Verify Digital Personal Data Protection Act 2023 Section 12 Right to Erasure endpoint."""
+    test_email = f"dpdp_{uuid.uuid4().hex[:8]}@example.com"
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # 1. Register a test patient
         reg_payload = {
-            "email": "dpdp_test_patient@example.com",
+            "email": test_email,
             "password": "Password123!",
             "full_name": "Ramesh Kumar Sharma",
             "phone": "+91-9988776655",
@@ -89,7 +91,7 @@ async def test_dpdp_user_anonymization_api():
         # Login to get fresh token
         login_res = await client.post(
             "/api/v1/auth/login",
-            json={"email": "dpdp_test_patient@example.com", "password": "Password123!"}
+            json={"email": test_email, "password": "Password123!"}
         )
         token = login_res.json()["access_token"]
         headers = {"Authorization": f"Bearer {token}"}
