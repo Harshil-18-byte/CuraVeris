@@ -32,6 +32,7 @@ def audit_room_charge(
     return {
         "rule": "ROOM_TARIFF_BENCHMARK_CGHS_AIIMS",
         "charged_rate": charged_rate,
+        "allowed_rate": max_allowable,
         "benchmark_rate": benchmark_rate,
         "max_allowable_rate": max_allowable,
         "days": days,
