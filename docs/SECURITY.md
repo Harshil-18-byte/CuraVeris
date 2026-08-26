@@ -1,19 +1,3 @@
----
-{
-  "id": "file_uvl3xdv1",
-  "filetype": "document",
-  "filename": "SECURITY",
-  "created_at": "2026-08-26T06:43:27.575Z",
-  "updated_at": "2026-08-26T06:43:38.176Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Security Controls
 
 This document specifies the security architecture, threat model, encryption controls, access controls, and compliance posture of the CuraVeris platform.

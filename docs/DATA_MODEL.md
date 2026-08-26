@@ -1,19 +1,3 @@
----
-{
-  "id": "file_ayw5q96j",
-  "filetype": "document",
-  "filename": "DATA_MODEL",
-  "created_at": "2026-08-26T06:43:39.769Z",
-  "updated_at": "2026-08-26T06:43:41.528Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Data Model
 
 This document specifies the persistence architecture, entity definitions, field-level descriptions, and reference data structure of the CuraVeris platform.
