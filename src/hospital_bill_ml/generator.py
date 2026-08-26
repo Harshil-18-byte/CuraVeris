@@ -94,6 +94,104 @@ SCENARIO_BLUEPRINTS = [
             ("Laparoscopic Trocar Port Seal", 650.0, 1),
             ("Sterile Surgical Gloves 7.5", 65.0, 3),
         ]
+    },
+    {
+        "scenario_id": "SCEN_ONCO_BREAST_CHEMO",
+        "diagnosis": "Invasive Ductal Carcinoma of Breast - Adjuvant Chemotherapy Cycle",
+        "icd10_code": "C50.91",
+        "alos_range": (1, 2),
+        "icu_range": (0, 0),
+        "primary_proc": ("Chemotherapy Administration Day Care Infusion", 4500.0),
+        "diagnostics": [
+            ("Complete Blood Count with Absolute Neutrophil Count", 220.0),
+            ("Serum Creatinine & Electrolytes", 180.0),
+            ("HER2/neu Immunohistochemistry Review", 2500.0)
+        ],
+        "implants": [],
+        "pharmacy": [
+            ("Inj. Trastuzumab 440mg Infusion Vial", 54000.0, 1),
+            ("Inj. Paclitaxel 260mg IV", 4800.0, 1),
+            ("Inj. Dexamethasone 8mg IV", 15.0, 2),
+            ("Inj. Ondansetron 8mg IV", 18.50, 2)
+        ],
+        "consumables": [
+            ("Chemo Spill Protection Drape & Kit", 850.0, 1),
+            ("Infusion Set with 0.22 Micron Filter", 420.0, 1)
+        ]
+    },
+    {
+        "scenario_id": "SCEN_NEPHRO_DIALYSIS",
+        "diagnosis": "End Stage Renal Disease on Maintenance Hemodialysis",
+        "icd10_code": "N18.6",
+        "alos_range": (2, 4),
+        "icu_range": (0, 1),
+        "primary_proc": ("Hemodialysis with High-Flux Dialyzer & Bicarbonate", 2200.0),
+        "diagnostics": [
+            ("Serum Potassium & Urea Nitrogen", 240.0),
+            ("Hemoglobin / Hematocrit Test", 110.0),
+            ("Arterial Blood Gas Analysis", 300.0)
+        ],
+        "implants": [],
+        "pharmacy": [
+            ("Inj. Recombinant Human Erythropoietin 4000 IU", 850.0, 2),
+            ("Inj. Iron Sucrose 100mg IV Infusion", 275.0, 2),
+            ("Inj. Heparin Sodium 5000 IU/ml", 120.0, 1)
+        ],
+        "consumables": [
+            ("High-Flux Polysulfone Dialyzer 1.8m2", 1450.0, 1),
+            ("Arterio-Venous Blood Tubing Set", 480.0, 1),
+            ("AV Fistula Needles 16G (Pair)", 120.0, 1)
+        ]
+    },
+    {
+        "scenario_id": "SCEN_NEURO_STROKE_THROMB",
+        "diagnosis": "Acute Ischemic Stroke with Middle Cerebral Artery Occlusion",
+        "icd10_code": "I63.511",
+        "alos_range": (5, 8),
+        "icu_range": (2, 4),
+        "primary_proc": ("Mechanical Thrombectomy for Large Vessel Occlusion", 95000.0),
+        "diagnostics": [
+            ("CT Brain Angiography (CTA Head & Neck)", 6500.0),
+            ("CT Perfusion Protocol", 5000.0),
+            ("Coagulation Screen & PT/INR", 350.0)
+        ],
+        "implants": [
+            ("Stent Retriever Revascularization Device", 78000.0),
+            ("Distal Access Aspiration Catheter", 32000.0)
+        ],
+        "pharmacy": [
+            ("Inj. Tenecteplase 20mg IV Bolus", 28000.0, 1),
+            ("Inj. Mannitol 20% 100ml Infusion", 140.0, 4),
+            ("Tab. Aspirin 75mg Gastro-Resistant", 4.50, 7)
+        ],
+        "consumables": [
+            ("Neurovascular Microcatheter 0.021", 16500.0, 1),
+            ("Sterile Neuro Angio Pack", 1800.0, 1)
+        ]
+    },
+    {
+        "scenario_id": "SCEN_OBGYN_LSCS",
+        "diagnosis": "Term Pregnancy with Cephalopelvic Disproportion for Emergency LSCS",
+        "icd10_code": "O33.9",
+        "alos_range": (3, 5),
+        "icu_range": (0, 0),
+        "primary_proc": ("Lower Segment Cesarean Section (LSCS Delivery)", 35000.0),
+        "diagnostics": [
+            ("Ultrasound Fetal Biometry & Doppler", 1200.0),
+            ("Maternal Blood Group & Rh Typing", 150.0),
+            ("Neonatal Bilirubin & Blood Sugar", 220.0)
+        ],
+        "implants": [],
+        "pharmacy": [
+            ("Inj. Oxytocin 10 IU/ml Ampoule", 22.0, 4),
+            ("Inj. Cefotaxime 1g IV", 45.0, 6),
+            ("Inj. Tranexamic Acid 500mg IV", 78.0, 2)
+        ],
+        "consumables": [
+            ("Sterile Cesarean Drape with Fluid Pouch", 950.0, 1),
+            ("Umbilical Cord Clamp & Mucus Extractor", 110.0, 1),
+            ("Absorbable Polyglactin 910 Suture (Vicryl 1-0)", 320.0, 3)
+        ]
     }
 ]
 
