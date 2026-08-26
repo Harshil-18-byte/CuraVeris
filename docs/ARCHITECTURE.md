@@ -289,6 +289,37 @@ For multi-model training under tight memory limits (< 8GB RAM peak), the paralle
 
 ---
 
+### 4.5 CuraVeris-4B & CuraVeris-1B Custom Transformer Architecture
+
+For domain-native clinical and statutory reasoning, CuraVeris implements custom dense Transformer architectures built from scratch:
+
+```mermaid
+graph TD
+  TokenInput[Hospital Bill Token Stream] --> Embed[BPE / WordPiece Embedding 64k Vocab]
+  Embed --> RoPE[Rotary Position Embeddings: dim 128, max_seq 8192, theta 10000]
+  RoPE --> Block1[Transformer Block 1..36]
+  
+  subgraph Block_Internals [Transformer Layer]
+    PreNorm1[RMSNorm eps=1e-6] --> GQA[Grouped Query Attention: 24 Query Heads, 4 KV Heads]
+    GQA --> Res1[Residual Addition]
+    Res1 --> PreNorm2[RMSNorm eps=1e-6]
+    PreNorm2 --> SwiGLU[SwiGLU Feed-Forward: 3072 to 8704 to 3072]
+    SwiGLU --> Res2[Residual Addition]
+  end
+
+  Block1 --> FinalNorm[Final RMSNorm 3072]
+  FinalNorm --> LMHead[Causal LM Head: 3072 to 64000]
+  FinalNorm --> AnomalyHead[7-Class Anomaly Classifier Head: 3072 to 7]
+  FinalNorm --> RestitutionHead[Continuous Restitution Huber Head: 3072 to 1]
+```
+
+- **CuraVeris-4B Specs**: 36 Layers, $d_{\text{model}}=3072$, $d_{\text{ff}}=8704$, 24 Query Heads, 4 KV Heads (6x GQA Compression), 64,000 Vocab, ~4.07B Parameters.
+- **CuraVeris-1B Specs**: 24 Layers, $d_{\text{model}}=1792$, $d_{\text{ff}}=4864$, 14 Query Heads, 2 KV Heads (7x GQA Compression), 64,000 Vocab, ~1.05B Parameters.
+- **Multi-Task Objective**:
+  $$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{LM}} + 0.5 \cdot \mathcal{L}_{\text{Focal}} + 0.1 \cdot \mathcal{L}_{\text{Huber}}$$
+
+---
+
 ## 5. Cryptographic Merkle Audit Ledger Specification
 
 The forensic audit ledger guarantees evidence integrity for legal admissibility under Section 65B of the Indian Evidence Act and Bharatiya Sakshya Adhiniyam Section 61.
