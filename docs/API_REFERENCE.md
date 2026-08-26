@@ -1,20 +1,3 @@
----
-{
-  "id": "file_wn13jweu",
-  "filetype": "document",
-  "filename": "API_REFERENCE",
-  "created_at": "2026-08-26T06:23:16.856Z",
-  "updated_at": "2026-08-26T06:23:25.519Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
-
 # CuraVeris REST API Reference
 
 All requests must be made to:
