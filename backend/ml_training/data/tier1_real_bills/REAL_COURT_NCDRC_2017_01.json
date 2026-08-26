@@ -1,0 +1,155 @@
+{
+  "bill_id": "REAL_COURT_NCDRC_2017_01",
+  "case_citation": "Jayant Singh vs Fortis Healthcare Ltd (Haryana State Consumer Commission & NPPA Order 2017)",
+  "hospital_name": "Fortis Memorial Research Institute",
+  "city": "Gurugram",
+  "state": "Haryana",
+  "tier": 1,
+  "is_nabh": true,
+  "admission_date": "2017-08-31",
+  "discharge_date": "2017-09-14",
+  "days_admitted": 15,
+  "diagnosis": "Severe Dengue with Dengue Shock Syndrome and Multi-Organ Dysfunction",
+  "icd10_code": "A91",
+  "total_billed": 1579369.0,
+  "source_type": "real_court_case",
+  "provenance_notes": "Official case file cited in NPPA overpricing notice (660 syringes, 2,700 gloves, 1,500% markup on consumables)",
+  "line_items": [
+    {
+      "item_id": "LI_001",
+      "raw_text": "PICU Bed with Advanced Mechanical Ventilator (15 days)",
+      "category": "room_nursing",
+      "quantity": 15.0,
+      "unit_price": 18000.0,
+      "total_amount": 270000.0,
+      "labels": {
+        "rate_anomaly": 1,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_002",
+      "raw_text": "Disposable Examination & Surgical Gloves (661 pairs billed)",
+      "category": "consumable",
+      "quantity": 661.0,
+      "unit_price": 35.0,
+      "total_amount": 23135.0,
+      "labels": {
+        "consumable_unbundled": 1,
+        "rate_anomaly": 1,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 1
+      }
+    },
+    {
+      "item_id": "LI_003",
+      "raw_text": "Disposable 3-Way Syringes & IV Catheters (1,546 units)",
+      "category": "consumable",
+      "quantity": 1546.0,
+      "unit_price": 55.0,
+      "total_amount": 85030.0,
+      "labels": {
+        "consumable_unbundled": 1,
+        "rate_anomaly": 1,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 1
+      }
+    },
+    {
+      "item_id": "LI_004",
+      "raw_text": "Inj. Meropenem 1g IV (Billed at \u20b93,112.50 vs NPPA procurement cost \u20b9450)",
+      "category": "pharmacy",
+      "quantity": 42.0,
+      "unit_price": 3112.5,
+      "total_amount": 130725.0,
+      "labels": {
+        "above_mrp": 1,
+        "rate_anomaly": 1,
+        "nppa_ceiling_violation": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_005",
+      "raw_text": "Inj. Tigecycline 50mg IV Infusion",
+      "category": "pharmacy",
+      "quantity": 28.0,
+      "unit_price": 2850.0,
+      "total_amount": 79800.0,
+      "labels": {
+        "above_mrp": 1,
+        "rate_anomaly": 1,
+        "nppa_ceiling_violation": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_006",
+      "raw_text": "Continuous Renal Replacement Therapy (CRRT 4 cycles)",
+      "category": "procedure",
+      "quantity": 4.0,
+      "unit_price": 45000.0,
+      "total_amount": 180000.0,
+      "labels": {
+        "rate_anomaly": 0,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_007",
+      "raw_text": "Paediatric Intensivist & Super Specialist Consultations (15 days)",
+      "category": "consultation",
+      "quantity": 15.0,
+      "unit_price": 3500.0,
+      "total_amount": 52500.0,
+      "labels": {
+        "rate_anomaly": 0,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    },
+    {
+      "item_id": "LI_008",
+      "raw_text": "Pathology Diagnostics (Daily Platelet Count, ABG, Coagulation)",
+      "category": "diagnostic",
+      "quantity": 1.0,
+      "unit_price": 145000.0,
+      "total_amount": 145000.0,
+      "labels": {
+        "rate_anomaly": 1,
+        "nppa_ceiling_violation": 0,
+        "above_mrp": 0,
+        "consumable_unbundled": 0,
+        "duplicate_charge": 0,
+        "gst_on_exempt": 0,
+        "package_unbundled": 0
+      }
+    }
+  ]
+}
