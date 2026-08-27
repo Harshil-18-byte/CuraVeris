@@ -22,31 +22,31 @@ CuraVeris is structured as an asynchronous layered service architecture with str
 
 ```mermaid
 graph TD
-  Client[Client / API Consumer] --> Gateway[Uvicorn ASGI Server]
+  Client["Client / API Consumer"] --> Gateway["Uvicorn ASGI Server"]
 
-  subgraph API_Layer [FastAPI Routing and Middleware]
-    Gateway --> AuthMiddleware[JWT Auth and DPDP Compliance Engine]
-    Gateway --> BillRouter[Bills and Ingestion Router]
-    Gateway --> ReportRouter[Dispute and Detention Notice Router]
-    Gateway --> PaymentRouter[Payment Webhook and Reconciliation Router]
-    Gateway --> DevRouter[Architecture Inspector and Tooling Router]
+  subgraph API_Layer ["FastAPI Routing & Middleware"]
+    Gateway --> AuthMiddleware["JWT Auth & DPDP Compliance Engine"]
+    Gateway --> BillRouter["Bills & Ingestion Router"]
+    Gateway --> ReportRouter["Dispute & Detention Notice Router"]
+    Gateway --> PaymentRouter["Payment Webhook & Reconciliation Router"]
+    Gateway --> DevRouter["Architecture Inspector & Tooling Router"]
   end
 
-  subgraph Service_Engine [Execution and Audit Engines]
-    BillRouter --> Extractor[OCR Ingestion and Magic Byte Validator]
-    BillRouter --> RiskEngine[Deterministic Statutory Rule Engine]
-    BillRouter --> EnsembleEngine[Hybrid ML Ensemble: XGBoost + Deep MLP]
-    BillRouter --> Explainer[SHAP Local Feature Explainer]
-    BillRouter --> MerkleEngine[Cryptographic Merkle Audit Ledger]
-    BillRouter --> ClinicalEngine[ICD-10 and SNOMED Clinical Resolver]
-    ReportRouter --> LegalEngine[High Court Anti-Detention Notice Generator]
-    PaymentRouter --> PaymentEnricher[Payment Gap and EMI Distress Enricher]
+  subgraph Service_Engine ["Execution & Audit Engines"]
+    BillRouter --> Extractor["OCR Ingestion & Magic Byte Validator"]
+    BillRouter --> RiskEngine["Deterministic Statutory Rule Engine"]
+    BillRouter --> EnsembleEngine["Hybrid ML Ensemble (XGBoost + Deep MLP)"]
+    BillRouter --> Explainer["SHAP Local Feature Explainer"]
+    BillRouter --> MerkleEngine["Cryptographic Merkle Audit Ledger"]
+    BillRouter --> ClinicalEngine["ICD-10 & SNOMED Clinical Resolver"]
+    ReportRouter --> LegalEngine["High Court Anti-Detention Notice Generator"]
+    PaymentRouter --> PaymentEnricher["Payment Gap & EMI Distress Enricher"]
   end
 
-  subgraph Storage_Layer [Persistence and Reference Stores]
-    RiskEngine --> SQLiteRef[(Reference Tariffs: CGHS / NPPA / DPCO)]
-    EnsembleEngine --> ModelWeights[(Serialized Model Weights: .joblib)]
-    BillRouter --> PostgresDB[(PostgreSQL: Bills, Items, Users, Audit Logs)]
+  subgraph Storage_Layer ["Persistence & Reference Stores"]
+    RiskEngine --> SQLiteRef[("Reference Tariffs: CGHS / NPPA / DPCO")]
+    EnsembleEngine --> ModelWeights[("Serialized Model Weights: .joblib / .pt / .onnx")]
+    BillRouter --> PostgresDB[("PostgreSQL: Bills, Items, Users, Audit Logs")]
   end
 ```
 
