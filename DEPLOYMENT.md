@@ -1,3 +1,19 @@
+---
+{
+  "id": "file_dlz46kr4",
+  "filetype": "document",
+  "filename": "DEPLOYMENT",
+  "created_at": "2026-08-27T08:15:52.391Z",
+  "updated_at": "2026-08-27T08:15:53.131Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris Deployment Guide
 
 This document covers production deployment of the CuraVeris backend on Ubuntu 22.04 / Debian 12, Docker, and cloud platforms (AWS, GCP, Azure).
@@ -305,9 +321,14 @@ sudo systemctl status curaveris
 
 ## ML Model Initialization
 
-ML model weights are **not committed to git** (they are in `.gitignore`). On a fresh deployment:
+Large binary model weights and databases are tracked with **Git LFS** (`.gitattributes`). On a fresh deployment:
 
 ```bash
+# Pull LFS model assets
+git lfs install
+git lfs pull
+
+# Alternatively, retrain lightweight baseline models locally:
 cd /opt/curaveris/backend
 source venv/bin/activate
 
@@ -321,7 +342,7 @@ python -c "from app.ml.deep_risk_model import train_deep_model; train_deep_model
 python -c "from app.ml.hybrid_ensemble import train_hybrid_ensemble; train_hybrid_ensemble()"
 ```
 
-The server also auto-trains the primary model on first startup if weights are missing — but pre-training is strongly recommended for production to avoid a cold-start delay.
+The server also auto-trains the primary model on first startup if weights are missing — but pulling via Git LFS or pre-training is strongly recommended for production to avoid a cold-start delay.
 
 ---
 
