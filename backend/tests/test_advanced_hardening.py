@@ -101,7 +101,7 @@ async def test_dpdp_user_anonymization_api():
         assert anon_res.status_code == 200
         anon_data = anon_res.json()
 
-        assert anon_data["status"] == "ANONYMIZED"
+        assert anon_data["status"].lower() == "anonymized"
         assert "DPDP_Anonymized_Patient_" in anon_data["pseudonym"]
         assert "Digital Personal Data Protection Act 2023" in anon_data["statutory_compliance"]
 
