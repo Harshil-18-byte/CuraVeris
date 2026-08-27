@@ -17,6 +17,27 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "CuraVeris - MedBill AI"
     VERSION: str = "1.2.0"
     API_V1_STR: str = "/api/v1"
+    DESCRIPTION: str = (
+        "Automated medical billing audit and patient financial advocacy engine for the Indian healthcare system. "
+        "Consolidates raw invoice OCR parsing, deterministic statutory compliance checks (NPPA, DPCO, CGHS, IRDAI), "
+        "hybrid machine learning risk ensembles (XGBoost + PyTorch MLP), and cryptographic Merkle audit ledgers "
+        "for Section 65B court admissibility."
+    )
+    REPOSITORY_URL: str = "https://github.com/Harshil-18-byte/CuraVeris"
+    APP_TAGS: List[str] = [
+        "medical-billing",
+        "healthcare-audit",
+        "fintech",
+        "nppa",
+        "cghs",
+        "dpco",
+        "irdai",
+        "dpdp-act",
+        "fastapi",
+        "xgboost",
+        "pytorch",
+        "merkle-tree"
+    ]
 
     # Environment
     ENV: str = Field(default="development", env="ENV")
