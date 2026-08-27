@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Body, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -80,7 +81,7 @@ async def upload_bill(
     # 3. AI narrative plain summary
     summary = ai_explainer.generate_plain_summary(audit, parsed_metadata)
 
-    # 4. Save into Database
+    # 4. Save into Database (Canonical Invoice and Bill)
     new_bill = Bill(
         hospital_name=parsed_metadata.get("hospital_name", "Hospital"),
         city=parsed_metadata.get("city", "City"),
@@ -98,6 +99,23 @@ async def upload_bill(
     )
     db.add(new_bill)
     await db.flush()  # to populate new_bill.id
+
+    from app.db.models import Invoice, InvoiceLineItem
+    canonical_invoice = Invoice(
+        id=new_bill.id,
+        invoice_number=f"INV-{new_bill.id[:8].upper()}",
+        gross_amount=audit["total_billed"],
+        discount_amount=0.00,
+        tax_amount=0.00,
+        net_amount=audit["total_billed"],
+        fair_estimate_amount=audit["total_fair_estimate"],
+        total_overcharge=audit["total_overcharge"],
+        risk_score=audit["risk_score"],
+        status="AUDITED",
+        plain_summary=summary,
+        risk_flags_summary=audit["flags_summary"]
+    )
+    db.add(canonical_invoice)
 
     saved_items = []
     for item in audit["items"]:
@@ -122,6 +140,27 @@ async def upload_bill(
         db.add(bi)
         saved_items.append(bi)
 
+        inv_item = InvoiceLineItem(
+            id=bi.id,
+            invoice_id=canonical_invoice.id,
+            raw_text=item["raw_text"],
+            normalized_name=item["normalized_name"],
+            category=item["category"],
+            quantity=item["quantity"],
+            unit_price=item["charged_rate"],
+            total_amount=item["charged_amount"],
+            mrp=item.get("mrp"),
+            cghs_rate=item.get("cghs_rate"),
+            nppa_ceiling=item.get("nppa_ceiling"),
+            is_flagged=item["is_flagged"],
+            risk_flags=item["risk_flags"],
+            overcharge_amount=item["overcharge_amount"],
+            legal_citation=item.get("legal_citation"),
+            patient_explanation=item.get("patient_explanation"),
+            action_recommended=item.get("action_recommended")
+        )
+        db.add(inv_item)
+
     await db.commit()
     await db.refresh(new_bill)
 
@@ -132,24 +171,25 @@ async def upload_bill(
         {"action": "Download Formal Legal Petition", "description": "Export pre-filled petition for Consumer Commission / NPPA."}
     ]
 
+    from app.core.currency import to_decimal
     return BillAnalysisResponse(
-        bill_id=new_bill.id,
-        hospital_name=new_bill.hospital_name,
-        city=new_bill.city,
-        tier=new_bill.tier,
-        patient_name=decrypt_pii(new_bill.patient_name_enc),
-        diagnosis=new_bill.diagnosis,
-        total_billed=new_bill.total_billed,
-        total_fair_estimate=new_bill.total_fair_estimate,
-        total_overcharge=new_bill.total_overcharge,
-        risk_score=new_bill.risk_score,
-        risk_level=audit["risk_level"],
+        bill_id=str(new_bill.id),
+        hospital_name=str(new_bill.hospital_name),
+        city=str(new_bill.city) if new_bill.city else None,
+        tier=int(getattr(new_bill, "tier", 1) or 1),
+        patient_name=decrypt_pii(str(new_bill.patient_name_enc)) if new_bill.patient_name_enc else None,
+        diagnosis=str(new_bill.diagnosis) if new_bill.diagnosis else None,
+        total_billed=to_decimal(new_bill.total_billed),
+        total_fair_estimate=to_decimal(new_bill.total_fair_estimate),
+        total_overcharge=to_decimal(new_bill.total_overcharge),
+        risk_score=to_decimal(new_bill.risk_score),
+        risk_level=str(audit["risk_level"]),
         plain_summary=summary,
         risk_flags=[RiskFlagSummary(**f) for f in audit["flags_summary"]],
         line_items=[BillItemSchema.model_validate(i) for i in saved_items],
         recommended_actions=rec_actions,
-        status=new_bill.status,
-        created_at=new_bill.created_at
+        status=str(new_bill.status),
+        created_at=new_bill.created_at or datetime.now(timezone.utc)
     )
 
 
@@ -654,14 +694,18 @@ async def get_bill_fraud_risk_heatmap(bill_id: str, db: AsyncSession = Depends(g
 
     matrix_rows = []
     for it in items_data:
-        flags = it.get("risk_flags", [])
-        cat = it.get("category", "")
-        overcharge = it.get("overcharge_amount", 0.0)
-        charged = max(it.get("charged_amount", 1.0), 1.0)
+        raw_flags = it.get("risk_flags") or []
+        flags = [str(f) for f in raw_flags] if isinstance(raw_flags, (list, tuple, set)) else []
+        cat = str(it.get("category") or "")
+        raw_over = it.get("overcharge_amount")
+        overcharge = float(raw_over) if isinstance(raw_over, (int, float, str)) else 0.0
+        raw_chg = it.get("charged_amount")
+        charged_val = float(raw_chg) if isinstance(raw_chg, (int, float, str)) else 1.0
+        charged = max(charged_val, 1.0)
         overcharge_ratio = min(overcharge / charged, 1.0)
 
         # 1. Statutory Rate Breach
-        axis_rate = 0.95 if ("nppa_ceiling_violation" in flags or "above_mrp" in flags or "cghs_excess" in flags) else (overcharge_ratio * 0.7)
+        axis_rate = 0.95 if any(f in flags for f in ["nppa_ceiling_violation", "above_mrp", "cghs_excess"]) else (overcharge_ratio * 0.7)
 
         # 2. Consumable Unbundling
         axis_consumable = 0.90 if "consumable_unbundled" in flags else (0.50 if cat == "consumable" else 0.05)
@@ -673,7 +717,7 @@ async def get_bill_fraud_risk_heatmap(bill_id: str, db: AsyncSession = Depends(g
         axis_tax = 0.98 if "gst_on_exempt" in flags else (0.80 if cat == "tax_gst" else 0.0)
 
         # 5. Clinical Discordance
-        axis_clinical = 0.85 if ("room_rent_ratio_violation" in flags or "geriatric_arbitrary_surcharge" in flags) else 0.10
+        axis_clinical = 0.85 if any(f in flags for f in ["room_rent_ratio_violation", "geriatric_arbitrary_surcharge"]) else 0.10
 
         avg_score = round((axis_rate + axis_consumable + axis_duplicate + axis_tax + axis_clinical) / 5.0, 3)
         risk_label = "CRITICAL_FRAUD" if avg_score >= 0.45 else ("ELEVATED_RISK" if avg_score >= 0.20 else "COMPLIANT")
