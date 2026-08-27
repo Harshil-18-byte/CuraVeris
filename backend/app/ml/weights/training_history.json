@@ -1,5 +1,81 @@
 [
   {
+    "run_id": "run_ee655db5",
+    "seed": 42,
+    "learning_rate": 0.04,
+    "timestamp_iso": "2026-08-27T10:31:56.430077+00:00",
+    "timestamp_human": "27 Aug 2026, 04:01:56 PM IST",
+    "num_samples": 5000,
+    "train_samples": 4000,
+    "test_samples": 1000,
+    "macro_f1": 0.6431,
+    "macro_precision": 0.755,
+    "macro_recall": 0.5838,
+    "status_tag": "High Variance",
+    "status_label": "\u26a0\ufe0f Review Required - High Variance",
+    "per_class": {
+      "above_mrp": {
+        "precision": 0.9444,
+        "recall": 0.5,
+        "f1_score": 0.6538,
+        "support": 68
+      },
+      "nppa_ceiling_violation": {
+        "precision": 0.9143,
+        "recall": 0.5424,
+        "f1_score": 0.6809,
+        "support": 59
+      },
+      "cghs_excess": {
+        "precision": 0.7313,
+        "recall": 0.6364,
+        "f1_score": 0.6806,
+        "support": 77
+      },
+      "duplicate_charge": {
+        "precision": 0.5584,
+        "recall": 0.5811,
+        "f1_score": 0.5695,
+        "support": 74
+      },
+      "room_rent_ratio_violation": {
+        "precision": 0.9524,
+        "recall": 0.5479,
+        "f1_score": 0.6957,
+        "support": 73
+      },
+      "gst_on_exempt": {
+        "precision": 0.3675,
+        "recall": 0.4943,
+        "f1_score": 0.4216,
+        "support": 87
+      },
+      "consumable_unbundled": {
+        "precision": 0.8163,
+        "recall": 0.7843,
+        "f1_score": 0.8,
+        "support": 153
+      }
+    },
+    "feature_importances": {
+      "rate_vs_cghs_ratio": 0.0539,
+      "rate_vs_mrp_ratio": 0.0516,
+      "qty_zscore": 0.0328,
+      "days_in_hospital": 0.0296,
+      "consumable_pct": 0.0363,
+      "is_package_item": 0.0283,
+      "has_icd_code": 0.0292,
+      "amount_percentile": 0.0398,
+      "description_similarity_max": 0.0571,
+      "cat_pharmacy": 0.0762,
+      "cat_procedure": 0.1121,
+      "cat_diagnostic": 0.0628,
+      "cat_room_nursing": 0.1288,
+      "cat_consumable": 0.1555,
+      "cat_tax_gst": 0.106
+    }
+  },
+  {
     "run_id": "run_b60d2992",
     "seed": 42,
     "learning_rate": 0.08,
