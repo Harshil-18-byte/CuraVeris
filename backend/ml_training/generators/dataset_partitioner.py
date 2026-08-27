@@ -33,7 +33,9 @@ ML_TRAINING_DIR = os.path.dirname(GENERATOR_DIR)
 DATA_DIR = os.path.join(ML_TRAINING_DIR, "data")
 PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
 DECOUPLED_DIR = os.path.join(PROCESSED_DIR, "decoupled_tasks")
+NORMALIZED_DIR = os.path.join(DATA_DIR, "normalized")
 os.makedirs(DECOUPLED_DIR, exist_ok=True)
+os.makedirs(NORMALIZED_DIR, exist_ok=True)
 
 
 class MultiTaskDatasetPartitioner:
@@ -263,10 +265,11 @@ class MultiTaskDatasetPartitioner:
         ]
 
         for fname, records in files_to_write:
-            fpath = os.path.join(DECOUPLED_DIR, fname)
-            with open(fpath, "w", encoding="utf-8") as fh:
-                for r in records:
-                    fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+            for d in [DECOUPLED_DIR, NORMALIZED_DIR]:
+                fpath = os.path.join(d, fname)
+                with open(fpath, "w", encoding="utf-8") as fh:
+                    for r in records:
+                        fh.write(json.dumps(r, ensure_ascii=False) + "\n")
             counts[fname] = len(records)
             print(f"[✓] Exported {len(records)} records to {fname}")
 
