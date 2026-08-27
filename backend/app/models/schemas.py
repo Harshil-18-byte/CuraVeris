@@ -1,16 +1,45 @@
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, EmailStr, Field
+"""
+Pydantic v2 Canonical Schemas for CuraVeris Backend API.
+
+Includes strict input validation, decimal-safe financial schemas,
+multi-tenant user profiles, claims, reconciliations, exceptions, and dispute management.
+"""
+from typing import List, Optional, Dict, Any, Union
+from decimal import Decimal
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from datetime import datetime
 
 
-# ─── AUTH SCHEMAS ────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# 1. Tenancy & Auth Schemas
+# ---------------------------------------------------------------------------
+
+class OrganizationCreate(BaseModel):
+    name: str = Field(..., min_length=2)
+    org_type: str = Field(..., pattern="^(hospital|tpa|insurer|platform)$")
+    slug: str = Field(..., min_length=2)
+    settings_json: Optional[Dict[str, Any]] = None
+
+
+class OrganizationResponse(BaseModel):
+    id: str
+    name: str
+    org_type: str
+    slug: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 
 class UserRegister(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=6)
-    full_name: str
+    password: str = Field(..., min_length=8)
+    full_name: str = Field(..., min_length=2)
     phone: Optional[str] = None
-    role: Optional[str] = "patient"
+    role: Optional[str] = "PATIENT"
+    org_id: Optional[str] = None
 
 
 class UserLogin(BaseModel):
@@ -23,6 +52,8 @@ class UserResponse(BaseModel):
     email: str
     full_name: str
     role: str
+    org_id: Optional[str] = None
+    is_active: bool
     created_at: datetime
 
     class Config:
@@ -36,26 +67,33 @@ class Token(BaseModel):
     user: UserResponse
 
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
 
-# ─── BILL & AUDIT SCHEMAS ───────────────────────────────────────────────────
+
+# ---------------------------------------------------------------------------
+# 2. Bill & Line Item Schemas
+# ---------------------------------------------------------------------------
 
 class BillItemSchema(BaseModel):
     id: Optional[str] = None
     raw_text: str
     normalized_name: str
     category: str
-    quantity: float
-    charged_rate: float
-    charged_amount: float
-    mrp: Optional[float] = None
-    cghs_rate: Optional[float] = None
-    nppa_ceiling: Optional[float] = None
+    quantity: Decimal = Decimal("1.00")
+    unit: str = "units"
+    charged_rate: Decimal = Decimal("0.00")
+    charged_amount: Decimal = Decimal("0.00")
+    mrp: Optional[Decimal] = None
+    cghs_rate: Optional[Decimal] = None
+    nppa_ceiling: Optional[Decimal] = None
     is_flagged: bool = False
     risk_flags: List[str] = []
-    overcharge_amount: float = 0.0
+    overcharge_amount: Decimal = Decimal("0.00")
     legal_citation: Optional[str] = None
     patient_explanation: Optional[str] = None
     action_recommended: Optional[str] = None
+    confidence_score: Decimal = Decimal("1.00")
 
     class Config:
         from_attributes = True
@@ -65,22 +103,23 @@ class RiskFlagSummary(BaseModel):
     flag_type: str
     severity: str  # critical, high, medium, low
     count: int
-    total_impact: float
+    total_impact: Decimal
     description: str
     law_cited: str
 
 
 class BillAnalysisResponse(BaseModel):
     bill_id: str
+    invoice_id: Optional[str] = None
     hospital_name: str
     city: Optional[str] = None
     tier: int = 1
     patient_name: Optional[str] = None
     diagnosis: Optional[str] = None
-    total_billed: float
-    total_fair_estimate: float
-    total_overcharge: float
-    risk_score: float  # 0 to 100
+    total_billed: Decimal
+    total_fair_estimate: Decimal
+    total_overcharge: Decimal
+    risk_score: Decimal  # 0 to 100
     risk_level: str    # Low, Moderate, High, Critical
     plain_summary: str
     risk_flags: List[RiskFlagSummary] = []
@@ -88,7 +127,7 @@ class BillAnalysisResponse(BaseModel):
     razorpay_gap: Optional[Dict[str, Any]] = None
     recommended_actions: List[Dict[str, str]] = []
     status: str = "completed"
-    created_at: datetime
+    created_at: Optional[Any] = None
 
     class Config:
         from_attributes = True
@@ -98,76 +137,225 @@ class BillUploadResponse(BaseModel):
     bill_id: str
     status: str
     message: str
-    total_items_detected: int = 0
 
 
-# ─── RECONCILIATION & RAZORPAY ──────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# 3. Insurance Claims & TPA Adjudication Schemas
+# ---------------------------------------------------------------------------
+
+class ClaimLineCreate(BaseModel):
+    invoice_line_item_id: str
+    claimed_amount: Decimal
+    approved_amount: Decimal
+    deduction_amount: Decimal
+    deduction_reason: Optional[str] = None
+    is_admissible: bool = True
+
+
+class ClaimCreateRequest(BaseModel):
+    invoice_id: str
+    patient_id: str
+    hospital_id: str
+    insurance_provider_id: str
+    tpa_id: Optional[str] = None
+    claim_number: str
+    claimed_amount: Decimal
+    lines: Optional[List[ClaimLineCreate]] = None
+
+
+class ClaimResponse(BaseModel):
+    id: str
+    claim_number: str
+    invoice_id: str
+    patient_id: str
+    hospital_id: str
+    insurance_provider_id: str
+    tpa_id: Optional[str] = None
+    claimed_amount: Decimal
+    eligible_amount: Decimal
+    approved_amount: Decimal
+    deduction_amount: Decimal
+    co_pay_amount: Decimal
+    status: str
+    status_reason: Optional[str] = None
+    submitted_at: datetime
+    adjudicated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class TPAApprovalRequest(BaseModel):
+    claim_id: str
+    tpa_reference_no: str
+    tpa_approved_amount: Decimal
+    tpa_deductions: Decimal
+    remarks: Optional[str] = None
+
 
 class ReconciliationRequest(BaseModel):
-    bill_id: str
-    total_billed: float
-    insurance_approved: float
-    tpa_name: Optional[str] = None
-    razorpay_paid: float
-    razorpay_payment_id: Optional[str] = None
+    invoice_id: Optional[str] = None
+    bill_id: Optional[str] = None
+    total_billed: Optional[Decimal] = None
+    insurance_approved: Decimal = Decimal("0.00")
+    tpa_deductions: Decimal = Decimal("0.00")
+    razorpay_paid: Decimal = Decimal("0.00")
+    settled_amount: Optional[Decimal] = None
+    tpa_name: Optional[str] = "TPA / Insurer"
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_ids(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            inv = data.get("invoice_id") or data.get("bill_id")
+            if inv:
+                data["invoice_id"] = str(inv)
+                data["bill_id"] = str(inv)
+        return data
 
 
 class ReconciliationResponse(BaseModel):
-    reconciliation_id: str
-    bill_id: str
-    total_billed: float
-    insurance_approved: float
-    tpa_deductions: float
-    razorpay_paid: float
-    patient_unjust_gap: float
-    refundable_amount: float
+    reconciliation_id: Optional[str] = None
+    invoice_id: str
+    gross_billed: Decimal
+    statutory_overcharge: Decimal
+    fair_bill_total: Decimal
+    insurance_approved: Decimal
+    tpa_deductions: Decimal
+    effective_insurer_share: Decimal
+    legitimate_patient_share: Decimal
+    patient_paid: Decimal
+    patient_unjust_gap: Decimal
+    outstanding_patient_balance: Decimal
+    settled_amount: Decimal
+    status: str  # BALANCED, EXCEPTION, PENDING_SETTLEMENT, REFUND_DUE
     reconciliation_notes: str
-    refund_link_recommended: bool = False
+    refund_link_recommended: bool
+    created_at: Optional[Any] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ReconciliationExceptionResponse(BaseModel):
+    id: str
+    reconciliation_id: str
+    exception_type: str
+    severity: str
+    amount: Decimal
+    cause: str
+    suggested_action: Optional[str] = None
+    status: str
+    assigned_to: Optional[str] = None
+    created_at: datetime
+    resolved_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ---------------------------------------------------------------------------
+# 5. Payments & Razorpay Schemas
+# ---------------------------------------------------------------------------
+
+class CreatePaymentOrderRequest(BaseModel):
+    invoice_id: str
+    amount: Decimal
+    currency: str = "INR"
+    notes: Optional[Dict[str, str]] = None
+
+
+class PaymentOrderResponse(BaseModel):
+    order_id: str
+    amount: Decimal
+    amount_paise: int
+    currency: str
+    key_id: str
+    invoice_id: str
+
+
+class VerifyPaymentRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+    invoice_id: str
+
+
+class PaymentResponse(BaseModel):
+    id: str
+    invoice_id: str
+    payment_id: str
+    amount: Decimal
+    currency: str
+    method: str
+    status: str
     created_at: datetime
 
+    class Config:
+        from_attributes = True
 
-class RazorpayWebhookEvent(BaseModel):
-    event: str
-    payload: Dict[str, Any]
-
-
-# ─── DISPUTE PETITION SCHEMAS ────────────────────────────────────────────────
 
 class DisputeLetterRequest(BaseModel):
     bill_id: str
-    forum_type: str  # hospital_grievance | nppa | irdai | consumer_court
-    patient_name: Optional[str] = "Patient / Aggrieved Complainant"
+    target_authority: Optional[str] = "hospital_grievance"
+    forum_type: Optional[str] = None
+    patient_name: Optional[str] = None
     patient_address: Optional[str] = None
     patient_phone: Optional[str] = None
-    specific_item_ids: Optional[List[str]] = None
+    patient_email: Optional[str] = None
+    hospital_name: Optional[str] = None
+    tone: Optional[str] = "formal_legal"
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_target(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            auth = data.get("target_authority") or data.get("forum_type") or "hospital_grievance"
+            data["target_authority"] = auth
+            data["forum_type"] = auth
+        return data
 
 
 class DisputeLetterResponse(BaseModel):
     letter_id: str
     bill_id: str
-    forum_type: str
     target_authority: str
-    letter_title: str
-    letter_body: str
-    statutory_citations: List[str]
-    total_disputed_amount: float
+    title: Optional[str] = None
+    letter_title: Optional[str] = None
+    body: Optional[str] = None
+    letter_body: Optional[str] = None
+    statutory_citations: List[str] = []
+    total_disputed_amount: Decimal = Decimal("0.00")
+    docx_download_url: Optional[str] = None
     created_at: datetime
 
+    @model_validator(mode="before")
+    @classmethod
+    def sync_title_body(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            t = data.get("title") or data.get("letter_title") or ""
+            b = data.get("body") or data.get("letter_body") or ""
+            data["title"] = t
+            data["letter_title"] = t
+            data["body"] = b
+            data["letter_body"] = b
+        return data
 
-# ─── CHAT SCHEMAS ────────────────────────────────────────────────────────────
 
-class ChatMessage(BaseModel):
-    role: str  # user | assistant | system
-    content: str
-
+# ---------------------------------------------------------------------------
+# 7. Chat & Assistant Schemas
+# ---------------------------------------------------------------------------
 
 class ChatRequest(BaseModel):
-    bill_id: str
+    bill_id: Optional[str] = None
+    invoice_id: Optional[str] = None
     message: str
-    history: List[ChatMessage] = []
+    role_context: Optional[str] = "PATIENT"  # PATIENT, HOSPITAL_FINANCE, TPA_REVIEWER
 
 
 class ChatResponse(BaseModel):
     reply: str
-    legal_citations: List[str] = []
-    suggested_actions: List[str] = []
+    bill_id: Optional[str] = None
+    sources_cited: List[str] = []
+    tool_calls_executed: List[Dict[str, Any]] = []
+    structured_findings: Optional[Dict[str, Any]] = None
