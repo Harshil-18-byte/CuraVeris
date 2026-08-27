@@ -16,11 +16,11 @@
     "Restitution Regression (\u20b9)"
   ],
   "training_objective": "L_total = L_LM + 0.5 * L_Focal + 0.1 * L_Huber",
-  "last_step": 10,
-  "last_loss": 1970.7318,
-  "lm_loss": 10.4865,
-  "focal_loss": 0.2126,
-  "huber_loss": 19601.3906,
+  "last_step": 5,
+  "last_loss": 1970.9252,
+  "lm_loss": 10.463,
+  "focal_loss": 0.2551,
+  "huber_loss": 19603.3457,
   "status": "Trained and Active",
-  "updated_at": "2026-08-26T17:21:35Z"
+  "updated_at": "2026-08-27T02:11:11Z"
 }
