@@ -12,7 +12,7 @@
     "effective_to": null,
     "citation": "NPPA S.O. 1335(E)",
     "sha256": "1a504596ec05610b59cbc1aeb53b8462cf0789c5f409e852951d7ba4b3dd221d",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_77EE9006C639",
@@ -27,7 +27,7 @@
     "effective_to": null,
     "citation": "NPPA S.O. 1335(E)",
     "sha256": "77ee9006c6392464fe7da28f743ab4ae316a8c513d8d0b5c5f094b3c9d7aadac",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_FC9A4C49C002",
@@ -42,7 +42,7 @@
     "effective_to": null,
     "citation": "NPPA S.O. 2668(E)",
     "sha256": "fc9a4c49c00282b5d7892530ea0ca1461690ababacc1caa4f2957b6bd840efbc",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_D5E204D80AAF",
@@ -57,7 +57,7 @@
     "effective_to": null,
     "citation": "DPCO 2013 / NLEM 2022",
     "sha256": "d5e204d80aaf9d8c311752cb8b084c1393cdaa74c401c80aadd103e659f6cb69",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_0EED192B21AB",
@@ -72,7 +72,7 @@
     "effective_to": null,
     "citation": "DPCO 2013 / NLEM 2022",
     "sha256": "0eed192b21abeb6243f4c2342fc3884e98ff1cfcbb4582831fda1601d504f470",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_67C538885756",
@@ -87,7 +87,7 @@
     "effective_to": null,
     "citation": "NPPA S.O. 2668(E)",
     "sha256": "67c538885756c1ad5d40e3e742c65fbc36a06100402fdc2e3c4e82a197af820a",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_F7733189ED14",
@@ -102,7 +102,7 @@
     "effective_to": null,
     "citation": "CGHS 2024 Rate List",
     "sha256": "f7733189ed14dc9deb2d3e82eb254efb6535e14a40860bc647d766b8617c81d2",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_7385177AA7CF",
@@ -117,7 +117,7 @@
     "effective_to": null,
     "citation": "CGHS 2024 Rate List",
     "sha256": "7385177aa7cfc0a04b984dbdc58a420fc3980d8094d183198932f3da850416e5",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_D248A9F889FD",
@@ -132,7 +132,7 @@
     "effective_to": null,
     "citation": "CGHS 2024 Package",
     "sha256": "d248a9f889fd36347d2b5fc13a07970263e4f09d5b115fb5097d80e5b02a6d0d",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   },
   {
     "record_id": "REF_0B37ABD6A342",
@@ -147,6 +147,6 @@
     "effective_to": null,
     "citation": "CGHS 2024 Package",
     "sha256": "0b37abd6a342627f6c66c34eea774c32906d13526d6b9c5ada8bd07db6024807",
-    "retrieved_at": "2026-08-27T02:26:01.892906"
+    "retrieved_at": "2026-08-27T10:37:11.821869"
   }
 ]
