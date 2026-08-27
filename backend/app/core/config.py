@@ -83,10 +83,26 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_SECRET: str = Field(default="mock_secret_curaveris_2026", env="RAZORPAY_KEY_SECRET")
     RAZORPAY_WEBHOOK_SECRET: str = Field(default="webhook_secret_curaveris_2026", env="RAZORPAY_WEBHOOK_SECRET")
 
+    # Hugging Face Model Hub & Embeddings
+    HF_TOKEN: str = Field(default="", env="HF_TOKEN")
+    HUGGINGFACE_API_KEY: str = Field(default="", env="HUGGINGFACE_API_KEY")
+    HUGGINGFACE_HUB_TOKEN: str = Field(default="", env="HUGGINGFACE_HUB_TOKEN")
+
     # Optional Cloud LLMs
     ANTHROPIC_API_KEY: str = Field(default="", env="ANTHROPIC_API_KEY")
     GEMINI_API_KEY: str = Field(default="", env="GEMINI_API_KEY")
     OPENAI_API_KEY: str = Field(default="", env="OPENAI_API_KEY")
+
+    # Supabase / Cloud Object Storage
+    SUPABASE_URL: str = Field(default="", env="SUPABASE_URL")
+    SUPABASE_ANON_KEY: str = Field(default="", env="SUPABASE_ANON_KEY")
+    SUPABASE_SERVICE_ROLE_KEY: str = Field(default="", env="SUPABASE_SERVICE_ROLE_KEY")
+
+    # AWS S3 Storage
+    AWS_ACCESS_KEY_ID: str = Field(default="", env="AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY: str = Field(default="", env="AWS_SECRET_ACCESS_KEY")
+    AWS_REGION: str = Field(default="ap-south-1", env="AWS_REGION")
+    AWS_S3_BUCKET: str = Field(default="curaveris-bills", env="AWS_S3_BUCKET")
 
     # CORS: explicit list — wildcard is never appropriate with credentialed requests.
     BACKEND_CORS_ORIGINS: List[str] = [
@@ -108,6 +124,14 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Automatically propagate Hugging Face tokens to environment for huggingface_hub/transformers
+_hf_token = settings.HF_TOKEN or settings.HUGGINGFACE_API_KEY or settings.HUGGINGFACE_HUB_TOKEN
+if _hf_token:
+    os.environ.setdefault("HF_TOKEN", _hf_token)
+    os.environ.setdefault("HUGGING_FACE_HUB_TOKEN", _hf_token)
+    os.environ.setdefault("HUGGINGFACE_API_KEY", _hf_token)
+
 
 
 def validate_secrets() -> None:
