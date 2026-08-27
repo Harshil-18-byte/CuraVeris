@@ -16,25 +16,25 @@ class DeepRiskNeuralNetwork:
     """
     Multi-Layer Perceptron Deep Neural Network for multi-label clinical bill risk prediction.
     Architecture:
-      Input (15 features) -> Dense(128, ReLU) -> Dense(64, ReLU) -> Dense(32, ReLU) -> Output(7 Sigmoid Multi-Labels)
+      Input (15 features) -> Dense(256, ReLU) -> Dense(128, ReLU) -> Dense(64, ReLU) -> Dense(32, ReLU) -> Output(7 Sigmoid Multi-Labels)
     Optimized with Adam, adaptive learning rate, L2 regularization, and early stopping.
     """
-    def __init__(self, random_state: int = 42, max_iter: int = 350, alpha: float = 1e-4):
+    def __init__(self, random_state: int = 42, max_iter: int = 450, alpha: float = 1e-4):
         self.random_state = random_state
         self.scaler = StandardScaler()
         self.mlp = MultiOutputClassifier(
             MLPClassifier(
-                hidden_layer_sizes=(128, 64, 32),
+                hidden_layer_sizes=(256, 128, 64, 32),
                 activation="relu",
                 solver="adam",
                 alpha=alpha,
                 batch_size=64,
                 learning_rate="adaptive",
-                learning_rate_init=0.003,
+                learning_rate_init=0.002,
                 max_iter=max_iter,
                 early_stopping=True,
                 validation_fraction=0.15,
-                n_iter_no_change=15,
+                n_iter_no_change=20,
                 random_state=random_state
             )
         )
@@ -64,13 +64,20 @@ class DeepRiskNeuralNetwork:
 class HybridRiskEnsemble:
     """
     Hybrid Stacking Ensemble blending the Deep Neural Network (continuous ratio non-linearities)
-    with Gradient Boosted Trees (sharp statutory thresholds) with soft voting.
+    with Gradient Boosted Trees (sharp statutory thresholds) with soft voting and calibrated decision boundaries.
     """
-    def __init__(self, tree_model: Any, nn_model: DeepRiskNeuralNetwork, nn_weight: float = 0.45):
+    def __init__(
+        self,
+        tree_model: Any,
+        nn_model: DeepRiskNeuralNetwork,
+        nn_weight: float = 0.45,
+        thresholds: Optional[Dict[str, float]] = None
+    ):
         self.tree_model = tree_model
         self.nn_model = nn_model
         self.nn_weight = nn_weight
         self.tree_weight = 1.0 - nn_weight
+        self.thresholds = thresholds or {}
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         # Get Tree model probabilities
@@ -93,7 +100,15 @@ class HybridRiskEnsemble:
         return np.clip(blended, 0.0, 1.0)
 
     def predict(self, X: np.ndarray, threshold: float = 0.5) -> np.ndarray:
-        return (self.predict_proba(X) >= threshold).astype(int)
+        probas = self.predict_proba(X)
+        if self.thresholds:
+            preds = np.zeros_like(probas, dtype=int)
+            for idx, name in enumerate(FLAG_NAMES):
+                th = self.thresholds.get(name, threshold)
+                if idx < probas.shape[1]:
+                    preds[:, idx] = (probas[:, idx] >= th).astype(int)
+            return preds
+        return (probas >= threshold).astype(int)
 
     def estimate_uncertainty(self, X: np.ndarray, num_passes: int = 10, noise_std: float = 0.03) -> Dict[str, Any]:
         """
