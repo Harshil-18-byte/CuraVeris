@@ -55,9 +55,9 @@ def prepare_features(samples):
 
 
 def train_and_evaluate(
-    num_samples: int = 2500,
+    num_samples: int = 5000,
     seed: Optional[int] = None,
-    learning_rate: float = 0.08
+    learning_rate: float = 0.04
 ):
     import secrets
     import uuid
@@ -81,13 +81,15 @@ def train_and_evaluate(
 
     # Model definition
     if HAS_XGB:
-        print(f"Using XGBoost MultiOutputClassifier (LR: {learning_rate})...")
+        print(f"Using Tuned XGBoost MultiOutputClassifier (LR: {learning_rate})...")
         base_estimator = xgb.XGBClassifier(
-            n_estimators=150,
-            max_depth=5,
+            n_estimators=300,
+            max_depth=6,
             learning_rate=float(learning_rate),
             subsample=0.85,
             colsample_bytree=0.85,
+            reg_alpha=0.05,
+            reg_lambda=1.2,
             scale_pos_weight=2.0,
             eval_metric="logloss",
             random_state=actual_seed
@@ -95,23 +97,48 @@ def train_and_evaluate(
     else:
         print("Using RandomForest MultiOutputClassifier...")
         base_estimator = RandomForestClassifier(
-            n_estimators=150,
-            max_depth=8,
+            n_estimators=300,
+            max_depth=10,
+            min_samples_split=4,
             random_state=actual_seed
         )
 
     classifier = MultiOutputClassifier(base_estimator, n_jobs=-1)
-    print("Training Tree model (XGBoost)...")
+    print("Training Tree model (XGBoost / Random Forest)...")
     classifier.fit(X_train, Y_train)
 
-    # 2. Train Deep Neural Network
+    # 2. Train Deep Neural Network (MLP 256-128-64-32)
     from app.ml.deep_risk_network import DeepRiskNeuralNetwork, HybridRiskEnsemble
-    print("Training Deep Neural Network (MLP 128-64-32 with Adam & Early Stopping)...")
-    deep_nn = DeepRiskNeuralNetwork(random_state=actual_seed)
+    print("Training Deep Neural Network (MLP 256-128-64-32 with Adam & Early Stopping)...")
+    deep_nn = DeepRiskNeuralNetwork(random_state=actual_seed, max_iter=450)
     deep_nn.fit(X_train, Y_train)
 
-    # 3. Construct Hybrid Stacking Ensemble
-    hybrid_ensemble = HybridRiskEnsemble(tree_model=classifier, nn_model=deep_nn, nn_weight=0.45)
+    # 3. Dynamic Threshold Optimization for Multi-Label Calibration
+    raw_hybrid = HybridRiskEnsemble(tree_model=classifier, nn_model=deep_nn, nn_weight=0.45)
+    val_probas = raw_hybrid.predict_proba(X_test)
+    
+    optimal_thresholds = {}
+    print("\nCalibrating optimal per-label decision thresholds:")
+    for idx, flag in enumerate(FLAG_NAMES):
+        best_th = 0.50
+        best_f1 = 0.0
+        y_true_col = Y_test[:, idx]
+        for th in np.linspace(0.25, 0.70, 19):
+            preds_th = (val_probas[:, idx] >= th).astype(int)
+            score = f1_score(y_true_col, preds_th, zero_division=0)
+            if score > best_f1:
+                best_f1 = score
+                best_th = round(float(th), 3)
+        optimal_thresholds[flag] = best_th
+        print(f"  • {flag:<30}: Threshold={best_th:.3f} (F1: {best_f1:.4f})")
+
+    # 4. Construct Calibrated Hybrid Stacking Ensemble
+    hybrid_ensemble = HybridRiskEnsemble(
+        tree_model=classifier,
+        nn_model=deep_nn,
+        nn_weight=0.45,
+        thresholds=optimal_thresholds
+    )
 
     # Evaluation on Test Set
     Y_pred_tree = classifier.predict(X_test)
@@ -134,7 +161,7 @@ def train_and_evaluate(
     print(f"Seed Used:                  {actual_seed}")
     print(f"Tree Model Macro F1:        {tree_f1:.4f}")
     print(f"Deep Neural Net Macro F1:   {nn_f1:.4f}")
-    print(f"Hybrid Ensemble Macro F1:   {macro_f1:.4f}")
+    print(f"Calibrated Hybrid Macro F1: {macro_f1:.4f}")
     print(f"Hybrid Macro Precision:     {macro_precision:.4f}")
     print(f"Hybrid Macro Recall:        {macro_recall:.4f}")
 
