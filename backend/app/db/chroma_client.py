@@ -85,11 +85,13 @@ class BioBERTEmbeddingFunction(EmbeddingFunction):
         try:
             from transformers import AutoTokenizer, AutoModel
             import torch
-            self._tokenizer = AutoTokenizer.from_pretrained(model_name)
-            self._model = AutoModel.from_pretrained(model_name)
+            hf_token = getattr(settings, "HF_TOKEN", "") or os.environ.get("HF_TOKEN") or None
+            self._tokenizer = AutoTokenizer.from_pretrained(model_name, token=hf_token)
+            self._model = AutoModel.from_pretrained(model_name, token=hf_token)
             self._torch = torch
             logger.info(f"Loaded HuggingFace BioBERT model: {model_name}")
-        except Exception:
+        except Exception as e:
+            logger.debug(f"HuggingFace BioBERT online load deferred ({e}), using fast clinical vectorizer")
             self._tokenizer = None
             self._model = None
             self._torch = None
@@ -207,17 +209,17 @@ def init_chroma_collections():
         logger.info("Populating ChromaDB 'cghs_collection'...")
         ids = [row[0] for row in CGHS_SEEDS]
         documents = [f"{row[1]} ({row[4]})" for row in CGHS_SEEDS]
-        metadatas = [
+        cghs_metadatas: Any = [
             {
                 "procedure_code": row[0],
                 "name": row[1],
                 "rate_non_nabh": float(row[2]),
                 "rate_nabh": float(row[3]),
-                "category": str(row[4]),
+                "category": row[4],
             }
             for row in CGHS_SEEDS
         ]
-        cghs_coll.add(ids=ids, documents=documents, metadatas=metadatas)
+        cghs_coll.add(ids=ids, documents=documents, metadatas=cghs_metadatas)
         logger.info(f"Added {len(ids)} procedure benchmarks to 'cghs_collection'.")
 
     # 2. NPPA Collection (loaded from nppa.db)
@@ -232,16 +234,16 @@ def init_chroma_collections():
             logger.info(f"Populating ChromaDB 'nppa_collection' with {len(nppa_rows)} items...")
             ids = [f"NPPA_{i+1:04d}" for i in range(len(nppa_rows))]
             documents = [f"{row[0]} ({row[1]})" for row in nppa_rows]
-            metadatas = [
+            nppa_metadatas: Any = [
                 {
-                    "name": row[0],
+                    "name": str(row[0]),
                     "category": str(row[1]),
                     "ceiling_price": float(row[2]),
                     "reference": str(row[3]) if row[3] else "NPPA_GAZETTE",
                 }
                 for row in nppa_rows
             ]
-            nppa_coll.add(ids=ids, documents=documents, metadatas=metadatas)
+            nppa_coll.add(ids=ids, documents=documents, metadatas=nppa_metadatas)
             logger.info(f"Added {len(ids)} NPPA items to 'nppa_collection'.")
 
     # 3. DPCO Collection (loaded from dpco.db)
@@ -256,9 +258,9 @@ def init_chroma_collections():
             logger.info(f"Populating ChromaDB 'dpco_collection' with {len(dpco_rows)} drugs...")
             ids = [f"DPCO_{i+1:04d}" for i in range(len(dpco_rows))]
             documents = [f"{row[0]} {row[1]}" for row in dpco_rows]
-            metadatas = [
+            dpco_metadatas: Any = [
                 {
-                    "drug_name": row[0],
+                    "drug_name": str(row[0]),
                     "formulation": str(row[1]),
                     "mrp": float(row[2]),
                     "scheduled": bool(row[3]),
@@ -266,7 +268,7 @@ def init_chroma_collections():
                 }
                 for row in dpco_rows
             ]
-            dpco_coll.add(ids=ids, documents=documents, metadatas=metadatas)
+            dpco_coll.add(ids=ids, documents=documents, metadatas=dpco_metadatas)
             logger.info(f"Added {len(ids)} drug MRP ceilings to 'dpco_collection'.")
 
     return {
