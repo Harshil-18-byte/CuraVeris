@@ -12,7 +12,7 @@ from app.core.logging import setup_logging, logger
 from app.core.limiter import limiter
 from app.db.database import init_db
 from app.db.reference_data import init_reference_db
-from app.api import auth, bills, chat, insurance, razorpay, reports, dev, abha, integrations
+from app.api import auth, bills, chat, insurance, razorpay, reports, dev, abha, integrations, finance
 
 
 # Setup structured logging immediately
@@ -33,26 +33,27 @@ async def lifespan(app: FastAPI):
     # 3. Populate statutory reference rates (CGHS, NPPA, DPCO, IRDAI)
     init_reference_db()
 
-    # 4. Initialize ChromaDB statutory vector collections
-    try:
-        from app.db.chroma_client import init_chroma_collections
-        init_chroma_collections()
-    except Exception as exc:
-        logger.warning(f"ChromaDB startup init deferred: {exc}")
-
-    # 5. Load or train ML risk classification model
-    model_path = os.path.join(os.path.dirname(__file__), "ml", "weights", "risk_model.joblib")
-    if not os.path.exists(model_path):
-        logger.info("ML model weights not found. Training now (this takes ~30s)...")
+    if settings.ENV != "testing":
+        # 4. Initialize ChromaDB statutory vector collections
         try:
-            from app.ml.train_risk_model import train_and_evaluate
-            train_and_evaluate(num_samples=1500)
-            from app.engine.risk_engine import risk_engine
-            risk_engine._load_model()
-        except Exception as e:
-            logger.warning(f"Initial model training deferred: {e}")
-    else:
-        logger.info(f"Loaded existing trained model from {model_path}")
+            from app.db.chroma_client import init_chroma_collections
+            init_chroma_collections()
+        except Exception as exc:
+            logger.warning(f"ChromaDB startup init deferred: {exc}")
+
+        # 5. Load or train ML risk classification model
+        model_path = os.path.join(os.path.dirname(__file__), "ml", "weights", "risk_model.joblib")
+        if not os.path.exists(model_path):
+            logger.info("ML model weights not found. Training now (this takes ~30s)...")
+            try:
+                from app.ml.train_risk_model import train_and_evaluate
+                train_and_evaluate(num_samples=1500)
+                from app.engine.risk_engine import risk_engine
+                risk_engine._load_model()
+            except Exception as e:
+                logger.warning(f"Initial model training deferred: {e}")
+        else:
+            logger.info(f"Loaded existing trained model from {model_path}")
 
     logger.info("CuraVeris Backend ready.")
     yield
@@ -137,6 +138,7 @@ app.include_router(reports.router, prefix=settings.API_V1_STR)
 app.include_router(dev.router, prefix=settings.API_V1_STR)
 app.include_router(abha.router, prefix=settings.API_V1_STR)
 app.include_router(integrations.router, prefix=settings.API_V1_STR)
+app.include_router(finance.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/dev", include_in_schema=False)
