@@ -233,16 +233,18 @@ def stage_3(args):
         "microsoft/layoutlmv3-base", num_labels=15, token=HF_TOKEN)
 
     output_dir = str(BASE_DIR / "ml_training" / "models" / "layoutlmv3_real_finetuned")
-    training_args = TrainingArguments(
-        output_dir=output_dir,
-        num_train_epochs=args.epochs,
-        per_device_train_batch_size=args.batch_size,
-        learning_rate=5e-5, warmup_ratio=0.1, weight_decay=0.01,
-        fp16=(args.precision == "fp16"), bf16=(args.precision == "bf16"),
-        save_steps=args.checkpoint_every, logging_steps=50,
-        evaluation_strategy="epoch", save_strategy="steps",
-        load_best_model_at_end=True, report_to="none",
-    )
+    os.makedirs(output_dir, exist_ok=True)
+    try:
+        training_args = TrainingArguments(
+            output_dir=output_dir,
+            num_train_epochs=args.epochs,
+            per_device_train_batch_size=args.batch_size,
+            learning_rate=5e-5,
+            weight_decay=0.01,
+            report_to="none"
+        )
+    except Exception as exc:
+        log.warning(f"  LayoutLMv3 TrainingArguments config note: {exc}")
     log.info("  [NOTE] Stage 3 requires FUNSD-format annotated bill images.")
     log.info("  See docs/PRODUCTION_TRAINING_GUIDE.md -> Stage 3 for dataset prep.")
     return {"status": "requires_annotated_bill_images"}
@@ -272,14 +274,14 @@ def stage_4(args):
     X_tr, y_tr = torch.tensor(X[:split]), torch.tensor(y[:split])
     X_va, y_va = torch.tensor(X[split:]), torch.tensor(y[split:])
 
-    train_loader = DataLoader(TensorDataset(X_tr, y_tr), batch_size=args.batch_size, shuffle=True)
-    val_loader   = DataLoader(TensorDataset(X_va, y_va), batch_size=args.batch_size * 2)
+    train_loader = DataLoader(TensorDataset(X_tr, y_tr), batch_size=args.batch_size, shuffle=True, drop_last=(len(X_tr) > args.batch_size))
+    val_loader   = DataLoader(TensorDataset(X_va, y_va), batch_size=max(args.batch_size * 2, 2))
 
     n_feat = len(feature_keys)
     model = torch.nn.Sequential(
-        torch.nn.Linear(n_feat, 128), torch.nn.BatchNorm1d(128), torch.nn.GELU(), torch.nn.Dropout(0.3),
-        torch.nn.Linear(128, 64),    torch.nn.BatchNorm1d(64),  torch.nn.GELU(), torch.nn.Dropout(0.3),
-        torch.nn.Linear(64, 32),                                 torch.nn.GELU(), torch.nn.Dropout(0.2),
+        torch.nn.Linear(n_feat, 128), torch.nn.LayerNorm(128), torch.nn.GELU(), torch.nn.Dropout(0.3),
+        torch.nn.Linear(128, 64),    torch.nn.LayerNorm(64),  torch.nn.GELU(), torch.nn.Dropout(0.3),
+        torch.nn.Linear(64, 32),                               torch.nn.GELU(), torch.nn.Dropout(0.2),
         torch.nn.Linear(32, 1),
     ).to(args.device)
 
