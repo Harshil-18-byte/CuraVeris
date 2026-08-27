@@ -54,13 +54,13 @@ CuraVeris resolves all five problems as first-class platform features.
 flowchart TD
   subgraph Stage1 ["Stage 1: Multi-Modal Ingestion & Preprocessing"]
     direction TB
-    A["Raw Medical Bill<br/><i>(PDF, Scan, Image, or Raw Text)</i>"] --> B["Extraction & Parser Pipeline<br/>• Magic Bytes Validation<br/>• Itemization & OCR Cleaning<br/>• Clinical Entity Normalization"]
+    A["Raw Medical Bill (PDF, Scan, Image, or Raw Text)"] --> B["Extraction & Parser Pipeline<br/>• Magic Bytes Validation<br/>• Itemization & OCR Cleaning<br/>• Clinical Entity Normalization"]
   end
 
   subgraph Stage2 ["Stage 2: Dual Forensic Engine"]
     direction TB
     subgraph Legal ["Deterministic Statutory Audit"]
-      C1["NPPA Device Price Caps<br/><i>(Stent S.O. 1335(E) • Knee S.O. 2668(E))</i>"]
+      C1["NPPA Device Price Caps (Stent S.O. 1335(E) / Knee S.O. 2668(E))"]
       C2["DPCO 2013 Drug Ceiling Caps"]
       C3["CGHS Benchmark Multipliers"]
       C4["IRDAI 199 Non-Payable Items"]
@@ -68,23 +68,24 @@ flowchart TD
     end
 
     subgraph ML ["Hybrid Machine Learning Ensemble"]
-      D1["Multi-Output XGBoost Classifier<br/><i>(Statutory Boundaries & Tree Splits)</i>"]
-      D2["Deep MLP Neural Network<br/><i>(Non-Linear Financial Interactions)</i>"]
-      D3["Monte Carlo Uncertainty Estimation<br/><i>(K=10 Perturbation Passes)</i>"]
-      D1 & D2 --> D3
+      D1["Multi-Output XGBoost Classifier (Statutory Boundaries & Tree Splits)"]
+      D2["Deep MLP Neural Network (Non-Linear Financial Interactions)"]
+      D3["Monte Carlo Uncertainty Estimation (K=10 Perturbation Passes)"]
+      D1 --> D3
+      D2 --> D3
     end
   end
 
   subgraph Stage3 ["Stage 3: Risk Synthesis & Financial Hardship"]
     direction TB
-    E["Composite Forensic Assessment<br/>• Line-by-Line Overcharge Tally<br/>• Composite Risk Score (0–100)<br/>• SHAP Waterfall Attribution"]
+    E["Composite Forensic Assessment<br/>• Line-by-Line Overcharge Tally<br/>• Composite Risk Score (0-100)<br/>• SHAP Waterfall Attribution"]
     F["Financial Risk Management (FRM)<br/>• Razorpay Payment Gap Reconciliation<br/>• DSTI Hardship & Income Shock Index"]
   end
 
   subgraph Stage4 ["Stage 4: Admissible Evidence & Patient Advocacy"]
     direction TB
-    G1["Section 65B Cryptographic Certificate<br/><i>(SHA-256 Merkle Block & HMAC Signature)</i>"]
-    G2["Statutory Legal Dispute Petitions<br/><i>(Ombudsman, Consumer Forum & Anti-Detention Notice)</i>"]
+    G1["Section 65B Cryptographic Certificate (SHA-256 Merkle Block & HMAC Signature)"]
+    G2["Statutory Legal Dispute Petitions (Ombudsman, Consumer Forum & Anti-Detention Notice)"]
   end
 
   Stage1 --> Stage2
@@ -134,29 +135,29 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  subgraph Inputs [Data Ingestion Layer]
-    A1[Hospital Bill: PDF / Scan / Photo]
-    A2[Payment Gateway API: Webhooks and Metadata]
-    A3[Statutory Reference Databases: CGHS / NPPA / DPCO]
+  subgraph Inputs ["Data Ingestion Layer"]
+    A1["Hospital Bill: PDF / Scan / Photo"]
+    A2["Payment Gateway API: Webhooks & Metadata"]
+    A3["Statutory Reference Databases: CGHS / NPPA / DPCO"]
   end
 
-  subgraph Processing [Feature Extraction and Processing Layer]
-    B1[OCR Ingestion Engine: PyPDF / Tesseract / EasyOCR]
-    B2[Payment Enrichment: Balance Gap and EMI Distress]
-    B3[Semantic Retrieval: BM25 / Embedding Search]
+  subgraph Processing ["Feature Extraction & Processing Layer"]
+    B1["OCR Ingestion Engine: PyPDF / Tesseract / EasyOCR"]
+    B2["Payment Enrichment: Balance Gap & EMI Distress"]
+    B3["Semantic Retrieval: BM25 / Embedding Search"]
   end
 
-  subgraph Decision [Auditing and Ensemble Layer]
-    C1[Deterministic Rule Engine: Statutory Violations]
-    C2[Hybrid ML Stacking Ensemble: XGBoost + Deep MLP]
-    C3[Monte Carlo Epistemic Uncertainty Estimation]
+  subgraph Decision ["Auditing & Ensemble Layer"]
+    C1["Deterministic Rule Engine: Statutory Violations"]
+    C2["Hybrid ML Stacking Ensemble: XGBoost + Deep MLP"]
+    C3["Monte Carlo Epistemic Uncertainty Estimation"]
   end
 
-  subgraph Outputs [Action and Export Layer]
-    D1[Itemized Audit Breakdown and Overcharge Tally]
-    D2[Composite Risk Score: 0 to 100 with SHAP Waterfall]
-    D3[Forensic Dispute Letters and Ombudsman Petitions]
-    D4[Cryptographic Merkle Audit Certificate: Section 65B]
+  subgraph Outputs ["Action & Export Layer"]
+    D1["Itemized Audit Breakdown & Overcharge Tally"]
+    D2["Composite Risk Score: 0 to 100 with SHAP Waterfall"]
+    D3["Forensic Dispute Letters & Ombudsman Petitions"]
+    D4["Cryptographic Merkle Audit Certificate: Section 65B"]
   end
 
   A1 --> B1
