@@ -276,6 +276,9 @@ CuraVeris/
 │   ├── DATA_MODEL.md                    # Entity-relationship specification
 │   ├── SECURITY.md                      # Security controls and threat model
 │   ├── CHANGELOG.md                     # Versioned implementation history
+│   ├── ENGINEERING_AUDIT.md             # Comprehensive architecture and gap analysis
+│   ├── PRODUCTION_TRAINING_GUIDE.md     # Real production multi-model GPU training guide
+│   ├── MANUAL_TRAINING_GUIDE.md         # Production model training and run reference
 │   └── images/                          # Architectural flow diagrams
 ├── backend/
 │   ├── app/
@@ -350,20 +353,26 @@ See [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md).
 
 - Python 3.11 or higher
 - PostgreSQL 14+ with a database named `curaveris_db`
-- Git
+- Git & [Git LFS](https://git-lfs.com/) (required for tracking large binary weights and database files)
 
 ### Installation
 
 ```bash
-git clone https://github.com/Harshil-18-byte/CuraVeris.git
-cd CuraVeris/backend
+# 1. Initialize Git LFS on your machine
+git lfs install
 
-# Create and activate virtual environment
+# 2. Clone repository and pull LFS objects
+git clone https://github.com/Harshil-18-byte/CuraVeris.git
+cd CuraVeris
+git lfs pull
+
+# 3. Navigate to backend and setup virtual environment
+cd backend
 python -m venv venv
 .\venv\Scripts\Activate.ps1          # Windows PowerShell
 # source venv/bin/activate           # Linux / macOS
 
-# Install dependencies
+# 4. Install dependencies
 pip install -r requirements.txt
 ```
 
@@ -395,9 +404,10 @@ The OpenAPI documentation is available at `http://127.0.0.1:8000/docs`.
 | :--- | :--- | :--- |
 | `uvicorn app.main:app --reload` | `backend/` | Starts the FastAPI server with hot-reload. |
 | `python app/ml/train_risk_model.py` | `backend/` | Retrains the XGBoost and MLP ensemble from scratch. |
-| `pytest -v` | `backend/` | Runs all 34 unit and integration tests. |
+| `pytest -v` | `backend/` | Runs all 62 test suites across API, security hardening, ML models, multi-tenancy, and financial invariants (100% passing). |
 | `python -m venv venv` | `backend/` | Creates the isolated Python virtual environment. |
 | `pip install -r requirements.txt` | `backend/` | Installs all production and development dependencies. |
+| `git lfs pull` | Root | Downloads all large binary model weights (`.pt`, `.onnx`, `.safetensors`, `.ubj`) and SQLite DBs. |
 
 ---
 
@@ -677,7 +687,11 @@ See [`docs/STATUTORY_FRAMEWORK.md`](./docs/STATUTORY_FRAMEWORK.md).
 - [`docs/STATUTORY_FRAMEWORK.md`](./docs/STATUTORY_FRAMEWORK.md) — statutory citations, gazette notifications, and case law
 - [`docs/SECURITY.md`](./docs/SECURITY.md) — encryption controls, threat model, and DPDP Act compliance
 - [`docs/CHANGELOG.md`](./docs/CHANGELOG.md) — versioned implementation history
-- [`backend/docs/ML_AND_BACKEND_HANDBOOK.md`](./backend/docs/ML_AND_BACKEND_HANDBOOK.md) — ML training guide and backend handbook
+- [`docs/ENGINEERING_AUDIT.md`](./docs/ENGINEERING_AUDIT.md) — comprehensive architectural audit and capability gap analysis
+- [`docs/PRODUCTION_TRAINING_GUIDE.md`](./docs/PRODUCTION_TRAINING_GUIDE.md) — production multi-model training procedures and GPU specifications
+- [`docs/MANUAL_TRAINING_GUIDE.md`](./docs/MANUAL_TRAINING_GUIDE.md) — manual model execution, hyperparameter tuning, and verification
+- [`backend/docs/ML_AND_BACKEND_HANDBOOK.md`](./backend/docs/ML_AND_BACKEND_HANDBOOK.md) — ML training guide and backend developer handbook
+- [`backend/ml_training/GOVERNMENT_DATA_COLLECTION.md`](./backend/ml_training/GOVERNMENT_DATA_COLLECTION.md) — government data collection and scraping protocol
 
 ---
 
