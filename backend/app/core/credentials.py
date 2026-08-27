@@ -69,6 +69,34 @@ class PaymentCredentials(BaseModel):
     )
 
 
+class HFCredentials(BaseModel):
+    """Hugging Face Model Hub authentication tokens for gated models and embeddings."""
+    hf_token: str = Field(default="", description="Hugging Face API user access token.")
+    huggingface_api_key: str = Field(default="", description="Hugging Face API key alias.")
+    huggingface_hub_token: str = Field(default="", description="Hugging Face Hub token.")
+
+    @property
+    def token(self) -> str:
+        """Return canonical token string."""
+        return self.hf_token or self.huggingface_api_key or self.huggingface_hub_token
+
+    @property
+    def has_token(self) -> bool:
+        """Return True if Hugging Face token is configured."""
+        return bool(self.token)
+
+
+class StorageCredentials(BaseModel):
+    """Cloud object storage and Supabase credentials."""
+    supabase_url: str = Field(default="", description="Supabase project base URL.")
+    supabase_anon_key: str = Field(default="", description="Supabase public anon key.")
+    supabase_service_role_key: str = Field(default="", description="Supabase administrative service role key.")
+    aws_access_key_id: str = Field(default="", description="AWS Access Key ID.")
+    aws_secret_access_key: str = Field(default="", description="AWS Secret Access Key.")
+    aws_region: str = Field(default="ap-south-1", description="AWS S3 Region.")
+    aws_s3_bucket: str = Field(default="curaveris-bills", description="AWS S3 Bucket name.")
+
+
 class LLMCredentials(BaseModel):
     """Optional cloud LLM provider API keys for natural-language narrative generation."""
     gemini_api_key: str = Field(default="", description="Google Gemini API key.")
@@ -153,10 +181,24 @@ class AppCredentials(BaseSettings):
     RAZORPAY_KEY_SECRET: str = Field(default="mock_secret_curaveris_2026", env="RAZORPAY_KEY_SECRET")
     RAZORPAY_WEBHOOK_SECRET: str = Field(default="webhook_secret_curaveris_2026", env="RAZORPAY_WEBHOOK_SECRET")
 
+    # Hugging Face
+    HF_TOKEN: str = Field(default="", env="HF_TOKEN")
+    HUGGINGFACE_API_KEY: str = Field(default="", env="HUGGINGFACE_API_KEY")
+    HUGGINGFACE_HUB_TOKEN: str = Field(default="", env="HUGGINGFACE_HUB_TOKEN")
+
     # LLM Providers
     GEMINI_API_KEY: str = Field(default="", env="GEMINI_API_KEY")
     OPENAI_API_KEY: str = Field(default="", env="OPENAI_API_KEY")
     ANTHROPIC_API_KEY: str = Field(default="", env="ANTHROPIC_API_KEY")
+
+    # Storage & Supabase
+    SUPABASE_URL: str = Field(default="", env="SUPABASE_URL")
+    SUPABASE_ANON_KEY: str = Field(default="", env="SUPABASE_ANON_KEY")
+    SUPABASE_SERVICE_ROLE_KEY: str = Field(default="", env="SUPABASE_SERVICE_ROLE_KEY")
+    AWS_ACCESS_KEY_ID: str = Field(default="", env="AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY: str = Field(default="", env="AWS_SECRET_ACCESS_KEY")
+    AWS_REGION: str = Field(default="ap-south-1", env="AWS_REGION")
+    AWS_S3_BUCKET: str = Field(default="curaveris-bills", env="AWS_S3_BUCKET")
 
     # ABDM
     ABDM_CLIENT_ID: str = Field(default="", env="ABDM_CLIENT_ID")
@@ -202,12 +244,36 @@ class AppCredentials(BaseSettings):
         )
 
     @property
+    def huggingface(self) -> HFCredentials:
+        return HFCredentials(
+            hf_token=self.HF_TOKEN,
+            huggingface_api_key=self.HUGGINGFACE_API_KEY,
+            huggingface_hub_token=self.HUGGINGFACE_HUB_TOKEN,
+        )
+
+    @property
     def llm(self) -> LLMCredentials:
         return LLMCredentials(
             gemini_api_key=self.GEMINI_API_KEY,
             openai_api_key=self.OPENAI_API_KEY,
             anthropic_api_key=self.ANTHROPIC_API_KEY,
         )
+
+    @property
+    def storage(self) -> StorageCredentials:
+        return StorageCredentials(
+            supabase_url=self.SUPABASE_URL,
+            supabase_anon_key=self.SUPABASE_ANON_KEY,
+            supabase_service_role_key=self.SUPABASE_SERVICE_ROLE_KEY,
+            aws_access_key_id=self.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
+            aws_region=self.AWS_REGION,
+            aws_s3_bucket=self.AWS_S3_BUCKET,
+        )
+
+    @property
+    def supabase(self) -> StorageCredentials:
+        return self.storage
 
     @property
     def abdm(self) -> ABDMCredentials:
@@ -228,3 +294,4 @@ class AppCredentials(BaseSettings):
 
 # Global singleton instance
 credentials = AppCredentials()
+
