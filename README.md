@@ -317,7 +317,7 @@ CuraVeris/
 │   │   ├── services/
 │   │   │   └── dispute_service.py       # Legal notice generator
 │   │   └── main.py                      # FastAPI application entrypoint and middleware
-│   ├── tests/                           # 34 automated unit and integration tests
+│   ├── tests/                           # 73 automated unit and integration tests
 │   ├── pytest.ini                       # Test configuration
 │   └── requirements.txt                 # Python package dependencies
 ├── pyrightconfig.json                   # IDE Python interpreter configuration
@@ -436,7 +436,7 @@ RAZORPAY_KEY_SECRET="rzp_secret_placeholder"
 
 A successful build is not the definition of completion. The acceptance path is:
 
-1. All 34 automated tests pass across security, reference data, ML inference, Merkle ledger, and API routes.
+1. All 73 automated tests pass across security, reference data, ML inference, Merkle ledger, and API routes.
 2. PostgreSQL connection is active and schema is initialized.
 3. Reference tariff database is seeded with CGHS, NPPA, DPCO, and IRDAI data.
 4. Bill upload endpoint exercises the full OCR → rule engine → ML ensemble → ledger pipeline.
