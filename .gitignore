@@ -217,4 +217,12 @@ backend/reference_data/temporal_gazette.db
 /data/
 
 
+# Ignore specific model files in model directories
+backend/ml_training/models/layoutlm_finetuned/
+backend/ml_training/models/flair_base/
+backend/ml_training/models/spacy_baseline/
+backend/ml_training/models/transformers_baseline/
+backend/ml_training/models/pytorch_transformers_base/
+backend/ml_training/models/pytorch_transformers_quantized/
+
 
