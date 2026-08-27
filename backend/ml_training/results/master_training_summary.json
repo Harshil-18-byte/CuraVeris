@@ -1,16 +1,16 @@
 {
   "pipeline_name": "CuraVeris Full Multi-Model Training Pipeline",
-  "timestamp": "2026-08-26T21:50:03.253180",
-  "total_duration_seconds": 55.35,
+  "timestamp": "2026-08-27T07:40:10.529072",
+  "total_duration_seconds": 42.47,
   "stages": [
     {
       "stage": "stage_1_vector_index",
       "collections": {
-        "cghs_collection": 293,
+        "cghs_collection": 3489,
         "nppa_collection": 919,
         "dpco_collection": 959
       },
-      "time_seconds": 5.100513219833374
+      "time_seconds": 2.9379029273986816
     },
     {
       "stage": "stage_2_xgboost",
@@ -60,33 +60,33 @@
           "val_f1": 0.1212
         }
       },
-      "time_seconds": 18.519450664520264
+      "time_seconds": 9.990844011306763
     },
     {
       "stage": "stage_3_deep_mlp",
       "macro_f1": 0.7128661762808104,
-      "time_seconds": 10.331296920776367
+      "time_seconds": 11.012987613677979
     },
     {
       "stage": "stage_4_hybrid_ensemble",
-      "time_seconds": 0.3609635829925537,
+      "time_seconds": 0.6851222515106201,
       "status": "saved"
     },
     {
       "stage": "stage_5_reference_model",
       "macro_f1": 0.5547172152686832,
-      "time_seconds": 20.543763160705566
+      "time_seconds": 17.14933490753174
     },
     {
       "stage": "stage_6_layoutlm",
       "checkpoint_dir": "J:\\Dev\\PROJECTS\\CuraVeris\\backend\\ml_training\\models\\layoutlm_finetuned",
-      "time_seconds": 0.0408635139465332
+      "time_seconds": 0.16911792755126953
     },
     {
       "stage": "stage_7_fine_tuning_corpus",
       "corpus_path": "J:\\Dev\\PROJECTS\\CuraVeris\\backend\\ml_training\\data\\processed\\fine_tuning_dataset.jsonl",
       "examples": 250,
-      "time_seconds": 0.10945773124694824
+      "time_seconds": 0.13908886909484863
     },
     {
       "stage": "stage_8_master_evaluation",
@@ -212,7 +212,7 @@
           ]
         }
       },
-      "time_seconds": 0.3255326747894287
+      "time_seconds": 0.3691446781158447
     }
   ],
   "status": "ALL_MODELS_TRAINED_AND_VERIFIED"
