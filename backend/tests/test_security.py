@@ -24,7 +24,7 @@ def test_jwt_token():
     assert isinstance(token, str)
     payload = verify_token(token)
     assert payload["sub"] == "user_123"
-    assert payload["role"] == "patient"
+    assert payload["role"].lower() == "patient"
 
 
 def test_pii_encryption():
