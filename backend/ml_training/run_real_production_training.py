@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 CuraVeris - Real Full-Scale Production Training Orchestrator
 
@@ -66,7 +66,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
     handlers=[
-        logging.FileHandler(log_file),
+        logging.FileHandler(log_file, encoding="utf-8"),
         logging.StreamHandler(sys.stdout),
     ],
 )
@@ -122,6 +122,14 @@ def autocast_ctx(precision, device):
     return torch.autocast(device_type=device, dtype=dtype)
 
 
+def resolve_jsonl_path(filename: str) -> Path:
+    p1 = BASE_DIR / "ml_training" / "data" / "normalized" / filename
+    p2 = BASE_DIR / "ml_training" / "data" / "processed" / "decoupled_tasks" / filename
+    if p1.exists():
+        return p1
+    return p2
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 - Dataset Partitioning (real scale: thousands of scenarios)
 # ---------------------------------------------------------------------------
@@ -154,7 +162,7 @@ def stage_2(args):
         log.warning(f"  [SKIP] {e}. Run: pip install xgboost scikit-learn imbalanced-learn")
         return {}
 
-    jsonl_path = BASE_DIR / "ml_training" / "data" / "normalized" / "task_d_tabular_anomaly_classification.jsonl"
+    jsonl_path = resolve_jsonl_path("task_d_tabular_anomaly_classification.jsonl")
     if not jsonl_path.exists():
         log.warning("  [SKIP] JSONL not found. Run Stage 1 first.")
         return {}
@@ -170,7 +178,9 @@ def stage_2(args):
     log.info(f"  Features: {X.shape} | Class distribution: {np.bincount(y)}")
     if len(np.unique(y)) > 1 and np.min(np.bincount(y)) >= 2:
         sm = SMOTE(random_state=42)
-        X, y = sm.fit_resample(X, y)
+        resampled = sm.fit_resample(X, y)
+        X = np.asarray(resampled[0], dtype=np.float32)
+        y = np.asarray(resampled[1], dtype=np.int32)
         log.info(f"  After SMOTE: {X.shape} | Balanced: {np.bincount(y)}")
 
     X_tr, X_va, y_tr, y_va = train_test_split(X, y, test_size=0.15, random_state=42, stratify=y)
@@ -246,7 +256,7 @@ def stage_4(args):
     banner(4, "Real Deep MLP Neural Network (128-64-32 + MC Dropout)")
     from torch.utils.data import TensorDataset, DataLoader
 
-    jsonl_path = BASE_DIR / "ml_training" / "data" / "normalized" / "task_d_tabular_anomaly_classification.jsonl"
+    jsonl_path = resolve_jsonl_path("task_d_tabular_anomaly_classification.jsonl")
     if not jsonl_path.exists():
         log.warning("  [SKIP] JSONL not found. Run Stage 1 first.")
         return {}
@@ -363,16 +373,18 @@ def stage_6(args):
     log.info(f"  Parameters: {total:,}  ({total/1e9:.3f}B)")
     log.info(f"  Device: {args.device.upper()} | Epochs: {args.epochs} | Seq: {args.seq_len} | Batch: {args.batch_size} | Precision: {args.precision}")
 
-    jsonl_path = BASE_DIR / "ml_training" / "data" / "normalized" / "task_f_legal_advocacy_sft.jsonl"
+    jsonl_path = resolve_jsonl_path("task_f_legal_advocacy_sft.jsonl")
     n_records = max(len(load_jsonl(jsonl_path)) if jsonl_path.exists() else 0, 200)
     steps_per_epoch = max(n_records // args.batch_size, 1)
+    if args.max_steps_per_epoch:
+        steps_per_epoch = min(steps_per_epoch, args.max_steps_per_epoch)
     total_steps = steps_per_epoch * args.epochs
     log.info(f"  Records: {n_records:,} | Steps/Epoch: {steps_per_epoch:,} | Total Steps: {total_steps:,}")
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.01)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=total_steps)
     loss_fn = MultiTaskFocalHuberLoss4B()
-    scaler = torch.cuda.amp.GradScaler(enabled=(args.precision == "fp16" and args.device == "cuda"))
+    scaler = torch.amp.GradScaler("cuda", enabled=(args.precision == "fp16" and args.device == "cuda"))
 
     before_w = next(p for n, p in model.named_parameters() if p.requires_grad).detach().clone()
     model.train()
@@ -429,16 +441,23 @@ def stage_7(args):
     log.info(f"  Parameters: {total:,}  ({total/1e9:.3f}B)")
     log.info(f"  Device: {args.device.upper()} | Epochs: {args.epochs}")
 
-    jsonl_path = BASE_DIR / "ml_training" / "data" / "normalized" / "task_f_legal_advocacy_sft.jsonl"
+    jsonl_path = resolve_jsonl_path("task_f_legal_advocacy_sft.jsonl")
     n_records = max(len(load_jsonl(jsonl_path)) if jsonl_path.exists() else 0, 200)
-    steps_per_epoch = max(n_records // args.batch_size, 1)
+    batch_size = 2 if args.device == "cpu" else args.batch_size
+    seq_len = min(args.seq_len, 64) if args.device == "cpu" else args.seq_len
+    steps_per_epoch = max(n_records // batch_size, 1)
+    if args.max_steps_per_epoch:
+        steps_per_epoch = min(steps_per_epoch, args.max_steps_per_epoch)
     total_steps = steps_per_epoch * args.epochs
     log.info(f"  Records: {n_records:,} | Steps/Epoch: {steps_per_epoch:,} | Total Steps: {total_steps:,}")
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=2e-4, weight_decay=0.01)
+    if args.device == "cpu":
+        optimizer = torch.optim.SGD(model.parameters(), lr=1e-4, momentum=0.9)
+    else:
+        optimizer = torch.optim.AdamW(model.parameters(), lr=2e-4, weight_decay=0.01)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=total_steps)
     loss_fn = MultiTaskFocalHuberLoss4B()
-    scaler = torch.cuda.amp.GradScaler(enabled=(args.precision == "fp16" and args.device == "cuda"))
+    scaler = torch.amp.GradScaler("cuda", enabled=(args.precision == "fp16" and args.device == "cuda"))
 
     before_w = next(p for n, p in model.named_parameters() if p.requires_grad).detach().clone()
     model.train()
@@ -447,10 +466,10 @@ def stage_7(args):
     for epoch in range(1, args.epochs + 1):
         ep_loss = 0.0
         for step in range(1, steps_per_epoch + 1):
-            optimizer.zero_grad()
-            ids = torch.randint(0, config.vocab_size, (args.batch_size, args.seq_len), device=args.device)
-            at = torch.randint(0, 2, (args.batch_size, config.num_anomaly_classes), dtype=torch.float32, device=args.device)
-            rt = torch.rand(args.batch_size, device=args.device) * 100000.0
+            optimizer.zero_grad(set_to_none=True)
+            ids = torch.randint(0, config.vocab_size, (batch_size, seq_len), device=args.device)
+            at = torch.randint(0, 2, (batch_size, config.num_anomaly_classes), dtype=torch.float32, device=args.device)
+            rt = torch.rand(batch_size, device=args.device) * 100000.0
             with autocast_ctx(args.precision, args.device):
                 out = model(input_ids=ids, labels=ids.clone())
                 ld = loss_fn(out["loss"], out["anomaly_logits"], at, out["restitution_prediction"], rt)
@@ -523,6 +542,8 @@ def main():
     parser.add_argument("--precision",        type=str,  default="fp32",
                         choices=["fp32", "fp16", "bf16"])
     parser.add_argument("--checkpoint-every", type=int,  default=200)
+    parser.add_argument("--max-steps-per-epoch", type=int, default=None,
+                        help="Optional cap on steps per epoch for fast local CPU execution.")
     parser.add_argument("--skip-layoutlm",    action="store_true")
     parser.add_argument("--resume-from",      type=str,  default=None)
     parser.add_argument("--skip-stages",      type=str,  default="",
@@ -538,14 +559,18 @@ def main():
     log.info("=" * 80)
 
     t0 = time.time()
-    if 1 not in skip: stage_1(args)
-    if 2 not in skip: stage_2(args)
-    if 3 not in skip: stage_3(args)
-    if 4 not in skip: stage_4(args)
-    if 5 not in skip: stage_5(args)
-    if 6 not in skip: stage_6(args)
-    if 7 not in skip: stage_7(args)
-    if 8 not in skip: stage_8()
+    try:
+        if 1 not in skip: stage_1(args)
+        if 2 not in skip: stage_2(args)
+        if 3 not in skip: stage_3(args)
+        if 4 not in skip: stage_4(args)
+        if 5 not in skip: stage_5(args)
+        if 6 not in skip: stage_6(args)
+        if 7 not in skip: stage_7(args)
+        if 8 not in skip: stage_8()
+    except Exception as e:
+        log.exception(f"FATAL ERROR during production training execution: {e}")
+        raise
 
     elapsed = time.time() - t0
     log.info(f"\n[OK] REAL PRODUCTION TRAINING COMPLETED IN {elapsed/3600:.2f} hours ({elapsed:.0f}s)")
