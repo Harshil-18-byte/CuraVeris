@@ -21,7 +21,7 @@ class SecurityCredentials(BaseModel):
         description="HMAC-SHA256 signing secret for stateless JWT tokens."
     )
     encryption_key: str = Field(
-        default="Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA==",
+        default="QMtBT1JbfKzD_rGs4_GWvCF16hCvXADnr1I4yhiYZrw=",
         description="Fernet (AES-128-CBC + HMAC-SHA256) 32 url-safe base64 bytes for PII fields."
     )
     algorithm: str = Field(default="HS256", description="JWT signing algorithm.")
