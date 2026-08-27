@@ -33,13 +33,22 @@ from ml_training.training.train_4b_from_scratch import MultiTaskFocalHuberLoss4B
 
 def load_real_training_dataset(dataset_path: Path) -> List[Dict[str, Any]]:
     """Loads and validates real training examples from JSONL."""
-    if not dataset_path.exists():
-        # Fallback to multi-task audit instructions
-        dataset_path = BASE_DIR / "data" / "training" / "audit" / "task_e_audit_sft_instructions.jsonl"
+    candidates = [
+        dataset_path,
+        BASE_DIR / "ml_training" / "data" / "processed" / "decoupled_tasks" / "task_f_legal_advocacy_sft.jsonl",
+        BASE_DIR / "ml_training" / "data" / "processed" / "decoupled_tasks" / "task_e_deterministic_math_audit.jsonl",
+        BASE_DIR / "data" / "training" / "audit" / "task_e_audit_sft_instructions.jsonl",
+        BASE_DIR.parent / "data" / "training" / "audit" / "task_e_audit_sft_instructions.jsonl",
+    ]
+    target_path = dataset_path
+    for c in candidates:
+        if c.exists() and c.stat().st_size > 0:
+            target_path = c
+            break
 
     examples = []
-    if dataset_path.exists():
-        with open(dataset_path, "r", encoding="utf-8") as f:
+    if target_path.exists():
+        with open(target_path, "r", encoding="utf-8") as f:
             for line in f:
                 if line.strip():
                     try:
