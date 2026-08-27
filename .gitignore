@@ -29,6 +29,9 @@ env.bak/
 venv.bak/
 */venv/
 */.venv/
+**/venv/
+**/.venv/
+backend/venv/
 
 # Installer logs
 pip-log.txt
@@ -128,6 +131,8 @@ log/
 .spyproject
 .spyderproject.cfg
 .ropeproject
+.agent/
+.claude/
 
 # =============================================================================
 # OS specific
@@ -181,6 +186,7 @@ temp/
 *.bak
 *.orig
 *.rej
+*.pdf
 
 # =============================================================================
 # Jupyter notebooks checkpoints
