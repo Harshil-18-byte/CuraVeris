@@ -1,6 +1,6 @@
 import json
 import asyncio
-from typing import Dict, Any, List, AsyncGenerator
+from typing import Dict, Any, List, Optional, AsyncGenerator
 from app.core.credentials import credentials
 from app.core.config import settings
 from app.core.logging import logger
@@ -36,10 +36,19 @@ Return concise, actionable, authoritative advice.
 
 class AIExplainer:
     def __init__(self):
-        self.has_anthropic = bool(credentials.llm.anthropic_api_key)
-        self.has_gemini = bool(credentials.llm.gemini_api_key)
-        self.has_openai = bool(credentials.llm.openai_api_key)
+        pass
 
+    @property
+    def has_anthropic(self) -> bool:
+        return bool(credentials.llm.anthropic_api_key)
+
+    @property
+    def has_gemini(self) -> bool:
+        return bool(credentials.llm.gemini_api_key)
+
+    @property
+    def has_openai(self) -> bool:
+        return bool(credentials.llm.openai_api_key)
 
     def generate_plain_summary(self, audit_result: Dict[str, Any], metadata: Dict[str, Any]) -> str:
         """
@@ -77,12 +86,43 @@ class AIExplainer:
         self,
         bill_context: Dict[str, Any],
         user_message: str,
-        chat_history: List[Dict[str, str]] = None
+        chat_history: Optional[List[Dict[str, str]]] = None
     ) -> AsyncGenerator[str, None]:
         """
-        Stream chat tokens to frontend. Uses cloud LLM if configured,
-        or deterministic medical legal assistant fallback.
+        Stream chat tokens to frontend. Uses OpenAI / Gemini / Anthropic cloud LLM if configured,
+        or deterministic statutory medical legal assistant fallback.
         """
+        # Try OpenAI streaming first if API key configured
+        openai_key = credentials.llm.openai_api_key or settings.OPENAI_API_KEY
+        if openai_key and openai_key.startswith("sk-"):
+            try:
+                from openai import AsyncOpenAI
+                client = AsyncOpenAI(api_key=openai_key)
+                context_str = json.dumps(bill_context, indent=2, default=str)
+                messages = [
+                    {"role": "system", "content": f"{MASTER_SYSTEM_PROMPT}\n\nInvoice Audit Context:\n{context_str}"}
+                ]
+                if chat_history:
+                    for h in chat_history[-6:]:
+                        messages.append({"role": h.get("role", "user"), "content": h.get("content", "")})
+                messages.append({"role": "user", "content": user_message})
+
+                stream = await client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=messages,
+                    stream=True,
+                    temperature=0.2,
+                    max_tokens=800
+                )
+                async for chunk in stream:
+                    content = chunk.choices[0].delta.content or ""
+                    if content:
+                        yield content
+                return
+            except Exception as e:
+                logger.debug(f"OpenAI live stream failed ({e}), falling back to deterministic assistant")
+
+        # Deterministic Medico-Legal Rule Engine Fallback
         user_msg_lower = user_message.lower()
         hospital = bill_context.get("hospital_name", "the hospital")
         total_billed = bill_context.get("total_billed", 0)
@@ -91,7 +131,6 @@ class AIExplainer:
         flags = bill_context.get("risk_flags_summary", [])
         items = bill_context.get("items", [])
 
-        # Heuristic intelligent responses if external keys are not yet configured
         if "gst" in user_msg_lower:
             response = (
                 f"Regarding the GST charges on your bill from {hospital}:\n\n"
