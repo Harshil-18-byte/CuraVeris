@@ -280,7 +280,8 @@ async def anonymize_my_account(
     DPDP Act 2023 Right-to-Erasure endpoint.
     Permanently redacts patient PII and deactivates the user account.
     """
-    setattr(current_user, "full_name", f"Redacted User {str(current_user.id)[:8]}")
+    pseudonym = f"DPDP_Anonymized_Patient_{str(current_user.id)[:8]}"
+    setattr(current_user, "full_name", pseudonym)
     setattr(current_user, "email", f"erased_{str(current_user.id)}@curaveris.internal")
     setattr(current_user, "encrypted_phone", None)
     setattr(current_user, "is_active", False)
@@ -293,5 +294,7 @@ async def anonymize_my_account(
     await db.commit()
     return {
         "status": "anonymized",
+        "pseudonym": pseudonym,
+        "statutory_compliance": "Digital Personal Data Protection Act 2023 Section 12",
         "message": "User PII successfully erased in compliance with DPDP Act 2023 Section 12."
     }
