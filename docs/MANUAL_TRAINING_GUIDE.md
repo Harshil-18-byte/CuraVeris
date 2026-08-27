@@ -1,19 +1,3 @@
-﻿---
-{
-  "id": "file_sl0o0xtg",
-  "filetype": "document",
-  "filename": "MANUAL_TRAINING_GUIDE",
-  "created_at": "2026-08-27T04:24:40.073Z",
-  "updated_at": "2026-08-27T04:24:45.270Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris - Complete Production Model Training Guide
 
 Generated: 2026-08-27
