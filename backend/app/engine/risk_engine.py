@@ -119,6 +119,25 @@ class RiskAuditEngine:
         self._ensure_models_loaded()
         from app.ml.dataset_generator import CATEGORIES, FLAG_NAMES
 
+        # Ensure every item has standard sanitized keys
+        sanitized_items = []
+        for i in items:
+            raw_t = i.get("raw_text") or i.get("item_name") or ""
+            norm_t = i.get("normalized_name") or raw_t
+            cat_t = i.get("category") or "procedure"
+            qty_t = max(float(i.get("quantity") or 1.0), 1.0)
+            rate_t = float(i.get("charged_rate") or i.get("unit_price") or 0.0)
+            amt_t = float(i.get("charged_amount") or (rate_t * qty_t))
+            item_copy = dict(i)
+            item_copy["raw_text"] = raw_t
+            item_copy["normalized_name"] = norm_t
+            item_copy["category"] = cat_t
+            item_copy["quantity"] = qty_t
+            item_copy["charged_rate"] = rate_t
+            item_copy["charged_amount"] = amt_t
+            sanitized_items.append(item_copy)
+        items = sanitized_items
+
         audited_items = []
         total_billed = sum(i["charged_amount"] for i in items)
         total_fair_estimate = 0.0
@@ -160,7 +179,7 @@ class RiskAuditEngine:
         # Reference lookups per item (needed for ML features and rule checks)
         item_refs = []
         for item in items:
-            norm_name = item["normalized_name"]
+            norm_name = item.get("normalized_name") or item.get("raw_text") or item.get("item_name", "")
             cghs_info = query_cghs_rate(norm_name)
             dpco_info = query_dpco_drug(norm_name)
             nppa_info = query_nppa_device(norm_name)
@@ -234,12 +253,12 @@ class RiskAuditEngine:
 
 
         for idx, item in enumerate(items):
-            raw_text = item["raw_text"]
-            norm_name = item["normalized_name"]
-            cat = item["category"]
-            qty = max(item["quantity"], 1.0)
-            charged_rate = item["charged_rate"]
-            charged_amount = item["charged_amount"]
+            raw_text = item.get("raw_text") or item.get("item_name") or ""
+            norm_name = item.get("normalized_name") or raw_text
+            cat = item.get("category") or "procedure"
+            qty = max(float(item.get("quantity") or 1.0), 1.0)
+            charged_rate = float(item.get("charged_rate") or item.get("unit_price") or 0.0)
+            charged_amount = float(item.get("charged_amount") or (charged_rate * qty))
 
             flags = []
             legal_citations = []
