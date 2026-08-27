@@ -1,10 +1,10 @@
-﻿---
+---
 {
-  "id": "file_hni065g8",
+  "id": "file_osix84y0",
   "filetype": "document",
   "filename": "PRODUCTION_TRAINING_GUIDE",
-  "created_at": "2026-08-26T17:50:30.036Z",
-  "updated_at": "2026-08-26T17:52:46.877Z",
+  "created_at": "2026-08-27T08:15:59.881Z",
+  "updated_at": "2026-08-27T08:15:59.881Z",
   "meta": {
     "location": "/",
     "tags": [],
