@@ -2,7 +2,7 @@ import os
 import joblib
 import numpy as np
 from difflib import SequenceMatcher
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from app.db.reference_data import (
     query_cghs_rate,
     query_nppa_device,
@@ -22,12 +22,25 @@ def string_similarity(a: str, b: str) -> float:
 class RiskAuditEngine:
     def __init__(self):
         self.model_artifact = None
+        self.hybrid_ensemble = None
+        self.deep_model = None
+        self._models_loaded = False
+
+    def _ensure_models_loaded(self):
+        """Lazy load trained ML models and hybrid ensemble upon first request."""
+        if self._models_loaded:
+            return
         self._load_model()
+        self._models_loaded = True
 
     def _load_model(self):
         """Load trained ML models and hybrid ensemble if present."""
         self.hybrid_ensemble = None
         self.deep_model = None
+
+        if os.environ.get("ENV") == "testing":
+            # Fast-path for testing: avoid unpickling 100MB+ deep neural net artifacts
+            return
 
         if os.path.exists(MODEL_PATH):
             try:
@@ -60,6 +73,7 @@ class RiskAuditEngine:
         """
         Runs inference through the Hybrid Stacking Ensemble with Monte Carlo uncertainty estimation.
         """
+        self._ensure_models_loaded()
         if self.hybrid_ensemble is not None:
             try:
                 probas = self.hybrid_ensemble.predict_proba(X)
@@ -93,7 +107,7 @@ class RiskAuditEngine:
         }
 
 
-    def audit_bill(self, metadata: Dict[str, Any], items: List[Dict[str, Any]], razorpay_gap_info: Dict[str, Any] = None) -> Dict[str, Any]:
+    def audit_bill(self, metadata: Dict[str, Any], items: List[Dict[str, Any]], razorpay_gap_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Comprehensive hybrid audit:
         1. Bill-level feature pre-computation (fixes train/inference skew)
@@ -102,6 +116,7 @@ class RiskAuditEngine:
         4. ML inference on bill-level feature matrix (hybrid XGBoost + MLP ensemble)
         5. Composite weighted risk score (deterministic 90% + ML 10%)
         """
+        self._ensure_models_loaded()
         from app.ml.dataset_generator import CATEGORIES, FLAG_NAMES
 
         audited_items = []
