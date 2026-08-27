@@ -99,12 +99,69 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 # ---------------------------------------------------------------------------
+# OpenAPI Tags Metadata
+# ---------------------------------------------------------------------------
+tags_metadata = [
+    {
+        "name": "Authentication & Access Control",
+        "description": "User registration, multi-tenant RBAC, JWT access/refresh token rotation, and DPDP Act 2023 Section 12 Right-to-Erasure compliance.",
+    },
+    {
+        "name": "Bills & Audits",
+        "description": "Multi-modal medical bill ingestion (PDF/Images/OCR), deterministic statutory audits (NPPA, DPCO, CGHS, IRDAI), and hybrid ML risk predictions.",
+    },
+    {
+        "name": "Reports & Disputes",
+        "description": "Generation of legally-binding dispute letters, Insurance Ombudsman petitions, and High Court anti-detention emergency notices.",
+    },
+    {
+        "name": "Insurance & TPA Reconciliation",
+        "description": "TPA claim reimbursement gap reconciliation, policy coverage analysis, and non-payable item dispute tracking.",
+    },
+    {
+        "name": "Razorpay Payments & Webhooks",
+        "description": "Payment gateway webhook signature verification, co-pay shortfall processing, and hospital balance reconciliation.",
+    },
+    {
+        "name": "Hospital Finance & Revenue Recovery",
+        "description": "Hospital ledger analytics, multi-currency conversions, financial hardship distress indices (DSTI), and revenue leakage audit.",
+    },
+    {
+        "name": "ABHA & ABDM Digital Health Records",
+        "description": "Ayushman Bharat Digital Mission (ABDM) integration, ABHA ID verification, and PM-JAY zero-cash package validation.",
+    },
+    {
+        "name": "Third-Party Integrations",
+        "description": "External hospital information system (HIS) hooks, electronic medical record (EMR) integrations, and partner endpoints.",
+    },
+    {
+        "name": "AI Chat",
+        "description": "Conversational AI patient advocacy assistant providing contextual statutory guidance and bill dispute explanations.",
+    },
+    {
+        "name": "Developer ML Observability",
+        "description": "Model telemetry, SHAP explainability inspectors, benchmark dataset generation, and continuous training observability.",
+    },
+]
+
+
+# ---------------------------------------------------------------------------
 # Application factory
 # ---------------------------------------------------------------------------
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Hospital Bill Audit and Statutory Regulatory Enforcement Engine for India.",
+    description=settings.DESCRIPTION,
+    openapi_tags=tags_metadata,
+    contact={
+        "name": "CuraVeris Engineering Team",
+        "url": settings.REPOSITORY_URL,
+        "email": "support@curaveris.internal",
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT",
+    },
     lifespan=lifespan,
     # Disable Swagger/ReDoc in production to reduce attack surface
     docs_url="/docs" if settings.ENV == "development" else None,
