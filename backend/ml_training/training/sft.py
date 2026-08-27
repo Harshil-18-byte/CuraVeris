@@ -9,9 +9,38 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 
+def resolve_dataset(dataset_path: str) -> Path:
+    """Find dataset across common decoupled tasks paths or auto-generate."""
+    candidates = [
+        BASE_DIR / dataset_path,
+        BASE_DIR / "ml_training" / "data" / "processed" / "decoupled_tasks" / "task_f_legal_advocacy_sft.jsonl",
+        BASE_DIR / "ml_training" / "data" / "processed" / "decoupled_tasks" / "task_e_deterministic_math_audit.jsonl",
+        BASE_DIR.parent / "data" / "training" / "audit" / "task_e_audit_sft_instructions.jsonl",
+        BASE_DIR / "data" / "training" / "audit" / "task_e_audit_sft_instructions.jsonl",
+    ]
+    for c in candidates:
+        if c.exists() and c.stat().st_size > 0:
+            return c
+
+    # If missing, auto-generate via MultiTaskDatasetPartitioner
+    print("[*] SFT dataset not found on disk. Generating multi-task corpus...")
+    try:
+        from ml_training.generators.dataset_partitioner import MultiTaskDatasetPartitioner
+        partitioner = MultiTaskDatasetPartitioner()
+        bills = partitioner.generate_scaled_master_corpus(num_scenarios=20)
+        partitioner.export_decoupled_tasks(bills)
+        target = BASE_DIR / "ml_training" / "data" / "processed" / "decoupled_tasks" / "task_f_legal_advocacy_sft.jsonl"
+        if target.exists():
+            return target
+    except Exception as e:
+        print(f"[!] Auto-generation warning: {e}")
+
+    return BASE_DIR / dataset_path
+
+
 def run_sft_pipeline(
     model_id: str = "Qwen/Qwen3-4B",
-    dataset_path: str = "data/training/audit/task_e_audit_sft_instructions.jsonl",
+    dataset_path: str = "ml_training/data/processed/decoupled_tasks/task_f_legal_advocacy_sft.jsonl",
     output_dir: str = "models/adapters/audit_qwen_qlora_v1",
     epochs: int = 2,
     batch_size: int = 1,
@@ -21,14 +50,14 @@ def run_sft_pipeline(
     print("🧠 QWEN-4B QLORA SUPERVISED FINE-TUNING PIPELINE")
     print("================================================================")
     print(f"Base Model:       {model_id}")
-    print(f"Dataset:          {dataset_path}")
     print(f"Output Adapters:  {output_dir}")
     print(f"Quantization:     4-bit NF4 with double quantization (BitsAndBytes)")
     print(f"PEFT Config:      LoRA (r=32, alpha=64, dropout=0.05, target=q/k/v/o/gate/up/down)")
     print(f"Trainer:          HuggingFace TRL SFTTrainer (completion-only loss, bf16)")
     print("================================================================")
 
-    data_file = BASE_DIR / dataset_path
+    data_file = resolve_dataset(dataset_path)
+    print(f"Dataset Path:     {data_file}")
     if not data_file.exists():
         print(f"[!] Dataset file {data_file} not found.")
         return
