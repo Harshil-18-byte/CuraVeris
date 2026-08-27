@@ -11,6 +11,7 @@ import hmac
 import hashlib
 from decimal import Decimal
 from typing import Dict, Any, Optional
+from app.core.config import settings
 from app.core.credentials import credentials
 from app.core.currency import to_decimal, to_paise, from_paise
 from app.core.logging import logger
@@ -23,10 +24,24 @@ except Exception:
 
 
 class RazorpayService:
-    def __init__(self):
-        self.key_id = credentials.payments.key_id
-        self.key_secret = credentials.payments.key_secret
-        self.webhook_secret = credentials.payments.webhook_secret
+    @property
+    def key_id(self) -> str:
+        return credentials.payments.key_id or settings.RAZORPAY_KEY_ID
+
+    @property
+    def key_secret(self) -> str:
+        return credentials.payments.key_secret or settings.RAZORPAY_KEY_SECRET
+
+    @property
+    def webhook_secret(self) -> str:
+        return credentials.payments.webhook_secret or settings.RAZORPAY_WEBHOOK_SECRET
+
+    def _get_client(self):
+        try:
+            import razorpay
+            return razorpay.Client(auth=(self.key_id, self.key_secret))
+        except Exception:
+            return None
 
     def create_order(
         self,
@@ -44,7 +59,8 @@ class RazorpayService:
         order_notes["invoice_id"] = invoice_id
         order_notes["purpose"] = "Hospital Inpatient Settlement"
 
-        if razorpay_client and not self.key_id.startswith("rzp_test_mock"):
+        client = self._get_client()
+        if client and not self.key_id.startswith("rzp_test_mock"):
             try:
                 order_payload = {
                     "amount": amount_paise,
@@ -53,7 +69,7 @@ class RazorpayService:
                     "notes": order_notes,
                     "payment_capture": 1
                 }
-                return razorpay_client.order.create(data=order_payload)
+                return client.order.create(data=order_payload)
             except Exception as e:
                 logger.error(f"Razorpay live order creation failed: {e}. Falling back to deterministic sandbox order.")
 
