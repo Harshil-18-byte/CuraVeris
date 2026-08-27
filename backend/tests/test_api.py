@@ -68,8 +68,8 @@ async def test_auth_and_bill_workflow(async_client: AsyncClient):
     bill_data = upload_resp.json()
     bill_id = bill_data["bill_id"]
     assert bill_id is not None
-    assert bill_data["total_overcharge"] > 25000.00  # Stent + Pantoprazole + GST + Duplicate ECG
-    assert bill_data["risk_score"] > 40.0
+    assert float(bill_data["total_overcharge"]) > 25000.00  # Stent + Pantoprazole + GST + Duplicate ECG
+    assert float(bill_data["risk_score"]) > 40.0
 
     # 4. Chat with the bill
     chat_resp = await async_client.post(
@@ -95,7 +95,7 @@ async def test_auth_and_bill_workflow(async_client: AsyncClient):
     )
     assert rec_resp.status_code == 200
     rec_data = rec_resp.json()
-    assert rec_data["patient_unjust_gap"] > 0
+    assert float(rec_data["patient_unjust_gap"]) > 0
     assert rec_data["refund_link_recommended"] is True
 
     # 6. Generate Formal Legal Dispute Petition (Hospital Grievance)
@@ -119,15 +119,17 @@ async def test_auth_and_bill_workflow(async_client: AsyncClient):
     webhook_resp = await async_client.post(
         "/api/v1/razorpay/webhook",
         content=fake_body,
-        headers={"X-Razorpay-Signature": "invalid_forged_sig"}
+        headers={"X-Razorpay-Signature": "invalid_forged_sig", "Content-Type": "application/json"}
     )
     assert webhook_resp.status_code == 403
 
     # With valid HMAC signature
-    valid_sig = hmac.new(settings.RAZORPAY_WEBHOOK_SECRET.encode(), fake_body, hashlib.sha256).hexdigest()
+    from app.core.credentials import credentials
+    secret = credentials.payments.webhook_secret.encode("utf-8")
+    valid_sig = hmac.new(secret, fake_body, hashlib.sha256).hexdigest()
     webhook_ok = await async_client.post(
         "/api/v1/razorpay/webhook",
         content=fake_body,
-        headers={"X-Razorpay-Signature": valid_sig}
+        headers={"X-Razorpay-Signature": valid_sig, "Content-Type": "application/json"}
     )
     assert webhook_ok.status_code == 200
