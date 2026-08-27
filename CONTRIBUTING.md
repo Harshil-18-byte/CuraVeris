@@ -1,3 +1,19 @@
+---
+{
+  "id": "file_dp6zl5a4",
+  "filetype": "document",
+  "filename": "CONTRIBUTING",
+  "created_at": "2026-08-27T08:15:44.318Z",
+  "updated_at": "2026-08-27T08:15:44.318Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # Contributing to CuraVeris
 
 Thank you for your interest in contributing to CuraVeris — India's open-source hospital bill audit and patient protection platform. This document explains how to contribute code, documentation, statutory data, and bug reports.
@@ -42,16 +58,19 @@ CuraVeris serves patients navigating some of the most stressful moments of their
 ### Prerequisites
 
 - Python 3.11+
-- `git`
+- `git` & `git-lfs`
 - `uv` or `pip`
 - PostgreSQL 15+ (or SQLite for local dev)
 
 ### Quick Start
 
 ```bash
-# 1. Fork and clone
+# 1. Initialize Git LFS, fork and clone
+git lfs install
 git clone https://github.com/your-username/CuraVeris.git
-cd CuraVeris/backend
+cd CuraVeris
+git lfs pull
+cd backend
 
 # 2. Create virtual environment
 python -m venv venv
