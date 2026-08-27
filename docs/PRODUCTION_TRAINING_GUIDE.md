@@ -1,17 +1,34 @@
-﻿# CuraVeris Production Training Guide
+﻿---
+{
+  "id": "file_hni065g8",
+  "filetype": "document",
+  "filename": "PRODUCTION_TRAINING_GUIDE",
+  "created_at": "2026-08-26T17:50:30.036Z",
+  "updated_at": "2026-08-26T17:52:46.877Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
+# CuraVeris Production Training Guide
 
 This document explains how to run the **real** hours-long production training that produces properly sized, properly trained models.
 
 ## The Two Scripts
 
 | Script | What it does | Time |
-|--------|-------------|------|
-| `run_full_production_training.py` | Quick verification run. Tiny models, synthetic steps. Proves the pipeline is wired correctly. | ~47 seconds |
+| :--- | :--- | :--- |
+| `run_full_production_training.py` | Quick verification run. Tiny models, synthetic steps. Proves the pipeline is wired correctly. | \~47 seconds |
 | `run_real_production_training.py` | **Real training.** Full model sizes, full datasets, real epochs. Checkpoints saved. | **14-22 hours on A100** |
 
 ## Why the Quick Script Finishes in Seconds
 
 The quick script uses:
+
 - CuraVeris-1B hidden_size=**384**, layers=**4** (real: 768, 12)
 - CuraVeris-4B hidden_size=**512**, layers=**4** (real: 1536, 16)
 - Only **20 random steps** with batch=1, seq=64
@@ -23,29 +40,32 @@ The real script uses actual model dimensions, a real DataLoader, real epochs, an
 ## Hardware You Need
 
 ### Minimum (to run at all)
+
 - 16 GB VRAM (RTX 3090 / RTX 4090 / A4000)
 - Can run CuraVeris-1B in fp16. 4B will OOM — use `--skip-stages 7`.
 
 ### Recommended
+
 - 40 GB VRAM (A100-40G)
-- Runs both 1B and 4B in bf16. Full pipeline ~14 hours.
+- Runs both 1B and 4B in bf16. Full pipeline \~14 hours.
 
 ### Ideal
+
 - 80 GB VRAM (A100-80G / H100)
 - Full fp32 with larger batch sizes. LayoutLMv3 + 4B simultaneously.
 
 ## Cloud GPU Options (Cheapest to Most Powerful)
 
 | Provider | GPU | VRAM | Cost/hr | Notes |
-|----------|-----|------|---------|-------|
-| **RunPod** | RTX 3090 | 24 GB | ~$0.24 | Spot pricing |
-| **RunPod** | A100 SXM | 80 GB | ~$1.64 | Best value for full run |
-| **Lambda Labs** | A100-40G | 40 GB | ~$1.10 | Reliable, no spot risk |
-| **Vast.ai** | RTX 4090 | 24 GB | ~$0.35 | Cheap for 1B only |
-| **Google Colab Pro+** | A100 | 40 GB | ~$50/mo | Good for 1B, 4B is tight |
-| **AWS p4d.24xlarge** | 8x A100 | 320 GB | ~$32/hr | Multi-GPU DDP |
+| :--- | :--- | :--- | :--- | :--- |
+| **RunPod** | RTX 3090 | 24 GB | \~$0.24 | Spot pricing |
+| **RunPod** | A100 SXM | 80 GB | \~$1.64 | Best value for full run |
+| **Lambda Labs** | A100-40G | 40 GB | \~$1.10 | Reliable, no spot risk |
+| **Vast.ai** | RTX 4090 | 24 GB | \~$0.35 | Cheap for 1B only |
+| **Google Colab Pro+** | A100 | 40 GB | \~$50/mo | Good for 1B, 4B is tight |
+| **AWS p4d.24xlarge** | 8x A100 | 320 GB | \~$32/hr | Multi-GPU DDP |
 
-**Recommended for CuraVeris**: RunPod A100 SXM 80GB (~$1.64/hr x 20hr = ~$33 total)
+**Recommended for CuraVeris**: RunPod A100 SXM 80GB (\~$1.64/hr x 20hr = ~$33 total)
 
 ## Step-by-Step: RunPod Setup
 
@@ -163,13 +183,13 @@ rsync -avz --progress \
 ### Quick Run vs Real Production
 
 | Config | Quick (47s) | Real Production |
-|--------|-------------|-----------------|
+| :--- | :--- | :--- |
 | CuraVeris-1B hidden_size | 384 | **768** |
 | CuraVeris-1B layers | 4 | **12** |
-| CuraVeris-1B parameters | ~31M | **~200M** |
+| CuraVeris-1B parameters | \~31M | **\~200M** |
 | CuraVeris-4B hidden_size | 512 | **1536** |
 | CuraVeris-4B layers | 4 | **16** |
-| CuraVeris-4B parameters | ~45M | **~3-4B** |
+| CuraVeris-4B parameters | \~45M | **\~3-4B** |
 | Batch size | 1 | **8-32** |
 | Sequence length | 64 | **512-1024** |
 | Training steps | 20 | **thousands** |
@@ -208,6 +228,7 @@ Notice: loss is actually **decreasing** across steps (not fixed), weight delta i
 LayoutLMv3 needs annotated bill images in FUNSD format. This is the most expensive stage to prepare data for.
 
 ### Minimal setup to enable it:
+
 ```bash
 # 1. Get HuggingFace token (free at huggingface.co)
 export HF_TOKEN=hf_xxxxxxxxxxxxxxxxxx
