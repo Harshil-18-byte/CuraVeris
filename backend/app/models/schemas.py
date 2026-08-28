@@ -11,6 +11,41 @@ from datetime import datetime
 
 
 # ---------------------------------------------------------------------------
+# 0. System, Health & Diagnostic Schemas
+# ---------------------------------------------------------------------------
+
+class HealthResponse(BaseModel):
+    status: str = Field(..., description="Overall health status: 'healthy' or 'degraded'")
+    environment: str = Field(..., description="Active runtime environment")
+    version: str = Field(..., description="Application semantic version")
+    database: bool = Field(..., description="Database connectivity status")
+    reference_db: bool = Field(..., description="Statutory reference SQLite database presence")
+    database_error: Optional[str] = Field(None, description="Optional error message if database check failed")
+
+
+class LivenessResponse(BaseModel):
+    status: str = Field("alive", description="Process liveness indicator")
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="UTC timestamp of the probe")
+
+
+class ReadinessResponse(BaseModel):
+    status: str = Field(..., description="Readiness status: 'ready' or 'not_ready'")
+    database: bool = Field(..., description="Database connection readiness")
+    reference_db: bool = Field(..., description="Reference rate database readiness")
+
+
+class ErrorDetail(BaseModel):
+    code: str = Field(..., description="Standardized error code string (e.g., VALIDATION_ERROR, UNAUTHORIZED)")
+    message: str = Field(..., description="Human-readable explanation of the error")
+    details: Optional[Any] = Field(None, description="Optional granular field or context error details")
+
+
+class ErrorResponse(BaseModel):
+    error: ErrorDetail = Field(..., description="Structured error payload")
+    request_id: Optional[str] = Field(None, description="Correlated client request trace identifier")
+
+
+# ---------------------------------------------------------------------------
 # 1. Tenancy & Auth Schemas
 # ---------------------------------------------------------------------------
 
@@ -69,6 +104,39 @@ class Token(BaseModel):
 
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
+
+
+class DeviceRegistrationRequest(BaseModel):
+    installation_id: str = Field(..., min_length=8, max_length=255)
+    platform: str = Field(..., pattern="^(WEB|ANDROID|IOS)$")
+    display_name: Optional[str] = Field(default=None, max_length=100)
+    app_version: Optional[str] = Field(default=None, max_length=64)
+
+
+class DeviceResponse(BaseModel):
+    id: str
+    installation_id: str
+    platform: str
+    display_name: Optional[str] = None
+    app_version: Optional[str] = None
+    is_active: bool
+    last_seen_at: datetime
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class PushTokenRequest(BaseModel):
+    provider: str = Field(..., pattern="^(FCM|APNS|WEB_PUSH)$")
+    token: str = Field(..., min_length=16, max_length=8192)
+    permission: str = Field(..., pattern="^(GRANTED|DENIED)$")
+
+
+class PushTokenRequest(BaseModel):
+    provider: str = Field(..., pattern="^(FCM|APNS|WEB_PUSH)$")
+    token: str = Field(..., min_length=16, max_length=8192)
+    permission: str = Field(..., pattern="^(GRANTED|DENIED)$")
 
 
 # ---------------------------------------------------------------------------
