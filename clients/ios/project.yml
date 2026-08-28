@@ -1,0 +1,13 @@
+name: CuraVeris
+options:
+  minimumXcodeGenVersion: 2.38.0
+targets:
+  CuraVeris:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources: [CuraVeris]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: in.curaveris.app
+        SWIFT_VERSION: "5.0"
