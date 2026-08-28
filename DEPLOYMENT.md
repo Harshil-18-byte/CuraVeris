@@ -18,6 +18,12 @@
 
 This document covers production deployment of the CuraVeris backend on Ubuntu 22.04 / Debian 12, Docker, and cloud platforms (AWS, GCP, Azure).
 
+## Phase 1 local foundation
+
+The repository now has independent client foundations in `clients/web`, `clients/android`, and `clients/ios`. The FastAPI backend remains the only authoritative service. Use `docker compose up --build` only after exporting `SECRET_KEY`, `ENCRYPTION_KEY`, and `POSTGRES_PASSWORD`; compose intentionally refuses empty values. Platform builds require their native toolchains: Node 20+ for web, Android Studio/SDK for Android, and macOS with Xcode/XcodeGen for iOS.
+
+Before staging or production startup, run `cd backend && alembic upgrade head` against PostgreSQL. The application refuses a failed PostgreSQL connection or missing migration state in these environments rather than silently using SQLite.
+
 ---
 
 ## Table of Contents
@@ -314,6 +320,201 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 sudo systemctl enable curaveris
 sudo systemctl start curaveris
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+```
+
+### docker-compose.yml
+
+```yaml
+version: "3.9"
+
+services:
+  api:
+    build: ./backend
+    env_file: ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: curaveris
+      POSTGRES_USER: curaveris
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U curaveris"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+```
+
+```bash
+# Start stack
+docker compose up -d
+
+# View logs
+docker compose logs -f api
+
+# Run database migrations / init
+docker compose exec api python -c "
+import asyncio
+from app.db.database import init_db
+from app.db.reference_data import init_reference_db
+asyncio.run(init_db())
+init_reference_db()
+"
+
+# Train production ML models & ChromaDB vector store
+docker compose exec api python ml_training/train_all_models.py
+```
+
+---
+
+## Bare-Metal / VM Deployment
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Harshil-18-byte/CuraVeris.git
+cd CuraVeris/backend
+
+# 2. Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# 3. Install production dependencies
+pip install --no-cache-dir -r requirements.txt
+
+# 4. Set environment variables
+cp .env.example .env
+nano .env  # Fill in all required production values
+
+# 5. Initialize database schema and seed statutory reference data
+python -c "
+import asyncio
+from app.db.database import init_db
+from app.db.reference_data import init_reference_db
+asyncio.run(init_db())
+init_reference_db()
+"
+
+# 6. Train ML models
+python -c "from app.ml.train_risk_model import train_and_evaluate; train_and_evaluate(num_samples=3000)"
+python -c "from app.ml.deep_risk_model import train_deep_model; train_deep_model()"
+python -c "from app.ml.hybrid_ensemble import train_hybrid_ensemble; train_hybrid_ensemble()"
+
+# 7. Test everything passes
+pytest --tb=short -q
+
+# 8. Start the production ASGI server
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --log-level warning
+```
+
+---
+
+## PostgreSQL Setup
+
+```sql
+-- Run as postgres superuser
+CREATE DATABASE curaveris;
+CREATE USER curaveris WITH ENCRYPTED PASSWORD 'strong-password-here';
+GRANT ALL PRIVILEGES ON DATABASE curaveris TO curaveris;
+
+-- Enable necessary extensions
+\c curaveris
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
+---
+
+## Reverse Proxy (Nginx)
+
+```nginx
+server {
+    listen 80;
+    server_name api.curaveris.ai;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name api.curaveris.ai;
+
+    ssl_certificate     /etc/letsencrypt/live/api.curaveris.ai/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.curaveris.ai/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    # Max upload size for bill PDFs
+    client_max_body_size 25M;
+
+    location / {
+        proxy_pass         http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+
+        # Streaming responses for LLM chat
+        proxy_buffering    off;
+        proxy_read_timeout 120s;
+    }
+}
+```
+
+---
+
+## TLS / HTTPS
+
+```bash
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx -y
+
+# Obtain and install certificate
+sudo certbot --nginx -d api.curaveris.ai
+
+# Auto-renewal (already set up by certbot, but verify)
+sudo systemctl enable certbot.timer
+```
+
+---
+
+## Process Management (Systemd)
+
+```ini
+# /etc/systemd/system/curaveris.service
+[Unit]
+Description=CuraVeris MedBill AI Backend
+After=network.target postgresql.service
+
+[Service]
+User=curaveris
+WorkingDirectory=/opt/curaveris/backend
+EnvironmentFile=/opt/curaveris/backend/.env
+ExecStart=/opt/curaveris/backend/venv/bin/uvicorn app.main:app \
+          --host 0.0.0.0 --port 8000 --workers 4 --log-level warning
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable curaveris
+sudo systemctl start curaveris
 sudo systemctl status curaveris
 ```
 
@@ -348,19 +549,29 @@ The server also auto-trains the primary model on first startup if weights are mi
 
 ## Health Checks and Monitoring
 
-The `/health` endpoint performs a live `SELECT 1` against PostgreSQL and checks for the reference database:
+The backend exposes three system diagnostic and orchestration endpoints:
 
 ```bash
+# 1. Comprehensive Health Check
 curl https://api.curaveris.ai/health
-# Expected: {"status":"healthy","environment":"production","database":true,"reference_db":true}
+# Expected: {"status":"healthy","environment":"production","version":"1.2.0","database":true,"reference_db":true}
+
+# 2. Kubernetes / Docker Liveness Probe
+curl https://api.curaveris.ai/health/live
+# Expected: {"status":"alive","timestamp":"2026-08-28T08:28:00.000Z"}
+
+# 3. Traffic Readiness Probe
+curl https://api.curaveris.ai/health/ready
+# Expected: {"status":"ready","database":true,"reference_db":true}
 ```
 
 ### Recommended monitoring stack
 
 - **Uptime**: Grafana Cloud or Uptime Robot — poll `/health` every 60s.
+- **Kubernetes Probes**: Configure `livenessProbe` at `/health/live` and `readinessProbe` at `/health/ready`.
 - **Logs**: Ship structured JSON logs to Loki, CloudWatch, or Datadog.
 - **Metrics**: Use `prometheus-fastapi-instrumentator` for request rate, latency, and error rate.
-- **Alerts**: PagerDuty or Opsgenie for `/health` returning non-200 for &gt; 2 minutes.
+- **Alerts**: PagerDuty or Opsgenie for `/health` returning non-200 for > 2 minutes.
 
 ---
 
