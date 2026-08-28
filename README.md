@@ -1,8 +1,18 @@
 # CuraVeris
 
-**An automated medical billing audit and patient financial advocacy engine for the Indian healthcare system — built with FastAPI, PostgreSQL, XGBoost, and a hybrid deep neural network ensemble.**
+## Healthcare Financial Verification & Reconciliation
 
-CuraVeris eliminates the information asymmetry between patients and hospitals at the point of financial settlement. Instead of relying on manual claim reviews and disconnected legal references, the platform consolidates the entire audit lifecycle — from raw invoice ingestion to court-admissible cryptographic evidence — into a single, deterministic, reproducible engine.
+**Know what you actually owe.**
+
+For repository layout and active client runtimes, see [Project structure](docs/PROJECT_STRUCTURE.md).
+
+CuraVeris analyzes hospital billing and related insurance/TPA documentation, combines deterministic financial rules with ML-based anomaly intelligence, produces evidence-backed patient responsibility, and connects verified obligations to payment and reconciliation.
+
+```text
+DOCUMENTS → INTELLIGENCE → FINANCIAL TRUTH → PAYMENT → RECONCILIATION
+```
+
+ML identifies risk; deterministic rules establish facts; the financial engine calculates liability; evidence explains the result; Razorpay moves money; reconciliation verifies the outcome.
 
 ---
 
@@ -257,20 +267,89 @@ See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) and [`docs/DATA_MODEL.md`](
 
 - Formal dispute letters addressed to hospital administration with line-item citation of violated gazette notifications.
 - Emergency anti-detention notice citing Bombay High Court Criminal WP No. 2502/2000 and BNS Section 127.
-- PM-JAY zero-cash violation notice with automatic 5x penalty calculation and SAFU referral.
+- PM-JAY zero-cash violation notice with automatic 5x penalty computation and SAFU referral.
 
 ### Cryptographic Evidence
 
 - Section 65B Merkle audit certificate with SHA-256 pairwise tree hashing and HMAC-SHA256 origin signature.
 - Tamper-evident: modifying any billed amount invalidates the Merkle root and fails signature verification.
 
----
-
 ## Project Structure
 
 ```text
 CuraVeris/
-├── docs/
+├── app/                                 # Global application assets & model storage
+│   └── ml/
+│       └── weights/                     # Pre-trained ML weight checkpoints
+├── backend/                             # Core FastAPI backend service
+│   ├── app/
+│   │   ├── api/                         # Versioned API routes (/api/v1)
+│   │   │   ├── abha.py                  # ABDM & ABHA digital health records
+│   │   │   ├── auth.py                  # JWT authentication, RBAC, DPDP anonymization
+│   │   │   ├── bills.py                 # Bill upload, OCR extraction, forensic audit
+│   │   │   ├── chat.py                  # Grounded AI statutory patient advocacy chat
+│   │   │   ├── dev.py                   # Model observability, telemetry, datasets
+│   │   │   ├── finance.py               # Hospital finance, ledger recovery, DSTI index
+│   │   │   ├── insurance.py             # TPA reconciliation, policy coverage analysis
+│   │   │   ├── integrations.py          # Hospital Information Systems & EMR hooks
+│   │   │   ├── razorpay.py              # Razorpay orders, signatures, webhook handler
+│   │   │   └── reports.py               # Dispute letters, Ombudsman & anti-detention notices
+│   │   ├── core/                        # Infrastructure, security, and middleware
+│   │   │   ├── config.py                # Pydantic BaseSettings & startup secret validator
+│   │   │   ├── credentials.py           # Secure key vault & credentials management
+│   │   │   ├── currency.py              # INR formatting, paise conversion, financial math
+│   │   │   ├── errors.py                # Structured error handlers & safe error envelopes
+│   │   │   ├── limiter.py               # SlowAPI rate limiting configuration
+│   │   │   ├── logging.py               # Structured log formatting & trace correlation
+│   │   │   ├── merkle_audit_ledger.py   # Cryptographic Merkle tree & Section 65B signatures
+│   │   │   ├── request_context.py       # ContextVar request ID tracking
+│   │   │   ├── security.py              # JWT tokens, bcrypt, RBAC, Fernet PII encryption
+│   │   │   └── security_hardening.py    # OWASP defense, input sanitization, signature checks
+│   │   ├── db/                          # Database connection and persistence
+│   │   │   ├── chroma_client.py         # Vector database client for statutory embeddings
+│   │   │   ├── database.py              # Async SQLAlchemy engine, session maker, get_db DI
+│   │   │   ├── disease_registry.py      # ICD-10 clinical registry & PM-JAY packages
+│   │   │   ├── hospital_registry.py     # Hospital registry & NABH accreditation tiers
+│   │   │   ├── models.py                # SQLAlchemy ORM database models
+│   │   │   └── reference_data.py        # CGHS, NPPA, DPCO, and IRDAI lookup queries
+│   │   ├── engine/                      # Deterministic and forensic calculation engines
+│   │   │   ├── admission_monitor.py     # Inpatient burn rate & bed-blocking audit
+│   │   │   ├── extractor.py             # Magic byte validation & multi-modal OCR pipeline
+│   │   │   ├── financial_toxicity.py    # DSTI hardship & FRM financial risk scoring
+│   │   │   ├── icd10_coding_engine.py   # ICD-10 & SNOMED-CT clinical terminology mapping
+│   │   │   ├── risk_engine.py           # Deterministic statutory rules (NPPA, DPCO, CGHS)
+│   │   │   ├── semantic_search.py       # BM25 & TF-IDF procedural search
+│   │   │   ├── shadow_bill_detector.py  # GST anomaly & duplicate invoice detection
+│   │   │   └── shap_explainer.py        # SHAP additive feature attribution waterfall
+│   │   ├── ml/                          # Hybrid machine learning ensemble
+│   │   │   ├── deep_risk_network.py     # PyTorch MLP + XGBoost hybrid stacking ensemble
+│   │   │   ├── fine_tuning_generator.py # Synthetic clinical fine-tuning dataset generator
+│   │   │   ├── train_risk_model.py      # Reproducible model training with deterministic seeds
+│   │   │   └── weights/                 # Local model weights (.joblib, .pt)
+│   │   ├── models/                      # Pydantic validation & response schemas
+│   │   │   └── schemas.py               # Pydantic v2 request, response, and health schemas
+│   │   ├── services/                    # Business service layer
+│   │   │   └── dispute_service.py       # Legal notice & petition document generator
+│   │   └── main.py                      # FastAPI application entrypoint, lifespan, & probes
+│   ├── migrations/                      # Alembic schema versioning and migration scripts
+│   ├── ml_training/                     # Distributed and offline ML training pipeline
+│   ├── notebooks/                       # Exploratory analysis and training notebooks
+│   ├── reference_data/                  # Statutory rate databases (medical_rates.db)
+│   ├── tests/                           # Automated unit, integration, & foundation tests
+│   │   ├── conftest.py                  # Pytest fixtures and async client configuration
+│   │   ├── test_phase3_foundation.py    # Phase 3 backend & API foundation test suite
+│   │   └── run_all_backend_tests.py     # Master backend test suite execution script
+│   ├── alembic.ini                      # Alembic migration configuration
+│   ├── pytest.ini                       # Pytest execution configuration
+│   ├── requirements.txt                 # Backend Python package dependencies
+│   ├── requirements-dev.txt             # Development and testing dependencies
+│   └── run.py                           # Local server launcher
+├── clients/                             # Client SDKs and integration stubs
+├── config/                              # Global service and environment configs
+├── contracts/                           # OpenAPI and RPC interface contracts
+├── data/                                # Vector storage and runtime data
+├── dev/                                 # Developer tools and local diagnostics
+├── docs/                                # Architectural and statutory documentation
 │   ├── ARCHITECTURE.md                  # System boundaries, database schema, ML pipeline
 │   ├── API_REFERENCE.md                 # REST endpoint schemas, payloads, and examples
 │   ├── STATUTORY_FRAMEWORK.md           # Legal citations, gazette notifications, case law
@@ -278,54 +357,104 @@ CuraVeris/
 │   ├── SECURITY.md                      # Security controls and threat model
 │   ├── CHANGELOG.md                     # Versioned implementation history
 │   ├── ENGINEERING_AUDIT.md             # Comprehensive architecture and gap analysis
-│   ├── PRODUCTION_TRAINING_GUIDE.md     # Real production multi-model GPU training guide
-│   ├── MANUAL_TRAINING_GUIDE.md         # Production model training and run reference
 │   └── images/                          # Architectural flow diagrams
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── auth.py                  # JWT authentication and DPDP anonymization routes
-│   │   │   ├── bills.py                 # Core bill upload, audit, heatmap, and ledger endpoints
-│   │   │   ├── dev.py                   # Architecture inspector and dataset downloads
-│   │   │   ├── payments.py              # Razorpay webhook and payment verification routes
-│   │   │   └── reports.py               # Dispute letters and anti-detention notice generator
-│   │   ├── core/
-│   │   │   ├── config.py                # Environment configuration and validation
-│   │   │   ├── database.py              # PostgreSQL async SQLAlchemy session engine
-│   │   │   ├── logging.py               # Structured log formatting
-│   │   │   ├── merkle_audit_ledger.py   # Cryptographic Merkle tree audit ledger
-│   │   │   └── security.py              # AES-256 PII encryption, JWT, and password hashing
-│   │   ├── db/
-│   │   │   ├── disease_registry.py      # ICD-10 and PM-JAY package definitions
-│   │   │   ├── hospital_registry.py     # Hospital registry and NABH accreditation tiers
-│   │   │   ├── models.py                # SQLAlchemy ORM models
-│   │   │   └── reference_data.py        # CGHS, NPPA, DPCO, and IRDAI lookup queries
-│   │   ├── engine/
-│   │   │   ├── admission_monitor.py     # Inpatient burn rate and bed-blocking audit
-│   │   │   ├── extractor.py             # File signature validation and OCR pipeline
-│   │   │   ├── financial_toxicity.py    # FRM financial toxicity calculations
-│   │   │   ├── icd10_coding_engine.py   # ICD-10 and SNOMED-CT clinical coding
-│   │   │   ├── risk_engine.py           # Regulatory audit rules and composite scoring
-│   │   │   ├── semantic_search.py       # TF-IDF and BM25 procedure search
-│   │   │   ├── shadow_bill_detector.py  # GST anomaly and duplicate invoice detection
-│   │   │   └── shap_explainer.py        # SHAP additive feature attribution waterfall
-│   │   ├── ml/
-│   │   │   ├── deep_risk_network.py     # MLP neural network and hybrid ensemble
-│   │   │   ├── fine_tuning_generator.py # 500-sample JSONL training dataset generator
-│   │   │   ├── train_risk_model.py      # Training script with deterministic seed logging
-│   │   │   └── weights/                 # Serialized model artifacts (.joblib)
-│   │   ├── services/
-│   │   │   └── dispute_service.py       # Legal notice generator
-│   │   └── main.py                      # FastAPI application entrypoint and middleware
-│   ├── tests/                           # 73 automated unit and integration tests
-│   ├── pytest.ini                       # Test configuration
-│   └── requirements.txt                 # Python package dependencies
-├── pyrightconfig.json                   # IDE Python interpreter configuration
+├── models/                              # Global ML model checkpoints and artifacts
+├── reference_data/                      # Statutory benchmark source datasets
+├── scripts/                             # Operational and maintenance automation scripts
+├── src/                                 # Shared core algorithms & utilities
+├── .env.example                         # Example environment variables template
+├── .gitignore                           # Comprehensive git exclusions
 ├── .markdownlint.json                   # Markdown linting rules
-├── .gitignore                           # Repository exclusion rules
+├── .mcp.json                            # Model Context Protocol configuration
+├── docker-compose.yml                   # Container orchestration definition
+├── Dockerfile                           # Production backend container build
+├── pyrightconfig.json                   # Python language server configuration
+├── ruff.toml                            # Ruff linter and formatter configuration
+├── CONTRIBUTING.md                      # Contribution guidelines
+├── DEPLOYMENT.md                        # Production deployment architecture
 ├── LICENSE                              # MIT License
-└── README.md                            # This file
+├── SECURITY.md                          # Security policy and reporting
+├── TESTING.md                           # Automated test coverage documentation
+└── README.md                            # Primary project documentation
 ```
+
+---
+
+## Phase 3: Backend + API Foundation
+
+The backend foundation is built on FastAPI with high-reliability enterprise architecture:
+
+### 1. Application Startup & Lifespan
+- **Lifespan Context Manager**: Managed in [`backend/app/main.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/main.py). Automatically coordinates startup tasks:
+  1. Validates configuration secrets (rejects insecure default keys in production/staging).
+  2. Initializes the PostgreSQL database connection pool and ensures schema presence.
+  3. Populates statutory reference benchmarks (CGHS, NPPA, DPCO, IRDAI).
+  4. Prepares ML ensemble weights and ChromaDB collections.
+  5. Coordinates graceful shutdown and connection cleanup.
+
+### 2. Configuration Management
+- **Pydantic BaseSettings**: Configured in [`backend/app/core/config.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/core/config.py). Supports automatic environment variable binding with typed fallbacks.
+- **Strict Startup Validation**: `validate_secrets()` prevents starting with development keys in staging or production.
+
+### 3. Database Connection & Lifecycle
+- **Async SQLAlchemy 2.0**: Configured in [`backend/app/db/database.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/db/database.py).
+- **Dependency Injection**: The `get_db` async generator provides scoped sessions with automatic transaction rollback on unhandled exceptions and guaranteed cleanup.
+
+### 4. Database Migrations
+- **Alembic Versioning**: Fully configured via `alembic.ini` and `backend/migrations/` to track schema changes.
+
+### 5. Dependency Injection Architecture
+- `get_db`: Yields transactional async database sessions.
+- `get_current_user`: Decodes JWT tokens, validates expiration, and retrieves active user records.
+- `require_roles`: Factory dependency enforcing Role-Based Access Control (RBAC).
+- `enforce_tenant_access`: Enforces organization boundary isolation.
+
+### 6. API Versioning & Routing
+- Base API prefix `settings.API_V1_STR` (`/api/v1`) mounted cleanly across all business routers:
+  - `/api/v1/auth`: Authentication, registration, token refresh, and user profile.
+  - `/api/v1/bills`: Bill upload, extraction, audit, and status tracking.
+  - `/api/v1/reports`: Legal dispute petitions, anti-detention notices.
+  - `/api/v1/insurance`: TPA reconciliation and policy coverage analysis.
+  - `/api/v1/razorpay`: Payment gateway orders and webhook processing.
+  - `/api/v1/finance`: Hospital ledger revenue recovery and analytics.
+  - `/api/v1/abha`: ABDM / ABHA health records integration.
+  - `/api/v1/chat`: Grounded statutory patient advocacy AI assistant.
+
+### 7. Request Validation & Response Schemas
+- Strict **Pydantic v2** models defined in [`backend/app/models/schemas.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/models/schemas.py).
+- Input fields enforce type safety, regex constraints, and value sanitization.
+- Response models guarantee well-defined schemas across all endpoints.
+
+### 8. Structured Error Handling
+- Safe error payloads formatted as:
+  ```json
+  {
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "message": "Request validation failed.",
+      "details": [...]
+    },
+    "request_id": "c71a396e-57b1-419b-a0ee-6c17e33527b1"
+  }
+  ```
+- Handlers registered for `CuraVerisError`, `RequestValidationError`, `RateLimitExceeded`, and `StarletteHTTPException`.
+
+### 9. Request Traceability (Request IDs)
+- `RequestCorrelationMiddleware` accepts client-provided `X-Request-ID` or generates a UUID4.
+- Injected into `request_id_context` for structured logging, returned in response headers, and embedded in all error payloads.
+
+### 10. Authentication & Authorization Foundation
+- **JWT Tokens**: Stateless HMAC-SHA256 access tokens and cryptographically hashed refresh tokens.
+- **RBAC Matrix**: Enforced via `require_roles("ROLE_A", "ROLE_B")` supporting:
+  `PATIENT`, `HOSPITAL_ADMIN`, `HOSPITAL_FINANCE`, `HOSPITAL_BILLING`, `HOSPITAL_AUDITOR`, `TPA_REVIEWER`, `TPA_ADMIN`, `INSURER_REVIEWER`, `INSURER_ADMIN`, and `PLATFORM_ADMIN`.
+
+### 11. Health, Liveness & Readiness Probes
+- `GET /health`: Comprehensive health report including database status and reference data availability.
+- `GET /health/live` & `GET /live`: Liveness probe indicating process responsiveness.
+- `GET /health/ready` & `GET /ready`: Readiness probe verifying backend database connectivity.
+
+### 12. OpenAPI Contracts
+- Full OpenAPI 3.x specification available dynamically at `/openapi.json` and interactive docs at `/docs` (in development).
 
 ---
 
@@ -342,8 +471,6 @@ The platform uses a hybrid persistence model: PostgreSQL for all ACID financial 
 | `cghs_rates` | SQLite | `procedure_name`, `nabh_rate`, `non_nabh_rate` | 1,900+ CGHS 2024 procedure benchmarks. |
 | `nppa_devices` | SQLite | `device_name`, `ceiling_price` | Coronary stent and orthopedic implant caps. |
 | `dpco_drugs` | SQLite | `drug_name`, `mrp_per_unit` | Scheduled pharmaceutical MRP ceilings. |
-| `irdai_non_payables` | SQLite | `item_name` | 199 consumable items excluded from patient billing. |
-
 See [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md).
 
 ---
