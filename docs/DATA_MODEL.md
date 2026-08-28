@@ -28,6 +28,20 @@ CuraVeris uses a two-tier persistence model:
 
 SQLite is the reference-only store. It is never written to during application operation. PostgreSQL holds all user data, bill records, audit results, and system logs.
 
+### Migration policy
+
+PostgreSQL is the production authority. Alembic migrations in `backend/migrations/` are the production schema-change path; application startup in staging/production validates the `alembic_version` table and does not create tables or fall back to SQLite. SQLite remains a development/test compatibility store only.
+
+### Phase 2 provenance and reproducibility tables
+
+| Table | Purpose | Key constraints |
+|---|---|---|
+| `documents` | Private storage metadata and ownership for uploaded source files | Tenant/storage-key uniqueness; non-negative byte size |
+| `document_fields` | Extracted and normalized critical fields with page/bounding-box/confidence provenance | Unique source location; confidence 0–1; positive page numbers |
+| `model_versions` | Model and feature-schema identifiers for reproducible advisory inference | Unique model name/version |
+| `financial_assessments` | Immutable deterministic liability snapshots | Non-negative invoice, liability, and paid values |
+| `financial_assessment_evidence` | Links a financial input to its extracted source field | One assessment/document-field link |
+
 ---
 
 ## 2. Entity-Relationship Overview
@@ -284,4 +298,3 @@ Bill records and audit logs are retained. The financial audit data does not cons
   ]
 }
 ```
-
