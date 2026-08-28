@@ -23,6 +23,7 @@ from app.services.razorpay_service import razorpay_service
 from app.engine.reconciliation import reconciliation_engine
 from app.core.currency import from_paise, to_decimal
 from app.core.logging import logger
+from app.core.config import settings
 
 router = APIRouter(prefix="/razorpay", tags=["Razorpay Payments & Webhooks"])
 
@@ -110,7 +111,8 @@ async def handle_razorpay_webhook(
 
     # Step 1: Verify signature
     is_valid = razorpay_service.verify_webhook_signature(body, signature)
-    if not is_valid and signature != "test_mock_sig":
+    is_test_mock = settings.ENV == "testing" and signature == "test_mock_sig"
+    if not is_valid and not is_test_mock:
         logger.warning("Rejected Razorpay webhook with invalid HMAC signature.")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
