@@ -1,17 +1,22 @@
 import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.config import settings, validate_secrets
 from app.core.logging import setup_logging, logger
 from app.core.limiter import limiter
+from app.core.errors import CuraVerisError, curaveris_error_handler, http_error_handler, validation_error_handler
+from app.core.request_context import request_id_context
 from app.db.database import init_db
 from app.db.reference_data import init_reference_db
+from app.models.schemas import HealthResponse, LivenessResponse, ReadinessResponse
 from app.api import auth, bills, chat, insurance, razorpay, reports, dev, abha, integrations, finance
 
 
@@ -41,17 +46,11 @@ async def lifespan(app: FastAPI):
         except Exception as exc:
             logger.warning(f"ChromaDB startup init deferred: {exc}")
 
-        # 5. Load or train ML risk classification model
+        # 5. Load existing ML risk classification model.  Training is an
+        # explicit offline operation; startup must never replace model state.
         model_path = os.path.join(os.path.dirname(__file__), "ml", "weights", "risk_model.joblib")
         if not os.path.exists(model_path):
-            logger.info("ML model weights not found. Training now (this takes ~30s)...")
-            try:
-                from app.ml.train_risk_model import train_and_evaluate
-                train_and_evaluate(num_samples=1500)
-                from app.engine.risk_engine import risk_engine
-                risk_engine._load_model()
-            except Exception as e:
-                logger.warning(f"Initial model training deferred: {e}")
+            logger.warning("ML model weights not found; ML inference will remain unavailable until approved artifacts are deployed.")
         else:
             logger.info(f"Loaded existing trained model from {model_path}")
 
@@ -98,10 +97,30 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class RequestCorrelationMiddleware(BaseHTTPMiddleware):
+    """Accepts a safe client correlation ID or creates one for this request."""
+    async def dispatch(self, request: Request, call_next):
+        import re
+        import uuid
+        candidate = request.headers.get("X-Request-ID", "")
+        request_id = candidate if re.fullmatch(r"[A-Za-z0-9_-]{8,128}", candidate) else str(uuid.uuid4())
+        token = request_id_context.set(request_id)
+        try:
+            response = await call_next(request)
+            response.headers["X-Request-ID"] = request_id
+            return response
+        finally:
+            request_id_context.reset(token)
+
+
 # ---------------------------------------------------------------------------
 # OpenAPI Tags Metadata
 # ---------------------------------------------------------------------------
 tags_metadata = [
+    {
+        "name": "System & Health Probes",
+        "description": "Liveness, readiness, and comprehensive dependency health check endpoints for container orchestrators and monitoring.",
+    },
     {
         "name": "Authentication & Access Control",
         "description": "User registration, multi-tenant RBAC, JWT access/refresh token rotation, and DPDP Act 2023 Section 12 Right-to-Erasure compliance.",
@@ -153,6 +172,7 @@ app = FastAPI(
     version=settings.VERSION,
     description=settings.DESCRIPTION,
     openapi_tags=tags_metadata,
+    openapi_url="/openapi.json",
     contact={
         "name": "CuraVeris Engineering Team",
         "url": settings.REPOSITORY_URL,
@@ -179,9 +199,13 @@ async def rate_limit_handler(request: Request, exc: Exception) -> Response:
 
 
 app.add_exception_handler(RateLimitExceeded, rate_limit_handler)
+app.add_exception_handler(CuraVerisError, curaveris_error_handler)
+app.add_exception_handler(RequestValidationError, validation_error_handler)
+app.add_exception_handler(StarletteHTTPException, http_error_handler)
 
 # Security headers (applied to every response)
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestCorrelationMiddleware)
 
 # CORS — use explicit origin list; never use wildcard with allow_credentials=True.
 # A wildcard + credentials combination is rejected by all modern browsers per the CORS spec.
@@ -212,7 +236,7 @@ async def dev_portal():
     return RedirectResponse(url="/api/v1/dev/dashboard")
 
 
-@app.get("/")
+@app.get("/", tags=["System & Health Probes"])
 async def root():
     return {
         "app": settings.PROJECT_NAME,
@@ -222,12 +246,20 @@ async def root():
     }
 
 
-@app.get("/health")
+@app.get(
+    "/health",
+    tags=["System & Health Probes"],
+    response_model=HealthResponse,
+    responses={
+        200: {"description": "All system components and dependencies are healthy"},
+        503: {"description": "One or more critical dependencies (database) are unreachable"},
+    },
+)
 async def health_check():
     """
-    Liveness and readiness probe.
-    Performs a real SELECT 1 against the database rather than returning a
-    hardcoded True. Returns HTTP 503 if the database is unreachable.
+    Comprehensive system health probe.
+    Performs active database ping and validates statutory reference DB presence.
+    Returns HTTP 200 when all dependencies are reachable, HTTP 503 when degraded.
     """
     from app.db.database import AsyncSessionLocal
     from sqlalchemy import text
@@ -247,6 +279,7 @@ async def health_check():
     payload = {
         "status": "healthy" if db_status else "degraded",
         "environment": settings.ENV,
+        "version": settings.VERSION,
         "database": db_status,
         "reference_db": reference_db_exists,
     }
@@ -255,3 +288,58 @@ async def health_check():
 
     status_code = 200 if db_status else 503
     return JSONResponse(content=payload, status_code=status_code)
+
+
+@app.get(
+    "/health/live",
+    tags=["System & Health Probes"],
+    response_model=LivenessResponse,
+    responses={200: {"description": "Service process is alive and responsive"}},
+)
+@app.get("/live", tags=["System & Health Probes"], include_in_schema=False)
+async def liveness_probe():
+    """
+    Kubernetes / Docker liveness probe.
+    Indicates whether the application process is running and accepting HTTP requests.
+    """
+    from datetime import datetime, timezone
+    return {"status": "alive", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+
+@app.get(
+    "/health/ready",
+    tags=["System & Health Probes"],
+    response_model=ReadinessResponse,
+    responses={
+        200: {"description": "Service is ready to accept and process traffic"},
+        503: {"description": "Service is not ready (database unreachable)"},
+    },
+)
+@app.get("/ready", tags=["System & Health Probes"], include_in_schema=False)
+async def readiness_probe():
+    """
+    Kubernetes / Docker readiness probe.
+    Indicates whether the service is ready to accept user and API traffic.
+    """
+    from app.db.database import AsyncSessionLocal
+    from sqlalchemy import text
+
+    db_status = False
+    try:
+        async with AsyncSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+        db_status = True
+    except Exception as exc:
+        logger.warning(f"Readiness probe DB ping failed: {exc}")
+
+    reference_db_exists = os.path.exists(settings.REFERENCE_DB_PATH)
+    is_ready = db_status and reference_db_exists
+
+    payload = {
+        "status": "ready" if is_ready else "not_ready",
+        "database": db_status,
+        "reference_db": reference_db_exists,
+    }
+    status_code = 200 if is_ready else 503
+    return JSONResponse(content=payload, status_code=status_code)
+
