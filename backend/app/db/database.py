@@ -9,6 +9,10 @@ logger = logging.getLogger("curaveris.db")
 
 
 def _get_active_urls():
+    if os.environ.get("ENV") == "testing" or settings.ENV == "testing":
+        test_url = os.environ.get("DATABASE_URL") or settings.FALLBACK_DATABASE_URL
+        test_sync = os.environ.get("SYNC_DATABASE_URL") or settings.FALLBACK_SYNC_DATABASE_URL
+        return test_url, test_sync
     db_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL
     sync_url = os.environ.get("SYNC_DATABASE_URL") or settings.SYNC_DATABASE_URL
     return db_url, sync_url
@@ -44,6 +48,9 @@ async def get_db():
     async with AsyncSessionLocal() as session:
         try:
             yield session
+        except Exception:
+            await session.rollback()
+            raise
         finally:
             await session.close()
 
@@ -79,10 +86,16 @@ async def init_db(force: bool = False):
     try:
         async with engine.begin() as conn:
             await conn.execute(text("SELECT 1;"))
-            await conn.run_sync(Base.metadata.create_all)
+            if settings.ENV in {"production", "staging"}:
+                await conn.execute(text("SELECT version_num FROM alembic_version LIMIT 1;"))
+            else:
+                await conn.run_sync(Base.metadata.create_all)
         _db_initialized = True
-        logger.info("Database initialized on primary PostgreSQL engine.")
+        logger.info("Database connection and schema state validated on primary PostgreSQL engine.")
     except Exception as exc:
+        if settings.ENV in {"production", "staging"}:
+            logger.error("Production database initialization failed; refusing SQLite fallback.")
+            raise
         logger.warning(f"Primary PostgreSQL connection failed ({exc}). Switching to fallback local database: {settings.FALLBACK_DATABASE_URL}")
         engine, sync_engine, AsyncSessionLocal, SyncSessionLocal = _build_engines(
             settings.FALLBACK_DATABASE_URL, settings.FALLBACK_SYNC_DATABASE_URL
