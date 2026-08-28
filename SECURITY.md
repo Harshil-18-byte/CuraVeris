@@ -1,5 +1,11 @@
 # Security Policy
 
+## Engineering foundation controls
+
+The backend assigns or validates an `X-Request-ID` for every request and returns it to clients. Structured logs include only this correlation value and standard metadata; request bodies, credentials, and sensitive financial or medical values are not added automatically. Public errors use a stable code/message/request-ID shape and do not expose stack traces.
+
+Production and staging startup reject development secret defaults and Razorpay placeholder credentials. `.env.example` contains no usable credentials. Docker Compose requires runtime secrets from the environment.
+
 ## Supported Versions
 
 | Version         | Supported |
