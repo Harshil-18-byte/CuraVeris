@@ -43,6 +43,35 @@ backend/
 
 ## Running Tests
 
+### Financial truth and evidence contracts
+
+```bash
+cd backend
+pytest tests/test_financial_truth.py tests/test_evidence_engine.py -q
+```
+
+These tests cover decimal-safe liability calculation, unexplained variance, payment/refund handling, input invariants, and source-backed evidence validation.
+
+### Engineering foundation
+
+```bash
+cd backend
+pytest tests/test_foundation.py -q
+ruff check app tests
+ruff format --check app tests
+```
+
+The foundation tests verify request correlation propagation and safe, structured validation errors. Client-runtime validation is performed with `npm ci && npm run lint && npm run format:check && npm run build` in `clients/web`. Android and iOS builds require their native toolchains.
+
+### Authentication and device identity
+
+```bash
+cd backend
+pytest tests/test_auth_devices.py tests/test_multi_tenancy_and_rbac.py -q
+```
+
+These tests cover public-role escalation rejection, authenticated device registration/revocation, and the explicit unavailable state for unconfigured phone verification.
+
 ### Full suite
 
 ```bash
