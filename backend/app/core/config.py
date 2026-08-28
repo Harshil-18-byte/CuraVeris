@@ -151,6 +151,8 @@ def validate_secrets() -> None:
                 "ENCRYPTION_KEY is set to the development default. "
                 "Generate a real Fernet key and set it via the ENCRYPTION_KEY environment variable."
             )
+        if settings.RAZORPAY_KEY_SECRET.startswith("mock_") or settings.RAZORPAY_WEBHOOK_SECRET == "webhook_secret_curaveris_2026":
+            errors.append("Razorpay credentials are development placeholders. Configure real environment-specific credentials.")
         if errors:
             raise RuntimeError(
                 "Startup blocked: insecure configuration detected.\n"
