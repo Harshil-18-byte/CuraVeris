@@ -2,6 +2,32 @@
 
 This document details the systems design, data pipelines, database schema, machine learning ensemble, and cryptographic protocols of the CuraVeris platform.
 
+> **2026-08-28 architecture direction.** The existing implementation described below is preserved. New work must converge on the following separation: document intelligence extracts evidence; the ML risk layer identifies anomalies; the deterministic financial-truth engine calculates liability; the evidence engine explains it; Razorpay executes payment; reconciliation compares expected and actual movement; the audit ledger preserves integrity. ML and narrative systems must not change a verified amount.
+
+## Current → target migration path
+
+| Current capability | Target refinement | Compatibility approach |
+|---|---|---|
+| `RiskAuditEngine` produces deterministic and ML audit material | `MLRiskEngine` supplies a stable advisory inference contract | Wrap existing XGBoost/MLP/ensemble artifacts; do not retrain or replace them |
+| `ReconciliationEngine` calculates legacy four-way reconciliation | `FinancialTruthEngine` calculates verified obligation from documented contributions | Add the pure service alongside existing endpoints; preserve legacy status/output contracts |
+| Extraction and audit data carry source fragments | `EvidenceEngine` creates explicit source → calculation → result chains | Add evidence contracts first, then persist with an additive migration |
+| Razorpay order endpoint accepts invoice and amount | `PaymentOrchestrator` accepts a persisted verified obligation | Add a compatibility endpoint or optional obligation reference before retiring no API |
+| `Payment`/`Reconciliation` tables store lifecycle fragments | obligation, contribution, timeline and resolution entities | Use additive migrations; do not alter legacy bill/payment tables destructively |
+
+```mermaid
+flowchart LR
+  D[Document intelligence] --> E[Evidence engine]
+  D --> M[ML risk intelligence]
+  E --> F[Deterministic financial truth]
+  M -. advisory only .-> F
+  F --> P[Verified obligation]
+  P --> R[Razorpay payment]
+  R --> C[Reconciliation]
+  E --> A[Cryptographic audit ledger]
+  F --> A
+  C --> A
+```
+
 ---
 
 ## Table of Contents
@@ -403,3 +429,39 @@ State transitions are persisted to the `bills.status` column in PostgreSQL and t
 6. **DPDP Act 2023, Section 12**: Right to erasure implemented at `POST /api/v1/auth/anonymize-me`. Replaces personal details with `DPDP_Anonymized_Patient_<SHA256_HASH>` pseudonyms.
 
 See [`SECURITY.md`](./SECURITY.md) for the complete threat model and control mapping.
+
+---
+
+## 8. Multi-Platform Client Tier
+
+CuraVeris provides unified, native client foundations across Web, Android, and iOS communicating with the canonical FastAPI REST API and WebSocket events:
+
+```mermaid
+graph LR
+  subgraph Clients ["Client Platforms"]
+    Web["Web Client (Next.js / TanStack Query)"]
+    Android["Android Client (Kotlin / Jetpack Compose)"]
+    iOS["iOS Client (Swift / SwiftUI)"]
+  end
+
+  subgraph Gateway ["Backend API Gateway"]
+    API["FastAPI /api/v1 & /health"]
+    WS["FastAPI WebSocket /ws"]
+  end
+
+  Web -->|HTTP / X-Request-ID| API
+  Web -->|WebSocket| WS
+  Android -->|Retrofit / OkHttp| API
+  Android -->|OkHttp WS| WS
+  iOS -->|URLSession Async/Await| API
+  iOS -->|URLSessionWebSocketTask| WS
+```
+
+### Client Architecture Details
+
+| Platform | Location | Core Technologies | Key Capabilities |
+| :--- | :--- | :--- | :--- |
+| **Web** | `clients/web/` | Next.js 14, React 18, TanStack Query v5, TypeScript | Responsive glassmorphism shell, `X-Request-ID` tracing, JWT auto-refresh, real-time WebSocket subscriber, error boundaries, and offline reachability detection. |
+| **Android** | `clients/android/` | Kotlin 1.9, Jetpack Compose, Material 3, OkHttp | AndroidX `EncryptedSharedPreferences` (AES256-GCM Keystore), `ConnectivityManager` StateFlow reachability, document picker contracts, notification channels for statutory alerts, and `curaveris://` deep linking. |
+| **iOS** | `clients/ios/` | Swift 5.0, SwiftUI, Foundation, Security | iOS Keychain Services (`kSecClassGenericPassword`), `URLSession` async/await, `NWPathMonitor` reachability, `UNUserNotificationCenter` statutory alert manager, `UIDocumentPickerViewController`, and universal deep link routing. |
+
