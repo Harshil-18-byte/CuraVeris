@@ -7,7 +7,7 @@ All entities include UUID primary keys, tenant/organization scoping, timestamps,
 import uuid
 from datetime import datetime, timezone
 from sqlalchemy import (
-    Column, String, Integer, Float, Numeric, Boolean, DateTime, ForeignKey, Text, JSON, Index
+    Column, String, Integer, Float, Numeric, Boolean, DateTime, ForeignKey, Text, JSON, Index, CheckConstraint, UniqueConstraint
 )
 from sqlalchemy.orm import relationship
 from app.db.database import Base
@@ -64,6 +64,7 @@ class User(Base):
     organization = relationship("Organization", back_populates="users")
     patient_profile = relationship("Patient", back_populates="user", uselist=False)
     refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
+    devices = relationship("Device", back_populates="user", cascade="all, delete-orphan")
     audit_events = relationship("AuditEvent", back_populates="actor")
     bills = relationship("Bill", back_populates="owner", cascade="all, delete-orphan")
 
@@ -74,12 +75,89 @@ class RefreshToken(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     user_id = Column(String, ForeignKey("users.id"), index=True, nullable=False)
+    device_id = Column(String, ForeignKey("devices.id"), index=True, nullable=True)
     token_hash = Column(String, unique=True, index=True, nullable=False)
     expires_at = Column(DateTime, nullable=False)
     is_revoked = Column(Boolean, default=False)
     created_at = Column(DateTime, default=utc_now)
 
     user = relationship("User", back_populates="refresh_tokens")
+    device = relationship("Device", back_populates="refresh_tokens")
+
+
+class Device(Base):
+    """A client installation, not a verified person, phone number, or SIM identity."""
+    __tablename__ = "devices"
+    __table_args__ = (
+        UniqueConstraint("user_id", "installation_id", name="uq_devices_user_installation"),
+        CheckConstraint("platform IN ('WEB', 'ANDROID', 'IOS')", name="ck_devices_platform"),
+        Index("ix_devices_user_active", "user_id", "is_active"),
+    )
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    installation_id = Column(String, nullable=False)
+    platform = Column(String, nullable=False)
+    display_name = Column(String, nullable=True)
+    app_version = Column(String, nullable=True)
+    push_provider = Column(String, nullable=True)
+    encrypted_push_token = Column(Text, nullable=True)
+    push_permission = Column(String, nullable=False, default="UNKNOWN")
+    is_active = Column(Boolean, nullable=False, default=True)
+    last_seen_at = Column(DateTime, default=utc_now, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now, nullable=False)
+
+    user = relationship("User", back_populates="devices")
+    refresh_tokens = relationship("RefreshToken", back_populates="device")
+    notification_deliveries = relationship("NotificationDelivery", back_populates="device")
+
+
+class NotificationPreference(Base):
+    """Per-user notification policy; provider credentials are never stored here."""
+    __tablename__ = "notification_preferences"
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    push_enabled = Column(Boolean, nullable=False, default=True)
+    in_app_enabled = Column(Boolean, nullable=False, default=True)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now, nullable=False)
+
+
+class Notification(Base):
+    """Persistent domain notification. Payload intentionally excludes sensitive details."""
+    __tablename__ = "notifications"
+    __table_args__ = (UniqueConstraint("user_id", "event_id", name="uq_notifications_user_event"), Index("ix_notifications_user_read", "user_id", "read_at"))
+    id = Column(String, primary_key=True, default=generate_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    event_id = Column(String, nullable=False)
+    event_type = Column(String, nullable=False, index=True)
+    priority = Column(String, nullable=False, default="NORMAL")
+    title = Column(String, nullable=False)
+    body = Column(String, nullable=False)
+    deep_link = Column(String, nullable=True)
+    entity_type = Column(String, nullable=True)
+    entity_id = Column(String, nullable=True)
+    read_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+    deliveries = relationship("NotificationDelivery", back_populates="notification", cascade="all, delete-orphan")
+
+
+class NotificationDelivery(Base):
+    """Idempotent, provider-neutral delivery outcome for one device and notification."""
+    __tablename__ = "notification_deliveries"
+    __table_args__ = (UniqueConstraint("notification_id", "device_id", name="uq_notification_deliveries_target"), Index("ix_notification_deliveries_status", "status", "next_attempt_at"))
+    id = Column(String, primary_key=True, default=generate_uuid)
+    notification_id = Column(String, ForeignKey("notifications.id"), nullable=False, index=True)
+    device_id = Column(String, ForeignKey("devices.id"), nullable=False, index=True)
+    provider = Column(String, nullable=False)
+    status = Column(String, nullable=False, default="PENDING")
+    attempt_count = Column(Integer, nullable=False, default=0)
+    next_attempt_at = Column(DateTime, nullable=True)
+    provider_message_id = Column(String, nullable=True)
+    failure_code = Column(String, nullable=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now, nullable=False)
+    notification = relationship("Notification", back_populates="deliveries")
+    device = relationship("Device", back_populates="notification_deliveries")
 
 
 # ---------------------------------------------------------------------------
@@ -257,6 +335,114 @@ class InvoiceLineItem(Base):
     invoice = relationship("Invoice", back_populates="line_items")
     claim_lines = relationship("ClaimLine", back_populates="invoice_line_item")
     audit_findings = relationship("AuditFinding", back_populates="line_item")
+
+
+# ---------------------------------------------------------------------------
+# 3A. Document, provenance, model, and financial-truth persistence
+# ---------------------------------------------------------------------------
+
+class Document(Base):
+    """Private object-storage metadata for a source document; never stores content."""
+    __tablename__ = "documents"
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "storage_key", name="uq_documents_tenant_storage_key"),
+        CheckConstraint("byte_size >= 0", name="ck_documents_byte_size_nonnegative"),
+        Index("ix_documents_invoice_created", "invoice_id", "created_at"),
+    )
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    tenant_id = Column(String, ForeignKey("organizations.id"), nullable=True, index=True)
+    invoice_id = Column(String, ForeignKey("invoices.id"), nullable=True, index=True)
+    uploaded_by_user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
+    storage_key = Column(String, nullable=False)
+    original_filename = Column(String, nullable=False)
+    content_type = Column(String, nullable=False)
+    byte_size = Column(Integer, nullable=False)
+    sha256 = Column(String(64), nullable=False, index=True)
+    status = Column(String, nullable=False, default="UPLOADED", index=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+
+    fields = relationship("DocumentField", back_populates="document", cascade="all, delete-orphan")
+
+
+class DocumentField(Base):
+    """A normalized critical extraction with source coordinates and confidence."""
+    __tablename__ = "document_fields"
+    __table_args__ = (
+        UniqueConstraint("document_id", "field_name", "page_number", name="uq_document_fields_location"),
+        CheckConstraint("confidence IS NULL OR (confidence >= 0 AND confidence <= 1)", name="ck_document_fields_confidence"),
+        CheckConstraint("page_number IS NULL OR page_number > 0", name="ck_document_fields_page"),
+    )
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    document_id = Column(String, ForeignKey("documents.id"), nullable=False, index=True)
+    field_name = Column(String, nullable=False, index=True)
+    extracted_value = Column(JSON, nullable=False)
+    normalized_value = Column(JSON, nullable=True)
+    page_number = Column(Integer, nullable=True)
+    bounding_box = Column(JSON, nullable=True)
+    confidence = Column(Numeric(4, 3), nullable=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+
+    document = relationship("Document", back_populates="fields")
+
+
+class ModelVersion(Base):
+    """Immutable identifier for a deployed advisory model and its feature schema."""
+    __tablename__ = "model_versions"
+    __table_args__ = (UniqueConstraint("model_name", "version", name="uq_model_versions_name_version"),)
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    model_name = Column(String, nullable=False, index=True)
+    version = Column(String, nullable=False)
+    feature_schema_version = Column(String, nullable=False)
+    artifact_sha256 = Column(String(64), nullable=True)
+    is_active = Column(Boolean, nullable=False, default=False, index=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+
+
+class FinancialAssessment(Base):
+    """Immutable deterministic financial-truth snapshot for an invoice."""
+    __tablename__ = "financial_assessments"
+    __table_args__ = (
+        CheckConstraint("invoice_total >= 0", name="ck_financial_assessments_invoice_total"),
+        CheckConstraint("verified_patient_responsibility >= 0", name="ck_financial_assessments_liability"),
+        CheckConstraint("net_paid >= 0", name="ck_financial_assessments_net_paid"),
+        Index("ix_financial_assessments_invoice_created", "invoice_id", "created_at"),
+    )
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    invoice_id = Column(String, ForeignKey("invoices.id"), nullable=False, index=True)
+    model_version_id = Column(String, ForeignKey("model_versions.id"), nullable=True, index=True)
+    calculation_version = Column(String, nullable=False)
+    currency = Column(String(3), nullable=False, default="INR")
+    invoice_total = Column(Numeric(12, 2), nullable=False)
+    insurance_contribution = Column(Numeric(12, 2), nullable=False, default=0)
+    tpa_adjustment = Column(Numeric(12, 2), nullable=False, default=0)
+    net_paid = Column(Numeric(12, 2), nullable=False, default=0)
+    verified_patient_responsibility = Column(Numeric(12, 2), nullable=False)
+    outstanding_balance = Column(Numeric(12, 2), nullable=False, default=0)
+    overpayment = Column(Numeric(12, 2), nullable=False, default=0)
+    unexplained_variance = Column(Numeric(12, 2), nullable=True)
+    status = Column(String, nullable=False, index=True)
+    input_hash = Column(String(64), nullable=False, index=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+
+    evidence_references = relationship("FinancialAssessmentEvidence", back_populates="financial_assessment", cascade="all, delete-orphan")
+
+
+class FinancialAssessmentEvidence(Base):
+    """Links each financial assessment input to a concrete extracted source field."""
+    __tablename__ = "financial_assessment_evidence"
+    __table_args__ = (UniqueConstraint("financial_assessment_id", "document_field_id", name="uq_assessment_evidence_reference"),)
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    financial_assessment_id = Column(String, ForeignKey("financial_assessments.id"), nullable=False, index=True)
+    document_field_id = Column(String, ForeignKey("document_fields.id"), nullable=False, index=True)
+    input_name = Column(String, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+
+    financial_assessment = relationship("FinancialAssessment", back_populates="evidence_references")
 
 
 # ---------------------------------------------------------------------------
