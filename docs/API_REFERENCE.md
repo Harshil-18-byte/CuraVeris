@@ -4,14 +4,94 @@ All requests must be made to:
 
 ```text
 http://127.0.0.1:8000/api/v1
-
 ```
 
 Unless stated otherwise, requests with JSON payloads must supply the header `Content-Type: application/json`. Protected endpoints require a valid JWT token supplied in the header:
 
 ```text
 Authorization: Bearer <access_token>
+```
 
+## Request Tracing & Correlation
+
+Clients may provide a custom request identifier in the `X-Request-ID` header. If omitted, the server generates a UUID4 trace ID. The server always returns the correlated `X-Request-ID` header in HTTP responses and embeds it into error payloads.
+
+## Standardized Error Format
+
+When an error occurs, the server returns an explicit error envelope:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Request validation failed.",
+    "details": [
+      {
+        "type": "missing",
+        "loc": ["body", "password"],
+        "msg": "Field required"
+      }
+    ]
+  },
+  "request_id": "c71a396e-57b1-419b-a0ee-6c17e33527b1"
+}
+```
+
+---
+
+## 0. System & Health Probes
+
+### 0.1 Comprehensive System Health Check
+
+Returns overall health status, active environment, primary PostgreSQL database connection state, and statutory reference SQLite database availability.
+
+- **Method**: `GET`
+- **Path**: `/health`
+- **Response**: `200 OK` (Healthy) or `503 Service Unavailable` (Degraded)
+
+```json
+{
+  "status": "healthy",
+  "environment": "development",
+  "version": "1.2.0",
+  "database": true,
+  "reference_db": true
+}
+```
+
+---
+
+### 0.2 Liveness Probe
+
+Kubernetes / Docker liveness probe indicating whether the application process is running and accepting HTTP requests.
+
+- **Method**: `GET`
+- **Path**: `/health/live` (or root alias `/live`)
+- **Response**: `200 OK`
+
+```json
+{
+  "status": "alive",
+  "timestamp": "2026-08-28T08:27:00.000Z"
+}
+```
+
+---
+
+### 0.3 Readiness Probe
+
+Kubernetes / Docker readiness probe indicating whether backend database dependencies are connected and ready to process traffic.
+
+- **Method**: `GET`
+- **Path**: `/health/ready` (or root alias `/ready`)
+- **Response**: `200 OK` (Ready) or `503 Service Unavailable` (Not Ready)
+
+```json
+{
+  "status": "ready",
+  "database": true,
+  "reference_db": true
+}
 ```
 
 ---
