@@ -2,7 +2,7 @@
 Multi-Tenancy and Role-Based Access Control (RBAC) Tests for CuraVeris.
 
 Verifies:
-1. User registration across roles (PATIENT, HOSPITAL_FINANCE, TPA_REVIEWER, PLATFORM_ADMIN).
+1. Public patient registration and role-based authorization helpers.
 2. Role-based endpoint authorization.
 3. Refresh token rotation and instant revocation on logout / anonymization.
 4. Tenant boundary isolation.
@@ -16,23 +16,23 @@ from fastapi import HTTPException
 
 @pytest.mark.asyncio
 async def test_rbac_user_registration_and_login(async_client: AsyncClient):
-    """Test user registration and login with role."""
+    """Public registration creates a patient account and can log in."""
     unique_id = uuid.uuid4().hex[:6]
     email = f"finance_{unique_id}@hospital.org"
 
-    # Register as HOSPITAL_FINANCE
+    # Public registration must not provision organization roles.
     reg_resp = await async_client.post(
         "/api/v1/auth/register",
         json={
             "email": email,
             "password": "SecurePassword123!",
-            "full_name": "Hospital Finance User",
-            "role": "HOSPITAL_FINANCE"
+            "full_name": "Patient User",
+            "role": "PATIENT"
         }
     )
     assert reg_resp.status_code == 201
     data = reg_resp.json()
-    assert data["user"]["role"] == "HOSPITAL_FINANCE"
+    assert data["user"]["role"] == "PATIENT"
     access_token = data["access_token"]
     refresh_token = data["refresh_token"]
     assert access_token is not None
@@ -47,7 +47,7 @@ async def test_rbac_user_registration_and_login(async_client: AsyncClient):
         }
     )
     assert login_resp.status_code == 200
-    assert login_resp.json()["user"]["role"] == "HOSPITAL_FINANCE"
+    assert login_resp.json()["user"]["role"] == "PATIENT"
 
 
 @pytest.mark.asyncio
