@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatINR } from '../../lib/utils/formatters';
+import { apiClient } from '../../lib/api/client';
 
 interface ExceptionItem {
   id: string;
@@ -15,40 +16,37 @@ interface ExceptionItem {
   status: string;
 }
 
-const EXCEPTIONS: ExceptionItem[] = [
-  {
-    id: 'EXC-101',
-    priority: 'CRITICAL',
-    exceptionType: 'TPA Settlement Underpayment Discrepancy',
-    hospital: 'Metro Multispeciality Hospital',
-    amount: 13500,
-    aging: '4 days',
-    owner: 'Arjun Mehta (Senior Auditor)',
-    status: 'INVESTIGATING',
-  },
-  {
-    id: 'EXC-102',
-    priority: 'HIGH',
-    exceptionType: 'Unbundled OT Sanitization Surcharge',
-    hospital: 'Max Healthcare Institute',
-    amount: 8400,
-    aging: '2 days',
-    owner: 'Priya Sharma (Billing Ops)',
-    status: 'NOTICE_SERVED',
-  },
-  {
-    id: 'EXC-103',
-    priority: 'MEDIUM',
-    exceptionType: 'Delayed Razorpay Gateway Webhook Capture',
-    hospital: 'Apollo Surgical Centre',
-    amount: 62000,
-    aging: '12 hours',
-    owner: 'System Auto-Reconciliation',
-    status: 'AUTO_RESOLVING',
-  },
-];
-
 export default function ExceptionsPage() {
+  const [exceptions, setExceptions] = useState<ExceptionItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadExceptions() {
+      try {
+        const billsRes: any = await apiClient('/api/v1/bills?per_page=20');
+        const items = billsRes?.items || [];
+        const mapped: ExceptionItem[] = items
+          .filter((b: any) => (b.total_overcharge || 0) > 0)
+          .map((b: any) => ({
+            id: `EXC-${b.id.slice(0, 6)}`,
+            priority: (b.total_overcharge || 0) > 20000 ? 'CRITICAL' : (b.total_overcharge || 0) > 5000 ? 'HIGH' : 'MEDIUM',
+            exceptionType: 'Statutory Gazette Rate Discrepancy',
+            hospital: b.hospital_name || 'Hospital Facility',
+            amount: b.total_overcharge || 0,
+            aging: 'Pending Audit',
+            owner: 'Automated Rule Engine',
+            status: b.processing_status || 'AUDITING',
+          }));
+        setExceptions(mapped);
+      } catch {
+        setExceptions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadExceptions();
+  }, []);
+
   return (
     <div className="app-container" style={{ padding: '32px 0 64px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -58,7 +56,7 @@ export default function ExceptionsPage() {
             Financial Exception Management
           </h1>
           <p style={{ fontSize: '14px', color: 'var(--color-neutral-600)' }}>
-            Prioritized operational queue for billing variances, gateway mismatches, and claim rejections.
+            Review, escalate, and resolve billing discrepancies and underpayments across facilities.
           </p>
         </div>
       </div>
@@ -67,39 +65,57 @@ export default function ExceptionsPage() {
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Exception ID</th>
               <th>Priority</th>
-              <th>Exception Description</th>
-              <th>Hospital</th>
-              <th className="amount-cell">Variance</th>
+              <th>Discrepancy Category</th>
+              <th>Hospital / Facility</th>
+              <th>Disputed Value</th>
               <th>Aging</th>
-              <th>Owner</th>
+              <th>Assigned Specialist</th>
+              <th>Resolution Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {EXCEPTIONS.map((e) => (
-              <tr key={e.id}>
-                <td className="text-mono" style={{ fontWeight: 600 }}>{e.id}</td>
-                <td>
-                  <span className={`badge ${e.priority === 'CRITICAL' ? 'badge-failed' : e.priority === 'HIGH' ? 'badge-queued' : 'badge-completed'}`}>
-                    {e.priority}
-                  </span>
-                </td>
-                <td style={{ fontWeight: 600, color: 'var(--color-neutral-900)' }}>{e.exceptionType}</td>
-                <td>{e.hospital}</td>
-                <td className="amount-cell" style={{ color: 'var(--color-danger)', fontWeight: 700 }}>
-                  +{formatINR(e.amount)}
-                </td>
-                <td style={{ fontSize: '12px', color: 'var(--color-neutral-600)' }}>{e.aging}</td>
-                <td style={{ fontSize: '12px', fontWeight: 500 }}>{e.owner}</td>
-                <td>
-                  <Link href={`/exceptions/${e.id}`} style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-primary)' }}>
-                    Resolve →
-                  </Link>
+            {isLoading ? (
+              <tr>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: 'var(--color-neutral-600)' }}>
+                  Loading financial exceptions…
                 </td>
               </tr>
-            ))}
+            ) : exceptions.length === 0 ? (
+              <tr>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '32px', color: 'var(--color-neutral-600)' }}>
+                  No open exceptions flagged across your current medical bills.
+                </td>
+              </tr>
+            ) : (
+              exceptions.map((exc) => (
+                <tr key={exc.id}>
+                  <td className="text-mono" style={{ fontWeight: 600 }}>{exc.id}</td>
+                  <td>
+                    <span className={`badge ${exc.priority === 'CRITICAL' ? 'badge-failed' : 'badge-queued'}`}>
+                      {exc.priority}
+                    </span>
+                  </td>
+                  <td style={{ fontWeight: 600, color: 'var(--color-neutral-900)' }}>{exc.exceptionType}</td>
+                  <td>{exc.hospital}</td>
+                  <td className="text-mono" style={{ fontWeight: 700, color: 'var(--color-danger)' }}>
+                    {formatINR(exc.amount)}
+                  </td>
+                  <td style={{ color: 'var(--color-neutral-600)' }}>{exc.aging}</td>
+                  <td style={{ fontSize: '12px' }}>{exc.owner}</td>
+                  <td>
+                    <span className="badge badge-completed">{exc.status}</span>
+                  </td>
+                  <td>
+                    <Link href="/dispute" className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '12px' }}>
+                      Review →
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
