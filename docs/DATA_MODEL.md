@@ -32,7 +32,7 @@ SQLite is the reference-only store. It is never written to during application op
 
 PostgreSQL is the production authority. Alembic migrations in `backend/migrations/` are the production schema-change path; application startup in staging/production validates the `alembic_version` table and does not create tables or fall back to SQLite. SQLite remains a development/test compatibility store only.
 
-### Phase 2 provenance and reproducibility tables
+### Provenance and Reproducibility Tables
 
 | Table | Purpose | Key constraints |
 |---|---|---|
@@ -298,3 +298,19 @@ Bill records and audit logs are retained. The financial audit data does not cons
   ]
 }
 ```
+
+---
+
+## 8. Relational Schema & Alembic Migration Map (`001_initial_schema`)
+
+The production PostgreSQL database managed on Neon Serverless consists of 9 normalized tables:
+
+1. **`users`**: Patient & advocate accounts, bcrypt password hash, AES-256 encrypted phone, RBAC roles.
+2. **`bills`**: Root medical bill audit entity, total billed, overcharge calculations, composite risk score, and processing lifecycle.
+3. **`bill_items`**: Itemized charges, category mappings, statutory benchmarks (CGHS, NPPA, DPCO), and multi-label violation flags.
+4. **`audit_logs`**: Forensic timeline recording all status transitions, user actions, and dispute generation events.
+5. **`documents`**: Document storage metadata, S3/R2 storage keys, file hash, MIME types, and upload timestamps.
+6. **`document_fields`**: Optical character recognition extraction fragments, bounding box coordinates, and extraction confidence.
+7. **`model_versions`**: Tracking machine learning model architectures, feature signatures, and inference reproducibility.
+8. **`financial_assessments`**: Immutable deterministic financial liability snapshots, DSTI scores, and patient obligations.
+9. **`financial_assessment_evidence`**: Cryptographic evidence linkages mapping financial calculations to exact extracted document fields.
