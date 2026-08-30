@@ -14,7 +14,11 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"
     APP_SECRET_KEY: str = "default_dev_secret_key_change_in_production_32b"
     APP_DEBUG: bool = False
-    APP_ALLOWED_ORIGINS: Union[List[str], str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    APP_ALLOWED_ORIGINS: Union[List[str], str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://your-vercel-app.vercel.app",
+    ]
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/curaveris"
     DATABASE_POOL_SIZE: int = 10
