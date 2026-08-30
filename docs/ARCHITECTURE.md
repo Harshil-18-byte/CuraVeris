@@ -1,8 +1,24 @@
+---
+{
+  "id": "file_t3540n0t",
+  "filetype": "document",
+  "filename": "ARCHITECTURE",
+  "created_at": "2026-08-30T16:44:07.871Z",
+  "updated_at": "2026-08-30T16:44:11.659Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris Technical Architecture Specification
 
 This document details the systems design, data pipelines, database schema, machine learning ensemble, and cryptographic protocols of the CuraVeris platform.
 
-> **2026-08-28 architecture direction.** The existing implementation described below is preserved. New work must converge on the following separation: document intelligence extracts evidence; the ML risk layer identifies anomalies; the deterministic financial-truth engine calculates liability; the evidence engine explains it; Razorpay executes payment; reconciliation compares expected and actual movement; the audit ledger preserves integrity. ML and narrative systems must not change a verified amount.
+> **Architecture Design Principles**: Document intelligence extracts evidence; the ML risk layer identifies anomalies; the deterministic financial-truth engine calculates liability; the evidence engine explains it; Razorpay executes payment; reconciliation compares expected and actual movement; the audit ledger preserves integrity. ML and narrative systems must not change a verified amount.
 
 ## Current → target migration path
 
@@ -464,4 +480,35 @@ graph LR
 | **Web** | `clients/web/` | Next.js 14, React 18, TanStack Query v5, TypeScript | Responsive glassmorphism shell, `X-Request-ID` tracing, JWT auto-refresh, real-time WebSocket subscriber, error boundaries, and offline reachability detection. |
 | **Android** | `clients/android/` | Kotlin 1.9, Jetpack Compose, Material 3, OkHttp | AndroidX `EncryptedSharedPreferences` (AES256-GCM Keystore), `ConnectivityManager` StateFlow reachability, document picker contracts, notification channels for statutory alerts, and `curaveris://` deep linking. |
 | **iOS** | `clients/ios/` | Swift 5.0, SwiftUI, Foundation, Security | iOS Keychain Services (`kSecClassGenericPassword`), `URLSession` async/await, `NWPathMonitor` reachability, `UNUserNotificationCenter` statutory alert manager, `UIDocumentPickerViewController`, and universal deep link routing. |
+
+---
+
+## 9. Distributed Infrastructure & Cloud Native Topology
+
+```mermaid
+flowchart TD
+  User([User / Browser / Mobile App]) --> Cloudflare[Cloudflare DNS / CDN / Edge Security]
+  Cloudflare --> RenderWeb[Render API Web Service / FastAPI / Uvicorn]
+  RenderWeb --> UpstashRedis[(Upstash Redis / Broker & Cache)]
+  UpstashRedis --> CeleryWorker[Celery Background Workers / OCR & ML Engine]
+  RenderWeb --> NeonPG[(Neon Serverless PostgreSQL / Primary & PR Branches)]
+  CeleryWorker --> NeonPG
+  CeleryWorker --> ResendAPI[Resend Email API / Transactional Notices]
+  CeleryWorker --> R2Storage[(Cloudflare R2 / AWS S3 Storage)]
+  RenderWeb --> R2Storage
+```
+
+### 1. Database Tier: Neon Serverless PostgreSQL
+- **Connection Pooling**: Managed via `ep-odd-wave-ax9dv3ka-pooler.c-4.us-east-2.aws.neon.tech` with async SQLAlchemy 2.0 (`asyncpg` driver).
+- **PR Database Branching**: Integrated via GitHub Actions (`neondatabase/create-branch-action@v6`) allowing instant zero-copy schema forks for each pull request.
+
+### 2. Message Broker & Background Tasks: Upstash Redis & Celery
+- **Broker**: Managed Redis with TLS (`rediss://`).
+- **Queues**: Dedicated queues for `bill_processing`, `notifications`, and `default`.
+- **Result Backend**: Stored securely in PostgreSQL backend tables.
+
+### 3. Notification & Storage Pipelines: Resend & Object Storage
+- **Email Delivery**: High-deliverability transactional audit reports and dispute notices dispatched via Resend REST API.
+- **Document Store**: S3-compatible encrypted cloud storage for incoming medical invoices and generated Section 65B legal petitions.
+
 
