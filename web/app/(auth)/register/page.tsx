@@ -248,14 +248,14 @@ export default function RegisterPage() {
                   </h3>
                   <Input
                     label="Full Name (as per ID)"
-                    placeholder="e.g. Rahul Sharma"
+                    placeholder="Enter your full name"
                     error={errors.full_name?.message}
                     {...register("full_name")}
                   />
                   <Input
                     label="Email Address"
                     type="email"
-                    placeholder="e.g. rahul@example.com"
+                    placeholder="Enter your email address"
                     error={errors.email?.message}
                     hint="We will send verification codes and audit certificates here."
                     {...register("email")}
@@ -271,7 +271,7 @@ export default function RegisterPage() {
                   </h3>
                   <Input
                     label="Mobile Phone Number"
-                    placeholder="9876543210"
+                    placeholder="10-digit mobile number"
                     leftAddon={<span className="font-semibold text-neutral-600 text-xs">+91</span>}
                     error={errors.phone_number?.message}
                     hint="We will send one-time verification codes to your email address."
