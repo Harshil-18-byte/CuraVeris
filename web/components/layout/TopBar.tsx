@@ -3,14 +3,23 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Bell, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
-import { useNotificationStore } from "@/store/notificationStore";
+import { api } from "@/lib/api";
 
 export const TopBar: React.FC = () => {
   const pathname = usePathname();
-  const { user } = useAuthStore();
-  const { unreadCount } = useNotificationStore();
+  const user = useAuthStore((state) => state.user);
+
+  const { data: unreadData } = useQuery({
+    queryKey: ["notifications", "unread-count"],
+    queryFn: () => api.notifications.getUnreadCount(),
+    refetchInterval: 60 * 1000,
+    staleTime: 30 * 1000,
+  });
+
+  const unreadCount = unreadData?.count ?? 0;
 
   const getBreadcrumbs = () => {
     const parts = pathname.split("/").filter(Boolean);
@@ -39,7 +48,7 @@ export const TopBar: React.FC = () => {
           <span>DPDP Act 2023 Compliant</span>
         </div>
 
-        {/* Notifications Icon (Mobile + Quick Access) */}
+        {/* Notifications Icon with Unread Badge */}
         <Link
           href="/notifications"
           className="relative p-2 text-neutral-600 hover:text-primary hover:bg-primary-surface rounded-button transition-colors"
@@ -47,14 +56,16 @@ export const TopBar: React.FC = () => {
         >
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+            <span className="absolute top-1 right-1 px-1.5 py-0.5 min-w-[18px] text-[10px] font-bold text-white bg-primary rounded-full flex items-center justify-center">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
           )}
         </Link>
 
         {/* User initials avatar */}
         <Link href="/account" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-primary-surface border border-primary/20 flex items-center justify-center text-primary font-heading font-bold text-xs">
-            {user?.full_name?.charAt(0) || "U"}
+            {user?.full_name?.charAt(0).toUpperCase() || "U"}
           </div>
         </Link>
       </div>
