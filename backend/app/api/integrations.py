@@ -1,8 +1,10 @@
+import hmac
 from typing import Optional, Dict, Any
 from fastapi import APIRouter, Request, HTTPException, Query, Response, status
 from app.engine.extractor import parse_bill_text
 from app.engine.risk_engine import risk_engine
 from app.core.credentials import credentials
+from app.core.config import settings
 from app.core.logging import logger
 
 router = APIRouter(prefix="/integrations", tags=["Third-Party Integrations"])
@@ -18,11 +20,17 @@ async def verify_whatsapp_webhook(
     Meta WhatsApp Cloud API Webhook Handshake Verification.
     Validates hub.verify_token and echoes back hub.challenge as required by Meta.
     """
-    valid_tokens = [credentials.integrations.whatsapp_verify_token, "curaveris_token", "curaveris_whatsapp_verify_token_2026"]
-    if hub_mode == "subscribe" and hub_verify_token in valid_tokens:
-        logger.info("Meta WhatsApp webhook challenge verified successfully.")
-        return Response(content=str(hub_challenge), media_type="text/plain")
+    expected_token = credentials.integrations.whatsapp_verify_token or "curaveris_whatsapp_verify_token_2026"
+    
+    is_valid = False
+    if hub_verify_token:
+        is_valid = hmac.compare_digest(hub_verify_token, expected_token)
+        if not is_valid and settings.ENV == "development":
+            is_valid = hub_verify_token in ["curaveris_token", "curaveris_whatsapp_verify_token_2026"]
 
+    if hub_mode == "subscribe" and is_valid:
+        logger.info("Meta WhatsApp webhook challenge verified successfully.")
+        return Response(content=str(hub_challenge or ""), media_type="text/plain")
 
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
@@ -39,7 +47,8 @@ async def receive_whatsapp_message(request: Request):
     - Returns structured WhatsApp formatted audit response with emojis and legal citations
     """
     payload = await request.json()
-    logger.info(f"Received WhatsApp webhook payload: {payload}")
+    logger.info("Received WhatsApp webhook message event.")
+
 
     sender_phone = "Unknown"
     message_text = ""
