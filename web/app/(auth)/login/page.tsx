@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ShieldCheck, Eye, EyeOff, Check, AlertCircle, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, Check, AlertCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { api } from "@/lib/api";
@@ -21,7 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const loginToStore = useAuthStore((state: { login: any }) => state.login);
+  const loginToStore = useAuthStore((state) => state.login);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lockedMinutes, setLockedMinutes] = useState<number | null>(null);
@@ -33,6 +33,10 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email_or_phone: "",
+      password: "",
+    },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
@@ -42,31 +46,38 @@ export default function LoginPage() {
 
     try {
       const res = await api.auth.login(data);
-      loginToStore({
-        access_token: res.access_token,
-        refresh_token: res.refresh_token,
-      }, {
-        id: res.user_id,
-        email: res.email,
-        full_name: res.full_name,
-        role: res.role as any,
-        phone_verified: false,
-        email_verified: true,
-        is_active: true,
-        dpdp_consent_given: true,
-        created_at: new Date().toISOString(),
-      });
+      loginToStore(
+        {
+          access_token: res.access_token,
+          refresh_token: res.refresh_token,
+        },
+        {
+          id: res.user_id,
+          email: res.email,
+          full_name: res.full_name,
+          role: res.role as any,
+          phone_verified: false,
+          email_verified: true,
+          is_active: true,
+          dpdp_consent_given: true,
+          created_at: new Date().toISOString(),
+        }
+      );
       router.push("/dashboard");
     } catch (err: any) {
-      const status = err?.response?.status;
-      const detail = err?.response?.data?.detail;
+      const status = err?.status || err?.response?.status;
+      const detail = err?.message || err?.response?.data?.detail;
 
-      if (status === 423 && detail?.retry_after_seconds) {
+      if (status === 423 && typeof detail === "object" && detail?.retry_after_seconds) {
         setLockedMinutes(Math.ceil(detail.retry_after_seconds / 60));
       } else if (status === 401) {
         setErrorMessage("Invalid email/phone or password. Please verify your credentials.");
       } else {
-        setErrorMessage("Unable to connect to authentication server. Please check your connection and retry.");
+        setErrorMessage(
+          typeof detail === "string"
+            ? detail
+            : "Unable to connect to authentication server. Please check your connection and retry."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -75,7 +86,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-white">
-      {/* Left 45% Brand Panel (Desktop) */}
+      {/* Left Brand Panel */}
       <div className="hidden lg:flex lg:col-span-5 bg-primary p-12 flex-col justify-between text-white">
         <div>
           <div className="flex items-center gap-3 mb-8">
@@ -122,7 +133,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right 55% Form Panel */}
+      {/* Right Form Panel */}
       <div className="lg:col-span-7 flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-12">
         <div className="max-w-md w-full mx-auto space-y-8">
           <div>
@@ -158,7 +169,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
               label="Email Address or Phone Number"
-              placeholder="e.g. rahul@example.com or 9876543210"
+              placeholder="Enter your registered email or phone"
               error={errors.email_or_phone?.message}
               {...register("email_or_phone")}
             />
