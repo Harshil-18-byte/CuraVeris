@@ -1,0 +1,29 @@
+name: CI Security & Compliance Gate
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  security-gate:
+    name: Security & Internal ID Leak Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run CI Security Gate
+        run: |
+          python scripts/ci_security_gate.py
+
+      - name: Run Curation Leak Prevention Tests
+        run: |
+          pip install -r backend/requirements.txt
+          pytest backend/tests/test_curation_leak_prevention.py -v
