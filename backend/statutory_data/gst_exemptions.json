@@ -1,0 +1,31 @@
+{
+  "exempt_service_categories": [
+    "consultation",
+    "doctor consultation",
+    "specialist fee",
+    "inpatient treatment",
+    "surgical procedure",
+    "surgery",
+    "ot charges",
+    "diagnostic services",
+    "pathology",
+    "radiology",
+    "x-ray",
+    "ct scan",
+    "mri",
+    "ultrasound",
+    "ambulance",
+    "physiotherapy",
+    "nursing services",
+    "dialysis",
+    "icu care",
+    "clinical health care"
+  ],
+  "taxable_categories": [
+    "room rent above 5000 per day",
+    "cosmetic surgery",
+    "hair transplant",
+    "dental aesthetic bleaching"
+  ],
+  "reference": "Notification No. 12/2017-CT(R) dated 28 June 2017 / CBIC Health Exemption Schedule"
+}
