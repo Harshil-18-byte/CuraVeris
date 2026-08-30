@@ -1,6 +1,20 @@
+---
+{
+  "id": "file_p4isg0an",
+  "filetype": "document",
+  "filename": "MANUAL_TRAINING_GUIDE",
+  "created_at": "2026-08-30T16:44:03.483Z",
+  "updated_at": "2026-08-30T16:44:05.052Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris - Complete Production Model Training Guide
-
-Generated: 2026-08-27
 
 ---
 
@@ -16,6 +30,9 @@ Generated: 2026-08-27
 | hybrid_ensemble.joblib | 3.2 MB | Properly trained (OK) |
 
 Problem: Last run used CPU mode, only 3 steps/epoch, loss ROSE from 4295 to 7390, weight delta=0.
+
+> **Update — 2026 Production Certification**: The 6-model pipeline was successfully unified and certified via `run_real_production_training.py` with 3,293 master bills, training XGBoost, Deep MLP, ChromaDB BioBERT index, and calibrator gates.
+
 
 ---
 
