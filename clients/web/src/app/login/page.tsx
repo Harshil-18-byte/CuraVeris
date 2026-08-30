@@ -1,197 +1,206 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function LoginPage() {
-  const { login, register, isLoggingIn, isRegistering, loginError, registerError, isAuthenticated } = useAuth();
-  const [isRegister, setIsRegister] = useState(false);
-  const [email, setEmail] = useState('');
+  const router = useRouter();
+  const { login, isLoggingIn, loginError } = useAuth();
+
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState('PATIENT');
-  const [successMsg, setSuccessMsg] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutMinutes, setLockoutMinutes] = useState(12);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccessMsg('');
+    if (!identifier || !password) return;
+
     try {
-      if (isRegister) {
-        await register({ email, password, full_name: fullName, role });
-        setSuccessMsg('Account registered successfully! Redirecting...');
-      } else {
-        await login({ email, password });
-        setSuccessMsg('Login successful! Redirecting...');
-      }
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 500);
-    } catch {
-      // Handled in mutation error state
+      await login({ email: identifier, password });
+      router.push('/dashboard');
+    } catch (err) {
+      // handled by useAuth
     }
   };
 
-  if (isAuthenticated) {
-    return (
-      <div className="container" style={{ padding: '4rem 1.5rem', textAlign: 'center' }}>
-        <div className="glass-panel" style={{ maxWidth: '440px', margin: '0 auto', padding: '2.5rem' }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Already Authenticated</h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-            You are currently logged into CuraVeris.
-          </p>
-          <a href="/dashboard" className="btn btn-primary" style={{ width: '100%' }}>
-            Go to Dashboard
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  const err = isRegister ? registerError : loginError;
-
   return (
-    <div className="container" style={{ padding: '3.5rem 1.5rem', display: 'flex', justifyContent: 'center' }}>
-      <div className="glass-panel" style={{ maxWidth: '440px', width: '100%', padding: '2.5rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            {isRegister ? 'Create Account' : 'Sign In'}
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--color-neutral-50)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '24px 16px',
+      }}
+    >
+      <div
+        className="card"
+        style={{
+          width: '100%',
+          maxWidth: '420px',
+          padding: '32px 28px',
+          boxShadow: 'var(--shadow-elevated)',
+        }}
+      >
+        {/* Wordmark */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 700,
+              fontSize: '22px',
+              color: 'var(--color-primary)',
+              letterSpacing: '-0.5px',
+              marginBottom: '4px',
+            }}
+          >
+            CURAVERIS
+          </div>
+          <h1
+            style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: 'var(--color-neutral-900)',
+              marginTop: '8px',
+            }}
+          >
+            Welcome Back
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            {isRegister ? 'Access statutory advocacy and bill auditing' : 'Sign in to access your bill audits'}
+          <p style={{ fontSize: '13px', color: 'var(--color-neutral-600)', marginTop: '4px' }}>
+            Sign in to access your statutory healthcare audits
           </p>
         </div>
 
-        {err && (
+        {/* Lockout Banner */}
+        {isLocked && (
           <div
-            role="alert"
             style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#ef4444',
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              marginBottom: '1.25rem',
+              backgroundColor: 'var(--color-warning-surface)',
+              border: '1px solid var(--color-warning)',
+              borderLeftWidth: '4px',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              fontSize: '13px',
+              color: 'var(--color-neutral-900)',
+              marginBottom: '16px',
             }}
           >
-            {err.message || 'Authentication failed. Please verify your credentials.'}
+            <strong>Account locked.</strong> Try again in {lockoutMinutes} minutes.
           </div>
         )}
 
-        {successMsg && (
+        {/* Error Banner */}
+        {loginError && (
           <div
-            role="alert"
             style={{
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#10b981',
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              marginBottom: '1.25rem',
+              backgroundColor: 'var(--color-danger-surface)',
+              border: '1px solid var(--color-danger)',
+              borderLeftWidth: '4px',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              fontSize: '13px',
+              color: 'var(--color-danger)',
+              marginBottom: '16px',
             }}
           >
-            {successMsg}
+            {loginError.message}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {isRegister && (
-            <>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.35rem' }}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Dr. Ramesh Gupta"
-                  className="form-input"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.35rem' }}>
-                  User Role
-                </label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="form-input"
-                >
-                  <option value="PATIENT">Patient / Financial Advocate</option>
-                  <option value="HOSPITAL_FINANCE">Hospital Finance Controller</option>
-                  <option value="HOSPITAL_ADMIN">Hospital Administrator</option>
-                  <option value="TPA_REVIEWER">TPA Claim Reviewer</option>
-                </select>
-              </div>
-            </>
-          )}
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.35rem' }}>
-              Email Address
-            </label>
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="form-group">
+            <label className="form-label">Email or Phone Number</label>
             <input
-              type="email"
+              type="text"
+              className="input"
+              placeholder="e.g. advocate@curaveris.in or 9876543210"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@curaveris.internal"
-              className="form-input"
             />
           </div>
 
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '0.35rem' }}>
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••••••"
-              className="form-input"
-            />
+          <div className="form-group">
+            <label className="form-label">Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="input"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{ paddingRight: '60px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-neutral-600)',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            <div style={{ textAlign: 'right', marginTop: '4px' }}>
+              <Link
+                href="/forgot-password"
+                style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 500 }}
+              >
+                Forgot Password?
+              </Link>
+            </div>
           </div>
 
           <button
             type="submit"
-            disabled={isLoggingIn || isRegistering}
             className="btn btn-primary"
-            style={{ width: '100%', marginTop: '0.5rem', padding: '0.75rem' }}
+            disabled={isLoggingIn}
+            style={{ width: '100%', marginTop: '8px' }}
           >
-            {isLoggingIn || isRegistering ? 'Processing...' : isRegister ? 'Register Account' : 'Sign In'}
+            {isLoggingIn ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
-        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          {isRegister ? (
-            <p>
-              Already have an account?{' '}
-              <button
-                onClick={() => setIsRegister(false)}
-                style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 600 }}
-              >
-                Sign In
-              </button>
-            </p>
-          ) : (
-            <p>
-              Do not have an account?{' '}
-              <button
-                onClick={() => setIsRegister(true)}
-                style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 600 }}
-              >
-                Create Account
-              </button>
-            </p>
-          )}
+        {/* Divider */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            margin: '24px 0',
+            color: 'var(--color-neutral-600)',
+            fontSize: '13px',
+          }}
+        >
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-neutral-300)' }} />
+          <span style={{ padding: '0 12px' }}>or</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--color-neutral-300)' }} />
         </div>
+
+        {/* Create Account Secondary Button */}
+        <Link
+          href="/register"
+          className="btn btn-secondary"
+          style={{ width: '100%', textAlign: 'center', justifyContent: 'center' }}
+        >
+          Create Account
+        </Link>
       </div>
     </div>
   );
