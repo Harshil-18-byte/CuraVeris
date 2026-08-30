@@ -1,10 +1,26 @@
+---
+{
+  "id": "file_ltuefxn7",
+  "filetype": "document",
+  "filename": "README",
+  "created_at": "2026-08-30T11:43:12.581Z",
+  "updated_at": "2026-08-30T11:43:14.765Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris
 
 ## Healthcare Financial Verification & Reconciliation
 
 **Know what you actually owe.**
 
-For repository layout and active client runtimes, see [Project structure](docs/PROJECT_STRUCTURE.md).
+For repository layout and active client runtimes, see [Project Structure](#project-structure).
 
 CuraVeris analyzes hospital billing and related insurance/TPA documentation, combines deterministic financial rules with ML-based anomaly intelligence, produces evidence-backed patient responsibility, and connects verified obligations to payment and reconciliation.
 
@@ -21,6 +37,7 @@ ML identifies risk; deterministic rules establish facts; the financial engine ca
 - [Problem Statement](#problem-statement)
 - [Product Model](#product-model)
 - [Product Surface](#product-surface)
+- [Multi-Platform Frontend & Client Persistence](#multi-platform-frontend--client-persistence)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Features](#features)
@@ -29,7 +46,7 @@ ML identifies risk; deterministic rules establish facts; the financial engine ca
 - [Getting Started](#getting-started)
 - [Available Commands](#available-commands)
 - [Environment Configuration](#environment-configuration)
-- [Testing and Completion](#testing-and-completion)
+- [Testing, Playwright E2E & CI Security Gate](#testing-playwright-e2e--ci-security-gate)
 - [Security](#security)
 - [API Reference](#api-reference)
 - [Machine Learning Ensemble](#machine-learning-ensemble)
@@ -45,6 +62,7 @@ ML identifies risk; deterministic rules establish facts; the financial engine ca
 ---
 
 ## Problem Statement
+
 
 Indian private healthcare relies on a fragmented three-party financial settlement process that systematically disadvantages patients:
 
@@ -141,7 +159,23 @@ flowchart TD
 
 ---
 
+## Multi-Platform Frontend & Client Persistence
+
+The CuraVeris client application is built with **Next.js 14 App Router**, **React 18**, and **Framer Motion**, delivering dedicated, specialized viewports for **Desktop Web**, **iOS Mobile (Cupertino)**, and **Android Mobile (Material)** without relying on generic icons or artificial gradients.
+
+### Core Architectural Features:
+1. **Zero Icons & Zero Gradients Design System**: Uses typography, status tags, and monospaced badges (`[NPPA CAP]`, `[DPCO]`, `[CGHS]`, `[SECTION 65B]`, `[VERIFIED]`) over solid, high-contrast matte surfaces (`#090D16`, `#0F172A`, `#1E293B`).
+2. **Device-Adaptive Layout Engine ([`AppLayout.tsx`](./clients/web/src/components/layout/AppLayout.tsx))**: Supports live runtime switching between Desktop Web, iOS Cupertino phone chassis, and Android Material phone chassis with responsive auto-detection.
+3. **Client Persistence Engine ([`persistence.ts`](./clients/web/src/lib/storage/persistence.ts))**: Automatically preserves active invoice audits, customized legal dispute drafts, copilot chat history, and device modes across browser closures and page reloads.
+4. **Pure Raw Dynamic Data**: Starts from a clean zero-state for new users, querying live FastAPI endpoints for statutory rates, audits, and chat completions.
+5. **Framer Motion Viewport Lazy Loading ([`LazyThumbnail.tsx`](./clients/web/src/components/common/LazyThumbnail.tsx))**: Smooth, viewport-triggered thumbnail and document rendering with touch optimization.
+6. **React ErrorBoundary ([`ErrorBoundary.tsx`](./clients/web/src/components/common/ErrorBoundary.tsx))**: Prevents blank screens and provides immediate recovery workflows.
+7. **Startup Health Probe ([`startupHealth.ts`](./clients/web/src/lib/health/startupHealth.ts))**: Detects 404 routing anomalies and self-heals by routing to the canonical root.
+
+---
+
 ## Architecture
+
 
 ```mermaid
 flowchart TD
@@ -337,7 +371,7 @@ CuraVeris/
 │   ├── reference_data/                  # Statutory rate databases (medical_rates.db)
 │   ├── tests/                           # Automated unit, integration, & foundation tests
 │   │   ├── conftest.py                  # Pytest fixtures and async client configuration
-│   │   ├── test_phase3_foundation.py    # Phase 3 backend & API foundation test suite
+│   │   ├── test_phase3_foundation.py    # Backend & API foundation test suite
 │   │   └── run_all_backend_tests.py     # Master backend test suite execution script
 │   ├── alembic.ini                      # Alembic migration configuration
 │   ├── pytest.ini                       # Pytest execution configuration
@@ -380,11 +414,12 @@ CuraVeris/
 
 ---
 
-## Phase 3: Backend + API Foundation
+## Backend & API Foundation
 
 The backend foundation is built on FastAPI with high-reliability enterprise architecture:
 
 ### 1. Application Startup & Lifespan
+
 - **Lifespan Context Manager**: Managed in [`backend/app/main.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/main.py). Automatically coordinates startup tasks:
   1. Validates configuration secrets (rejects insecure default keys in production/staging).
   2. Initializes the PostgreSQL database connection pool and ensures schema presence.
@@ -393,23 +428,28 @@ The backend foundation is built on FastAPI with high-reliability enterprise arch
   5. Coordinates graceful shutdown and connection cleanup.
 
 ### 2. Configuration Management
+
 - **Pydantic BaseSettings**: Configured in [`backend/app/core/config.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/core/config.py). Supports automatic environment variable binding with typed fallbacks.
 - **Strict Startup Validation**: `validate_secrets()` prevents starting with development keys in staging or production.
 
 ### 3. Database Connection & Lifecycle
+
 - **Async SQLAlchemy 2.0**: Configured in [`backend/app/db/database.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/db/database.py).
 - **Dependency Injection**: The `get_db` async generator provides scoped sessions with automatic transaction rollback on unhandled exceptions and guaranteed cleanup.
 
 ### 4. Database Migrations
+
 - **Alembic Versioning**: Fully configured via `alembic.ini` and `backend/migrations/` to track schema changes.
 
 ### 5. Dependency Injection Architecture
+
 - `get_db`: Yields transactional async database sessions.
 - `get_current_user`: Decodes JWT tokens, validates expiration, and retrieves active user records.
 - `require_roles`: Factory dependency enforcing Role-Based Access Control (RBAC).
 - `enforce_tenant_access`: Enforces organization boundary isolation.
 
 ### 6. API Versioning & Routing
+
 - Base API prefix `settings.API_V1_STR` (`/api/v1`) mounted cleanly across all business routers:
   - `/api/v1/auth`: Authentication, registration, token refresh, and user profile.
   - `/api/v1/bills`: Bill upload, extraction, audit, and status tracking.
@@ -421,12 +461,15 @@ The backend foundation is built on FastAPI with high-reliability enterprise arch
   - `/api/v1/chat`: Grounded statutory patient advocacy AI assistant.
 
 ### 7. Request Validation & Response Schemas
+
 - Strict **Pydantic v2** models defined in [`backend/app/models/schemas.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/models/schemas.py).
 - Input fields enforce type safety, regex constraints, and value sanitization.
 - Response models guarantee well-defined schemas across all endpoints.
 
 ### 8. Structured Error Handling
+
 - Safe error payloads formatted as:
+
   ```json
   {
     "error": {
@@ -437,23 +480,28 @@ The backend foundation is built on FastAPI with high-reliability enterprise arch
     "request_id": "c71a396e-57b1-419b-a0ee-6c17e33527b1"
   }
   ```
+
 - Handlers registered for `CuraVerisError`, `RequestValidationError`, `RateLimitExceeded`, and `StarletteHTTPException`.
 
 ### 9. Request Traceability (Request IDs)
+
 - `RequestCorrelationMiddleware` accepts client-provided `X-Request-ID` or generates a UUID4.
 - Injected into `request_id_context` for structured logging, returned in response headers, and embedded in all error payloads.
 
 ### 10. Authentication & Authorization Foundation
+
 - **JWT Tokens**: Stateless HMAC-SHA256 access tokens and cryptographically hashed refresh tokens.
 - **RBAC Matrix**: Enforced via `require_roles("ROLE_A", "ROLE_B")` supporting:
   `PATIENT`, `HOSPITAL_ADMIN`, `HOSPITAL_FINANCE`, `HOSPITAL_BILLING`, `HOSPITAL_AUDITOR`, `TPA_REVIEWER`, `TPA_ADMIN`, `INSURER_REVIEWER`, `INSURER_ADMIN`, and `PLATFORM_ADMIN`.
 
 ### 11. Health, Liveness & Readiness Probes
+
 - `GET /health`: Comprehensive health report including database status and reference data availability.
 - `GET /health/live` & `GET /live`: Liveness probe indicating process responsiveness.
 - `GET /health/ready` & `GET /ready`: Readiness probe verifying backend database connectivity.
 
 ### 12. OpenAPI Contracts
+
 - Full OpenAPI 3.x specification available dynamically at `/openapi.json` and interactive docs at `/docs` (in development).
 
 ---
@@ -471,7 +519,9 @@ The platform uses a hybrid persistence model: PostgreSQL for all ACID financial 
 | `cghs_rates` | SQLite | `procedure_name`, `nabh_rate`, `non_nabh_rate` | 1,900+ CGHS 2024 procedure benchmarks. |
 | `nppa_devices` | SQLite | `device_name`, `ceiling_price` | Coronary stent and orthopedic implant caps. |
 | `dpco_drugs` | SQLite | `drug_name`, `mrp_per_unit` | Scheduled pharmaceutical MRP ceilings. |
+
 See [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md).
+
 
 ---
 
@@ -504,25 +554,47 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### Initialize Reference Database
+### Initialize Reference Database & Run Migrations
 
 ```bash
+# Apply database schema to PostgreSQL (Neon / Local)
+alembic upgrade head
+
+# Initialize local statutory rates database (CGHS, NPPA, DPCO)
 python -c "from app.db.reference_data import initialize_reference_database; initialize_reference_database()"
 ```
 
 ### Train Machine Learning Models (Optional)
 
 ```bash
-python app/ml/train_risk_model.py
+python ml_training/run_real_production_training.py --epochs 10 --batch-size 32 --device cpu --precision fp32
 ```
 
-### Run the Application
+### Run the Application (3 Services)
 
-```bash
+To run the full stack locally with real-time asynchronous document processing:
+
+**Terminal 1 — FastAPI Backend Server:**
+```powershell
+cd j:\Dev\PROJECTS\CuraVeris\backend
+.\venv\Scripts\Activate.ps1
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+Interactive OpenAPI documentation: `http://127.0.0.1:8000/docs`
 
-The OpenAPI documentation is available at `http://127.0.0.1:8000/docs`.
+**Terminal 2 — Celery Async Processing Worker:**
+```powershell
+cd j:\Dev\PROJECTS\CuraVeris\backend
+.\venv\Scripts\Activate.ps1
+celery -A app.workers.celery_app.celery worker --loglevel=info -Q bill_processing,notifications,default --concurrency=2
+```
+
+**Terminal 3 — Next.js Web Frontend:**
+```powershell
+cd j:\Dev\PROJECTS\CuraVeris\web
+npm run dev
+```
+Web Application URL: `http://localhost:3000`
 
 ---
 
@@ -531,10 +603,13 @@ The OpenAPI documentation is available at `http://127.0.0.1:8000/docs`.
 | Command | Directory | Description |
 | :--- | :--- | :--- |
 | `uvicorn app.main:app --reload` | `backend/` | Starts the FastAPI server with hot-reload. |
-| `python app/ml/train_risk_model.py` | `backend/` | Retrains the XGBoost and MLP ensemble from scratch. |
-| `pytest -v` | `backend/` | Runs all 62 test suites across API, security hardening, ML models, multi-tenancy, and financial invariants (100% passing). |
+| `celery -A app.workers.celery_app.celery worker -l info -Q bill_processing,notifications,default` | `backend/` | Runs async OCR and audit processing workers. |
+| `alembic upgrade head` | `backend/` | Applies latest database schema migrations. |
+| `python ml_training/run_real_production_training.py` | `backend/` | Trains all 6 hybrid ML models with statutory calibration. |
+| `pytest -v` | `backend/` | Runs all test suites across API, security hardening, ML models, and financial invariants. |
+| `npm run dev` | `web/` | Starts Next.js frontend development server. |
 | `python -m venv venv` | `backend/` | Creates the isolated Python virtual environment. |
-| `pip install -r requirements.txt` | `backend/` | Installs all production and development dependencies. |
+| `pip install -e .` | `backend/` | Installs backend package in editable mode. |
 | `git lfs pull` | Root | Downloads all large binary model weights (`.pt`, `.onnx`, `.safetensors`, `.ubj`) and SQLite DBs. |
 
 ---
@@ -544,32 +619,69 @@ The OpenAPI documentation is available at `http://127.0.0.1:8000/docs`.
 Create `backend/.env` with the following variables. Do not commit this file.
 
 ```env
+APP_ENV=development
 PROJECT_NAME="CuraVeris"
-SECRET_KEY="curaveris_production_grade_secret_key_change_in_prod"
-ALGORITHM="HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES=1440
+APP_SECRET_KEY="<generated_openssl_hex_32>"
+JWT_SECRET_KEY="<generated_openssl_hex_32>"
+EVIDENCE_HMAC_SECRET="<generated_openssl_hex_32>"
+JWT_ALGORITHM="HS256"
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
+JWT_REFRESH_TOKEN_EXPIRE_DAYS=30
 
-# PostgreSQL connection string
-DATABASE_URL="postgresql+asyncpg://postgres:postgres@localhost:5432/curaveris_db"
+# PostgreSQL Connection Strings (Neon Serverless / Local PostgreSQL)
+DATABASE_URL="postgresql+asyncpg://neondb_owner:<password>@ep-xxx-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
+CELERY_RESULT_BACKEND="postgresql://neondb_owner:<password>@ep-xxx-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
 
-# Optional: Razorpay payment gateway credentials
-RAZORPAY_KEY_ID="rzp_test_placeholder"
-RAZORPAY_KEY_SECRET="rzp_secret_placeholder"
+# Upstash Redis Broker
+REDIS_URL="rediss://default:<password>@xxx.upstash.io:6379"
+CELERY_BROKER_URL="rediss://default:<password>@xxx.upstash.io:6379"
+
+# Resend Email Integration
+RESEND_API_KEY="re_xxx"
+EMAIL_FROM_ADDRESS="onboarding@resend.dev"
+
+# Cloudflare R2 / AWS S3 Storage Backend (Optional for Cloud uploads)
+STORAGE_BACKEND=local
+AWS_ACCESS_KEY_ID="<r2_access_key_id>"
+AWS_SECRET_ACCESS_KEY="<r2_secret_key>"
+AWS_S3_BUCKET_NAME="curaveris-bills"
+AWS_S3_REGION="auto"
+AWS_S3_ENDPOINT_URL="https://<account_id>.r2.cloudflarestorage.com"
 ```
 
 ---
 
-## Testing and Completion
+## Testing, Playwright E2E & CI Security Gate
 
-A successful build is not the definition of completion. The acceptance path is:
+The CuraVeris quality framework enforces comprehensive automated testing across backend invariants, ML pipelines, frontend components, and security merge gates:
 
-1. All 73 automated tests pass across security, reference data, ML inference, Merkle ledger, and API routes.
-2. PostgreSQL connection is active and schema is initialized.
-3. Reference tariff database is seeded with CGHS, NPPA, DPCO, and IRDAI data.
-4. Bill upload endpoint exercises the full OCR → rule engine → ML ensemble → ledger pipeline.
-5. Dispute letter and anti-detention notice endpoints return legally-cited documents.
-6. No fabricated statutory rates or pre-computed scores are present outside test fixtures.
-7. Documentation matches the implementation at every endpoint.
+```bash
+# 1. Run full backend test suite (96 passed, 0 failed)
+pytest -v
+
+# 2. Run curation leak prevention tests
+pytest tests/test_curation_leak_prevention.py -v
+
+# 3. Run model statutory taxonomy compliance tests
+pytest tests/test_taxonomy_compliance.py -v
+
+# 4. Run CI Security Gate locally (scans for exposed internal_ids & secrets)
+python scripts/ci_security_gate.py
+
+# 5. Run frontend TypeScript validation & production build
+cd clients/web && npm run typecheck && npm run build
+
+# 6. Run Playwright E2E tests for empty results and search analytics
+cd clients/web && npx playwright test
+```
+
+### Acceptance & Quality Invariants:
+1. **96 Automated Backend Tests Pass**: 100% green coverage across security hardening, reference DB rate queries, ML inference uncertainty, Merkle audit ledger, and multi-tenant RBAC.
+2. **Curation Leak Prevention Verified**: Automated scans ensure internal curation metadata, notes, and raw database IDs are never returned in public DB reads or API responses.
+3. **Model Taxonomy Compliance**: All pipeline outputs strictly conform to approved regulatory classifications (`NPPA`, `DPCO`, `CGHS`, `IRDAI`).
+4. **Playwright E2E Scenarios**: Verifies that empty search queries correctly render dedicated empty state panels with working Retry buttons and emit accurate analytics telemetry (`search_query_executed`, `empty_result_rendered`).
+5. **CI Security Gate**: Automated blocker in `.github/workflows/security_gate.yml` preventing PR merges if forbidden patterns or internal IDs reappear.
+
 
 ---
 
