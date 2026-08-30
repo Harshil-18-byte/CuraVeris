@@ -21,6 +21,7 @@ from app.core.security import (
     create_access_token,
     create_refresh_token,
     oauth2_scheme,
+    oauth2_optional_scheme,
     verify_token,
     hash_token,
     encrypt_pii,
@@ -62,7 +63,7 @@ async def get_current_user(
 
 
 async def get_optional_user(
-    token: Optional[str] = Depends(oauth2_scheme),
+    token: Optional[str] = Depends(oauth2_optional_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> Optional[User]:
     """Returns the authenticated user or None for optional-auth endpoints."""
@@ -72,6 +73,7 @@ async def get_optional_user(
         return await get_current_user(token, db)
     except Exception:
         return None
+
 
 
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
@@ -231,10 +233,12 @@ async def refresh_tokens(
         raise HTTPException(status_code=401, detail="Refresh token has been revoked or expired")
     if str(rt_entry.user_id) != str(user_id):
         raise HTTPException(status_code=401, detail="Refresh token ownership mismatch")
-    if rt_entry.expires_at < datetime.now(timezone.utc):
+    rt_expires = rt_entry.expires_at.replace(tzinfo=timezone.utc) if rt_entry.expires_at.tzinfo is None else rt_entry.expires_at
+    if rt_expires < datetime.now(timezone.utc):
         rt_entry.is_revoked = True
         await db.commit()
         raise HTTPException(status_code=401, detail="Refresh token has expired")
+
 
     # Invalidate previous refresh token (rotation)
     rt_entry.is_revoked = True
