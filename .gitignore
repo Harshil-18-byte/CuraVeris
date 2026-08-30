@@ -149,12 +149,14 @@ desktop.ini
 $RECYCLE.BIN/
 
 # =============================================================================
-# Node.js (frontend)
+# Node.js (frontend & mobile)
 # =============================================================================
 
 node_modules/
+**/node_modules/
 npm-debug.log*
 yarn-debug.log*
+
 yarn-error.log*
 .pnp
 .pnp.js
@@ -232,3 +234,10 @@ backend/ml_training/models/pytorch_transformers_base/
 backend/ml_training/models/pytorch_transformers_quantized/
 
 
+.neon
+.gradle/
+clients/android/.gradle/
+web/.next/
+clients/web/.next/
+web/node_modules/
+clients/web/node_modules/
