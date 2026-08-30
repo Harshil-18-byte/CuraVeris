@@ -37,7 +37,17 @@ backend/
     test_curaveris_1b_model.py            <- CuraVeris-1B parameter scaling, RoPE, GQA, multi-task loss
     test_curaveris_4b_model.py            <- CuraVeris-4B parameter scaling, 36 layers, Huber restitution
     test_security_and_4b_telemetry.py     <- Magic bytes validation, path traversal, 4B/1B observability
+    test_curation_leak_prevention.py      <- Scans public DB reads to ensure internal curation fields are never leaked
+    test_taxonomy_compliance.py           <- Compares ML outputs against approved regulatory taxonomy schedules
 ```
+
+### Web Client & E2E Testing:
+```text
+clients/web/
+  e2e/
+    empty_results.spec.ts                 <- Playwright E2E tests for empty-result scenarios & telemetry assertions
+```
+
 
 ---
 
@@ -104,6 +114,24 @@ pytest --cov=app --cov-report=term-missing --cov-report=html:htmlcov
 ```
 
 Open `htmlcov/index.html` to browse line-level coverage.
+
+### Real PostgreSQL / Neon Integration Testing
+
+To execute tests against a live PostgreSQL database (such as your Neon dev branch):
+
+```bash
+cd backend
+# Set DATABASE_URL in environment or backend/.env
+$env:DATABASE_URL="postgresql+asyncpg://neondb_owner:***@ep-***-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
+pytest tests/ -v -m "not slow"
+```
+
+### Celery Async Worker & Queue Testing
+
+```bash
+cd backend
+pytest tests/test_enhancements.py -k "worker or celery or async" -v
+```
 
 ### Parallel execution (faster)
 
