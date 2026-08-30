@@ -1,3 +1,19 @@
+---
+{
+  "id": "file_w5i3zku6",
+  "filetype": "document",
+  "filename": "ML_AND_BACKEND_HANDBOOK",
+  "created_at": "2026-08-30T16:43:55.112Z",
+  "updated_at": "2026-08-30T16:44:01.841Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris — ML Model Training, Dataset & Backend Developer Handbook
 
 Welcome to the definitive developer handbook for **CuraVeris (MedBill AI)**. This document provides an exhaustive reference for system installation, multi-model machine learning training, dataset architecture, scoring and accuracy metrics, statutory compliance engines, and Razorpay payment-aware integrations.
@@ -904,5 +920,33 @@ python backend/ml_training/models/export_1b_quantized.py
 - `GET /api/v1/dev/curaveris-1b`: Live 1.05B model specifications and quantization state.
 - `GET /api/v1/dev/security-status`: Real-time defense-in-depth posture (magic bytes, HSTS, rate limits, SHA-256 integrity).
 - `GET /api/v1/dev/model-metrics`: Unified developer observability dashboard payload.
+
+---
+
+## 16. Full Real Production Multi-Model Training Pipeline (`run_real_production_training.py`)
+
+The full production training pipeline coordinates end-to-end dataset synthesis, temporal rate index verification, multi-model training, calibration, and statutory gate certification across 3,293+ master bills:
+
+### Master Training Execution
+
+```powershell
+python backend\ml_training\run_real_production_training.py `
+    --epochs 10 `
+    --batch-size 32 `
+    --num-scenarios 2000 `
+    --device cpu `
+    --precision fp32 `
+    --skip-stages 3,5,6,7 `
+    --skip-layoutlm
+```
+
+### Production Model Suite
+
+1. **Stage 1: XGBoost Multi-Label Violation Classifier**: Evaluates 15 statutory boundary and tabular bill features.
+2. **Stage 2: Deep MLP Neural Network (128-64-32)**: Non-linear financial interaction model trained with Adam optimizer and BCEWithLogitsLoss.
+3. **Stage 3: Hybrid Stacking Ensemble**: Combines calibrated outputs with logistic meta-learner.
+4. **Stage 4: BioBERT Statutory Vector Database**: Generates 768-dimensional embeddings for ChromaDB semantic statutory retrieval.
+5. **Stage 5: Calibration & Validation Certification**: Verifies Macro F1, Recall on DPCO/NPPA overcharges, and probability reliability.
+
 
 
