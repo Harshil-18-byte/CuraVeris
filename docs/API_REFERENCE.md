@@ -3,7 +3,8 @@
 All requests must be made to:
 
 ```text
-http://127.0.0.1:8000/api/v1
+Local Development: http://127.0.0.1:8000/api/v1
+Cloud Production:  https://curaveris.onrender.com/api/v1
 ```
 
 Unless stated otherwise, requests with JSON payloads must supply the header `Content-Type: application/json`. Protected endpoints require a valid JWT token supplied in the header:
