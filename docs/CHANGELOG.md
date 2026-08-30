@@ -10,6 +10,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
+## [1.6.0] — 2026-08-30
+
+### Added
+
+- **Render Cloud Deployment**: Production web service setup for `curaveris.onrender.com` with automated zero-downtime health check probes (`/api/v1/health`).
+- **Neon Serverless PostgreSQL Database**: Integrated connection pooling (`postgresql+asyncpg://`) and dynamic PR Database Branching workflow (`.github/workflows/neon_workflow.yml`).
+- **Upstash Redis Broker & Celery Workers**: Distributed asynchronous document OCR, risk engine evaluation, and audit report generation.
+- **Resend Email Integration**: Automated transactional email pipeline for statutory medical dispute notices and Section 65B audit reports.
+- **6-Model Unified Production Training Pipeline (`run_real_production_training.py`)**: Trained XGBoost, Deep MLP, ChromaDB BioBERT vector store, and probability calibration gates over 3,293 master bills.
+
+---
+
 ## [1.5.0] — 2026-08-26
 
 ### Added
