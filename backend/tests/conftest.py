@@ -1,39 +1,51 @@
-import os
-import sys
 import pytest
 import pytest_asyncio
+from decimal import Decimal
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from app.core.database import Base, get_db
+from app.core.config import settings
 
-# Ensure tests use isolated local test database and testing environment
-os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test_curaveris.db"
-os.environ["SYNC_DATABASE_URL"] = "sqlite:///./test_curaveris.db"
-os.environ["ENV"] = "testing"
+try:
+    from httpx import AsyncClient, ASGITransport
+    from app.main import app
+except ImportError:
+    AsyncClient = None
+    ASGITransport = None
+    app = None
 
-# Add backend directory to sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
 
-from httpx import AsyncClient, ASGITransport
-from app.main import app
-from app.db.database import init_db
-from app.db.reference_data import init_reference_db
+test_engine = create_async_engine(TEST_DB_URL, echo=False)
+TestingSessionLocal = async_sessionmaker(bind=test_engine, expire_on_commit=False)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_test_environment():
-    """Session-level setup of statutory reference rates."""
-    init_reference_db()
+@pytest_asyncio.fixture(scope="session")
+async def prepare_database():
+    async with test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
-
-
-@pytest_asyncio.fixture(scope="session", autouse=True)
-async def auto_init_db():
-    """Ensure database schema is created once per test session."""
-    await init_db(force=True)
-    yield
+    async with test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest_asyncio.fixture
-async def async_client():
-    """Async test client for FastAPI."""
+async def db_session(prepare_database) -> AsyncGenerator[AsyncSession, None]:
+    async with TestingSessionLocal() as session:
+        yield session
+
+
+@pytest_asyncio.fixture
+async def client(db_session: AsyncSession) -> AsyncGenerator:
+    if AsyncClient is None or app is None:
+        yield None
+        return
+
+    async def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_get_db
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        yield client
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac
+    app.dependency_overrides.clear()
