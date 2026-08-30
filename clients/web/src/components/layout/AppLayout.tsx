@@ -9,7 +9,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-neutral-50)' }}>
       <NetworkBanner />
       <Header />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -19,17 +19,17 @@ export function AppLayout({ children }: AppLayoutProps) {
       </main>
       <footer
         style={{
-          borderTop: '1px solid var(--border-color)',
-          padding: '2rem 0',
+          borderTop: '1px solid var(--color-neutral-300)',
+          padding: '24px 0',
           marginTop: 'auto',
-          background: 'rgba(10, 15, 29, 0.95)',
-          color: 'var(--text-muted)',
-          fontSize: '0.85rem',
+          backgroundColor: 'var(--color-neutral-900)',
+          color: '#FFFFFF',
+          fontSize: '13px',
           textAlign: 'center',
         }}
       >
-        <div className="container">
-          <p>© 2026 CuraVeris. Automated Statutory Medical Bill Verification & Patient Financial Advocacy.</p>
+        <div className="app-container">
+          <p>© 2026 CuraVeris · Statutory Healthcare Financial Verification · DPDP Act 2023 Compliant</p>
         </div>
       </footer>
     </div>
