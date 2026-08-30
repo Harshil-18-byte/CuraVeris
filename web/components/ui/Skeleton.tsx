@@ -11,7 +11,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className, count = 1, ...pro
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className={cn("bg-neutral-300/60 animate-pulse rounded", className)}
+          className={cn("bg-neutral-200 animate-pulse rounded", className)}
           {...props}
         />
       ))}
@@ -42,24 +42,46 @@ export const SkeletonCard: React.FC<{ className?: string }> = ({ className }) =>
 export const SkeletonRow: React.FC<{ cols?: number; className?: string }> = ({ cols = 5, className }) => {
   return (
     <tr className={cn("border-b border-neutral-300 animate-pulse", className)}>
-      {Array.from({ length: cols }).map((_, idx) => (
-        <td key={idx} className="p-4">
-          <Skeleton className="h-4 w-full max-w-[120px]" />
-        </td>
-      ))}
+      <td className="p-4 w-1/4">
+        <Skeleton className="h-4 w-full" />
+      </td>
+      <td className="p-4 w-[15%]">
+        <Skeleton className="h-4 w-full" />
+      </td>
+      <td className="p-4 w-[15%]">
+        <Skeleton className="h-4 w-full" />
+      </td>
+      <td className="p-4 w-[15%]">
+        <Skeleton className="h-4 w-full" />
+      </td>
+      <td className="p-4 w-[15%] text-right">
+        <Skeleton className="h-4 w-16 ml-auto" />
+      </td>
     </tr>
   );
 };
 
-export const SkeletonText: React.FC<{ lines?: number; className?: string }> = ({ lines = 3, className }) => {
+export const SkeletonText: React.FC<{
+  lines?: number;
+  width?: "sm" | "md" | "lg" | "full";
+  className?: string;
+}> = ({ lines = 1, width = "full", className }) => {
+  const widthClass = {
+    sm: "w-24",
+    md: "w-48",
+    lg: "w-64",
+    full: "w-full",
+  }[width];
+
   return (
     <div className={cn("space-y-2", className)}>
       {Array.from({ length: lines }).map((_, idx) => (
         <Skeleton
           key={idx}
-          className={cn("h-4", idx === lines - 1 ? "w-2/3" : "w-full")}
+          className={cn("h-4", idx === lines - 1 && lines > 1 ? "w-2/3" : widthClass)}
         />
       ))}
     </div>
   );
 };
+
