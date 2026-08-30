@@ -263,7 +263,7 @@ export default function ScanBillPage() {
                   <input
                     type="text"
                     className="input"
-                    placeholder="e.g. Apollo Hospital, Max Healthcare..."
+                    placeholder="Enter hospital or healthcare facility name"
                     value={hospitalName}
                     onChange={(e) => setHospitalName(e.target.value)}
                   />
