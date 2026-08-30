@@ -1,19 +1,3 @@
----
-{
-  "id": "file_osix84y0",
-  "filetype": "document",
-  "filename": "PRODUCTION_TRAINING_GUIDE",
-  "created_at": "2026-08-27T08:15:59.881Z",
-  "updated_at": "2026-08-27T08:15:59.881Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Production Training Guide
 
 This document explains how to run the **real** hours-long production training that produces properly sized, properly trained models.
