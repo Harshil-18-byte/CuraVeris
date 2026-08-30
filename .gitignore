@@ -247,3 +247,4 @@ ml_models/
 *.pyc
 .next/
 **/.next/
+*.tsbuildinfo
