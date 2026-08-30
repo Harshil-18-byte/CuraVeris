@@ -3,16 +3,19 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UploadCloud, ArrowRight, AlertTriangle, ArrowLeft } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UploadCloud, ArrowRight, AlertTriangle, ArrowLeft, Loader2 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { UploadZone } from "@/components/bills/UploadZone";
-import { api } from "@/lib/api";
+import { api, AppError } from "@/lib/api";
 
 export default function UploadBillPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [hospitalName, setHospitalName] = useState("");
   const [approxAmount, setApproxAmount] = useState("");
@@ -21,7 +24,41 @@ export default function UploadBillPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [duplicateBillId, setDuplicateBillId] = useState<string | null>(null);
 
-  const handleUpload = async () => {
+  const uploadMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      return api.bills.upload(formData, (progress) => {
+        setUploadProgress(progress);
+      });
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["bills"] });
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+      router.push(`/bills/${data.bill_id}`);
+    },
+    onError: (err: any) => {
+      setUploadProgress(null);
+      const code = err?.code;
+      const status = err?.status || err?.response?.status;
+      const detail = err?.message || err?.response?.data?.detail;
+
+      if (code === "BILL_003" || status === 409) {
+        const existingId = typeof detail === "object" ? detail?.existing_bill_id : null;
+        if (existingId) {
+          setDuplicateBillId(existingId);
+        } else {
+          setErrorMsg("This exact billing invoice was already uploaded.");
+        }
+      } else if (code === "BILL_001" || status === 413) {
+        setErrorMsg("File exceeds 50MB limit.");
+      } else if (code === "BILL_002" || status === 422) {
+        setErrorMsg("Unsupported file format. Please upload PDF, PNG, or JPEG.");
+      } else {
+        setErrorMsg(typeof detail === "string" ? detail : "Failed to upload document. Please retry.");
+      }
+    },
+  });
+
+  const handleUpload = () => {
     if (!selectedFile) return;
 
     setErrorMsg(null);
@@ -30,30 +67,11 @@ export default function UploadBillPage() {
 
     const formData = new FormData();
     formData.append("file", selectedFile);
-    if (hospitalName) formData.append("hospital_name", hospitalName);
-    if (approxAmount) formData.append("estimated_amount", approxAmount);
+    if (hospitalName.trim()) formData.append("hospital_name", hospitalName.trim());
+    if (approxAmount.trim()) formData.append("estimated_amount", approxAmount.trim());
     if (insuranceType) formData.append("insurance_type", insuranceType);
 
-    try {
-      const res = await api.bills.upload(formData, (prog) => {
-        setUploadProgress(prog);
-      });
-      router.push(`/bills/${res.bill_id}`);
-    } catch (err: any) {
-      setUploadProgress(null);
-      const status = err?.response?.status;
-      const detail = err?.response?.data?.detail;
-
-      if (status === 409 && detail?.existing_bill_id) {
-        setDuplicateBillId(detail.existing_bill_id);
-      } else if (status === 413) {
-        setErrorMsg("File too large. Maximum supported document size is 50MB.");
-      } else if (status === 422) {
-        setErrorMsg("Unsupported file type. Please upload a PDF, PNG, JPEG, or TIFF document.");
-      } else {
-        setErrorMsg(detail?.message || "Failed to upload document. Please check your connection and retry.");
-      }
-    }
+    uploadMutation.mutate(formData);
   };
 
   return (
@@ -109,7 +127,7 @@ export default function UploadBillPage() {
           <div className="space-y-4 pt-2">
             <Input
               label="Hospital / Clinic Facility Name"
-              placeholder="e.g. Apollo Multispeciality, Max Super Speciality"
+              placeholder="Enter hospital or clinic facility name"
               value={hospitalName}
               onChange={(e) => setHospitalName(e.target.value)}
             />
@@ -117,7 +135,7 @@ export default function UploadBillPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 label="Approximate Total Bill Amount"
-                placeholder="150000"
+                placeholder="Enter billed total amount"
                 leftAddon={<span className="font-semibold text-neutral-600 text-xs">₹</span>}
                 value={approxAmount}
                 onChange={(e) => setApproxAmount(e.target.value)}
@@ -147,11 +165,16 @@ export default function UploadBillPage() {
         <Button
           size="lg"
           className="w-full h-12 text-base font-semibold"
-          disabled={!selectedFile || uploadProgress !== null}
+          disabled={!selectedFile || uploadMutation.isPending}
           onClick={handleUpload}
         >
-          {uploadProgress !== null ? (
-            <span>Uploading & Enqueuing Pipeline… {uploadProgress}%</span>
+          {uploadMutation.isPending ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {uploadProgress !== null && uploadProgress < 100
+                ? `Uploading… ${uploadProgress}%`
+                : "Processing your bill…"}
+            </span>
           ) : (
             <>
               <UploadCloud className="w-5 h-5 mr-2" />
