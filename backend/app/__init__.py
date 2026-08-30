@@ -1,4 +1,2 @@
-"""
-CuraVeris (MedBill AI) Backend Package
-"""
+# CuraVeris Backend Application Package
 __version__ = "1.0.0"
