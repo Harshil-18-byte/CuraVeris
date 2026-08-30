@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   FileStack,
@@ -13,19 +14,24 @@ import {
   Layers,
   Users,
 } from "lucide-react";
+import { SkeletonText } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
-import { useNotificationStore } from "@/store/notificationStore";
+import { api } from "@/lib/api";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const { unreadCount, fetchUnreadCount } = useNotificationStore();
 
-  useEffect(() => {
-    fetchUnreadCount();
-  }, [fetchUnreadCount]);
+  const { data: unreadData } = useQuery({
+    queryKey: ["notifications", "unread-count"],
+    queryFn: () => api.notifications.getUnreadCount(),
+    refetchInterval: 60 * 1000,
+    staleTime: 30 * 1000,
+  });
+
+  const unreadCount = unreadData?.count ?? 0;
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -42,7 +48,7 @@ export const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    router.push("/login");
+    router.replace("/login");
   };
 
   return (
@@ -64,7 +70,8 @@ export const Sidebar: React.FC = () => {
         <nav className="p-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            const isActive =
+              pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
             return (
               <Link
                 key={item.href}
@@ -130,10 +137,19 @@ export const Sidebar: React.FC = () => {
       <div className="p-4 border-t border-neutral-300 bg-neutral-50/50">
         <div className="flex items-center justify-between">
           <div className="flex flex-col min-w-0 pr-2">
-            <span className="text-sm font-medium text-neutral-900 truncate">
-              {user?.full_name || "Account"}
-            </span>
-            <span className="text-xs text-neutral-600 truncate">{user?.email}</span>
+            {user ? (
+              <>
+                <span className="text-sm font-medium text-neutral-900 truncate">
+                  {user.full_name || "User"}
+                </span>
+                <span className="text-xs text-neutral-600 truncate">{user.email}</span>
+              </>
+            ) : (
+              <div className="space-y-1">
+                <SkeletonText width="sm" className="h-4" />
+                <SkeletonText width="sm" className="h-3" />
+              </div>
+            )}
           </div>
           <button
             onClick={handleLogout}
