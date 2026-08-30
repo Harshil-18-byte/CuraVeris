@@ -1,24 +1,8 @@
----
-{
-  "id": "file_dlz46kr4",
-  "filetype": "document",
-  "filename": "DEPLOYMENT",
-  "created_at": "2026-08-27T08:15:52.391Z",
-  "updated_at": "2026-08-27T08:15:53.131Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Deployment Guide
 
 This document covers production deployment of the CuraVeris backend on Ubuntu 22.04 / Debian 12, Docker, and cloud platforms (AWS, GCP, Azure).
 
-## Phase 1 local foundation
+## Local and Client Foundations
 
 The repository now has independent client foundations in `clients/web`, `clients/android`, and `clients/ios`. The FastAPI backend remains the only authoritative service. Use `docker compose up --build` only after exporting `SECRET_KEY`, `ENCRYPTION_KEY`, and `POSTGRES_PASSWORD`; compose intentionally refuses empty values. Platform builds require their native toolchains: Node 20+ for web, Android Studio/SDK for Android, and macOS with Xcode/XcodeGen for iOS.
 
@@ -616,3 +600,242 @@ pip install -r requirements.txt
 sudo systemctl start curaveris
 sudo systemctl status curaveris
 ```
+
+---
+
+## Render Cloud & Serverless Infrastructure Deployment
+
+CuraVeris is production-ready for automated continuous deployment on Render, Neon Serverless PostgreSQL, Upstash Redis, and Resend.
+
+### 1. Render Web Service Configuration (`curaveris.onrender.com`)
+
+| Configuration Field | Value | Notes |
+|:---|:---|:---|
+---
+
+## Reverse Proxy (Nginx)
+
+```nginx
+server {
+    listen 80;
+    server_name api.curaveris.ai;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name api.curaveris.ai;
+
+    ssl_certificate     /etc/letsencrypt/live/api.curaveris.ai/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.curaveris.ai/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    # Max upload size for bill PDFs
+    client_max_body_size 25M;
+
+    location / {
+        proxy_pass         http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+
+        # Streaming responses for LLM chat
+        proxy_buffering    off;
+        proxy_read_timeout 120s;
+    }
+}
+```
+
+---
+
+## TLS / HTTPS
+
+```bash
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx -y
+
+# Obtain and install certificate
+sudo certbot --nginx -d api.curaveris.ai
+
+# Auto-renewal (already set up by certbot, but verify)
+sudo systemctl enable certbot.timer
+```
+
+---
+
+## Process Management (Systemd)
+
+```ini
+# /etc/systemd/system/curaveris.service
+[Unit]
+Description=CuraVeris MedBill AI Backend
+After=network.target postgresql.service
+
+[Service]
+User=curaveris
+WorkingDirectory=/opt/curaveris/backend
+EnvironmentFile=/opt/curaveris/backend/.env
+ExecStart=/opt/curaveris/backend/venv/bin/uvicorn app.main:app \
+          --host 0.0.0.0 --port 8000 --workers 4 --log-level warning
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable curaveris
+sudo systemctl start curaveris
+sudo systemctl status curaveris
+```
+
+---
+
+## ML Model Initialization
+
+Large binary model weights and databases are tracked with **Git LFS** (`.gitattributes`). On a fresh deployment:
+
+```bash
+# Pull LFS model assets
+git lfs install
+git lfs pull
+
+# Alternatively, retrain lightweight baseline models locally:
+cd /opt/curaveris/backend
+source venv/bin/activate
+
+# Train primary GBM model (~30s on 4 vCPUs)
+python -c "from app.ml.train_risk_model import train_and_evaluate; train_and_evaluate(num_samples=3000)"
+
+# Train Deep MLP model
+python -c "from app.ml.deep_risk_model import train_deep_model; train_deep_model()"
+
+# Train Hybrid Stacking Ensemble
+python -c "from app.ml.hybrid_ensemble import train_hybrid_ensemble; train_hybrid_ensemble()"
+```
+
+The server also auto-trains the primary model on first startup if weights are missing — but pulling via Git LFS or pre-training is strongly recommended for production to avoid a cold-start delay.
+
+---
+
+## Health Checks and Monitoring
+
+The backend exposes three system diagnostic and orchestration endpoints:
+
+```bash
+# 1. Comprehensive Health Check
+curl https://api.curaveris.ai/health
+# Expected: {"status":"healthy","environment":"production","version":"1.2.0","database":true,"reference_db":true}
+
+# 2. Kubernetes / Docker Liveness Probe
+curl https://api.curaveris.ai/health/live
+# Expected: {"status":"alive","timestamp":"2026-08-28T08:28:00.000Z"}
+
+# 3. Traffic Readiness Probe
+curl https://api.curaveris.ai/health/ready
+# Expected: {"status":"ready","database":true,"reference_db":true}
+```
+
+### Recommended monitoring stack
+
+- **Uptime**: Grafana Cloud or Uptime Robot — poll `/health` every 60s.
+- **Kubernetes Probes**: Configure `livenessProbe` at `/health/live` and `readinessProbe` at `/health/ready`.
+- **Logs**: Ship structured JSON logs to Loki, CloudWatch, or Datadog.
+- **Metrics**: Use `prometheus-fastapi-instrumentator` for request rate, latency, and error rate.
+- **Alerts**: PagerDuty or Opsgenie for `/health` returning non-200 for > 2 minutes.
+
+---
+
+## Secrets Rotation
+
+### JWT Secret Key rotation
+
+1. Generate a new key: `python -c "import secrets; print(secrets.token_hex(32))"`
+2. Update `SECRET_KEY` in the production `.env` / secrets manager.
+3. Restart the service: `sudo systemctl restart curaveris`
+4. All existing JWT tokens are immediately invalidated — active users will need to log in again.
+
+### Fernet Encryption Key rotation
+
+Rotating `ENCRYPTION_KEY` requires re-encrypting all PII fields in the database. Contact the security team before rotating in production.
+
+### Razorpay Key rotation
+
+1. Rotate keys in the Razorpay dashboard.
+2. Update `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET` in `.env`.
+3. Restart the service.
+
+---
+
+## Rollback Procedure
+
+```bash
+# 1. Stop the service
+sudo systemctl stop curaveris
+
+# 2. Revert to previous commit
+cd /opt/curaveris
+git log --oneline -10   # Find last good commit
+git checkout <commit-hash>
+
+# 3. Reinstall dependencies if requirements changed
+cd backend
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 4. Restart
+sudo systemctl start curaveris
+sudo systemctl status curaveris
+```
+
+---
+
+## Render Cloud & Serverless Infrastructure Deployment
+
+CuraVeris is production-ready for automated continuous deployment on Render, Neon Serverless PostgreSQL, Upstash Redis, and Resend.
+
+### 1. Render Web Service Configuration (`curaveris.onrender.com`)
+
+| Configuration Field | Value | Notes |
+|:---|:---|:---|
+| **Service Name** | `curaveris-api` | Public API endpoint |
+| **Root Directory** | `backend` | Isolates backend codebase |
+| **Runtime** | `Python 3` | Python 3.11+ |
+| **Build Command** | `pip install -e . && alembic upgrade head` | Installs dependencies & runs database schema migrations |
+| **Start Command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` | Binds to Render dynamic port |
+| **Health Check Path** | `/api/v1/health` | Automated zero-downtime health checking |
+
+### 2. Render Celery Background Worker Service
+
+For async document OCR, rule execution, and ML inference:
+
+| Configuration Field | Value | Notes |
+|:---|:---|:---|
+| **Service Type** | Background Worker | Runs Celery worker loop |
+| **Root Directory** | `backend` | Isolates backend codebase |
+| **Runtime** | `Python 3` | Python 3.11+ |
+| **Build Command** | `pip install -e .` | Installs backend package |
+| **Start Command** | `celery -A app.workers.celery_app.celery worker --loglevel=info -Q bill_processing,notifications,default --concurrency=2` | Multi-queue processing |
+
+### 3. Serverless Services & Connection Strings
+
+- **Neon PostgreSQL Database**:
+  - Async Driver URL: `postgresql+asyncpg://neondb_owner:<neon_password>@ep-odd-wave-ax9dv3ka-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require`
+  - Sync / Celery Backend URL: `postgresql://neondb_owner:<neon_password>@ep-odd-wave-ax9dv3ka-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require`
+- **Upstash Redis**:
+  - Connection URL: `rediss://default:<upstash_token>@becoming-kingfish-192595.upstash.io:6379`
+- **Resend Email API**:
+  - API Key: `re_placeholder_api_key`
+  - Default Sender: `onboarding@resend.dev`
+
+### 4. Neon Database Automated PR Branching (CI/CD)
+
+The repository integrates `.github/workflows/neon_workflow.yml` to automatically branch PostgreSQL databases per pull request:
+1. **On PR Open / Sync**: Creates a transient Neon database branch `preview/pr-<number>-<branch>` with 14-day automatic TTL.
+2. **On PR Close / Merge**: Deletes the ephemeral database branch automatically.
