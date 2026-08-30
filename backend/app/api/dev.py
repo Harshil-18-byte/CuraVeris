@@ -11,12 +11,38 @@ import os
 import json
 import joblib
 from typing import Optional
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Response, Query
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Response, Query, Depends, status
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.ml.train_risk_model import MODEL_SAVE_PATH, train_and_evaluate
+from app.core.config import settings
+from app.core.security import verify_token
 
-router = APIRouter(prefix="/dev", tags=["Developer ML Observability"])
+security_scheme = HTTPBearer(auto_error=False)
+
+
+async def dev_access_guard(creds: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme)):
+    """Allow open access in development and testing, but strictly enforce PLATFORM_ADMIN in staging/production."""
+    if settings.ENV in ("development", "testing"):
+        return {"role": "DEVELOPER"}
+    if not creds:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Developer observability dashboard is disabled in non-development environments without PLATFORM_ADMIN credentials."
+        )
+    payload = verify_token(creds.credentials, expected_type="access")
+    if (payload.get("role") or "").upper() != "PLATFORM_ADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden: PLATFORM_ADMIN role required."
+        )
+    return payload
+
+
+
+router = APIRouter(prefix="/dev", tags=["Developer ML Observability"], dependencies=[Depends(dev_access_guard)])
 HISTORY_FILE = os.path.join(os.path.dirname(MODEL_SAVE_PATH), "training_history.json")
+
 
 
 def load_model_telemetry():
