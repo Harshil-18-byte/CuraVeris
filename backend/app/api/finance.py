@@ -23,10 +23,13 @@ from app.core.currency import to_decimal, ZERO, format_inr
 
 router = APIRouter(prefix="/finance", tags=["Hospital Finance & Revenue Recovery"])
 
+FINANCE_ROLES = ["HOSPITAL_ADMIN", "HOSPITAL_FINANCE", "HOSPITAL_AUDITOR", "PLATFORM_ADMIN"]
+
 
 @router.get("/metrics")
 async def get_finance_dashboard_metrics(
     tenant_id: Optional[str] = None,
+    user_payload: dict = Depends(require_roles(*FINANCE_ROLES)),
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """
@@ -37,14 +40,19 @@ async def get_finance_dashboard_metrics(
     - Potential Recoverable Revenue
     - Overall Reconciliation Balanced Rate
     """
+    user_role = (user_payload.get("role") or "").upper()
+    user_org = user_payload.get("org_id")
+    # Enforce tenant boundary unless PLATFORM_ADMIN
+    effective_tenant = tenant_id if user_role == "PLATFORM_ADMIN" else (user_org or tenant_id)
+
     # Invoices aggregate
     inv_query = select(
         func.count(Invoice.id).label("total_invoices"),
         func.coalesce(func.sum(Invoice.gross_amount), Decimal("0.00")).label("gross_billed"),
         func.coalesce(func.sum(Invoice.total_overcharge), Decimal("0.00")).label("total_overcharge")
     )
-    if tenant_id:
-        inv_query = inv_query.where(Invoice.tenant_id == tenant_id)
+    if effective_tenant:
+        inv_query = inv_query.where(Invoice.tenant_id == effective_tenant)
     inv_res = (await db.execute(inv_query)).first()
 
     # Reconciliations aggregate
@@ -55,9 +63,10 @@ async def get_finance_dashboard_metrics(
         func.coalesce(func.sum(Reconciliation.patient_unjust_gap), Decimal("0.00")).label("refunds_due"),
         func.coalesce(func.sum(Reconciliation.settled_amount), Decimal("0.00")).label("settled")
     )
-    if tenant_id:
-        rec_query = rec_query.where(Reconciliation.tenant_id == tenant_id)
+    if effective_tenant:
+        rec_query = rec_query.where(Reconciliation.tenant_id == effective_tenant)
     rec_res = (await db.execute(rec_query)).first()
+
 
     # Exceptions count & volume
     exc_query = select(
@@ -107,6 +116,7 @@ async def get_exception_queue(
     status_filter: Optional[str] = "OPEN",
     severity_filter: Optional[str] = None,
     limit: int = Query(50, le=100),
+    user_payload: dict = Depends(require_roles(*FINANCE_ROLES)),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -129,6 +139,7 @@ async def resolve_exception(
     exception_id: str,
     resolution_status: str = Query("RESOLVED", description="RESOLVED | WAIVED"),
     notes: Optional[str] = None,
+    user_payload: dict = Depends(require_roles(*FINANCE_ROLES)),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -151,8 +162,10 @@ async def resolve_exception(
 
 @router.get("/revenue-recovery/prioritized")
 async def get_revenue_recovery_pipeline(
+    user_payload: dict = Depends(require_roles(*FINANCE_ROLES)),
     db: AsyncSession = Depends(get_db)
 ) -> List[Dict[str, Any]]:
+
     """
     AI-Assisted Revenue Recovery prioritization engine.
     Analyzes outstanding balances, abandoned claims, and TPA discrepancies.
