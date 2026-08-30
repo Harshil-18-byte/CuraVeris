@@ -1,18 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from app.db.database import get_db
-from app.db.models import Bill
+from app.db.models import Bill, User
 from app.models.schemas import ChatRequest, ChatResponse
 from app.engine.ai_explainer import ai_explainer
+from app.api.auth import get_optional_user
+from app.core.limiter import limiter
 
 router = APIRouter(prefix="/chat", tags=["AI Chat"])
 
 
 @router.post("/stream")
-async def stream_chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("30/minute")
+async def stream_chat(
+    request: Request,
+    req: ChatRequest,
+    current_user: Optional[User] = Depends(get_optional_user),
+    db: AsyncSession = Depends(get_db)
+):
     """
     Stream token-by-token contextual explanation about a specific bill via SSE.
     """
@@ -22,6 +31,15 @@ async def stream_chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     bill = result.scalars().first()
     if not bill:
         raise HTTPException(status_code=404, detail="Bill not found")
+
+    # IDOR check: verify bill ownership if bound
+    if bill.user_id and current_user:
+        is_staff = current_user.role in ("HOSPITAL_ADMIN", "HOSPITAL_FINANCE", "HOSPITAL_BILLING", "HOSPITAL_AUDITOR", "TPA_REVIEWER", "TPA_ADMIN", "INSURER_REVIEWER", "INSURER_ADMIN", "PLATFORM_ADMIN")
+        if not is_staff and str(bill.user_id) != str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access forbidden: you do not have permission to chat about this medical bill."
+            )
 
     bill_context = {
         "bill_id": bill.id,
@@ -52,7 +70,13 @@ async def stream_chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/", response_model=ChatResponse)
-async def standard_chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
+@limiter.limit("30/minute")
+async def standard_chat(
+    request: Request,
+    req: ChatRequest,
+    current_user: Optional[User] = Depends(get_optional_user),
+    db: AsyncSession = Depends(get_db)
+):
     """Non-streaming JSON response fallback for standard clients."""
     result = await db.execute(
         select(Bill).where(Bill.id == req.bill_id).options(selectinload(Bill.items))
@@ -60,6 +84,16 @@ async def standard_chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     bill = result.scalars().first()
     if not bill:
         raise HTTPException(status_code=404, detail="Bill not found")
+
+    # IDOR check: verify bill ownership if bound
+    if bill.user_id and current_user:
+        is_staff = current_user.role in ("HOSPITAL_ADMIN", "HOSPITAL_FINANCE", "HOSPITAL_BILLING", "HOSPITAL_AUDITOR", "TPA_REVIEWER", "TPA_ADMIN", "INSURER_REVIEWER", "INSURER_ADMIN", "PLATFORM_ADMIN")
+        if not is_staff and str(bill.user_id) != str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access forbidden: you do not have permission to chat about this medical bill."
+            )
+
 
     bill_context = {
         "bill_id": bill.id,
