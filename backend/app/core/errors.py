@@ -37,7 +37,12 @@ async def http_error_handler(_: Request, exc: Exception) -> JSONResponse:
     if isinstance(exc, StarletteHTTPException):
         message = exc.detail if isinstance(exc.detail, str) else "Request could not be completed."
         return JSONResponse(content=error_payload("HTTP_ERROR", message), status_code=exc.status_code)
-    return JSONResponse(content=error_payload("HTTP_ERROR", str(exc)), status_code=500)
+    
+    # In production/staging, never leak raw exception messages or tracebacks
+    from app.core.config import settings
+    safe_message = str(exc) if settings.ENV == "development" else "An unexpected server error occurred."
+    return JSONResponse(content=error_payload("INTERNAL_SERVER_ERROR", safe_message), status_code=500)
+
 
 
 async def validation_error_handler(_: Request, exc: Exception) -> JSONResponse:
