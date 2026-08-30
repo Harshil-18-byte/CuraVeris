@@ -107,7 +107,7 @@ export function UploadBillScreen({
                 <Text style={styles.label}>Hospital Name</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="e.g. Apollo Hospital"
+                  placeholder="Enter hospital name"
                   placeholderTextColor="#8E8E93"
                   value={hospitalName}
                   onChangeText={setHospitalName}
