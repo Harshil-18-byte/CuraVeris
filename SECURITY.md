@@ -53,7 +53,7 @@ security@curaveris.ai
 
 ### Scope
 
-This policy covers the CuraVeris backend (`backend/` directory) and its deployed production endpoint at `api.curaveris.ai`. Third-party integrations (Razorpay, ABDM, WhatsApp Cloud API) should be reported directly to those vendors.
+This policy covers the CuraVeris backend (`backend/` directory), web frontend (`web/` and `clients/web/`), and its deployed production endpoints at `curaveris.onrender.com` and `api.curaveris.ai`. Database credentials (such as Neon PostgreSQL and Upstash Redis connection strings) must be stored strictly in environment variables and never exposed to client-side code or committed into version control. Third-party integrations (Razorpay, ABDM, Resend, WhatsApp Cloud API) should be reported directly to those vendors.
 
 ## Security Architecture Summary
 
