@@ -1,10 +1,12 @@
 """Database-foundation migration tests run against a clean SQLite database."""
 from pathlib import Path
+import pytest
 
+alembic = pytest.importorskip("alembic")
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, inspect, text
-import pytest
+
 
 
 def test_baseline_migration_creates_required_schema(tmp_path: Path):
