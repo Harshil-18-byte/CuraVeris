@@ -69,7 +69,7 @@ class OrganizationResponse(BaseModel):
 
 
 class UserRegister(BaseModel):
-    email: EmailStr
+    email: str = Field(..., min_length=3)
     password: str = Field(..., min_length=8)
     full_name: str = Field(..., min_length=2)
     phone: Optional[str] = None
@@ -78,8 +78,9 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str = Field(..., min_length=3)
     password: str
+
 
 
 class UserResponse(BaseModel):
