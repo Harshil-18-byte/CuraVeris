@@ -1,19 +1,3 @@
----
-{
-  "id": "file_dp6zl5a4",
-  "filetype": "document",
-  "filename": "CONTRIBUTING",
-  "created_at": "2026-08-27T08:15:44.318Z",
-  "updated_at": "2026-08-27T08:15:44.318Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # Contributing to CuraVeris
 
 Thank you for your interest in contributing to CuraVeris — India's open-source hospital bill audit and patient protection platform. This document explains how to contribute code, documentation, statutory data, and bug reports.
@@ -157,10 +141,15 @@ sec(pii): enforce strict Fernet key validation at startup
 1. **Open an issue first** for non-trivial changes.
 2. **Write or update tests** — PRs that reduce test coverage will not be merged.
 3. **Run the full test suite** and ensure all tests pass: `pytest --tb=short`
-4. **Lint check**: `flake8 app/ --max-line-length=120`
-5. **Fill the PR description** with motivation, regulatory basis for rate changes, and test evidence.
-6. **Link the issue** with `Closes #<number>`.
-7. Maintainers aim to review within **5 business days**.
+4. **Lint check**: `flake8 app/ --max-line-length=120` or `ruff check .`
+5. **Database Migrations**: If your PR modifies SQLAlchemy models in `app/db/models.py`, generate a corresponding Alembic migration via `alembic revision --autogenerate -m "description"` and verify with `alembic upgrade head`.
+6. **Automated Neon Database Preview Branches**:
+   - Every Pull Request automatically triggers `.github/workflows/neon_workflow.yml`.
+   - Neon provisions an isolated, transient PostgreSQL database branch (`preview/pr-<number>-<branch>`) for running integration tests against real relational schemas.
+   - When the PR is closed or merged, the ephemeral Neon branch is automatically torn down.
+7. **Fill the PR description** with motivation, regulatory basis for rate changes, and test evidence.
+8. **Link the issue** with `Closes #<number>`.
+9. Maintainers aim to review within **5 business days**.
 
 ### PR Checklist
 
@@ -169,6 +158,7 @@ sec(pii): enforce strict Fernet key validation at startup
 - [ ] New `.env` variables added to `backend/.env.example` and `/.env.example`
 - [ ] Relevant docs updated
 - [ ] `CHANGELOG.md` entry added under `[Unreleased]`
+- [ ] Alembic migrations tested against clean PostgreSQL instances
 
 ---
 
