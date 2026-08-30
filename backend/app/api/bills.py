@@ -1,23 +1,28 @@
 from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Body, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Body, BackgroundTasks, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from app.db.database import get_db
-from app.db.models import Bill, BillItem, User
+from app.db.models import Bill, BillItem, User, Invoice, InvoiceLineItem
 from app.models.schemas import BillAnalysisResponse, BillUploadResponse, BillItemSchema, RiskFlagSummary
 from app.engine.extractor import extract_text_from_pdf, parse_bill_text
 from app.engine.risk_engine import risk_engine
 from app.engine.ai_explainer import ai_explainer
 from app.core.security import encrypt_pii, decrypt_pii
+from app.core.security_hardening import SecurityHardeningEngine
+from app.core.limiter import limiter
+from app.api.auth import get_current_user, get_optional_user
 from app.db.reference_data import query_cghs_rate, query_nppa_device, query_dpco_drug, is_irdai_non_payable
 
 router = APIRouter(prefix="/bills", tags=["Bills & Audits"])
 
 
 @router.post("/upload", response_model=BillAnalysisResponse)
+@limiter.limit("20/minute")
 async def upload_bill(
+    request: Request,
     file: Optional[UploadFile] = File(None),
     raw_text: Optional[str] = Form(None),
     hospital_name: Optional[str] = Form(None),
@@ -25,8 +30,10 @@ async def upload_bill(
     patient_name: Optional[str] = Form(None),
     diagnosis: Optional[str] = Form(None),
     days_admitted: Optional[int] = Form(1),
+    current_user: Optional[User] = Depends(get_optional_user),
     db: AsyncSession = Depends(get_db)
 ):
+
     """
     Ingests and dynamically audits any hospital bill:
     - Extracts text from PDF or raw input
@@ -35,23 +42,46 @@ async def upload_bill(
     - Computes composite risk score
     - Saves in DB and returns detailed audit report
     """
+    start_time = datetime.now(timezone.utc)
     text_content = ""
     if file:
         file_bytes = await file.read()
-        if file.filename.lower().endswith(".pdf"):
+        clean_name = SecurityHardeningEngine.sanitize_filename(file.filename or "document.pdf")
+        is_valid, validation_msg = SecurityHardeningEngine.validate_upload(clean_name, file_bytes)
+        if not is_valid:
+            duration_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000.0
+            import logging
+            logging.getLogger("curaveris.audit").warning(
+                f"[DOCUMENT_FETCH_FAILURE] status_code=400 filename={clean_name} latency_ms={duration_ms:.2f} "
+                f"missing_keys=['valid_magic_bytes'] reason={validation_msg}"
+            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation_msg)
+        
+        if clean_name.lower().endswith(".pdf"):
             text_content = extract_text_from_pdf(file_bytes)
         else:
             try:
                 text_content = file_bytes.decode("utf-8")
-            except Exception:
+            except Exception as e:
                 text_content = str(file_bytes)
     elif raw_text:
         text_content = raw_text
     else:
+        duration_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000.0
+        import logging
+        logging.getLogger("curaveris.audit").warning(
+            f"[DOCUMENT_FETCH_FAILURE] status_code=400 missing_keys=['file', 'raw_text'] latency_ms={duration_ms:.2f}"
+        )
         raise HTTPException(status_code=400, detail="Please provide a PDF file or bill text.")
 
     if not text_content or len(text_content.strip()) < 10:
+        duration_ms = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000.0
+        import logging
+        logging.getLogger("curaveris.audit").warning(
+            f"[DOCUMENT_FETCH_FAILURE] status_code=400 missing_keys=['parsed_text_content'] latency_ms={duration_ms:.2f} reason='Empty OCR extraction'"
+        )
         raise HTTPException(status_code=400, detail="Unable to extract text from the provided file.")
+
 
     # 1. Parse bill
     parsed_metadata, parsed_items = parse_bill_text(text_content)
@@ -83,6 +113,7 @@ async def upload_bill(
 
     # 4. Save into Database (Canonical Invoice and Bill)
     new_bill = Bill(
+        user_id=current_user.id if current_user else None,
         hospital_name=parsed_metadata.get("hospital_name", "Hospital"),
         city=parsed_metadata.get("city", "City"),
         patient_name_enc=encrypt_pii(parsed_metadata.get("patient_name")),
@@ -100,9 +131,10 @@ async def upload_bill(
     db.add(new_bill)
     await db.flush()  # to populate new_bill.id
 
-    from app.db.models import Invoice, InvoiceLineItem
     canonical_invoice = Invoice(
         id=new_bill.id,
+        tenant_id=current_user.org_id if (current_user and current_user.org_id) else None,
+        patient_id=current_user.id if current_user else None,
         invoice_number=f"INV-{new_bill.id[:8].upper()}",
         gross_amount=audit["total_billed"],
         discount_amount=0.00,
@@ -193,15 +225,76 @@ async def upload_bill(
     )
 
 
+@router.get("/recent", response_model=List[Dict[str, Any]])
+async def list_recent_bills(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """List recent bills for the authenticated user."""
+    return await list_bills(current_user=current_user, db=db)
+
+
+@router.get("/", response_model=List[Dict[str, Any]])
+async def list_bills(
+    current_user: Optional[User] = Depends(get_optional_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """List bills with tenant isolation and patient scoping."""
+    if current_user and current_user.role == "PATIENT":
+        query = select(Bill).where(Bill.user_id == current_user.id).order_by(Bill.created_at.desc()).limit(50)
+    elif current_user and current_user.role == "PLATFORM_ADMIN":
+        query = select(Bill).order_by(Bill.created_at.desc()).limit(50)
+    else:
+        # Default public/demo view
+        query = select(Bill).order_by(Bill.created_at.desc()).limit(20)
+
+    result = await db.execute(query)
+    bills = result.scalars().all()
+    return [
+
+        {
+            "id": b.id,
+            "hospital_name": b.hospital_name,
+            "diagnosis": b.diagnosis,
+            "total_billed": b.total_billed,
+            "total_overcharge": b.total_overcharge,
+            "risk_score": b.risk_score,
+            "status": b.status,
+            "created_at": b.created_at
+        }
+        for b in bills
+    ]
+
+
 @router.get("/{bill_id}", response_model=BillAnalysisResponse)
-async def get_bill_analysis(bill_id: str, db: AsyncSession = Depends(get_db)):
-    """Retrieve full audited bill analysis by ID."""
+async def get_bill_analysis(
+    bill_id: str,
+    current_user: Optional[User] = Depends(get_optional_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Retrieve full audited bill analysis by ID with cross-user IDOR defense."""
     result = await db.execute(
         select(Bill).where(Bill.id == bill_id).options(selectinload(Bill.items))
     )
     bill = result.scalars().first()
     if not bill:
         raise HTTPException(status_code=404, detail="Bill not found")
+
+    # IDOR check: if bill has an owner and current caller is a PATIENT, verify ownership
+    if bill.user_id:
+        if current_user:
+            is_staff = current_user.role in ("HOSPITAL_ADMIN", "HOSPITAL_FINANCE", "HOSPITAL_BILLING", "HOSPITAL_AUDITOR", "TPA_REVIEWER", "TPA_ADMIN", "INSURER_REVIEWER", "INSURER_ADMIN", "PLATFORM_ADMIN")
+            if not is_staff and str(bill.user_id) != str(current_user.id):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Access forbidden: you do not have permission to view this medical bill."
+                )
+        else:
+            # Unauthenticated caller attempting to view a user-bound private bill
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Authentication required to view this private medical record."
+            )
 
     risk_level = "Low"
     if bill.risk_score >= 70:
@@ -231,27 +324,8 @@ async def get_bill_analysis(bill_id: str, db: AsyncSession = Depends(get_db)):
     )
 
 
-@router.get("/", response_model=List[Dict[str, Any]])
-async def list_bills(db: AsyncSession = Depends(get_db)):
-    """List recent bills."""
-    result = await db.execute(select(Bill).order_by(Bill.created_at.desc()).limit(20))
-    bills = result.scalars().all()
-    return [
-        {
-            "id": b.id,
-            "hospital_name": b.hospital_name,
-            "diagnosis": b.diagnosis,
-            "total_billed": b.total_billed,
-            "total_overcharge": b.total_overcharge,
-            "risk_score": b.risk_score,
-            "status": b.status,
-            "created_at": b.created_at
-        }
-        for b in bills
-    ]
-
-
 @router.post("/benchmark-check")
+
 async def check_benchmark_item(item_name: str = Body(..., embed=True)):
     """Quick lookup of an item against CGHS, NPPA, and DPCO."""
     cghs = query_cghs_rate(item_name)
