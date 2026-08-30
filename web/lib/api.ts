@@ -1,4 +1,4 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios";
 import {
   User,
   Bill,
@@ -8,14 +8,72 @@ import {
   Notification,
   EvidenceRecord,
   PaginatedResponse,
-  ApiError,
 } from "@/types";
+
+export interface AppError {
+  code: string;
+  message: string;
+  retryable: boolean;
+  requestId: string | null;
+  status: number;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  full_name: string;
+  phone_number?: string;
+  dpdp_consent: boolean;
+}
+
+export interface VerifyOtpRequest {
+  email: string;
+  otp: string;
+  purpose?: string;
+}
+
+export interface LoginRequest {
+  email_or_phone: string;
+  password: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  otp: string;
+  new_password: string;
+}
+
+export interface BillListParams {
+  page?: number;
+  per_page?: number;
+  status?: string;
+  sort?: string;
+}
+
+export interface FindingsParams {
+  page?: number;
+  per_page?: number;
+  source?: string;
+  severity?: string;
+  finding_type?: string;
+}
+
+export interface NotificationListParams {
+  page?: number;
+  per_page?: number;
+  filter?: string;
+}
+
+export interface UpdateUserRequest {
+  full_name?: string;
+  phone_number?: string;
+}
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL
   ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
   : "http://localhost:8000/api/v1";
 
-export const apiClient = axios.create({
+export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE,
   timeout: 30000,
   headers: {
@@ -23,243 +81,211 @@ export const apiClient = axios.create({
   },
 });
 
+// Request interceptor: Attach Token & X-Request-ID
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = typeof window !== "undefined"
+    ? localStorage.getItem("cv_access_token")
+    : null;
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  const requestId = typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Math.random().toString(36).substring(2);
+  config.headers["X-Request-ID"] = requestId;
+  return config;
+});
+
+// Response interceptor: 401 Token Refresh & Error Normalization
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
   reject: (err: any) => void;
 }> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else if (token) {
-      prom.resolve(token);
-    }
+const processQueue = (error: Error | null, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else if (token) resolve(token);
   });
   failedQueue = [];
 };
 
-// Request Interceptor: Attach Bearer JWT and X-Request-ID
-apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("cv_access_token");
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  const requestId = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
-  config.headers["X-Request-ID"] = requestId;
-  return config;
-});
-
-// Response Interceptor: 401 Token Refresh & Error Normalization
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (typeof window === "undefined") {
-        return Promise.reject(error);
-      }
-
-      const refreshToken = localStorage.getItem("cv_refresh_token");
-      if (!refreshToken) {
-        localStorage.removeItem("cv_access_token");
-        localStorage.removeItem("cv_refresh_token");
-        if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
-          window.location.href = "/login";
-        }
-        return Promise.reject(error);
-      }
-
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
+        }).then((token) => {
+          if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${token}`;
-            return apiClient(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
+          }
+          return apiClient(originalRequest);
+        });
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
+      const refreshToken = typeof window !== "undefined" ? localStorage.getItem("cv_refresh_token") : null;
+      if (!refreshToken) {
+        isRefreshing = false;
+        if (typeof window !== "undefined") {
+          localStorage.clear();
+          if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+            window.location.href = "/login";
+          }
+        }
+        return Promise.reject(error);
+      }
+
       try {
-        const { data } = await axios.post(`${API_BASE}/auth/refresh`, {
+        const response = await axios.post(`${API_BASE}/auth/refresh`, {
           refresh_token: refreshToken,
         });
-
-        localStorage.setItem("cv_access_token", data.access_token);
-        localStorage.setItem("cv_refresh_token", data.refresh_token);
-        apiClient.defaults.headers.common.Authorization = `Bearer ${data.access_token}`;
-        originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
-
-        processQueue(null, data.access_token);
-        return apiClient(originalRequest);
-      } catch (refreshErr) {
-        processQueue(refreshErr, null);
-        localStorage.removeItem("cv_access_token");
-        localStorage.removeItem("cv_refresh_token");
-        if (window.location.pathname !== "/login") {
-          window.location.href = "/login";
+        const { access_token, refresh_token } = response.data;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cv_access_token", access_token);
+          localStorage.setItem("cv_refresh_token", refresh_token);
         }
-        return Promise.reject(refreshErr);
+        processQueue(null, access_token);
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+        }
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError as Error, null);
+        if (typeof window !== "undefined") {
+          localStorage.clear();
+          if (window.location.pathname !== "/login") {
+            window.location.href = "/login";
+          }
+        }
+        return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
 
-    // Handle 429 Rate Limits
-    if (error.response?.status === 429) {
-      const retryAfter = error.response.headers["retry-after"];
-      const appErr: ApiError = {
-        code: "RATE_LIMITED",
-        message: "Too many requests. Please slow down.",
-        retryable: true,
-        retryAfterSeconds: retryAfter ? parseInt(retryAfter, 10) : 60,
-      };
-      return Promise.reject(appErr);
-    }
+    const errorData = error.response?.data as any;
+    const appError: AppError = {
+      code: errorData?.error?.code || errorData?.detail?.code || "UNKNOWN_ERROR",
+      message: errorData?.error?.message || errorData?.detail || (error.message || "An unexpected error occurred."),
+      retryable: errorData?.error?.retryable || error.response?.status === 503 || error.response?.status === 429 || false,
+      requestId: (error.config?.headers?.["X-Request-ID"] as string) || errorData?.error?.request_id || null,
+      status: error.response?.status || 0,
+    };
 
-    return Promise.reject(error);
+    return Promise.reject(appError);
   }
 );
 
-// Typed API modules
-export const api = {
-  auth: {
-    register: async (data: { email: string; password: string; full_name: string; phone_number?: string; dpdp_consent: boolean }) => {
-      const resp = await apiClient.post("/auth/register", data);
-      return resp.data;
-    },
-    verifyOtp: async (data: { email: string; otp: string; purpose?: string }) => {
-      const resp = await apiClient.post("/auth/verify-otp", data);
-      return resp.data;
-    },
-    login: async (data: { email_or_phone: string; password: string }) => {
-      const resp = await apiClient.post("/auth/login", data);
-      return resp.data;
-    },
-    refresh: async (refreshToken: string) => {
-      const resp = await apiClient.post("/auth/refresh", { refresh_token: refreshToken });
-      return resp.data;
-    },
-    logout: async () => {
-      const resp = await apiClient.post("/auth/logout");
-      return resp.data;
-    },
-    requestPasswordReset: async (email: string) => {
-      const resp = await apiClient.post("/auth/request-password-reset", { email });
-      return resp.data;
-    },
-    resetPassword: async (data: { email: string; otp: string; new_password: string }) => {
-      const resp = await apiClient.post("/auth/reset-password", data);
-      return resp.data;
-    },
-  },
+// Auth API
+export const authApi = {
+  register: (data: RegisterRequest) =>
+    apiClient.post("/auth/register", data).then((r) => r.data),
 
-  bills: {
-    upload: async (
-      formData: FormData,
-      onProgress?: (progress: number) => void
-    ): Promise<{ bill_id: string; status: string; message: string }> => {
-      const resp = await apiClient.post("/bills/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total && onProgress) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            onProgress(percentCompleted);
-          }
-        },
-      });
-      return resp.data;
-    },
-    list: async (params?: { page?: number; per_page?: number; status?: string }): Promise<PaginatedResponse<BillSummary>> => {
-      const resp = await apiClient.get("/bills", { params });
-      return resp.data;
-    },
-    getById: async (billId: string): Promise<Bill> => {
-      const resp = await apiClient.get(`/bills/${billId}`);
-      return resp.data;
-    },
-    getStatus: async (billId: string) => {
-      const resp = await apiClient.get(`/bills/${billId}/status`);
-      return resp.data;
-    },
-    deleteById: async (billId: string): Promise<void> => {
-      await apiClient.delete(`/bills/${billId}`);
-    },
-  },
+  verifyOtp: (data: VerifyOtpRequest) =>
+    apiClient.post("/auth/verify-otp", data).then((r) => r.data),
 
-  audits: {
-    getByBillId: async (billId: string): Promise<Audit> => {
-      const resp = await apiClient.get(`/bills/${billId}/audit`);
-      return resp.data;
-    },
-    getFindings: async (
-      billId: string,
-      params?: { page?: number; per_page?: number; source?: string; severity?: string; finding_type?: string }
-    ): Promise<PaginatedResponse<AuditFinding>> => {
-      const resp = await apiClient.get(`/bills/${billId}/audit/findings`, { params });
-      return resp.data;
-    },
-    getFinding: async (billId: string, findingId: string): Promise<AuditFinding> => {
-      const resp = await apiClient.get(`/bills/${billId}/audit/findings/${findingId}`);
-      return resp.data;
-    },
-    getEvidence: async (billId: string): Promise<EvidenceRecord> => {
-      const resp = await apiClient.get(`/bills/${billId}/evidence`);
-      return resp.data;
-    },
-  },
+  login: (data: LoginRequest) =>
+    apiClient.post("/auth/login", data).then((r) => r.data),
 
-  evidence: {
-    getByBillId: async (billId: string): Promise<EvidenceRecord> => {
-      const resp = await apiClient.get(`/bills/${billId}/evidence`);
-      return resp.data;
-    },
-    verify: async (evidenceId: string) => {
-      const resp = await apiClient.post(`/evidence/${evidenceId}/verify`);
-      return resp.data;
-    },
-  },
+  refresh: (refreshToken: string) =>
+    apiClient.post("/auth/refresh", { refresh_token: refreshToken }).then((r) => r.data),
 
-  notifications: {
-    list: async (params?: { page?: number; per_page?: number; filter_type?: string }): Promise<PaginatedResponse<Notification>> => {
-      const resp = await apiClient.get("/notifications", { params });
-      return resp.data;
-    },
-    getUnreadCount: async (): Promise<{ count: number }> => {
-      const resp = await apiClient.get("/notifications/unread-count");
-      return resp.data;
-    },
-    markRead: async (notificationId: string): Promise<void> => {
-      await apiClient.post(`/notifications/${notificationId}/read`);
-    },
-    markAllRead: async (): Promise<void> => {
-      await apiClient.post("/notifications/read-all");
-    },
-  },
+  logout: () =>
+    apiClient.post("/auth/logout").then((r) => r.data),
 
-  users: {
-    getMe: async (): Promise<User> => {
-      const resp = await apiClient.get("/users/me");
-      return resp.data;
-    },
-    updateMe: async (data: { full_name?: string; phone_number?: string }): Promise<User> => {
-      const resp = await apiClient.patch("/users/me", data);
-      return resp.data;
-    },
-  },
+  requestPasswordReset: (email: string) =>
+    apiClient.post("/auth/request-password-reset", { email }).then((r) => r.data),
 
-  legalDocs: {
-    getDisputeNotice: async (billId: string) => {
-      const resp = await apiClient.get(`/legal-docs/bills/${billId}/dispute-notice`);
-      return resp.data;
-    },
-  },
+  resetPassword: (data: ResetPasswordRequest) =>
+    apiClient.post("/auth/reset-password", data).then((r) => r.data),
 };
+
+// Bills API
+export const billsApi = {
+  upload: (formData: FormData, onProgress?: (pct: number) => void): Promise<{ bill_id: string; status: string; message: string }> =>
+    apiClient.post("/bills/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: (e) => {
+        if (onProgress && e.total) {
+          onProgress(Math.round((e.loaded * 100) / e.total));
+        }
+      },
+    }).then((r) => r.data),
+
+  list: (params?: BillListParams): Promise<PaginatedResponse<BillSummary>> =>
+    apiClient.get("/bills", { params }).then((r) => r.data),
+
+  getById: (billId: string): Promise<Bill> =>
+    apiClient.get(`/bills/${billId}`).then((r) => r.data),
+
+  getStatus: (billId: string) =>
+    apiClient.get(`/bills/${billId}/status`).then((r) => r.data),
+
+  deleteById: (billId: string): Promise<void> =>
+    apiClient.delete(`/bills/${billId}`).then((r) => r.data),
+};
+
+// Audits API
+export const auditsApi = {
+  getByBillId: (billId: string): Promise<Audit> =>
+    apiClient.get(`/bills/${billId}/audit`).then((r) => r.data),
+
+  getFindings: (billId: string, params?: FindingsParams): Promise<PaginatedResponse<AuditFinding>> =>
+    apiClient.get(`/bills/${billId}/audit/findings`, { params }).then((r) => r.data),
+
+  getFinding: (billId: string, findingId: string): Promise<AuditFinding> =>
+    apiClient.get(`/bills/${billId}/audit/findings/${findingId}`).then((r) => r.data),
+};
+
+// Notifications API
+export const notificationsApi = {
+  list: (params?: NotificationListParams): Promise<PaginatedResponse<Notification>> =>
+    apiClient.get("/notifications", { params }).then((r) => r.data),
+
+  getUnreadCount: (): Promise<{ count: number }> =>
+    apiClient.get("/notifications/unread-count").then((r) => r.data),
+
+  markRead: (id: string): Promise<void> =>
+    apiClient.post(`/notifications/${id}/read`).then((r) => r.data),
+
+  markAllRead: (): Promise<void> =>
+    apiClient.post("/notifications/read-all").then((r) => r.data),
+};
+
+// Evidence API
+export const evidenceApi = {
+  getByBillId: (billId: string): Promise<EvidenceRecord> =>
+    apiClient.get(`/bills/${billId}/evidence`).then((r) => r.data),
+
+  verify: (evidenceId: string) =>
+    apiClient.post(`/evidence/${evidenceId}/verify`).then((r) => r.data),
+};
+
+// Users API
+export const usersApi = {
+  getMe: (): Promise<User> =>
+    apiClient.get("/users/me").then((r) => r.data),
+
+  updateMe: (data: UpdateUserRequest): Promise<User> =>
+    apiClient.patch("/users/me", data).then((r) => r.data),
+};
+
+// Unified api object for backward compatibility
+export const api = {
+  auth: authApi,
+  bills: billsApi,
+  audits: auditsApi,
+  notifications: notificationsApi,
+  evidence: evidenceApi,
+  users: usersApi,
+};
+
+export default apiClient;
