@@ -1,0 +1,22 @@
+[
+  {"item_name": "Drug Eluting Stent", "ceiling_price": 27890.00, "unit": "per unit", "order_ref": "NPPA S.O. 1335(E)"},
+  {"item_name": "Bare Metal Stent", "ceiling_price": 7260.00, "unit": "per unit", "order_ref": "NPPA S.O. 1335(E)"},
+  {"item_name": "Biodegradable Stent", "ceiling_price": 27890.00, "unit": "per unit", "order_ref": "NPPA S.O. 1335(E)"},
+  {"item_name": "Total Knee Implant", "ceiling_price": 54720.00, "unit": "per set", "order_ref": "NPPA S.O. 2668(E)"},
+  {"item_name": "Primary Knee Femoral Component", "ceiling_price": 24000.00, "unit": "per unit", "order_ref": "NPPA S.O. 2668(E)"},
+  {"item_name": "Primary Knee Tibial Component", "ceiling_price": 16990.00, "unit": "per unit", "order_ref": "NPPA S.O. 2668(E)"},
+  {"item_name": "Primary Knee Articular Insert", "ceiling_price": 9550.00, "unit": "per unit", "order_ref": "NPPA S.O. 2668(E)"},
+  {"item_name": "Primary Knee Patella Component", "ceiling_price": 4180.00, "unit": "per unit", "order_ref": "NPPA S.O. 2668(E)"},
+  {"item_name": "Revision Knee System", "ceiling_price": 113950.00, "unit": "per set", "order_ref": "NPPA S.O. 2668(E)"},
+  {"item_name": "Total Hip Implant", "ceiling_price": 50000.00, "unit": "per unit", "order_ref": "NPPA Advisory 2024"},
+  {"item_name": "Bipolar Hip Prosthesis", "ceiling_price": 28000.00, "unit": "per unit", "order_ref": "NPPA Advisory 2024"},
+  {"item_name": "Intraocular Lens", "ceiling_price": 6000.00, "unit": "per unit", "order_ref": "NPPA Guideline"},
+  {"item_name": "Foldable Hydrophobic IOL", "ceiling_price": 8500.00, "unit": "per unit", "order_ref": "NPPA Guideline"},
+  {"item_name": "Cardiac Pacemaker Single Chamber", "ceiling_price": 45000.00, "unit": "per unit", "order_ref": "NPPA Notified Ceiling"},
+  {"item_name": "Cardiac Pacemaker Dual Chamber", "ceiling_price": 85000.00, "unit": "per unit", "order_ref": "NPPA Notified Ceiling"},
+  {"item_name": "Cochlear Implant", "ceiling_price": 520000.00, "unit": "per unit", "order_ref": "NPPA Health Benchmark"},
+  {"item_name": "Orthopaedic Bone Cement 40g", "ceiling_price": 3200.00, "unit": "per pack", "order_ref": "NPPA Cap List"},
+  {"item_name": "Coronary Balloon Catheter", "ceiling_price": 8500.00, "unit": "per unit", "order_ref": "NPPA Guideline"},
+  {"item_name": "Coronary Guide Wire", "ceiling_price": 3500.00, "unit": "per unit", "order_ref": "NPPA Guideline"},
+  {"item_name": "Orthopaedic Trauma Locking Plate", "ceiling_price": 12000.00, "unit": "per unit", "order_ref": "NPPA Cap List"}
+]
