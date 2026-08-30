@@ -24,6 +24,8 @@ from app.engine.reconciliation import reconciliation_engine
 from app.core.currency import from_paise, to_decimal
 from app.core.logging import logger
 from app.core.config import settings
+from app.api.auth import get_optional_user, get_current_user
+from app.db.models import User
 
 router = APIRouter(prefix="/razorpay", tags=["Razorpay Payments & Webhooks"])
 
@@ -31,11 +33,13 @@ router = APIRouter(prefix="/razorpay", tags=["Razorpay Payments & Webhooks"])
 @router.post("/order", response_model=PaymentOrderResponse)
 async def create_payment_order(
     req: CreatePaymentOrderRequest,
+    current_user: Optional[User] = Depends(get_optional_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
     Generate an authoritative Razorpay order for an invoice settlement.
     """
+
     order_data = razorpay_service.create_order(
         amount=req.amount,
         invoice_id=req.invoice_id,
