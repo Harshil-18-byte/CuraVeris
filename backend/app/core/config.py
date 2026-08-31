@@ -1,3 +1,6 @@
+import os
+import base64
+import hashlib
 from typing import List, Union, Optional
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -17,12 +20,12 @@ class Settings(BaseSettings):
 
     APP_ENV: str = "development"
     ENV: str = "development"
-    APP_SECRET_KEY: str = "ci-test-secret-key-replace-before-any-deployment-2026"
-    SECRET_KEY: str = "ci-test-secret-key-replace-before-any-deployment-2026"
+    APP_SECRET_KEY: str = ""
+    SECRET_KEY: str = ""
     APP_DEBUG: bool = False
     DEBUG: bool = False
 
-    ENCRYPTION_KEY: str = "Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA=="
+    ENCRYPTION_KEY: str = ""
     REFERENCE_DB_PATH: str = "./reference_data/medical_rates.db"
 
     APP_ALLOWED_ORIGINS: Union[List[str], str] = [
@@ -41,22 +44,22 @@ class Settings(BaseSettings):
     CELERY_BROKER_URL: str = "redis://localhost:6379/0"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/0"
 
-    JWT_SECRET_KEY: str = "default_jwt_secret_key_change_in_production_32b"
+    JWT_SECRET_KEY: str = ""
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
     STORAGE_BACKEND: str = "s3"
-    AWS_ACCESS_KEY_ID: str = "dev_r2_access_key"
-    AWS_SECRET_ACCESS_KEY: str = "dev_r2_secret_key"
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
     AWS_S3_BUCKET_NAME: str = "curaveris-bills"
     AWS_S3_REGION: str = "auto"
     AWS_S3_ENDPOINT_URL: str = "https://example.r2.cloudflarestorage.com"
 
-    RESEND_API_KEY: str = "re_dev_placeholder"
+    RESEND_API_KEY: str = ""
     EMAIL_FROM_ADDRESS: str = "noreply@curaveris.in"
 
-    EVIDENCE_HMAC_SECRET: str = "default_hmac_secret_key_change_in_production_32b"
+    EVIDENCE_HMAC_SECRET: str = ""
     ML_MODEL_PATH: str = "./ml_models"
     SENTRY_DSN: str = ""
 
