@@ -1,26 +1,10 @@
----
-{
-  "id": "file_ltuefxn7",
-  "filetype": "document",
-  "filename": "README",
-  "created_at": "2026-08-30T11:43:12.581Z",
-  "updated_at": "2026-08-30T11:43:14.765Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris
 
-## Healthcare Financial Verification & Reconciliation
+## Healthcare Financial Verification & Reconciliation Engine
 
 **Know what you actually owe.**
 
-For repository layout and active client runtimes, see [Project Structure](#project-structure).
+For repository layout, multi-platform client runtimes, and active foundations, see [Project Structure](#project-structure).
 
 CuraVeris analyzes hospital billing and related insurance/TPA documentation, combines deterministic financial rules with ML-based anomaly intelligence, produces evidence-backed patient responsibility, and connects verified obligations to payment and reconciliation.
 
@@ -34,35 +18,38 @@ ML identifies risk; deterministic rules establish facts; the financial engine ca
 
 ## Table of Contents
 
-- [Problem Statement](#problem-statement)
-- [Product Model](#product-model)
-- [Product Surface](#product-surface)
-- [Multi-Platform Frontend & Client Persistence](#multi-platform-frontend--client-persistence)
-- [Architecture](#architecture)
-- [Tech Stack](#tech-stack)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Data Model](#data-model)
-- [Getting Started](#getting-started)
-- [Available Commands](#available-commands)
-- [Environment Configuration](#environment-configuration)
+- [Executive Summary & Problem Statement](#executive-summary--problem-statement)
+- [Product Model & Operational Pipeline](#product-model--operational-pipeline)
+- [Product Surface & Core Capabilities](#product-surface--core-capabilities)
+- [Multi-Platform Frontend & Client Architecture](#multi-platform-frontend--client-architecture)
+- [System Architecture & Data Flow](#system-architecture--data-flow)
+- [Complete Technology Stack](#complete-technology-stack)
+- [Key Features & Subsystems](#key-features--subsystems)
+- [Project Structure & Directory Tree](#project-structure--directory-tree)
+- [Persistence Strategy & Data Model](#persistence-strategy--data-model)
+- [Backend & API Foundation Architecture](#backend--api-foundation-architecture)
+- [Getting Started & Local Development](#getting-started--local-development)
+- [Available CLI Commands](#available-cli-commands)
+- [Environment Configuration & Secrets](#environment-configuration--secrets)
 - [Testing, Playwright E2E & CI Security Gate](#testing-playwright-e2e--ci-security-gate)
-- [Security](#security)
-- [API Reference](#api-reference)
-- [Machine Learning Ensemble](#machine-learning-ensemble)
-- [Modular ML Pipelines for Mobile](#modular-ml-pipelines-for-mobile-apps-android--ios)
+- [Platform Security & Compliance](#platform-security--compliance)
+- [REST API Reference](#rest-api-reference)
+- [Machine Learning Ensemble & AI Architecture](#machine-learning-ensemble--ai-architecture)
+- [Modular ML Pipelines for Mobile Apps (Android & iOS)](#modular-ml-pipelines-for-mobile-apps-android--ios)
 - [Memory-Efficient Multi-Model Parallel Training](#memory-efficient-multi-model-parallel-training)
-- [Cryptographic Ledger](#cryptographic-ledger)
-- [Statutory Framework](#statutory-framework)
-- [Comparative Positioning](#comparative-positioning)
-- [Documentation](#documentation)
+- [CuraVeris-4B & CuraVeris-1B Custom Transformer Models](#curaveris-4b--curaveris-1b-custom-transformer-models)
+- [Two-Track Hybrid Production Architecture](#two-track-hybrid-production-architecture)
+- [Enterprise Security Hardening](#enterprise-security-hardening)
+- [Cryptographic Audit Ledger (Section 65B)](#cryptographic-audit-ledger-section-65b)
+- [Statutory Framework & Legal Grounding](#statutory-framework--legal-grounding)
+- [Comparative Positioning & Industry Benchmarks](#comparative-positioning--industry-benchmarks)
+- [Documentation Index](#documentation-index)
 - [Disclaimer](#disclaimer)
 - [License](#license)
 
 ---
 
-## Problem Statement
-
+## Executive Summary & Problem Statement
 
 Indian private healthcare relies on a fragmented three-party financial settlement process that systematically disadvantages patients:
 
@@ -72,11 +59,11 @@ Indian private healthcare relies on a fragmented three-party financial settlemen
 4. **Illegible legal recourse**: Anti-detention rights, PM-JAY zero-cash protections, and Mental Healthcare Act parity mandates exist in statute but are practically unreachable at the point of care.
 5. **Evidentiary gap**: Audit records generated outside cryptographic frameworks are inadmissible under Section 65B of the Indian Evidence Act.
 
-CuraVeris resolves all five problems as first-class platform features.
+CuraVeris resolves all five problems as first-class platform features through a dual-forensic audit framework that blends deterministic statutory truth with machine learning anomaly detection.
 
 ---
 
-## Product Model
+## Product Model & Operational Pipeline
 
 ```mermaid
 flowchart TD
@@ -131,51 +118,49 @@ flowchart TD
   style Stage4 fill:#2a1a00,stroke:#f59e0b,stroke-width:2px,color:#e2e8f0
 ```
 
-### Operational Pipeline
+### Operational Pipeline Breakdown
 
 | Stage | Subsystem | Functionality & Statutory Backing |
 | :--- | :--- | :--- |
 | **1. Ingestion** | `extractor.py` | Magic bytes check, Unicode normalization, monetary number correction, and item segmentation. |
 | **2. Deterministic Audit** | `risk_engine.py` | Line-by-line validation against NPPA implant ceilings, DPCO drug MRPs, CGHS tariffs, and IRDAI unbundling rules. |
-| **3. ML Ensemble** | `deep_risk_network.py` | Soft voting blend of XGBoost + 3-layer MLP neural network with Monte Carlo epistemic uncertainty bounds. |
+| **3. ML Ensemble** | `deep_risk_network.py` | Soft voting blend of XGBoost + 3-layer MLP neural network with Monte Carlo epistemic uncertainty bounds. (Detailed in [MODELS.md](./MODELS.md)) |
 | **4. Toxicity & Gap** | `financial_toxicity.py` | Razorpay webhook verification, co-pay shortfall reconciliation, and Debt Service-to-Income (DSTI) distress calculation. |
 | **5. Legal Redress** | `merkle_audit_ledger.py` | Tamper-evident Merkle tree block hashing and HMAC origin sealing under Section 65B of the Indian Evidence Act. |
 
 ---
 
-## Product Surface
+## Product Surface & Core Capabilities
 
-- Medical bill ingestion accepting PDF, PNG, and JPEG formats
-- Item-level overcharge detection against CGHS, NPPA, DPCO, and IRDAI schedules
-- Hybrid XGBoost and deep neural network violation classifier
-- SHAP waterfall feature attribution for explainable audit decisions
-- Inpatient burn rate monitoring against clinical ALOS benchmarks
-- GST exemption enforcement and shadow bill detection
-- PM-JAY zero-cash compliance audit with automatic 5x penalty computation
-- ICD-10 and SNOMED-CT clinical coding engine
-- Cryptographic Merkle audit ledger for Section 65B court admissibility
-- Emergency anti-detention legal notice generator citing Bombay High Court precedent
-- DPDP Act 2023 right-to-erasure endpoint
+- **Multi-Format Bill Ingestion**: Native acceptance and processing of PDF, PNG, and JPEG documents with OCR preprocessing and normalization.
+- **Line-Item Statutory Enforcement**: Item-level overcharge detection against CGHS 2024 schedules, NPPA implant caps, DPCO NLEM drug ceilings, and IRDAI 199 excluded consumables.
+- **Hybrid Machine Learning Ensemble**: Blends multi-output XGBoost with a PyTorch Deep MLP network across 8 statutory violation labels.
+- **SHAP Waterfall Attribution**: Additive feature decomposition explaining exactly which parameters and rates contributed to risk classifications.
+- **Inpatient Burn Rate & Bed-Blocking Monitor**: Monitors real-time daily burn velocity against ICMR and NHA clinical ALOS benchmarks.
+- **Shadow Billing & GST Exemption Enforcement**: Identifies illegal GST charged on healthcare services (CBIC Notif. 12/2017) and duplicate items billed on overlapping timestamps.
+- **PM-JAY Zero-Cash Protection**: Audits out-of-pocket charges against Ayushman Bharat beneficiaries with automatic 5x penalty computation.
+- **ICD-10 & SNOMED-CT Clinical Coding Engine**: Maps free-text medical notes and procedures into standardized clinical ontology codes.
+- **Section 65B Cryptographic Merkle Ledger**: Generates tamper-evident SHA-256 Merkle tree certificates with HMAC origin signatures admissible in Indian courts.
+- **Automated Legal Dispute Generator**: Produces ready-to-file legal petitions for Consumer Forums (DCDRC/SCDRC/NCDRC), Insurance Ombudsman, and emergency Anti-Detention Notices citing Bombay High Court precedent.
+- **DPDP Act 2023 Compliance**: Built-in Right to Erasure / Anonymization endpoint (`POST /api/v1/auth/anonymize-me`) and AES-256-GCM field encryption.
 
 ---
 
-## Multi-Platform Frontend & Client Persistence
+## Multi-Platform Frontend & Client Architecture
 
-The CuraVeris client application is built with **Next.js 14 App Router**, **React 18**, and **Framer Motion**, delivering dedicated, specialized viewports for **Desktop Web**, **iOS Mobile (Cupertino)**, and **Android Mobile (Material)** without relying on generic icons or artificial gradients.
+The CuraVeris web and client ecosystem is powered by **Next.js 14 App Router**, **React 18**, and **Tailwind CSS**, delivering specialized views for Desktop Web, Android Material, and iOS Cupertino:
 
-### Core Architectural Features:
-1. **Zero Icons & Zero Gradients Design System**: Uses typography, status tags, and monospaced badges (`[NPPA CAP]`, `[DPCO]`, `[CGHS]`, `[SECTION 65B]`, `[VERIFIED]`) over solid, high-contrast matte surfaces (`#090D16`, `#0F172A`, `#1E293B`).
-2. **Device-Adaptive Layout Engine ([`AppLayout.tsx`](./clients/web/src/components/layout/AppLayout.tsx))**: Supports live runtime switching between Desktop Web, iOS Cupertino phone chassis, and Android Material phone chassis with responsive auto-detection.
-3. **Client Persistence Engine ([`persistence.ts`](./clients/web/src/lib/storage/persistence.ts))**: Automatically preserves active invoice audits, customized legal dispute drafts, copilot chat history, and device modes across browser closures and page reloads.
+1. **Monochrome High-Contrast UI**: Uses typography, status tags, and monospaced badges (`[NPPA CAP]`, `[DPCO]`, `[CGHS]`, `[SECTION 65B]`, `[VERIFIED]`) over solid, high-contrast surfaces (`#090D16`, `#0F172A`, `#1E293B`).
+2. **Device-Adaptive Layout Engine ([`AppLayout.tsx`](./clients/web/src/components/layout/AppLayout.tsx))**: Supports live runtime switching between Desktop Web, iOS Cupertino phone chassis, and Android Material phone chassis.
+3. **Client Persistence Engine ([`persistence.ts`](./clients/web/src/lib/storage/persistence.ts))**: Automatically preserves active invoice audits, customized legal dispute drafts, copilot chat history, and device modes across browser sessions.
 4. **Pure Raw Dynamic Data**: Starts from a clean zero-state for new users, querying live FastAPI endpoints for statutory rates, audits, and chat completions.
-5. **Framer Motion Viewport Lazy Loading ([`LazyThumbnail.tsx`](./clients/web/src/components/common/LazyThumbnail.tsx))**: Smooth, viewport-triggered thumbnail and document rendering with touch optimization.
-6. **React ErrorBoundary ([`ErrorBoundary.tsx`](./clients/web/src/components/common/ErrorBoundary.tsx))**: Prevents blank screens and provides immediate recovery workflows.
-7. **Startup Health Probe ([`startupHealth.ts`](./clients/web/src/lib/health/startupHealth.ts))**: Detects 404 routing anomalies and self-heals by routing to the canonical root.
+5. **Framer Motion Lazy Rendering ([`LazyThumbnail.tsx`](./clients/web/src/components/common/LazyThumbnail.tsx))**: Smooth, viewport-triggered thumbnail and document rendering with touch optimization.
+6. **React Error Boundary ([`ErrorBoundary.tsx`](./clients/web/src/components/common/ErrorBoundary.tsx))**: Prevents white-screen crashes and provides instant recovery workflows.
+7. **Custom 404 & Routing Resilience ([`not-found.tsx`](./web/app/not-found.tsx))**: User-friendly resource recovery ensuring seamless navigation.
 
 ---
 
-## Architecture
-
+## System Architecture & Data Flow
 
 ```mermaid
 flowchart TD
@@ -224,97 +209,96 @@ flowchart TD
 ```
 
 ```text
-Client / API Consumer
-    |
-    v
+Client / Web App / Mobile App
+    │
+    ▼
 Uvicorn ASGI Server (FastAPI Application)
-    |
-    +-- JWT Auth + DPDP Compliance Middleware
-    +-- Bills Router          (audit, heatmap, ledger, async ingestion)
-    +-- Reports Router        (dispute letters, anti-detention notices)
-    +-- Payments Router       (Razorpay webhook verification)
-    +-- Dev Router            (architecture inspector, dataset downloads)
-            |
-            v
-        Execution Engines
-            |
-            +-- extractor.py          (magic byte validation, OCR)
-            +-- risk_engine.py        (deterministic statutory rules)
-            +-- deep_risk_network.py  (XGBoost + MLP hybrid ensemble)
-            +-- shap_explainer.py     (SHAP waterfall attribution)
-            +-- merkle_audit_ledger.py(SHA-256 chain + HMAC signature)
-            +-- icd10_coding_engine.py(ICD-10 and SNOMED resolution)
-            |
-            v
-        PostgreSQL (ACID) + Reference Tariff Store (SQLite)
+    │
+    ├── JWT Auth + DPDP Compliance Middleware
+    ├── Bills Router          (audit, heatmap, ledger, async ingestion)
+    ├── Reports Router        (dispute letters, anti-detention notices)
+    ├── Payments Router       (Razorpay webhook verification)
+    ├── Dev Router            (architecture inspector, dataset downloads)
+    │       │
+    │       ▼
+    │   Execution Engines
+    │       ├── extractor.py          (magic byte validation, OCR)
+    │       ├── risk_engine.py        (deterministic statutory rules)
+    │       ├── deep_risk_network.py  (XGBoost + MLP hybrid ensemble)
+    │       ├── shap_explainer.py     (SHAP waterfall attribution)
+    │       ├── merkle_audit_ledger.py(SHA-256 chain + HMAC signature)
+    │       └── icd10_coding_engine.py(ICD-10 and SNOMED resolution)
+    │       │
+    │       ▼
+    └── PostgreSQL (ACID persistence) + Reference Tariff Store (SQLite)
 ```
 
 See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) and [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md).
 
 ---
 
-## Tech Stack
+## Complete Technology Stack
 
 | Layer | Technology | Version | Purpose |
 | :--- | :--- | :--- | :--- |
-| Backend Framework | FastAPI | 0.111+ | Async REST API and middleware |
-| Language | Python | 3.11+ | Server-side logic and data processing |
-| Primary Database | PostgreSQL | 14.0+ | ACID-compliant relational persistence |
-| Reference Store | SQLite | 3.x | Local statutory rate lookup tables |
-| ML Framework | scikit-learn + XGBoost | Latest | Gradient boosted classifier |
-| Deep Learning | PyTorch / Custom MLP | Latest | Multi-layer perceptron neural network |
-| Explainability | SHAP | Latest | Additive feature attribution |
-| OCR | PyPDF / Tesseract | Latest | Invoice text extraction |
-| Search | BM25 / TF-IDF | Latest | Semantic procedure similarity |
-| Auth | PyJWT + Passlib | Latest | Stateless JWT and bcrypt |
-| Encryption | PyCryptodome | Latest | AES-256-GCM PII field encryption |
-| Payment | Razorpay | Latest | Webhook verification and order creation |
-| Task Queue | FastAPI BackgroundTasks | Built-in | Async bill ingestion |
+| **Backend Framework** | FastAPI | 0.111+ | High-performance asynchronous REST API |
+| **Language** | Python | 3.11+ | Core engine, ML modeling, and data pipelines |
+| **Frontend Framework** | Next.js (App Router) | 14.2+ | Server components, client interactivity, and routing |
+| **Frontend UI** | React + Tailwind CSS | 18.3+ / 3.4+ | Modern, responsive, high-contrast user interface |
+| **Primary Database** | PostgreSQL (Neon) | 14.0+ | ACID-compliant relational persistence and state |
+| **Reference Store** | SQLite | 3.x | Low-latency local statutory rate lookup tables |
+| **ML Framework** | scikit-learn + XGBoost | Latest | Gradient boosted multi-label decision trees |
+| **Deep Learning** | PyTorch | Latest | Multi-layer perceptron neural network with MC Dropout |
+| **Document Vision** | LayoutLMv3 | Latest | Multimodal visual, spatial, and textual token classifier |
+| **Embeddings** | SentenceTransformers | Latest | Dense 384-d semantic vectors (`all-MiniLM-L6-v2`) |
+| **Explainability** | SHAP | Latest | Additive feature attribution and waterfall plotting |
+| **OCR Engines** | PyPDF / Tesseract / EasyOCR | Latest | Multi-format invoice text and bounding box extraction |
+| **Auth & Security** | PyJWT + Passlib (bcrypt) | Latest | Stateless JWT authorization and password hashing |
+| **Data Encryption** | PyCryptodome (AES-256-GCM)| Latest | PII field encryption and secure token generation |
+| **Payment Gateway** | Razorpay | Latest | Order generation, signature checks, and webhooks |
+| **Async Task Queue** | Celery / Redis | Latest | Asynchronous document ingestion and email dispatch |
 
 ---
 
-## Features
+## Key Features & Subsystems
 
 ### Bill Audit Engine
-
-- Item-level statutory cross-referencing against CGHS 2024 (1,900+ procedures), NPPA implant caps, DPCO 2013 drug ceilings, and IRDAI 199-item non-payable schedule.
-- Composite risk score from 0 to 100 derived from violation count, overcharge magnitude, and model confidence.
-- SHAP waterfall attribution decomposing each contributing feature's additive impact on the final score.
-- Shadow bill detection — identifies duplicate line items and unlawful GST surcharges on exempt healthcare services.
+- **Item-level statutory cross-referencing** against CGHS 2024 (1,900+ procedures), NPPA implant caps, DPCO 2013 drug ceilings, and IRDAI 199-item non-payable schedule.
+- **Composite risk score from 0 to 100** derived from violation count, overcharge magnitude, and model confidence.
+- **SHAP waterfall attribution** decomposing each contributing feature's additive impact on the final score.
+- **Shadow bill detection** — identifies duplicate line items and unlawful GST surcharges on exempt healthcare services.
 
 ### Forensic ML Ensemble Architecture
-
-- Hybrid stacking of an XGBoost multi-output classifier and a three-layer MLP (Dense 128 → 64 → 32) across 7 violation labels simultaneously.
-- Soft probability blending: $P_{\text{blended}} = 0.45 \cdot P_{\text{NN}} + 0.55 \cdot P_{\text{XGB}}$.
-- Monte Carlo epistemic uncertainty estimation across $K = 10$ stochastic forward passes.
-- Deterministic production seeds logged cryptographically to `training_history.json` for reproducibility.
+- **Hybrid stacking** of an XGBoost multi-output classifier and a three-layer MLP (Dense 128 → 64 → 32) across 8 violation labels simultaneously.
+- **Soft probability blending**: $P_{\text{blended}} = 0.45 \cdot P_{\text{NN}} + 0.55 \cdot P_{\text{XGB}}$.
+- **Monte Carlo epistemic uncertainty estimation** across $K = 10$ stochastic forward passes.
+- **Deterministic production seeds** logged cryptographically to `training_history.json` for reproducibility.
 
 ### Inpatient Financial Lifecycle
-
-- Pre-admission package tariff and NABH accreditation tier verification.
-- Real-time inpatient burn rate monitoring: flags daily expenditures deviating more than 30% from clinical ALOS benchmarks.
-- Discharge overcharge tally with item-level citation of specific statutory notifications.
-- Post-discharge TPA shortfall and FRM financial toxicity calculation.
-- Emergency legal filing support including Ombudsman petitions and anti-detention notices.
+- **Pre-admission package tariff** and NABH accreditation tier verification.
+- **Real-time inpatient burn rate monitoring**: flags daily expenditures deviating more than 30% from clinical ALOS benchmarks.
+- **Discharge overcharge tally** with item-level citation of specific statutory notifications.
+- **Post-discharge TPA shortfall** and FRM financial toxicity calculation.
+- **Emergency legal filing support** including Ombudsman petitions and anti-detention notices.
 
 ### Legal Document Generation
-
-- Formal dispute letters addressed to hospital administration with line-item citation of violated gazette notifications.
-- Emergency anti-detention notice citing Bombay High Court Criminal WP No. 2502/2000 and BNS Section 127.
-- PM-JAY zero-cash violation notice with automatic 5x penalty computation and SAFU referral.
+- **Formal dispute letters** addressed to hospital administration with line-item citation of violated gazette notifications.
+- **Emergency anti-detention notice** citing Bombay High Court Criminal WP No. 2502/2000 and BNS Section 127.
+- **PM-JAY zero-cash violation notice** with automatic 5x penalty computation and SAFU referral.
 
 ### Cryptographic Evidence
+- **Section 65B Merkle audit certificate** with SHA-256 pairwise tree hashing and HMAC-SHA256 origin signature.
+- **Tamper-evident**: modifying any billed amount invalidates the Merkle root and fails signature verification.
 
-- Section 65B Merkle audit certificate with SHA-256 pairwise tree hashing and HMAC-SHA256 origin signature.
-- Tamper-evident: modifying any billed amount invalidates the Merkle root and fails signature verification.
+---
 
-## Project Structure
+## Project Structure & Directory Tree
 
 ```text
 CuraVeris/
 ├── app/                                 # Global application assets & model storage
 │   └── ml/
-│       └── weights/                     # Pre-trained ML weight checkpoints
+│       └── weights/                     # Pre-trained ML weight checkpoints & ONNX artifacts
 ├── backend/                             # Core FastAPI backend service
 │   ├── app/
 │   │   ├── api/                         # Versioned API routes (/api/v1)
@@ -370,15 +354,12 @@ CuraVeris/
 │   ├── notebooks/                       # Exploratory analysis and training notebooks
 │   ├── reference_data/                  # Statutory rate databases (medical_rates.db)
 │   ├── tests/                           # Automated unit, integration, & foundation tests
-│   │   ├── conftest.py                  # Pytest fixtures and async client configuration
-│   │   ├── test_phase3_foundation.py    # Backend & API foundation test suite
-│   │   └── run_all_backend_tests.py     # Master backend test suite execution script
 │   ├── alembic.ini                      # Alembic migration configuration
 │   ├── pytest.ini                       # Pytest execution configuration
 │   ├── requirements.txt                 # Backend Python package dependencies
 │   ├── requirements-dev.txt             # Development and testing dependencies
 │   └── run.py                           # Local server launcher
-├── clients/                             # Client SDKs and integration stubs
+├── clients/                             # Mobile & web client foundations
 ├── config/                              # Global service and environment configs
 ├── contracts/                           # OpenAPI and RPC interface contracts
 ├── data/                                # Vector storage and runtime data
@@ -396,6 +377,14 @@ CuraVeris/
 ├── reference_data/                      # Statutory benchmark source datasets
 ├── scripts/                             # Operational and maintenance automation scripts
 ├── src/                                 # Shared core algorithms & utilities
+├── web/                                 # Production Next.js 14 Web Application
+│   ├── app/                             # Next.js App Router (auth, bills, dashboard, admin)
+│   ├── components/                      # Reusable UI component library (Button, Card, Badge)
+│   ├── hooks/                           # Custom React hooks (useAuth, useBillAudit)
+│   ├── lib/                             # API clients and utilities
+│   ├── store/                           # Zustand global state management
+│   ├── styles/                          # Global Tailwind CSS styling
+│   └── vercel.json                      # Vercel subproject deployment configuration
 ├── .env.example                         # Example environment variables template
 ├── .gitignore                           # Comprehensive git exclusions
 ├── .markdownlint.json                   # Markdown linting rules
@@ -404,9 +393,11 @@ CuraVeris/
 ├── Dockerfile                           # Production backend container build
 ├── pyrightconfig.json                   # Python language server configuration
 ├── ruff.toml                            # Ruff linter and formatter configuration
+├── vercel.json                          # Root Vercel build & proxy routing configuration
 ├── CONTRIBUTING.md                      # Contribution guidelines
 ├── DEPLOYMENT.md                        # Production deployment architecture
 ├── LICENSE                              # MIT License
+├── MODELS.md                            # Comprehensive ML/DL Model Architecture Specification
 ├── SECURITY.md                          # Security policy and reporting
 ├── TESTING.md                           # Automated test coverage documentation
 └── README.md                            # Primary project documentation
@@ -414,207 +405,112 @@ CuraVeris/
 
 ---
 
-## Backend & API Foundation
+## Persistence Strategy & Data Model
 
-The backend foundation is built on FastAPI with high-reliability enterprise architecture:
-
-### 1. Application Startup & Lifespan
-
-- **Lifespan Context Manager**: Managed in [`backend/app/main.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/main.py). Automatically coordinates startup tasks:
-  1. Validates configuration secrets (rejects insecure default keys in production/staging).
-  2. Initializes the PostgreSQL database connection pool and ensures schema presence.
-  3. Populates statutory reference benchmarks (CGHS, NPPA, DPCO, IRDAI).
-  4. Prepares ML ensemble weights and ChromaDB collections.
-  5. Coordinates graceful shutdown and connection cleanup.
-
-### 2. Configuration Management
-
-- **Pydantic BaseSettings**: Configured in [`backend/app/core/config.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/core/config.py). Supports automatic environment variable binding with typed fallbacks.
-- **Strict Startup Validation**: `validate_secrets()` prevents starting with development keys in staging or production.
-
-### 3. Database Connection & Lifecycle
-
-- **Async SQLAlchemy 2.0**: Configured in [`backend/app/db/database.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/db/database.py).
-- **Dependency Injection**: The `get_db` async generator provides scoped sessions with automatic transaction rollback on unhandled exceptions and guaranteed cleanup.
-
-### 4. Database Migrations
-
-- **Alembic Versioning**: Fully configured via `alembic.ini` and `backend/migrations/` to track schema changes.
-
-### 5. Dependency Injection Architecture
-
-- `get_db`: Yields transactional async database sessions.
-- `get_current_user`: Decodes JWT tokens, validates expiration, and retrieves active user records.
-- `require_roles`: Factory dependency enforcing Role-Based Access Control (RBAC).
-- `enforce_tenant_access`: Enforces organization boundary isolation.
-
-### 6. API Versioning & Routing
-
-- Base API prefix `settings.API_V1_STR` (`/api/v1`) mounted cleanly across all business routers:
-  - `/api/v1/auth`: Authentication, registration, token refresh, and user profile.
-  - `/api/v1/bills`: Bill upload, extraction, audit, and status tracking.
-  - `/api/v1/reports`: Legal dispute petitions, anti-detention notices.
-  - `/api/v1/insurance`: TPA reconciliation and policy coverage analysis.
-  - `/api/v1/razorpay`: Payment gateway orders and webhook processing.
-  - `/api/v1/finance`: Hospital ledger revenue recovery and analytics.
-  - `/api/v1/abha`: ABDM / ABHA health records integration.
-  - `/api/v1/chat`: Grounded statutory patient advocacy AI assistant.
-
-### 7. Request Validation & Response Schemas
-
-- Strict **Pydantic v2** models defined in [`backend/app/models/schemas.py`](file:///j:/Dev/PROJECTS/CuraVeris/backend/app/models/schemas.py).
-- Input fields enforce type safety, regex constraints, and value sanitization.
-- Response models guarantee well-defined schemas across all endpoints.
-
-### 8. Structured Error Handling
-
-- Safe error payloads formatted as:
-
-  ```json
-  {
-    "error": {
-      "code": "VALIDATION_ERROR",
-      "message": "Request validation failed.",
-      "details": [...]
-    },
-    "request_id": "c71a396e-57b1-419b-a0ee-6c17e33527b1"
-  }
-  ```
-
-- Handlers registered for `CuraVerisError`, `RequestValidationError`, `RateLimitExceeded`, and `StarletteHTTPException`.
-
-### 9. Request Traceability (Request IDs)
-
-- `RequestCorrelationMiddleware` accepts client-provided `X-Request-ID` or generates a UUID4.
-- Injected into `request_id_context` for structured logging, returned in response headers, and embedded in all error payloads.
-
-### 10. Authentication & Authorization Foundation
-
-- **JWT Tokens**: Stateless HMAC-SHA256 access tokens and cryptographically hashed refresh tokens.
-- **RBAC Matrix**: Enforced via `require_roles("ROLE_A", "ROLE_B")` supporting:
-  `PATIENT`, `HOSPITAL_ADMIN`, `HOSPITAL_FINANCE`, `HOSPITAL_BILLING`, `HOSPITAL_AUDITOR`, `TPA_REVIEWER`, `TPA_ADMIN`, `INSURER_REVIEWER`, `INSURER_ADMIN`, and `PLATFORM_ADMIN`.
-
-### 11. Health, Liveness & Readiness Probes
-
-- `GET /health`: Comprehensive health report including database status and reference data availability.
-- `GET /health/live` & `GET /live`: Liveness probe indicating process responsiveness.
-- `GET /health/ready` & `GET /ready`: Readiness probe verifying backend database connectivity.
-
-### 12. OpenAPI Contracts
-
-- Full OpenAPI 3.x specification available dynamically at `/openapi.json` and interactive docs at `/docs` (in development).
-
----
-
-## Data Model
-
-The platform uses a hybrid persistence model: PostgreSQL for all ACID financial and audit data, SQLite for read-only statutory reference lookups.
+The platform uses a hybrid persistence architecture: **PostgreSQL** for all ACID financial and audit data, and **SQLite** for low-latency read-only statutory reference lookups.
 
 | Entity | Store | Key Fields | Description |
 | :--- | :--- | :--- | :--- |
-| `users` | PostgreSQL | `id`, `email`, `hashed_password`, `phone_encrypted` | Patient and advocate accounts. Phone stored encrypted under AES-256-GCM. |
+| `users` | PostgreSQL | `id`, `email`, `hashed_password`, `phone_encrypted` | Patient and advocate accounts. Phone encrypted under AES-256-GCM. |
 | `bills` | PostgreSQL | `id`, `user_id`, `total_billed`, `total_overcharge`, `risk_score`, `status` | Root audit session entity. Tracks gross financial totals and composite score. |
 | `bill_items` | PostgreSQL | `id`, `bill_id`, `category`, `charged_rate`, `cghs_rate`, `nppa_ceiling`, `risk_flags` | Atomic line item with statutory comparisons and violation flags. |
 | `audit_logs` | PostgreSQL | `id`, `bill_id`, `action_type`, `details`, `timestamp` | Forensic trail of all status transitions and report generations. |
-| `cghs_rates` | SQLite | `procedure_name`, `nabh_rate`, `non_nabh_rate` | 1,900+ CGHS 2024 procedure benchmarks. |
-| `nppa_devices` | SQLite | `device_name`, `ceiling_price` | Coronary stent and orthopedic implant caps. |
-| `dpco_drugs` | SQLite | `drug_name`, `mrp_per_unit` | Scheduled pharmaceutical MRP ceilings. |
+| `cghs_rates` | SQLite | `procedure_name`, `nabh_rate`, `non_nabh_rate` | 1,900+ CGHS 2024 procedure benchmarks across city classes. |
+| `nppa_devices` | SQLite | `device_name`, `ceiling_price` | Coronary stent and orthopedic knee implant statutory caps. |
+| `dpco_drugs` | SQLite | `drug_name`, `mrp_per_unit` | Scheduled pharmaceutical MRP ceilings under NLEM 2022. |
 
 See [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md).
 
+---
+
+## Backend & API Foundation Architecture
+
+The backend foundation is built on FastAPI with enterprise-grade resilience:
+
+1. **Application Startup & Lifespan**: Managed in `backend/app/main.py`. Coordinates configuration validation, connection pool initialization, reference data caching, and graceful shutdown.
+2. **Configuration Management**: Powered by Pydantic `BaseSettings` with typed environment variable bindings and strict secret validation.
+3. **Async SQLAlchemy 2.0 Engine**: Connection pool management with scoped session injection and automatic transaction rollbacks on errors.
+4. **Alembic Database Migrations**: Tracks and executes schema migrations across development, staging, and production environments.
+5. **Dependency Injection Architecture**: Scoped sessions (`get_db`), authenticated context (`get_current_user`), and role-based guards (`require_roles`).
+6. **API Versioning & Routing**: Unified prefix `/api/v1` serving auth, bills, reports, insurance, razorpay, finance, abha, and chat endpoints.
+7. **Pydantic v2 Schemas**: Strict request sanitization and response contracts.
+8. **Structured Error Envelopes**: Consistent `{ error: { code, message, details }, request_id }` payloads with zero stack-trace leakage.
+9. **Request Correlation Middleware**: Propagates `X-Request-ID` across structured logging and client responses.
+10. **Role-Based Access Control (RBAC)**: Matrix supporting `PATIENT`, `HOSPITAL_ADMIN`, `HOSPITAL_FINANCE`, `TPA_REVIEWER`, `INSURER_ADMIN`, and `PLATFORM_ADMIN`.
+11. **Health Probes**: `GET /health`, `GET /health/live`, `GET /health/ready`.
 
 ---
 
-## Getting Started
+## Getting Started & Local Development
 
 ### Prerequisites
-
 - Python 3.11 or higher
-- PostgreSQL 14+ with a database named `curaveris_db`
-- Git & [Git LFS](https://git-lfs.com/) (required for tracking large binary weights and database files)
+- Node.js 18+ and npm
+- PostgreSQL 14+ or Neon Serverless PostgreSQL URL
+- Git & [Git LFS](https://git-lfs.com/)
 
-### Installation
+### Step-by-Step Setup
 
 ```bash
-# 1. Initialize Git LFS on your machine
+# 1. Initialize Git LFS
 git lfs install
 
-# 2. Clone repository and pull LFS objects
+# 2. Clone repository and pull LFS binary assets
 git clone https://github.com/Harshil-18-byte/CuraVeris.git
 cd CuraVeris
 git lfs pull
 
-# 3. Navigate to backend and setup virtual environment
+# 3. Setup Python Backend Environment
 cd backend
 python -m venv venv
 .\venv\Scripts\Activate.ps1          # Windows PowerShell
 # source venv/bin/activate           # Linux / macOS
-
-# 4. Install dependencies
 pip install -r requirements.txt
-```
 
-### Initialize Reference Database & Run Migrations
-
-```bash
-# Apply database schema to PostgreSQL (Neon / Local)
+# 4. Apply Database Migrations & Seed Statutory Rates
 alembic upgrade head
-
-# Initialize local statutory rates database (CGHS, NPPA, DPCO)
 python -c "from app.db.reference_data import initialize_reference_database; initialize_reference_database()"
+
+# 5. Setup Next.js Frontend
+cd ../web
+npm install
 ```
 
-### Train Machine Learning Models (Optional)
+### Running the Services Locally
 
-```bash
-python ml_training/run_real_production_training.py --epochs 10 --batch-size 32 --device cpu --precision fp32
-```
-
-### Run the Application (3 Services)
-
-To run the full stack locally with real-time asynchronous document processing:
-
-**Terminal 1 — FastAPI Backend Server:**
+**Terminal 1 — FastAPI Backend:**
 ```powershell
 cd j:\Dev\PROJECTS\CuraVeris\backend
 .\venv\Scripts\Activate.ps1
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-Interactive OpenAPI documentation: `http://127.0.0.1:8000/docs`
+Interactive Swagger UI: `http://127.0.0.1:8000/docs`
 
-**Terminal 2 — Celery Async Processing Worker:**
-```powershell
-cd j:\Dev\PROJECTS\CuraVeris\backend
-.\venv\Scripts\Activate.ps1
-celery -A app.workers.celery_app.celery worker --loglevel=info -Q bill_processing,notifications,default --concurrency=2
-```
-
-**Terminal 3 — Next.js Web Frontend:**
+**Terminal 2 — Next.js Web Frontend:**
 ```powershell
 cd j:\Dev\PROJECTS\CuraVeris\web
 npm run dev
 ```
-Web Application URL: `http://localhost:3000`
+Web Application Portal: `http://localhost:3000`
 
 ---
 
-## Available Commands
+## Available CLI Commands
 
 | Command | Directory | Description |
 | :--- | :--- | :--- |
+| `npm run dev` | Root or `web/` | Starts Next.js frontend development server. |
+| `npm run build` | Root or `web/` | Generates production Next.js optimized bundle. |
 | `uvicorn app.main:app --reload` | `backend/` | Starts the FastAPI server with hot-reload. |
 | `celery -A app.workers.celery_app.celery worker -l info -Q bill_processing,notifications,default` | `backend/` | Runs async OCR and audit processing workers. |
 | `alembic upgrade head` | `backend/` | Applies latest database schema migrations. |
 | `python ml_training/run_real_production_training.py` | `backend/` | Trains all 6 hybrid ML models with statutory calibration. |
-| `pytest -v` | `backend/` | Runs all test suites across API, security hardening, ML models, and financial invariants. |
-| `npm run dev` | `web/` | Starts Next.js frontend development server. |
-| `python -m venv venv` | `backend/` | Creates the isolated Python virtual environment. |
-| `pip install -e .` | `backend/` | Installs backend package in editable mode. |
+| `pytest -v` | `backend/` | Runs test suites across API, security hardening, ML models, and financial invariants. |
 | `git lfs pull` | Root | Downloads all large binary model weights (`.pt`, `.onnx`, `.safetensors`, `.ubj`) and SQLite DBs. |
 
 ---
 
-## Environment Configuration
+## Environment Configuration & Secrets
 
 Create `backend/.env` with the following variables. Do not commit this file.
 
@@ -640,7 +536,7 @@ CELERY_BROKER_URL="rediss://default:<password>@xxx.upstash.io:6379"
 RESEND_API_KEY="re_xxx"
 EMAIL_FROM_ADDRESS="onboarding@resend.dev"
 
-# Cloudflare R2 / AWS S3 Storage Backend (Optional for Cloud uploads)
+# Storage Backend
 STORAGE_BACKEND=local
 AWS_ACCESS_KEY_ID="<r2_access_key_id>"
 AWS_SECRET_ACCESS_KEY="<r2_secret_key>"
@@ -653,10 +549,8 @@ AWS_S3_ENDPOINT_URL="https://<account_id>.r2.cloudflarestorage.com"
 
 ## Testing, Playwright E2E & CI Security Gate
 
-The CuraVeris quality framework enforces comprehensive automated testing across backend invariants, ML pipelines, frontend components, and security merge gates:
-
 ```bash
-# 1. Run full backend test suite (96 passed, 0 failed)
+# 1. Run full backend test suite
 pytest -v
 
 # 2. Run curation leak prevention tests
@@ -665,42 +559,32 @@ pytest tests/test_curation_leak_prevention.py -v
 # 3. Run model statutory taxonomy compliance tests
 pytest tests/test_taxonomy_compliance.py -v
 
-# 4. Run CI Security Gate locally (scans for exposed internal_ids & secrets)
+# 4. Run CI Security Gate locally
 python scripts/ci_security_gate.py
 
-# 5. Run frontend TypeScript validation & production build
-cd clients/web && npm run typecheck && npm run build
+# 5. Run frontend TypeScript validation & build
+cd web && npm run build
 
-# 6. Run Playwright E2E tests for empty results and search analytics
+# 6. Run Playwright E2E tests
 cd clients/web && npx playwright test
 ```
 
-### Acceptance & Quality Invariants:
-1. **96 Automated Backend Tests Pass**: 100% green coverage across security hardening, reference DB rate queries, ML inference uncertainty, Merkle audit ledger, and multi-tenant RBAC.
-2. **Curation Leak Prevention Verified**: Automated scans ensure internal curation metadata, notes, and raw database IDs are never returned in public DB reads or API responses.
-3. **Model Taxonomy Compliance**: All pipeline outputs strictly conform to approved regulatory classifications (`NPPA`, `DPCO`, `CGHS`, `IRDAI`).
-4. **Playwright E2E Scenarios**: Verifies that empty search queries correctly render dedicated empty state panels with working Retry buttons and emit accurate analytics telemetry (`search_query_executed`, `empty_result_rendered`).
-5. **CI Security Gate**: Automated blocker in `.github/workflows/security_gate.yml` preventing PR merges if forbidden patterns or internal IDs reappear.
-
-
 ---
 
-## Security
+## Platform Security & Compliance
 
-- **Field-level encryption**: Patient phone numbers and identifiers encrypted with AES-256-GCM.
-- **Password storage**: bcrypt with cost factor 12.
-- **Authentication**: Stateless HMAC-SHA256 signed JWT tokens. Expire at 1,440 minutes.
-- **File ingestion defense**: Binary magic bytes validation rejects polyglot payloads before OCR.
-- **Webhook integrity**: Razorpay HMAC-SHA256 signature verification before any payment status transition.
+- **Field-Level Encryption**: Patient phone numbers and identifiers encrypted with AES-256-GCM.
+- **Password Security**: bcrypt password hashing with work factor 12.
+- **Stateless Authentication**: HMAC-SHA256 signed JWT tokens with granular role claims.
+- **File Ingestion Defense**: Binary magic bytes validation rejects polyglot payloads before OCR execution.
+- **Webhook Integrity**: Razorpay HMAC-SHA256 signature verification before any payment state transition.
 - **DPDP Act 2023**: Right to erasure implemented at `POST /api/v1/auth/anonymize-me`.
 
 See [`docs/SECURITY.md`](./docs/SECURITY.md).
 
 ---
 
-## API Reference
-
-### Core Endpoints
+## REST API Reference
 
 | Method | Route | Description |
 | :--- | :--- | :--- |
@@ -726,29 +610,15 @@ See [`docs/API_REFERENCE.md`](./docs/API_REFERENCE.md).
 
 ---
 
-## Machine Learning Ensemble
+## Machine Learning Ensemble & AI Architecture
 
-The audit engine combines a gradient-boosted decision tree classifier with a multi-layer perceptron to classify non-linear financial ratios across 7 violation labels simultaneously.
+For exhaustive architecture blueprints, loss functions, layer definitions, and training pipelines, refer to the dedicated specification in [`MODELS.md`](./MODELS.md).
 
-**Architecture**:
-
-$$\text{Input}(15) \longrightarrow \text{Dense}(128, \text{ReLU}) \longrightarrow \text{Dense}(64, \text{ReLU}) \longrightarrow \text{Dense}(32, \text{ReLU}) \longrightarrow \text{Output}(7, \sigma)$$
-
-**Blending**:
-
+**Model Blend**:
 $$P_{\text{blended}} = 0.45 \cdot P_{\text{NN}} + 0.55 \cdot P_{\text{XGB}}$$
 
-**Uncertainty**:
-
+**Monte Carlo Epistemic Uncertainty**:
 $$\mu_j = \frac{1}{K}\sum_{k=1}^{K} P_j^{(k)}, \quad \sigma_j = \sqrt{\frac{1}{K}\sum_{k=1}^{K}\left(P_j^{(k)} - \mu_j\right)^2}, \quad K = 10$$
-
-**Holdout metrics (production seed 364658)**:
-
-| Metric | XGBoost | Deep MLP | Hybrid Ensemble |
-| :--- | :--- | :--- | :--- |
-| Macro Precision | — | — | 0.7875 |
-| Macro Recall | — | — | 0.4820 |
-| Macro F1 | 0.5881 | 0.5540 | 0.5836 |
 
 ---
 
@@ -756,10 +626,10 @@ $$\mu_j = \frac{1}{K}\sum_{k=1}^{K} P_j^{(k)}, \quad \sigma_j = \sqrt{\frac{1}{K
 
 CuraVeris provides 7 production-grade ML pipelines in `backend/app/ml/pipelines/` engineered for low-latency (< 100ms) mobile app consumption:
 
-1. **`DocumentParsingPipeline`**: Multimodal LayoutLMv3 tokenization, normalized 2D bounding boxes ($[0, 1000]$), 15 NER entity labels, and tabular row-column association.
-2. **`StatutoryRAGPipeline`**: ChromaDB BioBERT semantic vector lookup across CGHS, NPPA, and DPCO statutory registries ($> 0.72$ threshold gating).
-3. **`XGBoostRiskPipeline`**: 10-feature multi-label gradient boosted trees with SMOTE class balancing and optimal decision threshold calibration.
-4. **`DeepEnsembleRiskPipeline`**: Deep MLP (128-64-32 with Adam) + XGBoost stacking + 15-pass Monte Carlo Dropout epistemic uncertainty ($\sigma$).
+1. **`DocumentParsingPipeline`**: Multimodal LayoutLMv3 tokenization, normalized 2D bounding boxes ($[0, 1000]$), 12 NER entity labels, and tabular row-column association.
+2. **`StatutoryRAGPipeline`**: ChromaDB / MiniLM semantic vector lookup across CGHS, NPPA, and DPCO statutory registries ($> 0.72$ threshold gating).
+3. **`XGBoostRiskPipeline`**: 32-feature multi-label gradient boosted trees with SMOTE class balancing and optimal decision threshold calibration.
+4. **`DeepEnsembleRiskPipeline`**: Deep MLP (128-64-32 with Adam) + XGBoost stacking + 10-pass Monte Carlo Dropout epistemic uncertainty ($\sigma$).
 5. **`InsuranceReconciliationPipeline`**: IRDAI non-payable items audit (199 schedule items) and TPA settlement gap recovery analysis.
 6. **`LegalDisputePipeline`**: Automated legal notice generator under Consumer Protection Act 2019 and Essential Commodities Act 1955.
 7. **`MobileInferencePipeline`**: Unified mobile gateway returning structured UI cards with color badges (`#10B981`, `#F59E0B`, `#EF4444`), 0–100 risk score, and downloadable dispute letters.
@@ -778,15 +648,13 @@ graph TD
     subgraph ParallelPipe ["Single Disk-Read Pass (< 200MB Streaming RAM)"]
         Feat -->|"xgb_X, xgb_y"| ModelA["Model A: XGBoost Multi-Label (np.memmap on disk + SMOTE)"]
         Feat -->|"tokens, bboxes"| ModelB["Model B: LayoutLMv3 (Worker Thread + Gradient Checkpointing)"]
-        Feat -->|"texts, metadata"| ModelC["Model C: ChromaDB BioBERT Indexer (32-batch flush)"]
+        Feat -->|"texts, metadata"| ModelC["Model C: Vector Store Embedder (32-batch flush)"]
     end
 
     ModelA --> OutA["models/risk_classifier.pkl"]
     ModelB --> OutB["models/layoutlm_finetuned/"]
-    ModelC --> OutC["ChromaDB Vector Store"]
+    ModelC --> OutC["Vector Store Collections"]
 ```
-
-### CLI Training Commands
 
 ```bash
 # 1. Train all models in a single parallel streaming pass:
@@ -795,10 +663,7 @@ python ml_training/train_all_models.py
 # 2. Train only XGBoost classifier (fastest):
 python ml_training/train_all_models.py --models A
 
-# 3. Train XGBoost + rebuild ChromaDB statutory vector index:
-python ml_training/train_all_models.py --models A C
-
-# 4. Train LayoutLMv3 document transformer:
+# 3. Train LayoutLMv3 document transformer:
 python ml_training/train_all_models.py --models B
 ```
 
@@ -806,9 +671,7 @@ python ml_training/train_all_models.py --models B
 
 ## CuraVeris-4B & CuraVeris-1B Custom Transformer Models
 
-CuraVeris includes native custom dense decoder Transformers built and trained from scratch specifically for the Indian healthcare statutory billing domain:
-
-### Architecture Matrix
+Custom dense decoder Transformers trained specifically for the Indian healthcare statutory billing domain:
 
 | Specification | CuraVeris-4B | CuraVeris-1B |
 | :--- | :--- | :--- |
@@ -824,16 +687,6 @@ CuraVeris includes native custom dense decoder Transformers built and trained fr
 | **Multi-Task Heads** | Causal LM + 7-Class Anomaly + ₹ Restitution | Causal LM + 7-Class Anomaly + ₹ Restitution |
 | **Quantized Formats** | Dynamic INT8 (`.pt`), ONNX Runtime (`.onnx`) | Dynamic INT8 (`.pt`), ONNX Runtime (`.onnx`) |
 
-### Multi-Task Scratch Training Objective
-
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{LM}} + 0.5 \cdot \mathcal{L}_{\text{Focal}} + 0.1 \cdot \mathcal{L}_{\text{Huber}}$$
-
-1. **Causal Language Modeling ($\mathcal{L}_{\text{LM}}$)**: Next-token cross-entropy over statutory gazette citations, forensic reasoning, and Section 65B legal dispute letters.
-2. **Multi-Label Focal Loss ($\mathcal{L}_{\text{Focal}}$)**:
-   $$\mathcal{L}_{\text{Focal}} = -(1 - p_t)^\gamma \log(p_t) \quad (\gamma=2.0, \alpha=0.25)$$
-   Mitigates severe class imbalance across the 7 hospital billing violation categories.
-3. **Continuous Restitution Huber Loss ($\mathcal{L}_{\text{Huber}}$)**: Smooth L1 regression for exact rupee overcharge difference prediction.
-
 ---
 
 ## Two-Track Hybrid Production Architecture
@@ -848,90 +701,86 @@ Temporal Reference RAG -> Deterministic Rule Engine -> 4B Model Reasoning ->
 Evidence Verification -> Calibrated Confidence Gate -> Certified Audit Report
 ```
 
-- **Track A (Model Specialization)**: Domain-adapted 4B transformer providing nuanced clinical rationale, item categorization, and statutory justification.
-- **Track B (Reliable Auditing Core)**: Zero-hallucination code-based calculation engine ($Q \times R_{\text{charged}} - Q \times R_{\text{allowed}}$), BM25 + Bi-Encoder dense retrieval, cross-encoder temporal reranker, and calibrated confidence routing ($\ge 0.95$ clear finding, $0.70-0.95$ enhanced review, $< 0.70$ human review).
+- **Track A (Model Specialization)**: Domain-adapted transformer providing nuanced clinical rationale, item categorization, and statutory justification.
+- **Track B (Reliable Auditing Core)**: Zero-hallucination code-based calculation engine ($Q \times R_{\text{charged}} - Q \times R_{\text{allowed}}$), BM25 + dense retrieval, and calibrated confidence routing ($\ge 0.95$ clear finding, $0.70-0.95$ enhanced review, $< 0.70$ human review).
 
 ---
 
 ## Enterprise Security Hardening
 
-CuraVeris enforces defense-in-depth security controls across the entire platform:
-
-- **File Upload Protection**: Magic bytes header inspection (`%PDF`, `\x89PNG`, `\xff\xd8\xff`, `RIFF`), max payload size limit (25MB), and recursive path traversal sanitization (`../`, `..\`, null bytes `\x00`).
+- **File Upload Protection**: Magic bytes header inspection (`%PDF`, `\x89PNG`, `\xff\xd8\xff`, `RIFF`), max payload size limit (25MB), and recursive path traversal sanitization.
 - **Cryptographic Audit Integrity**: Deterministic SHA-256 hashing on all uploaded bills and findings, sealed with HMAC-SHA256 signatures in a Merkle tree ledger.
-- **Transport & Web Security**: HTTP Strict Transport Security (HSTS `max-age=31536000; includeSubDomains`), Content Security Policy (CSP baseline), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`.
+- **Transport & Web Security**: HTTP Strict Transport Security (HSTS `max-age=31536000; includeSubDomains`), CSP baseline, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`.
 - **Rate Limiting & Anti-DDoS**: Token bucket rate limiting via SlowAPI on `/auth`, `/audit`, `/upload`, and `/api/v1/dev` endpoints.
-- **Observability APIs**: Real-time endpoints at `/api/v1/dev/curaveris-4b`, `/api/v1/dev/curaveris-1b`, and `/api/v1/dev/security-status`.
 
 ---
 
-## Cryptographic Ledger
+## Cryptographic Audit Ledger (Section 65B)
 
 Each completed audit is sealed in a chained cryptographic block for court admissibility under Section 65B of the Indian Evidence Act:
 
 **Leaf hash**:
-
 $$\text{Leaf}_i = \text{SHA-256}(\text{RawText} \parallel \text{ChargedRate} \parallel \text{Quantity} \parallel \text{Overcharge})$$
 
 **Block hash**:
-
 $$\text{Block}_n = \text{SHA-256}(n \parallel \text{Timestamp} \parallel \text{BillID} \parallel \text{TotalBilled} \parallel \text{Overcharge} \parallel \text{RiskScore} \parallel \text{MerkleRoot} \parallel \text{PrevHash})$$
 
 **Origin signature**:
-
 $$\text{Signature} = \text{HMAC-SHA256}(k_{\text{secret}}, \text{Block}_n)$$
 
-See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for the full ledger specification.
+See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
 
 ---
 
-## Statutory Framework
-
-Primary statutes and judicial precedents implemented in the audit engine:
+## Statutory Framework & Legal Grounding
 
 | Statute | Scope | Violation Flag |
 | :--- | :--- | :--- |
-| NPPA S.O. 1335(E) | DES stent cap ₹38,260; BMS cap ₹10,509 | `nppa_ceiling_violation` |
-| NPPA S.O. 2668(E) | Primary knee implant cap ₹63,800 | `nppa_ceiling_violation` |
-| DPCO 2013, Para 24 | Scheduled drug MRP ceilings | `above_mrp` |
-| MoF Notification 12/2017-CT(R), Entry 74 | GST exemption on healthcare services | `gst_on_exempt` |
-| IRDAI Circular 2020, 199 items | Consumable unbundling prohibition | `consumable_unbundled` |
-| Mental Healthcare Act 2017, Section 21(4) | Psychiatric parity mandate | `mental_healthcare_act_violation` |
-| NHA Operational Guidelines Section 3.2 | PM-JAY zero cash mandate | `pmjay_cash_violation` |
-| Bombay HC CrWP 2502/2000, BNS Section 127 | Anti-detention constitutional right | Anti-detention notice |
+| **NPPA S.O. 1335(E)** | DES stent cap ₹30,080 + GST; BMS cap ₹8,260 | `nppa_ceiling_violation` |
+| **NPPA S.O. 2668(E)** | Primary knee implant cap ₹54,000 + GST | `nppa_ceiling_violation` |
+| **DPCO 2013, Para 24** | Scheduled drug MRP ceilings under NLEM | `above_mrp` |
+| **MoF Notification 12/2017-CT(R), Entry 74** | GST exemption on healthcare clinical services | `gst_on_exempt` |
+| **IRDAI Standardization Circular, 199 Items**| Consumable overhead unbundling prohibition | `consumable_unbundled` |
+| **Mental Healthcare Act 2017, Section 21(4)** | Psychiatric insurance parity mandate | `mental_healthcare_act_violation` |
+| **NHA Operational Guidelines Section 3.2** | PM-JAY zero cash mandate (5x penalty) | `pmjay_cash_violation` |
+| **Bombay HC CrWP 2502/2000, BNS Section 127**| Anti-detention fundamental right under Art. 21 | Emergency anti-detention notice |
 
 See [`docs/STATUTORY_FRAMEWORK.md`](./docs/STATUTORY_FRAMEWORK.md).
 
 ---
 
-## Comparative Positioning
+## Comparative Positioning & Industry Benchmarks
 
 | Feature | US Tools | Generic LLMs | Hospital ERPs | CuraVeris |
 | :--- | :--- | :--- | :--- | :--- |
-| Jurisdiction | HIPAA / CPT | Global | Indian networks | Indian statutory |
-| NPPA / DPCO caps | No | No | Not enforced | Automated |
-| CGHS tariff benchmarks | No | No | Not enforced | NABH / non-NABH |
-| Payment gap analysis | No | No | Records only | EMI and distress scoring |
-| Burn rate forecasting | No | No | No | Daily monitoring |
-| Model verification | Commercial | Non-deterministic | Rules only | Hybrid ensemble |
-| Evidentiary standard | PDF report | Text transcript | Invoice reprint | Section 65B Merkle ledger |
-| Anti-detention notice | No | No | Opposing interest | Bombay HC precedent |
+| **Jurisdiction** | HIPAA / CPT | Global | Indian networks | Indian statutory |
+| **NPPA / DPCO caps** | No | No | Not enforced | Automated |
+| **CGHS tariff benchmarks** | No | No | Not enforced | NABH / non-NABH |
+| **Payment gap analysis** | No | No | Records only | EMI and distress scoring |
+| **Burn rate forecasting** | No | No | No | Daily monitoring |
+| **Model verification** | Commercial | Non-deterministic | Rules only | Hybrid ensemble |
+| **Evidentiary standard** | PDF report | Text transcript | Invoice reprint | Section 65B Merkle ledger |
+| **Anti-detention notice** | No | No | Opposing interest | Bombay HC precedent |
 
 ---
 
-## Documentation
+## Documentation Index
 
-- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — system boundaries, database schema, ML pipeline, cryptographic ledger
-- [`docs/API_REFERENCE.md`](./docs/API_REFERENCE.md) — complete REST endpoint reference with request and response schemas
-- [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md) — entity-relationship specification and field-level descriptions
-- [`docs/STATUTORY_FRAMEWORK.md`](./docs/STATUTORY_FRAMEWORK.md) — statutory citations, gazette notifications, and case law
-- [`docs/SECURITY.md`](./docs/SECURITY.md) — encryption controls, threat model, and DPDP Act compliance
-- [`docs/CHANGELOG.md`](./docs/CHANGELOG.md) — versioned implementation history
-- [`docs/ENGINEERING_AUDIT.md`](./docs/ENGINEERING_AUDIT.md) — comprehensive architectural audit and capability gap analysis
-- [`docs/PRODUCTION_TRAINING_GUIDE.md`](./docs/PRODUCTION_TRAINING_GUIDE.md) — production multi-model training procedures and GPU specifications
-- [`docs/MANUAL_TRAINING_GUIDE.md`](./docs/MANUAL_TRAINING_GUIDE.md) — manual model execution, hyperparameter tuning, and verification
+- [`MODELS.md`](./MODELS.md) — Comprehensive ML/DL Model Architecture Specification, training pipelines, and benchmarks
+- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — System boundaries, database schema, ML pipeline, cryptographic ledger
+- [`docs/API_REFERENCE.md`](./docs/API_REFERENCE.md) — Complete REST endpoint reference with request and response schemas
+- [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md) — Entity-relationship specification and field-level descriptions
+- [`docs/STATUTORY_FRAMEWORK.md`](./docs/STATUTORY_FRAMEWORK.md) — Statutory citations, gazette notifications, and case law
+- [`docs/SECURITY.md`](./docs/SECURITY.md) — Encryption controls, threat model, and DPDP Act compliance
+- [`docs/CHANGELOG.md`](./docs/CHANGELOG.md) — Versioned implementation history
+- [`docs/ENGINEERING_AUDIT.md`](./docs/ENGINEERING_AUDIT.md) — Comprehensive architectural audit and capability gap analysis
+- [`docs/PRODUCTION_TRAINING_GUIDE.md`](./docs/PRODUCTION_TRAINING_GUIDE.md) — Production multi-model training procedures and GPU specifications
+- [`docs/MANUAL_TRAINING_GUIDE.md`](./docs/MANUAL_TRAINING_GUIDE.md) — Manual model execution, hyperparameter tuning, and verification
 - [`backend/docs/ML_AND_BACKEND_HANDBOOK.md`](./backend/docs/ML_AND_BACKEND_HANDBOOK.md) — ML training guide and backend developer handbook
-- [`backend/ml_training/GOVERNMENT_DATA_COLLECTION.md`](./backend/ml_training/GOVERNMENT_DATA_COLLECTION.md) — government data collection and scraping protocol
+- [`backend/ml_training/GOVERNMENT_DATA_COLLECTION.md`](./backend/ml_training/GOVERNMENT_DATA_COLLECTION.md) — Government data collection and scraping protocol
+- [`DEPLOYMENT.md`](./DEPLOYMENT.md) — Production deployment and cloud infrastructure guide
+- [`TESTING.md`](./TESTING.md) — Automated test suite coverage and execution instructions
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — Open-source contribution guidelines
 
 ---
 
@@ -945,4 +794,4 @@ This software is an engineering platform for medical billing audit workflows. It
 
 Copyright 2026 CuraVeris. All rights reserved.
 
-MIT. See [`LICENSE`](./LICENSE).
+Licensed under the MIT License. See [`LICENSE`](./LICENSE).
