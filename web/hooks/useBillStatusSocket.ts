@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 
 export function useBillStatusSocket(billId: string, initialStatus?: ProcessingStatus) {
   const [status, setStatus] = useState<ProcessingStatus>(initialStatus || "QUEUED");
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
   const [isPolling, setIsPolling] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const statusRef = useRef<ProcessingStatus>(status);
@@ -23,10 +23,25 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
     }
 
     const token = typeof window !== "undefined" ? localStorage.getItem("cv_access_token") : null;
-    const wsUrlBase = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
+
+    let wsUrlBase = process.env.NEXT_PUBLIC_WS_URL;
+    if (!wsUrlBase && typeof window !== "undefined") {
+      const isHttps = window.location.protocol === "https:";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "";
+      if (apiBase.startsWith("https://")) {
+        wsUrlBase = apiBase.replace("https://", "wss://");
+      } else if (apiBase.startsWith("http://")) {
+        wsUrlBase = apiBase.replace("http://", "ws://");
+      } else if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        wsUrlBase = "ws://localhost:8000";
+      } else {
+        wsUrlBase = "wss://curaveris.onrender.com";
+      }
+    }
 
     const startPolling = () => {
       setIsPolling(true);
+      setIsConnected(true);
       if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
       pollingIntervalRef.current = setInterval(async () => {
         try {
@@ -34,18 +49,19 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
           if (res.processing_status) {
             const newStatus = res.processing_status as ProcessingStatus;
             setStatus(newStatus);
+            setIsConnected(true);
             if (newStatus === "COMPLETED" || newStatus === "FAILED") {
               if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
             }
           }
         } catch {
-          // Keep polling
+          // Graceful polling fallback
         }
-      }, 10000);
+      }, 5000);
     };
 
     const connectWebSocket = () => {
-      if (!token) {
+      if (!token || !wsUrlBase) {
         startPolling();
         return;
       }
@@ -67,6 +83,7 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
             const data = JSON.parse(event.data);
             if (data.status) {
               setStatus(data.status as ProcessingStatus);
+              setIsConnected(true);
             }
           } catch {
             // Ignored
@@ -74,14 +91,12 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
         };
 
         ws.onerror = () => {
-          setIsConnected(false);
           startPolling();
         };
 
         ws.onclose = () => {
-          setIsConnected(false);
           const currentStatus = statusRef.current;
-          if (currentStatus !== "COMPLETED" && currentStatus !== "FAILED" && reconnectCountRef.current < 10) {
+          if (currentStatus !== "COMPLETED" && currentStatus !== "FAILED" && reconnectCountRef.current < 5) {
             reconnectCountRef.current += 1;
             setTimeout(connectWebSocket, 3000);
           } else if (currentStatus !== "COMPLETED" && currentStatus !== "FAILED") {
