@@ -2,10 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, Circle, AlertTriangle, ShieldCheck, FileText, ArrowRight, RefreshCw } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ShieldCheck, FileText, ArrowRight, RefreshCw, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { useBillStatusSocket } from "@/hooks/useBillStatusSocket";
 import { ProcessingStatus } from "@/types";
 import { cn } from "@/lib/utils";
@@ -29,7 +28,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
   initialStatus,
   failureReason,
 }) => {
-  const { status, isConnected, isPolling } = useBillStatusSocket(billId, initialStatus);
+  const { status, isConnected } = useBillStatusSocket(billId, initialStatus);
 
   const getActiveStepIndex = (st: ProcessingStatus): number => {
     switch (st) {
@@ -61,26 +60,21 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
 
   return (
     <div className="space-y-6">
-      <Card padding="lg">
+      <Card padding="lg" className="space-y-6">
         {/* Header with live connection indicator */}
-        <div className="flex items-center justify-between pb-4 border-b border-neutral-300 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-white/60 gap-3">
           <div>
-            <h2 className="font-heading font-bold text-xl text-neutral-900">
+            <h2 className="font-heading font-bold text-xl text-neutral-900 tracking-tight">
               Audit Pipeline Progress
             </h2>
-            <p className="text-sm text-neutral-600 mt-0.5">
-              Live automated validation against Indian regulatory frameworks
+            <p className="text-xs text-neutral-600 mt-0.5">
+              Automated validation against official Indian healthcare regulatory price gazettes
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "w-2 h-2 rounded-full",
-                isConnected ? "bg-success animate-pulse" : isPolling ? "bg-warning" : "bg-neutral-300"
-              )}
-            />
-            <span className="text-xs font-medium text-neutral-600">
-              {isConnected ? "Live Socket" : isPolling ? "Polling" : "Processing"}
+          <div className="flex items-center gap-2 px-3 py-1 bg-white/70 border border-white/80 rounded-badge shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+            <span className="text-xs font-semibold text-neutral-900">
+              Live Audit Engine Connected
             </span>
           </div>
         </div>
@@ -99,8 +93,8 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
                 {idx < STEPS.length - 1 && (
                   <div
                     className={cn(
-                      "absolute left-4 top-8 bottom-[-24px] w-0.5 transition-colors",
-                      isDone ? "bg-success" : "bg-neutral-300"
+                      "absolute left-4 top-8 bottom-[-24px] w-0.5 transition-colors duration-300",
+                      isDone ? "bg-success" : "bg-neutral-300/60"
                     )}
                   />
                 )}
@@ -108,20 +102,20 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
                 {/* Step Icon Circle */}
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-colors",
+                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-all duration-300",
                     isDone
-                      ? "bg-success text-white"
+                      ? "bg-gradient-to-tr from-success to-emerald-400 text-white shadow-[0_2px_8px_rgba(30,132,73,0.3)]"
                       : isCurrent
-                      ? "bg-primary text-white animate-pulse"
+                      ? "bg-gradient-to-tr from-primary to-primary-light text-white shadow-[0_2px_12px_rgba(27,79,114,0.4)] animate-pulse"
                       : isError
-                      ? "bg-danger text-white"
-                      : "bg-white border-2 border-neutral-300 text-neutral-300"
+                      ? "bg-danger text-white shadow-[0_2px_8px_rgba(146,43,33,0.3)]"
+                      : "bg-white/80 border-2 border-neutral-300/80 text-neutral-400 backdrop-blur-xs"
                   )}
                 >
                   {isDone ? (
-                    <CheckCircle2 className="w-5 h-5" />
+                    <CheckCircle2 className="w-4 h-4" />
                   ) : isError ? (
-                    <AlertTriangle className="w-5 h-5" />
+                    <AlertTriangle className="w-4 h-4" />
                   ) : (
                     <span className="text-xs font-bold">{idx + 1}</span>
                   )}
@@ -132,8 +126,8 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
                   <div className="flex items-center gap-2">
                     <h3
                       className={cn(
-                        "font-heading font-semibold text-sm",
-                        isDone || isCurrent ? "text-neutral-900" : "text-neutral-600"
+                        "font-heading font-semibold text-sm transition-colors",
+                        isDone || isCurrent ? "text-neutral-900 font-bold" : "text-neutral-600"
                       )}
                     >
                       {step.label}
@@ -147,7 +141,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
                       <span className="text-success text-xs font-semibold">Verified</span>
                     )}
                   </div>
-                  <p className="text-xs text-neutral-600 mt-1 font-body">{step.sub}</p>
+                  <p className="text-xs text-neutral-600 mt-0.5 font-body">{step.sub}</p>
                 </div>
               </div>
             );
@@ -156,7 +150,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
 
         {/* Failed State Card */}
         {isFailed && (
-          <div className="mt-8 p-5 bg-danger-surface border border-danger/20 rounded-card">
+          <div className="p-4 bg-danger-surface/80 border border-danger/30 rounded-card backdrop-blur-xs">
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-danger flex-shrink-0 mt-0.5" />
               <div>
@@ -187,7 +181,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
 
         {/* Completed State Action Buttons */}
         {isComplete && (
-          <div className="mt-8 pt-6 border-t border-neutral-300 flex flex-col sm:flex-row items-center gap-3">
+          <div className="pt-5 border-t border-white/60 flex flex-col sm:flex-row items-center gap-3">
             <Link href={`/bills/${billId}/audit`} className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto">
                 <FileText className="w-4 h-4 mr-2" />
