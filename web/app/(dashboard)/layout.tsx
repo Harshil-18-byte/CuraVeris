@@ -27,23 +27,29 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex">
+      <div className="min-h-screen bg-[#F4F6FB] flex relative overflow-hidden">
+        {/* Liquid Mesh */}
+        <div className="liquid-mesh">
+          <div className="liquid-orb-1" />
+          <div className="liquid-orb-2" />
+        </div>
+
         {/* Sidebar Skeleton */}
-        <div className="w-60 bg-white border-r border-neutral-300 p-6 hidden lg:flex flex-col justify-between">
+        <div className="w-60 glass-sidebar p-6 hidden lg:flex flex-col justify-between z-10">
           <div className="space-y-6">
             <SkeletonText width="sm" className="h-8" />
             <div className="space-y-3 pt-4">
               <SkeletonText lines={4} className="h-6" />
             </div>
           </div>
-          <div className="pt-4 border-t border-neutral-300">
+          <div className="pt-4 border-t border-white/60">
             <SkeletonText lines={2} />
           </div>
         </div>
 
         {/* Content Skeleton */}
-        <div className="flex-1 flex flex-col">
-          <div className="h-16 bg-white border-b border-neutral-300 px-6 flex items-center justify-between">
+        <div className="flex-1 flex flex-col z-10">
+          <div className="h-16 glass-nav px-6 flex items-center justify-between">
             <SkeletonText width="sm" />
             <SkeletonText width="sm" />
           </div>
@@ -58,7 +64,7 @@ export default function DashboardLayout({
               <SkeletonCard />
               <SkeletonCard />
             </div>
-            <div className="bg-white rounded-card border border-neutral-300 p-6">
+            <div className="glass-card p-6">
               <table className="w-full">
                 <tbody>
                   <SkeletonRow />
@@ -78,10 +84,17 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex flex-col">
+    <div className="min-h-screen bg-[#F4F6FB] flex flex-col relative overflow-hidden">
+      {/* Liquid Glass Ambient Mesh */}
+      <div className="liquid-mesh">
+        <div className="liquid-orb-1" />
+        <div className="liquid-orb-2" />
+        <div className="liquid-orb-3" />
+      </div>
+
       <Sidebar />
       <TopBar />
-      <main className="lg:ml-60 pt-16 p-6 sm:p-8 flex-1">
+      <main className="lg:ml-60 pt-16 p-6 sm:p-8 flex-1 relative z-10">
         <div className="max-w-7xl mx-auto">{children}</div>
       </main>
     </div>
