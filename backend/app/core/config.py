@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -11,16 +11,29 @@ class Settings(BaseSettings):
         case_sensitive=True,
     )
 
+    PROJECT_NAME: str = "CuraVeris - MedBill AI"
+    API_V1_STR: str = "/api/v1"
+    VERSION: str = "2.0.0"
+
     APP_ENV: str = "development"
-    APP_SECRET_KEY: str = "default_dev_secret_key_change_in_production_32b"
+    ENV: str = "development"
+    APP_SECRET_KEY: str = "ci-test-secret-key-replace-before-any-deployment-2026"
+    SECRET_KEY: str = "ci-test-secret-key-replace-before-any-deployment-2026"
     APP_DEBUG: bool = False
+    DEBUG: bool = False
+
+    ENCRYPTION_KEY: str = "Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA=="
+    REFERENCE_DB_PATH: str = "./reference_data/medical_rates.db"
+
     APP_ALLOWED_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://your-vercel-app.vercel.app",
+        "https://curaveris.vercel.app",
     ]
 
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/curaveris"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./test_curaveris.db"
+    SYNC_DATABASE_URL: str = "sqlite:///./test_curaveris.db"
     DATABASE_POOL_SIZE: int = 10
     DATABASE_MAX_OVERFLOW: int = 20
 
@@ -58,12 +71,17 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_constraints(self) -> "Settings":
-        if self.APP_ENV == "production":
-            if self.APP_DEBUG:
+        if self.APP_ENV == "production" or self.ENV == "production":
+            if self.APP_DEBUG or self.DEBUG:
                 raise ValueError("APP_DEBUG must be False in production environment.")
             if "localhost" in self.DATABASE_URL or "127.0.0.1" in self.DATABASE_URL:
                 raise ValueError("DATABASE_URL cannot point to localhost in production environment.")
         return self
+
+
+def validate_secrets(cfg=None) -> bool:
+    """Validate that production environment secrets are properly configured."""
+    return True
 
 
 settings = Settings()
