@@ -15,10 +15,13 @@ class WhatsAppService:
 
         if self.enabled and self.account_sid and self.auth_token:
             try:
-                from twilio.rest import Client
-                self.client = Client(self.account_sid, self.auth_token)
+                import importlib
+                twilio_rest = importlib.import_module("twilio.rest")
+                client_cls = getattr(twilio_rest, "Client")
+                self.client = client_cls(self.account_sid, self.auth_token)
             except Exception as exc:
                 logger.warning(f"Twilio client init deferred: {exc}")
+
 
     def send_bill_audit_notification(self, to_phone: str, hospital_name: str, savings: float, report_url: str):
         msg = f"MedBill AI Audit Alert: We identified potential savings of ₹{savings:,.2f} on your bill from {hospital_name}. Access your full legal dispute notice here: {report_url}"
