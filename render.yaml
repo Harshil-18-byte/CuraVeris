@@ -1,0 +1,79 @@
+services:
+  - type: web
+    name: curaveris-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: EVIDENCE_HMAC_SECRET
+        generateValue: true
+      - key: APP_ALLOWED_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: CELERY_RESULT_BACKEND
+        sync: false
+      - key: STORAGE_BACKEND
+        value: s3
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_BUCKET_NAME
+        sync: false
+      - key: AWS_S3_REGION
+        value: auto
+      - key: AWS_S3_ENDPOINT_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM_ADDRESS
+        value: noreply@curaveris.in
+      - key: ML_MODEL_PATH
+        value: ./ml_models
+      - key: SENTRY_DSN
+        sync: false
+
+  - type: worker
+    name: curaveris-worker
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A app.workers.celery_app.celery worker --loglevel=info -Q bill_processing,notifications,default --concurrency=2
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: CELERY_RESULT_BACKEND
+        sync: false
+      - key: EVIDENCE_HMAC_SECRET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_BUCKET_NAME
+        sync: false
+      - key: AWS_S3_ENDPOINT_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
