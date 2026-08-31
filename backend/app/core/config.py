@@ -32,8 +32,9 @@ class Settings(BaseSettings):
     APP_ALLOWED_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://your-vercel-app.vercel.app",
+        "https://cura-veris.vercel.app",
         "https://curaveris.vercel.app",
+        "https://your-vercel-app.vercel.app",
     ]
 
     DATABASE_URL: str = "sqlite+aiosqlite:///./test_curaveris.db"
