@@ -5,6 +5,8 @@ Organizes all external service keys, cryptographic secrets, database URLs,
 and integration tokens into structured, validated domains.
 """
 import os
+import base64
+import hashlib
 from typing import Optional, List
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
@@ -17,11 +19,11 @@ from pydantic_settings import BaseSettings
 class SecurityCredentials(BaseModel):
     """Cryptographic keys, JWT signing parameters, and token lifetimes."""
     secret_key: str = Field(
-        default="curaveris-dev-only-secret-key-replace-before-any-deployment-2026",
+        default="",
         description="HMAC-SHA256 signing secret for stateless JWT tokens."
     )
     encryption_key: str = Field(
-        default="QMtBT1JbfKzD_rGs4_GWvCF16hCvXADnr1I4yhiYZrw=",
+        default="",
         description="Fernet (AES-128-CBC + HMAC-SHA256) 32 url-safe base64 bytes for PII fields."
     )
     algorithm: str = Field(default="HS256", description="JWT signing algorithm.")
@@ -56,15 +58,15 @@ class DatabaseCredentials(BaseModel):
 class PaymentCredentials(BaseModel):
     """Razorpay payment gateway API keys and webhook signing secret."""
     key_id: str = Field(
-        default="rzp_test_mock_curaveris",
+        default="",
         description="Razorpay public Key ID."
     )
     key_secret: str = Field(
-        default="mock_secret_curaveris_2026",
+        default="",
         description="Razorpay private Key Secret."
     )
     webhook_secret: str = Field(
-        default="webhook_secret_curaveris_2026",
+        default="",
         description="Razorpay HMAC-SHA256 webhook verification secret."
     )
 
@@ -122,7 +124,7 @@ class ABDMCredentials(BaseModel):
 class IntegrationCredentials(BaseModel):
     """Third-party communication webhook verification tokens."""
     whatsapp_verify_token: str = Field(
-        default="curaveris_whatsapp_verify_token_2026",
+        default="",
         description="Meta WhatsApp Cloud API Webhook handshake token."
     )
     whatsapp_api_token: str = Field(
@@ -149,11 +151,11 @@ class AppCredentials(BaseSettings):
 
     # Security
     SECRET_KEY: str = Field(
-        default="curaveris-dev-only-secret-key-replace-before-any-deployment-2026",
+        default="",
         env="SECRET_KEY"
     )
     ENCRYPTION_KEY: str = Field(
-        default="Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA==",
+        default="",
         env="ENCRYPTION_KEY"
     )
     ALGORITHM: str = "HS256"
@@ -177,9 +179,9 @@ class AppCredentials(BaseSettings):
     )
 
     # Razorpay
-    RAZORPAY_KEY_ID: str = Field(default="rzp_test_mock_curaveris", env="RAZORPAY_KEY_ID")
-    RAZORPAY_KEY_SECRET: str = Field(default="mock_secret_curaveris_2026", env="RAZORPAY_KEY_SECRET")
-    RAZORPAY_WEBHOOK_SECRET: str = Field(default="webhook_secret_curaveris_2026", env="RAZORPAY_WEBHOOK_SECRET")
+    RAZORPAY_KEY_ID: str = Field(default="", env="RAZORPAY_KEY_ID")
+    RAZORPAY_KEY_SECRET: str = Field(default="", env="RAZORPAY_KEY_SECRET")
+    RAZORPAY_WEBHOOK_SECRET: str = Field(default="", env="RAZORPAY_WEBHOOK_SECRET")
 
     # Hugging Face
     HF_TOKEN: str = Field(default="", env="HF_TOKEN")
@@ -206,7 +208,7 @@ class AppCredentials(BaseSettings):
     ABDM_GATEWAY_URL: str = Field(default="https://dev.abdm.gov.in/gateway", env="ABDM_GATEWAY_URL")
 
     # WhatsApp Integration
-    WHATSAPP_VERIFY_TOKEN: str = Field(default="curaveris_whatsapp_verify_token_2026", env="WHATSAPP_VERIFY_TOKEN")
+    WHATSAPP_VERIFY_TOKEN: str = Field(default="", env="WHATSAPP_VERIFY_TOKEN")
     WHATSAPP_API_TOKEN: str = Field(default="", env="WHATSAPP_API_TOKEN")
     WHATSAPP_PHONE_NUMBER_ID: str = Field(default="", env="WHATSAPP_PHONE_NUMBER_ID")
 
@@ -294,4 +296,3 @@ class AppCredentials(BaseSettings):
 
 # Global singleton instance
 credentials = AppCredentials()
-
