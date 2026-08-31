@@ -97,7 +97,7 @@ export default function LandingPage() {
                   Audit Verification Sample
                 </span>
                 <h3 className="font-heading font-bold text-base text-neutral-900">
-                  Apollo Multispeciality Invoice #4892
+                  Tertiary Healthcare Invoice #4892
                 </h3>
               </div>
               <Badge variant="danger">HIGH RISK</Badge>
