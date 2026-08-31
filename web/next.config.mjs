@@ -8,7 +8,16 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   images: {
-    domains: ["localhost", "r2.cloudflarestorage.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
+      },
+    ],
   },
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://curaveris.onrender.com";
