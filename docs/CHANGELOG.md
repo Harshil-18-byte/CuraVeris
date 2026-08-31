@@ -8,6 +8,16 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 - `MINOR`: New features added in a backward-compatible manner.
 - `PATCH`: Bug fixes, documentation improvements, dependency updates.
 
+## [2.0.0] — 2026-08-31
+
+### Added
+
+- **Multi-Platform Next.js 14 Web Application**: Production-ready App Router web portal with authenticated dashboard, bill upload & OCR itemization, line-by-line statutory comparison, and instant legal dispute petition downloads.
+- **Comprehensive ML & DL Architecture Documentation (`MODELS.md`)**: Full architectural reference covering LayoutLMv3 Base, SentenceTransformers semantic retrieval, 32-dim multi-label XGBoost, PyTorch Deep MLP with 10-pass Monte Carlo epistemic uncertainty estimation, and INT8 ONNX mobile quantization benchmarks.
+- **Vercel Deployment & 404 Resolution Infrastructure**: Root and subproject `vercel.json` configurations, Next.js API proxy rewrites (`/api/v1/:path*`), and custom `not-found.tsx` error recovery page.
+- **Clean Documentation Standard**: Standardized documentation across all project `.md` files with zero metadata frontmatter clutter.
+- **Hardened Cloudflare R2 / AWS S3 Async Storage Adapter (`app/core/storage.py`)**: Graceful dynamic exception handling for `botocore.exceptions.ClientError`.
+
 ---
 
 ## [1.6.0] — 2026-08-30
