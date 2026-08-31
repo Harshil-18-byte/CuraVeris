@@ -1,3 +1,5 @@
+import os
+import base64
 import secrets
 import hashlib
 import hmac
@@ -9,6 +11,7 @@ from passlib.context import CryptContext
 from fastapi import HTTPException, status, Depends
 from cryptography.fernet import Fernet
 from app.core.config import settings
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
@@ -26,6 +29,18 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
+def _get_jwt_secret() -> str:
+    return (
+        getattr(settings, "JWT_SECRET_KEY", None)
+        or os.environ.get("JWT_SECRET_KEY")
+        or getattr(settings, "APP_SECRET_KEY", None)
+        or os.environ.get("APP_SECRET_KEY")
+        or getattr(settings, "SECRET_KEY", None)
+        or os.environ.get("SECRET_KEY")
+        or "curaveris_dev_runtime_jwt_seed_secret"
+    )
+
+
 def create_access_token(
     data: Optional[Dict[str, Any]] = None,
     subject: Optional[str] = None,
@@ -33,7 +48,7 @@ def create_access_token(
     expires_delta: Optional[timedelta] = None,
 ) -> str:
     """Generate an HS256 signed JWT access token."""
-    to_encode = (data or {}).copy()
+    to_encode = data.copy() if data else {}
     if subject is not None:
         to_encode["sub"] = str(subject)
     if role is not None:
@@ -50,7 +65,7 @@ def create_access_token(
         "iat": int(now.timestamp()),
         "jti": str(uuid.uuid4()),
     })
-    return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    return jwt.encode(to_encode, _get_jwt_secret(), algorithm=settings.JWT_ALGORITHM)
 
 
 def create_refresh_token() -> Tuple[str, str]:
@@ -65,14 +80,14 @@ def verify_access_token(token: str) -> Dict[str, Any]:
     try:
         payload = jwt.decode(
             token,
-            settings.JWT_SECRET_KEY,
+            _get_jwt_secret(),
             algorithms=[settings.JWT_ALGORITHM],
         )
         return payload
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials or token expired",
+            detail="Invalid, malformed, or expired token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -107,12 +122,18 @@ def compute_hmac(data: str, secret: str) -> str:
 
 
 def _get_fernet() -> Fernet:
-    key = getattr(settings, "ENCRYPTION_KEY", None) or "Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA=="
+    key = getattr(settings, "ENCRYPTION_KEY", None) or os.environ.get("ENCRYPTION_KEY")
+    if not key:
+        # Dynamically derive 32 url-safe base64 bytes for development/testing runtime
+        seed = (getattr(settings, "APP_SECRET_KEY", "") or getattr(settings, "SECRET_KEY", "") or "curaveris_dev_runtime_seed").encode()
+        derived = hashlib.sha256(seed).digest()
+        key = base64.urlsafe_b64encode(derived).decode()
     if isinstance(key, str):
         key_bytes = key.encode("utf-8")
     else:
         key_bytes = key
     return Fernet(key_bytes)
+
 
 
 def encrypt_pii(text: Optional[str]) -> Optional[str]:
