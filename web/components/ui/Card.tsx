@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   padding?: "none" | "sm" | "md" | "lg";
   accentColor?: "none" | "primary" | "success" | "warning" | "danger";
+  glass?: boolean;
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, padding = "md", accentColor = "none", children, ...props }, ref) => {
+  ({ className, padding = "md", accentColor = "none", glass = true, children, ...props }, ref) => {
     const paddingStyles = {
       none: "p-0",
       sm: "p-4",
@@ -27,7 +28,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          "bg-white rounded-card shadow-card border border-neutral-300",
+          glass ? "glass-card rounded-card" : "bg-white rounded-card shadow-card border border-neutral-300",
           paddingStyles[padding],
           accentStyles[accentColor],
           className
