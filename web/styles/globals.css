@@ -4,10 +4,11 @@
 
 @layer base {
   body {
-    background-color: #F7F7FC;
+    background-color: #F4F6FB;
     color: #1A1A2E;
     font-family: var(--font-inter), sans-serif;
     line-height: 1.6;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -19,5 +20,129 @@
     font-family: var(--font-jetbrains-mono), monospace;
     font-feature-settings: "tnum";
     font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Glassmorphism & Liquid Glass Utility Classes */
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: blur(20px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px -6px rgba(27, 79, 114, 0.09), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+  }
+
+  .glass-nav {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.03);
+  }
+
+  .glass-sidebar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.90) 0%, rgba(246, 249, 254, 0.85) 100%);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border-right: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 4px 0 24px 0 rgba(27, 79, 114, 0.03);
+  }
+
+  .glass-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.25),
+      transparent
+    );
+    transition: none;
+  }
+
+  .glass-button:hover::after {
+    left: 140%;
+    transition: left 0.75s ease-in-out;
+  }
+
+  .liquid-mesh {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .liquid-orb-1 {
+    position: absolute;
+    top: -10%;
+    right: 5%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(46, 134, 193, 0.12) 0%, rgba(46, 134, 193, 0) 70%);
+    filter: blur(60px);
+    animation: floatOrb 18s ease-in-out infinite alternate;
+  }
+
+  .liquid-orb-2 {
+    position: absolute;
+    bottom: 5%;
+    left: -5%;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(30, 132, 73, 0.08) 0%, rgba(30, 132, 73, 0) 70%);
+    filter: blur(70px);
+    animation: floatOrb 22s ease-in-out infinite alternate-reverse;
+  }
+
+  .liquid-orb-3 {
+    position: absolute;
+    top: 40%;
+    left: 30%;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(27, 79, 114, 0.07) 0%, rgba(27, 79, 114, 0) 70%);
+    filter: blur(50px);
+    animation: floatOrb 15s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  100% {
+    transform: translate(-20px, 30px) scale(0.95);
   }
 }
