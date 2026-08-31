@@ -24,6 +24,8 @@ jobs:
           python scripts/ci_security_gate.py
 
       - name: Run Curation Leak Prevention Tests
+        env:
+          PYTHONPATH: backend
         run: |
           pip install -r backend/requirements.txt
-          pytest backend/tests/test_curation_leak_prevention.py -v
+          cd backend && pytest tests/test_curation_leak_prevention.py -v
