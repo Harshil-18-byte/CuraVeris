@@ -1,19 +1,3 @@
----
-{
-  "id": "file_t3540n0t",
-  "filetype": "document",
-  "filename": "ARCHITECTURE",
-  "created_at": "2026-08-30T16:44:07.871Z",
-  "updated_at": "2026-08-30T16:44:11.659Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Technical Architecture Specification
 
 This document details the systems design, data pipelines, database schema, machine learning ensemble, and cryptographic protocols of the CuraVeris platform.
