@@ -29,7 +29,7 @@
     "@radix-ui/react-checkbox": "^1.1.0",
     "@radix-ui/react-select": "^2.1.0",
     "lucide-react": "^0.390.0",
-    "sonner": "^1.5.0"
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
