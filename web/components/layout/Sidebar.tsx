@@ -13,6 +13,7 @@ import {
   LogOut,
   Layers,
   Users,
+  Sparkles,
 } from "lucide-react";
 import { SkeletonText } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
@@ -52,12 +53,12 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 w-60 bg-white border-r border-neutral-300 flex flex-col justify-between hidden lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-30 w-60 glass-sidebar flex flex-col justify-between hidden lg:flex">
       {/* Brand Header */}
       <div>
-        <div className="h-16 flex items-center px-6 border-b border-neutral-300">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-heading font-bold text-lg">
+        <div className="h-16 flex items-center px-6 border-b border-white/60">
+          <Link href="/dashboard" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center text-white font-heading font-bold text-base shadow-[0_4px_12px_rgba(27,79,114,0.3)] group-hover:scale-105 transition-transform duration-200">
               C
             </div>
             <span className="font-heading font-bold text-xl text-neutral-900 tracking-tight">
@@ -67,7 +68,7 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Navigation List */}
-        <nav className="p-4 space-y-1">
+        <nav className="p-4 space-y-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -77,10 +78,10 @@ export const Sidebar: React.FC = () => {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center justify-between px-3 py-2.5 rounded-button text-sm font-medium transition-colors",
+                  "flex items-center justify-between px-3.5 py-2.5 rounded-button text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-primary text-white"
-                    : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                    ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-[0_4px_16px_rgba(27,79,114,0.22)] border border-white/20"
+                    : "text-neutral-600 hover:text-neutral-900 hover:bg-white/60 hover:shadow-xs"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -91,7 +92,7 @@ export const Sidebar: React.FC = () => {
                   <span
                     className={cn(
                       "px-2 py-0.5 text-xs font-semibold rounded-badge",
-                      isActive ? "bg-white text-primary" : "bg-primary text-white"
+                      isActive ? "bg-white text-primary font-bold" : "bg-primary text-white"
                     )}
                   >
                     {item.badge}
@@ -103,11 +104,11 @@ export const Sidebar: React.FC = () => {
 
           {/* Admin Section */}
           {user?.role === "admin" && (
-            <div className="pt-5 mt-4 border-t border-neutral-300">
-              <span className="px-3 text-xs font-semibold uppercase tracking-wider text-neutral-600">
+            <div className="pt-5 mt-4 border-t border-white/60">
+              <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-neutral-600/80 block mb-1.5">
                 Administration
               </span>
-              <div className="mt-2 space-y-1">
+              <div className="space-y-1">
                 {adminItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.href;
@@ -116,10 +117,10 @@ export const Sidebar: React.FC = () => {
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-button text-sm font-medium transition-colors",
+                        "flex items-center gap-3 px-3.5 py-2 rounded-button text-sm font-medium transition-all duration-200",
                         isActive
-                          ? "bg-primary text-white"
-                          : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                          ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-[0_4px_16px_rgba(27,79,114,0.22)] border border-white/20"
+                          : "text-neutral-600 hover:text-neutral-900 hover:bg-white/60 hover:shadow-xs"
                       )}
                     >
                       <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-neutral-600")} />
@@ -134,19 +135,19 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* User Profile & Logout */}
-      <div className="p-4 border-t border-neutral-300 bg-neutral-50/50">
+      <div className="p-3.5 m-3 glass-panel rounded-card">
         <div className="flex items-center justify-between">
           <div className="flex flex-col min-w-0 pr-2">
             {user ? (
               <>
-                <span className="text-sm font-medium text-neutral-900 truncate">
-                  {user.full_name || "User"}
+                <span className="text-xs font-bold text-neutral-900 truncate">
+                  {user.full_name || "Patient Account"}
                 </span>
-                <span className="text-xs text-neutral-600 truncate">{user.email}</span>
+                <span className="text-[11px] text-neutral-600 truncate">{user.email}</span>
               </>
             ) : (
               <div className="space-y-1">
-                <SkeletonText width="sm" className="h-4" />
+                <SkeletonText width="sm" className="h-3.5" />
                 <SkeletonText width="sm" className="h-3" />
               </div>
             )}
@@ -154,7 +155,7 @@ export const Sidebar: React.FC = () => {
           <button
             onClick={handleLogout}
             title="Sign Out"
-            className="p-2 text-neutral-600 hover:text-danger hover:bg-danger-surface rounded-button transition-colors"
+            className="p-1.5 text-neutral-600 hover:text-danger hover:bg-danger-surface/80 rounded-button transition-colors"
           >
             <LogOut className="w-4 h-4" />
           </button>
