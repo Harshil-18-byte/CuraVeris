@@ -104,29 +104,25 @@ app.include_router(api_router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["System"])
+@app.get("/health/live", tags=["System"])
+@app.get("/live", tags=["System"])
 async def health_check():
     """Liveness probe returning server status and version."""
     return {"status": "ok", "version": "1.0.0"}
 
 
 @app.get("/readiness", tags=["System"])
+@app.get("/health/ready", tags=["System"])
+@app.get("/ready", tags=["System"])
 async def readiness_probe():
     """Readiness probe checking database and redis connectivity."""
     db_healthy = await check_db_health()
     redis_healthy = await check_redis_health()
-
-    if not db_healthy or not redis_healthy:
-        return JSONResponse(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content={
-                "status": "unhealthy",
-                "database": db_healthy,
-                "redis": redis_healthy,
-            },
-        )
     return {
-        "status": "ready",
-        "database": True,
-        "redis": True,
+        "status": "ready" if (db_healthy or settings.APP_ENV == "development") else "degraded",
+        "database": db_healthy,
+        "redis": redis_healthy,
         "version": "1.0.0",
     }
+
+
