@@ -826,13 +826,14 @@ For async document OCR, rule execution, and ML inference:
 ### 3. Serverless Services & Connection Strings
 
 - **Neon PostgreSQL Database**:
-  - Async Driver URL: `postgresql+asyncpg://neondb_owner:<neon_password>@ep-odd-wave-ax9dv3ka-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require`
-  - Sync / Celery Backend URL: `postgresql://neondb_owner:<neon_password>@ep-odd-wave-ax9dv3ka-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require`
+  - Async Driver URL: `postgresql+asyncpg://neondb_owner:<neon_password>@ep-placeholder-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require`
+  - Sync / Celery Backend URL: `postgresql://neondb_owner:<neon_password>@ep-placeholder-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require`
 - **Upstash Redis**:
-  - Connection URL: `rediss://default:<upstash_token>@becoming-kingfish-192595.upstash.io:6379`
+  - Connection URL: `rediss://default:<upstash_token>@placeholder-redis.upstash.io:6379`
 - **Resend Email API**:
   - API Key: `re_placeholder_api_key`
   - Default Sender: `onboarding@resend.dev`
+
 
 ### 4. Neon Database Automated PR Branching (CI/CD)
 
