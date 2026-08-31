@@ -8,7 +8,9 @@ class RegisterRequest(BaseModel):
     phone_number: Optional[str] = None
     password: str = Field(..., min_length=8)
     full_name: str = Field(..., min_length=2, max_length=255)
-    dpdp_consent: bool = Field(..., description="Consent to processing under DPDP Act 2023")
+    role: Optional[str] = "PATIENT"
+    dpdp_consent: bool = Field(default=True, description="Consent to processing under DPDP Act 2023")
+
 
     @field_validator("password")
     @classmethod
