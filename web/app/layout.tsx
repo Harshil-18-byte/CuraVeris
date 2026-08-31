@@ -9,6 +9,7 @@ const sora = Sora({
   weight: ["400", "600", "700"],
   variable: "--font-sora",
   display: "swap",
+  fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
 
 const inter = Inter({
@@ -16,6 +17,7 @@ const inter = Inter({
   weight: ["400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
+  fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -23,6 +25,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
   variable: "--font-jetbrains-mono",
   display: "swap",
+  fallback: ["monospace"],
 });
 
 export const metadata: Metadata = {
