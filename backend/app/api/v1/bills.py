@@ -263,6 +263,51 @@ async def get_bill_status(
     )
 
 
+@router.post("/benchmark-check")
+async def check_benchmark_item(payload: dict):
+    """Quick lookup of an item against CGHS, NPPA, and DPCO."""
+    from app.db.reference_data import query_cghs_rate, query_nppa_device, query_dpco_drug, is_irdai_non_payable
+    item_name = payload.get("item_name", "")
+    cghs = query_cghs_rate(item_name)
+    nppa = query_nppa_device(item_name)
+    dpco = query_dpco_drug(item_name)
+    irdai = is_irdai_non_payable(item_name)
+
+    return {
+        "item_name": item_name,
+        "cghs_benchmark": cghs,
+        "nppa_device_ceiling": nppa,
+        "dpco_drug_ceiling": dpco,
+        "irdai_non_payable_status": irdai,
+    }
+
+
+@router.get("/recent")
+async def get_recent_bills(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Returns recent bills for the authenticated user."""
+    stmt = (
+        select(Bill)
+        .where(and_(Bill.user_id == current_user.id, Bill.deleted_at.is_(None)))
+        .order_by(Bill.created_at.desc())
+        .limit(5)
+    )
+    result = await db.execute(stmt)
+    bills = result.scalars().all()
+    return [
+        {
+            "id": str(b.id),
+            "hospital_name": b.hospital_name,
+            "total_amount": float(b.total_amount) if b.total_amount else 0.0,
+            "status": b.processing_status,
+            "created_at": b.created_at.isoformat() if b.created_at else None,
+        }
+        for b in bills
+    ]
+
+
 @router.delete("/{bill_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_bill(
     bill_id: UUID,
@@ -281,6 +326,7 @@ async def delete_bill(
     bill.deleted_at = datetime.now(timezone.utc)
     await db.commit()
     return None
+
 
 
 @router.websocket("/ws/{bill_id}/status")
