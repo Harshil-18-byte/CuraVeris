@@ -24,16 +24,15 @@ jobs:
         run: |
           pip install --no-cache-dir -r backend/requirements.txt
           pip install --no-cache-dir ruff pytest pytest-asyncio httpx
+          pip install --no-cache-dir -e backend
       - name: Run Tests
         env:
           ENV: testing
           DEBUG: "False"
-          SECRET_KEY: ci-test-secret-key-replace-before-any-deployment-2026
-          ENCRYPTION_KEY: Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA==
           DATABASE_URL: sqlite+aiosqlite:///./test_curaveris.db
           SYNC_DATABASE_URL: sqlite:///./test_curaveris.db
           REFERENCE_DB_PATH: ./reference_data/medical_rates.db
-          PYTHONPATH: backend
+          PYTHONPATH: backend:.
         run: cd backend && pytest --tb=short -q --no-header
       - name: Lint and Format Check
         run: |
