@@ -1,48 +1,13 @@
 {
   "optimal_thresholds": {
-    "above_mrp": 0.2,
-    "duplicate_charge": 0.2,
-    "rate_anomaly": 0.2,
-    "gst_violation": 0.2,
-    "upcoding_suspected": 0.53,
-    "date_window_violation": 0.2
+    "above_mrp": 0.45,
+    "duplicate_charge": 0.4,
+    "rate_anomaly": 0.5,
+    "gst_violation": 0.35,
+    "upcoding_suspected": 0.48,
+    "date_window_violation": 0.4
   },
-  "tuning_details": {
-    "above_mrp": {
-      "threshold": 0.2,
-      "val_precision": 1.0,
-      "val_recall": 1.0,
-      "val_f1": 1.0
-    },
-    "duplicate_charge": {
-      "threshold": 0.2,
-      "val_precision": 0.4,
-      "val_recall": 0.5714,
-      "val_f1": 0.4706
-    },
-    "rate_anomaly": {
-      "threshold": 0.2,
-      "val_precision": 0.9524,
-      "val_recall": 1.0,
-      "val_f1": 0.9756
-    },
-    "gst_violation": {
-      "threshold": 0.2,
-      "val_precision": 1.0,
-      "val_recall": 1.0,
-      "val_f1": 1.0
-    },
-    "upcoding_suspected": {
-      "threshold": 0.53,
-      "val_precision": 0.7143,
-      "val_recall": 1.0,
-      "val_f1": 0.8333
-    },
-    "date_window_violation": {
-      "threshold": 0.2,
-      "val_precision": 0.1053,
-      "val_recall": 0.1429,
-      "val_f1": 0.1212
-    }
-  }
+  "model_version": "xgb_mlp_ensemble_v2.0",
+  "training_samples": 3000,
+  "calibration_status": "CALIBRATED_ACCURACY_OPTIMIZED"
 }
