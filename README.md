@@ -499,14 +499,16 @@ Web Application Portal: `http://localhost:3000`
 
 | Command | Directory | Description |
 | :--- | :--- | :--- |
-| `npm run dev` | Root or `web/` | Starts Next.js frontend development server. |
+| `npm run dev` | Root or `web/` | Starts Next.js 14 frontend development server (`http://localhost:3000`). |
 | `npm run build` | Root or `web/` | Generates production Next.js optimized bundle. |
-| `uvicorn app.main:app --reload` | `backend/` | Starts the FastAPI server with hot-reload. |
-| `celery -A app.workers.celery_app.celery worker -l info -Q bill_processing,notifications,default` | `backend/` | Runs async OCR and audit processing workers. |
+| `uvicorn app.main:app --reload` | `backend/` | Starts the FastAPI server with hot-reload (`http://localhost:8000`). |
+| `celery -A app.workers.celery_app worker -l info -Q bill_processing,notifications,default --pool=solo` | `backend/` | Runs async OCR, ML inference, and audit processing workers. |
 | `alembic upgrade head` | `backend/` | Applies latest database schema migrations. |
 | `python ml_training/run_real_production_training.py` | `backend/` | Trains all 6 hybrid ML models with statutory calibration. |
 | `pytest -v` | `backend/` | Runs test suites across API, security hardening, ML models, and financial invariants. |
+| `python scripts/ci_security_gate.py` | Root | Runs the CI Security Gate for PII and internal ID protection. |
 | `git lfs pull` | Root | Downloads all large binary model weights (`.pt`, `.onnx`, `.safetensors`, `.ubj`) and SQLite DBs. |
+
 
 ---
 
