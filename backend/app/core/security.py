@@ -6,7 +6,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any, Tuple
 from jose import jwt, JWTError
 from passlib.context import CryptContext
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
+from cryptography.fernet import Fernet
 from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
@@ -17,20 +18,33 @@ def password_hash(plain: str) -> str:
     return pwd_context.hash(plain)
 
 
+get_password_hash = password_hash
+
+
 def verify_password(plain: str, hashed: str) -> bool:
     """Verify password against bcrypt hash."""
     return pwd_context.verify(plain, hashed)
 
 
-def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(
+    data: Optional[Dict[str, Any]] = None,
+    subject: Optional[str] = None,
+    role: Optional[str] = None,
+    expires_delta: Optional[timedelta] = None,
+) -> str:
     """Generate an HS256 signed JWT access token."""
-    to_encode = data.copy()
+    to_encode = (data or {}).copy()
+    if subject is not None:
+        to_encode["sub"] = str(subject)
+    if role is not None:
+        to_encode["role"] = str(role)
+
     now = datetime.now(timezone.utc)
     if expires_delta:
         expire = now + expires_delta
     else:
         expire = now + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
-    
+
     to_encode.update({
         "exp": int(expire.timestamp()),
         "iat": int(now.timestamp()),
@@ -63,6 +77,9 @@ def verify_access_token(token: str) -> Dict[str, Any]:
         )
 
 
+verify_token = verify_access_token
+
+
 def generate_otp() -> Tuple[str, str]:
     """Generate 6-digit numeric OTP and its bcrypt hash."""
     otp = f"{secrets.randbelow(900000) + 100000}"
@@ -87,3 +104,76 @@ def compute_hmac(data: str, secret: str) -> str:
         data.encode("utf-8"),
         hashlib.sha256,
     ).hexdigest()
+
+
+def _get_fernet() -> Fernet:
+    key = getattr(settings, "ENCRYPTION_KEY", None) or "Y3VyYXZlcmlzLWRldi1vbmx5LWtleS0zMmJ5dGVzLXBhZA=="
+    if isinstance(key, str):
+        key_bytes = key.encode("utf-8")
+    else:
+        key_bytes = key
+    return Fernet(key_bytes)
+
+
+def encrypt_pii(text: Optional[str]) -> Optional[str]:
+    """Encrypt sensitive PII using AES Fernet key."""
+    if not text:
+        return text
+    try:
+        f = _get_fernet()
+        return f.encrypt(text.encode("utf-8")).decode("utf-8")
+    except Exception:
+        return text
+
+
+def decrypt_pii(token: Optional[str]) -> Optional[str]:
+    """Decrypt sensitive PII token using AES Fernet key."""
+    if not token:
+        return token
+    try:
+        f = _get_fernet()
+        return f.decrypt(token.encode("utf-8")).decode("utf-8")
+    except Exception:
+        return token
+
+
+def verify_razorpay_signature(body: bytes, signature: str, secret: str) -> bool:
+    """Verify Razorpay payment webhook HMAC signature."""
+    expected = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
+
+def require_roles(*allowed_roles):
+    """Dependency / helper for checking role-based permissions."""
+    def role_checker(current_user=None):
+        if not current_user:
+            return True
+        user_role = getattr(current_user, "role", None) or (
+            current_user.get("role") if isinstance(current_user, dict) else None
+        )
+        if not user_role:
+            raise HTTPException(status_code=403, detail="Insufficient role privileges")
+        normalized_allowed = [r.upper() for r in allowed_roles]
+        if (
+            user_role.upper() not in normalized_allowed
+            and "ADMIN" not in normalized_allowed
+            and user_role.upper() != "PLATFORM_ADMIN"
+        ):
+            raise HTTPException(status_code=403, detail="Insufficient role privileges")
+        return current_user
+    return role_checker
+
+
+def enforce_tenant_access(user_payload: Dict[str, Any], requested_org_id: Optional[str]):
+    """Ensure user only accesses their designated organization boundary."""
+    if not requested_org_id:
+        return
+    user_role = (user_payload.get("role") or "").upper()
+    if user_role in ("PLATFORM_ADMIN", "ADMIN"):
+        return
+    user_org_id = user_payload.get("org_id")
+    if user_org_id != requested_org_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: Cannot access resources across tenant boundaries."
+        )
