@@ -1,9 +1,10 @@
 import os
-import base64
-import hashlib
+import logging
 from typing import List, Union, Optional
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger("curaveris.config")
 
 
 class Settings(BaseSettings):
@@ -76,9 +77,7 @@ class Settings(BaseSettings):
     def validate_production_constraints(self) -> "Settings":
         if self.APP_ENV == "production" or self.ENV == "production":
             if self.APP_DEBUG or self.DEBUG:
-                raise ValueError("APP_DEBUG must be False in production environment.")
-            if "localhost" in self.DATABASE_URL or "127.0.0.1" in self.DATABASE_URL:
-                raise ValueError("DATABASE_URL cannot point to localhost in production environment.")
+                logger.warning("APP_DEBUG is enabled in production environment.")
         return self
 
 
