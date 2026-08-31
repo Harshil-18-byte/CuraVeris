@@ -483,7 +483,7 @@ flowchart TD
 ```
 
 ### 1. Database Tier: Neon Serverless PostgreSQL
-- **Connection Pooling**: Managed via `ep-odd-wave-ax9dv3ka-pooler.c-4.us-east-2.aws.neon.tech` with async SQLAlchemy 2.0 (`asyncpg` driver).
+- **Connection Pooling**: Managed via `ep-placeholder-pooler.c-4.us-east-2.aws.neon.tech` with async SQLAlchemy 2.0 (`asyncpg` driver).
 - **PR Database Branching**: Integrated via GitHub Actions (`neondatabase/create-branch-action@v6`) allowing instant zero-copy schema forks for each pull request.
 
 ### 2. Message Broker & Background Tasks: Upstash Redis & Celery
