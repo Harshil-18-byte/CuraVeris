@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "cd web && npm install && npm run build",
+  "outputDirectory": "web/.next",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://curaveris.onrender.com/api/v1/:path*"
+    }
+  ]
+}
