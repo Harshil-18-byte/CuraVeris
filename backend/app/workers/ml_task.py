@@ -11,7 +11,7 @@ from app.core.redis import publish
 from app.models.bill import Bill, BillLineItem
 from app.models.audit import Audit, AuditFinding
 from app.audit_engine.ml.features import extract_features
-from app.audit_engine.ml.ensemble import predict_risk_ensemble
+from app.audit_engine.ml.ensemble import predict_risk_ensemble, get_loaded_xgb_booster
 from app.audit_engine.ml.explainer import explain_prediction
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,9 @@ async def _run_ml_async(bill_id_str: str) -> str:
             deterministic_violation_count=len(findings),
         )
 
-        shap_expls = explain_prediction(features=features_vec)
+        xgb_inst = get_loaded_xgb_booster()
+        shap_expls = explain_prediction(features=features_vec, xgb_model=xgb_inst)
+
 
         audit.risk_score = Decimal(str(round(score, 4)))
         audit.risk_label = label
