@@ -64,33 +64,35 @@ export const TopBar: React.FC = () => {
 
   return (
     <>
-      <header className="fixed top-0 right-0 left-0 lg:left-60 h-16 bg-white border-b border-neutral-300 z-20 flex items-center justify-between px-4 sm:px-6">
+      <header className="fixed top-0 right-0 left-0 lg:left-60 h-16 glass-nav z-20 flex items-center justify-between px-4 sm:px-6">
         {/* Left: Mobile Toggle & Breadcrumbs */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-button transition-colors"
+            className="lg:hidden p-2 text-neutral-600 hover:text-neutral-900 hover:bg-white/80 rounded-button transition-colors"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-neutral-600 hidden sm:inline">
+          {/* Breadcrumb Capsule */}
+          <div className="flex items-center gap-2 px-3 py-1 bg-white/60 border border-white/80 rounded-badge shadow-2xs backdrop-blur-xs">
+            <span className="text-xs font-semibold text-primary">
               CuraVeris
             </span>
-            <span className="text-neutral-300 hidden sm:inline">/</span>
-            <span className="text-sm font-semibold text-neutral-900 truncate">
+            <span className="text-neutral-300 text-xs">/</span>
+            <span className="text-xs font-bold text-neutral-900 truncate">
               {getBreadcrumbs()}
             </span>
           </div>
         </div>
 
         {/* Right Action Icons & Badges */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* Compliance indicator */}
-          <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-success-surface border border-success/20 rounded-badge text-xs font-semibold text-success">
+        <div className="flex items-center gap-2.5 sm:gap-3.5">
+          {/* DPDP Compliance Indicator */}
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-success-surface/80 border border-success/30 rounded-badge text-xs font-semibold text-success shadow-2xs backdrop-blur-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>DPDP Act 2023</span>
           </div>
@@ -98,20 +100,20 @@ export const TopBar: React.FC = () => {
           {/* Notifications Icon with Unread Badge */}
           <Link
             href="/notifications"
-            className="relative p-2 text-neutral-600 hover:text-primary hover:bg-primary-surface rounded-button transition-colors"
+            className="relative p-2 text-neutral-600 hover:text-primary hover:bg-white/80 border border-transparent hover:border-white/80 rounded-button transition-all duration-200 shadow-2xs"
             title="Notifications"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 px-1.5 py-0.5 min-w-[18px] text-[10px] font-bold text-white bg-primary rounded-full flex items-center justify-center">
+              <span className="absolute top-1 right-1 px-1.5 py-0.5 min-w-[17px] text-[9px] font-bold text-white bg-primary rounded-full flex items-center justify-center shadow-xs">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
           </Link>
 
-          {/* User initials avatar */}
+          {/* User Avatar */}
           <Link href="/account" className="flex items-center gap-2" title="My Account">
-            <div className="w-8 h-8 rounded-full bg-primary-surface border border-primary/20 flex items-center justify-center text-primary font-heading font-bold text-xs">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-primary-light border-2 border-white text-white flex items-center justify-center font-heading font-bold text-xs shadow-[0_2px_8px_rgba(27,79,114,0.25)] hover:scale-105 transition-transform duration-200">
               {user?.full_name?.charAt(0).toUpperCase() || "U"}
             </div>
           </Link>
@@ -123,13 +125,13 @@ export const TopBar: React.FC = () => {
         <div className="fixed inset-0 z-40 lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-neutral-900/40 backdrop-blur-xs"
+            className="fixed inset-0 bg-neutral-900/30 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Drawer Menu */}
-          <div className="fixed top-16 left-0 bottom-0 w-64 bg-white border-r border-neutral-300 p-4 flex flex-col justify-between overflow-y-auto animate-in slide-in-from-left duration-200">
-            <nav className="space-y-1">
+          <div className="fixed top-16 left-0 bottom-0 w-64 glass-sidebar p-4 flex flex-col justify-between overflow-y-auto animate-in slide-in-from-left duration-200">
+            <nav className="space-y-1.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive =
@@ -140,10 +142,10 @@ export const TopBar: React.FC = () => {
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center justify-between px-3 py-2.5 rounded-button text-sm font-medium transition-colors",
+                      "flex items-center justify-between px-3.5 py-2.5 rounded-button text-sm font-medium transition-all duration-200",
                       isActive
-                        ? "bg-primary text-white"
-                        : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                        ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-[0_4px_16px_rgba(27,79,114,0.22)] border border-white/20"
+                        : "text-neutral-600 hover:text-neutral-900 hover:bg-white/60 hover:shadow-xs"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -154,7 +156,7 @@ export const TopBar: React.FC = () => {
                       <span
                         className={cn(
                           "px-2 py-0.5 text-xs font-semibold rounded-badge",
-                          isActive ? "bg-white text-primary" : "bg-primary text-white"
+                          isActive ? "bg-white text-primary font-bold" : "bg-primary text-white"
                         )}
                       >
                         {item.badge}
@@ -165,8 +167,8 @@ export const TopBar: React.FC = () => {
               })}
 
               {user?.role === "admin" && (
-                <div className="pt-4 mt-3 border-t border-neutral-300">
-                  <span className="px-3 text-xs font-semibold uppercase tracking-wider text-neutral-600 block mb-2">
+                <div className="pt-4 mt-3 border-t border-white/60">
+                  <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-neutral-600/80 block mb-2">
                     Administration
                   </span>
                   {adminItems.map((item) => {
@@ -178,10 +180,10 @@ export const TopBar: React.FC = () => {
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-button text-sm font-medium transition-colors",
+                          "flex items-center gap-3 px-3.5 py-2 rounded-button text-sm font-medium transition-all duration-200",
                           isActive
-                            ? "bg-primary text-white"
-                            : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                            ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-[0_4px_16px_rgba(27,79,114,0.22)] border border-white/20"
+                            : "text-neutral-600 hover:text-neutral-900 hover:bg-white/60 hover:shadow-xs"
                         )}
                       >
                         <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-neutral-600")} />
@@ -193,14 +195,14 @@ export const TopBar: React.FC = () => {
               )}
             </nav>
 
-            <div className="pt-4 border-t border-neutral-300">
+            <div className="pt-4 border-t border-white/60">
               <button
                 type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-danger hover:bg-danger-surface rounded-button transition-colors"
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-danger hover:bg-danger-surface/80 rounded-button transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sign Out</span>
