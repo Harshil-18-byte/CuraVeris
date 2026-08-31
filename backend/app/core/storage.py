@@ -2,6 +2,12 @@ import asyncio
 from typing import BinaryIO, Dict, Any, Optional
 from app.core.config import settings
 
+try:
+    from botocore.exceptions import ClientError
+except ImportError:
+    class ClientError(Exception):  # type: ignore[no-redef]
+        pass
+
 SUPPORTED_MAGIC_BYTES = {
     "pdf": b"%PDF",             # 25 50 44 46
     "png": b"\x89PNG",          # 89 50 4e 47
