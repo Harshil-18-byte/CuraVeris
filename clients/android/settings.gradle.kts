@@ -4,15 +4,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-    includeBuild("../mobile/node_modules/@react-native/gradle-plugin")
-}
-
-plugins {
-    id("com.facebook.react.settings")
-}
-
-extensions.configure<com.facebook.react.ReactSettingsExtension> {
-    autolinkLibrariesFromCommand()
 }
 
 dependencyResolutionManagement {
@@ -20,7 +11,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("../mobile/node_modules/react-native/android") }
     }
 }
 
