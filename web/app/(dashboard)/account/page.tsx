@@ -2,211 +2,222 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Mail, Phone, Lock, Trash2, LogOut, AlertTriangle, CheckCircle2 } from "lucide-react";
+import {
+  User as UserIcon,
+  ShieldCheck,
+  Lock,
+  Trash2,
+  Phone,
+  Mail,
+  Calendar,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
+import { toast } from "sonner";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
+import { Modal } from "@/components/ui/Modal";
 import { useAuthStore } from "@/store/authStore";
-import { api, apiClient } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 export default function AccountPage() {
   const router = useRouter();
-  const { user, setUser, logout } = useAuthStore();
-  const [fullName, setFullName] = useState(user?.full_name || "");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "");
-  const [isSaving, setIsSaving] = useState(false);
-  const [successMsg, setSuccessMsg] = useState(false);
-  const [isAnonymizing, setIsAnonymizing] = useState(false);
-  const [showAnonymizeConfirm, setShowAnonymizeConfirm] = useState(false);
-  const [anonymizeError, setAnonymizeError] = useState<string | null>(null);
+  const { user, logout } = useAuthStore();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
-    setSuccessMsg(false);
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
     try {
-      const updated = await api.users.updateMe({
-        full_name: fullName,
-        phone_number: phoneNumber,
-      });
-      setUser({ ...user!, ...updated });
-      setSuccessMsg(true);
-      setTimeout(() => setSuccessMsg(false), 3000);
-    } catch {
-      alert("Failed to update profile details.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleAnonymize = async () => {
-    setIsAnonymizing(true);
-    setAnonymizeError(null);
-    try {
-      await apiClient.post("/auth/anonymize-me");
+      await api.auth.deleteAccount();
+      toast.success("Your account and all associated bills have been permanently deleted.");
       logout();
       router.replace("/login");
-    } catch (err: any) {
-      setAnonymizeError(err?.response?.data?.detail || "Failed to anonymize account.");
-      setIsAnonymizing(false);
+    } catch {
+      toast.error("Failed to delete account. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
-  };
-
-  const handleLogout = () => {
-    logout();
-    router.replace("/login");
   };
 
   return (
     <PageShell
-      title="Account Settings"
-      description="Manage your profile credentials, privacy preferences, and DPDP statutory data rights."
-      action={
-        <Button variant="outline" size="sm" onClick={handleLogout}>
-          <LogOut className="w-4 h-4 mr-1.5" />
-          Sign Out
-        </Button>
-      }
+      title="Profile & Settings"
+      description="Manage your personal contact details, security credentials, and DPDP privacy settings."
     >
-      <div className="max-w-2xl space-y-6">
-        {/* Personal Information Form */}
-        <form onSubmit={handleUpdate}>
-          <Card padding="lg" className="space-y-4">
-            <h3 className="font-heading font-bold text-base text-neutral-900">
-              Personal Information
-            </h3>
-
-            {successMsg && (
-              <div className="p-3 bg-success-surface border border-success/20 rounded-button text-xs text-success font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Profile updated successfully.</span>
-              </div>
-            )}
-
-            <div className="space-y-4 pt-1">
-              <Input
-                label="Full Name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-
-              <Input
-                label="Email Address"
-                value={user?.email || ""}
-                disabled
-                hint="Your email address is verified and serves as your primary login identifier."
-              />
-
-              <Input
-                label="Mobile Phone Number"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                leftAddon={<span className="font-semibold text-neutral-600 text-xs">+91</span>}
-                placeholder="10-digit mobile number"
-              />
-            </div>
-
-            <div className="pt-3 border-t border-neutral-300 flex justify-end">
-              <Button type="submit" size="md" isLoading={isSaving}>
-                Save Changes
-              </Button>
-            </div>
-          </Card>
-        </form>
-
-        {/* Statutory DPDP Act 2023 Compliance Card */}
-        <Card padding="lg" className="space-y-4">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-success" />
-            <h3 className="font-heading font-bold text-base text-neutral-900">
-              Statutory Data Protection & Consent Status
-            </h3>
+      <div className="space-y-6 max-w-4xl">
+        {/* 1. PROFILE OVERVIEW CARD */}
+        <Card padding="lg" className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          {/* 64px Avatar */}
+          <div className="w-16 h-16 rounded-full bg-brand-primary text-white flex items-center justify-center font-heading font-bold text-2xl flex-shrink-0 shadow-sm">
+            {user?.full_name?.charAt(0).toUpperCase() || "U"}
           </div>
 
-          <p className="text-xs text-neutral-600 font-body leading-relaxed">
-            Your medical billing records, OCR extractions, and Section 65B Merkle certificates are processed in full compliance with the Digital Personal Data Protection (DPDP) Act, 2023.
-          </p>
+          <div className="flex-1 text-center sm:text-left space-y-1">
+            <h3 className="font-heading font-bold text-xl text-text-primary">
+              {user?.full_name || "Patient Account"}
+            </h3>
+            <p className="text-xs text-text-secondary">{user?.email}</p>
 
-          <div className="space-y-2.5 pt-2 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-neutral-600">Consent Status:</span>
-              <Badge variant="success">CONSENT VERIFIED & ACTIVE</Badge>
-            </div>
+            <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-success-bg border border-success/20 rounded-full text-xs font-medium text-success">
+                <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span>DPDP 2023 Protected Account</span>
+              </div>
 
-            <div className="flex items-center justify-between border-t border-neutral-300 pt-2">
-              <span className="text-neutral-600">Account Role:</span>
-              <Badge variant={user?.role === "admin" ? "primary" : "secondary"}>
-                {user?.role ? user.role.toUpperCase() : "PATIENT"}
-              </Badge>
-            </div>
-
-            <div className="flex items-center justify-between border-t border-neutral-300 pt-2">
-              <span className="text-neutral-600">Account Member Since:</span>
-              <span className="font-medium text-neutral-900">{formatDate(user?.created_at)}</span>
+              {user?.role === "admin" && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-accent-light rounded-full text-xs font-semibold text-brand-accent">
+                  Administrator
+                </div>
+              )}
             </div>
           </div>
         </Card>
 
-        {/* DPDP Right to Erasure / Danger Zone */}
-        <Card padding="lg" accentColor="danger" className="space-y-4">
-          <div>
-            <h3 className="font-heading font-bold text-base text-danger flex items-center gap-2">
-              <Trash2 className="w-4 h-4" />
-              DPDP Act 2023 Section 12 — Right to Erasure
-            </h3>
-            <p className="text-xs text-neutral-600 mt-1 font-body leading-relaxed">
-              You can exercise your statutory right to erasure. This permanently anonymizes your personal identifiers and audit records.
+        {/* 2. ACCOUNT INFORMATION */}
+        <Card padding="lg" className="space-y-4">
+          <div className="border-b border-border-subtle pb-3">
+            <h4 className="font-heading font-semibold text-base text-text-primary">
+              Personal Information
+            </h4>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Contact details used for dispute letters and status updates
             </p>
           </div>
 
-          {anonymizeError && (
-            <div className="p-3 bg-danger-surface border border-danger/20 rounded-button text-xs text-danger">
-              {anonymizeError}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
+              <span className="text-text-tertiary flex items-center gap-1.5">
+                <UserIcon className="w-3.5 h-3.5" strokeWidth={1.5} />
+                Full Name
+              </span>
+              <p className="font-semibold text-sm text-text-primary">{user?.full_name || "—"}</p>
             </div>
-          )}
 
-          {showAnonymizeConfirm ? (
-            <div className="p-4 bg-danger-surface/50 border border-danger/30 rounded-card space-y-3">
-              <div className="flex items-start gap-2.5 text-xs text-danger font-medium">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span>
-                  Are you sure? This action is irreversible and will permanently delete your identity and sign you out immediately.
-                </span>
-              </div>
-              <div className="flex items-center gap-3 pt-2">
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={handleAnonymize}
-                  isLoading={isAnonymizing}
-                >
-                  Yes, Anonymize My Account
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowAnonymizeConfirm(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
+            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
+              <span className="text-text-tertiary flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
+                Email Address
+              </span>
+              <p className="font-semibold text-sm text-text-primary">{user?.email || "—"}</p>
             </div>
-          ) : (
-            <div className="pt-2 border-t border-neutral-300 flex justify-end">
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setShowAnonymizeConfirm(true)}
-              >
-                Anonymize My Account
-              </Button>
+
+            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
+              <span className="text-text-tertiary flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5" strokeWidth={1.5} />
+                Mobile Number
+              </span>
+              <p className="font-semibold text-sm text-text-primary">
+                {user?.phone_number ? `+91 ${user.phone_number}` : "Not linked"}
+              </p>
             </div>
-          )}
+
+            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
+              <span className="text-text-tertiary flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
+                Account Created On
+              </span>
+              <p className="font-semibold text-sm text-text-primary">
+                {user?.created_at ? formatDate(user.created_at) : "Recent"}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* 3. SECURITY & PRIVACY */}
+        <Card padding="lg" className="space-y-4">
+          <div className="border-b border-border-subtle pb-3">
+            <h4 className="font-heading font-semibold text-base text-text-primary">
+              Security & DPDP Privacy Rights
+            </h4>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Under India&apos;s DPDP Act 2023, you have full control over your health records.
+            </p>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-md">
+              <div>
+                <span className="font-semibold text-text-primary block">Right to Information</span>
+                <span className="text-text-secondary">Your data is only processed to find bill overcharges.</span>
+              </div>
+              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" strokeWidth={1.5} />
+            </div>
+
+            <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-md">
+              <div>
+                <span className="font-semibold text-text-primary block">Right to Correction & Erasure</span>
+                <span className="text-text-secondary">You may permanently delete your data at any time.</span>
+              </div>
+              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" strokeWidth={1.5} />
+            </div>
+          </div>
+        </Card>
+
+        {/* 4. DANGER ZONE */}
+        <Card padding="lg" className="border-danger/30 space-y-4">
+          <div className="border-b border-border-subtle pb-3">
+            <h4 className="font-heading font-semibold text-base text-danger">
+              Danger Zone
+            </h4>
+            <p className="text-xs text-text-secondary mt-0.5">
+              Permanent account actions that cannot be undone
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="text-xs text-text-secondary">
+              <strong className="text-text-primary block">Close and delete account</strong>
+              Permanently delete all your uploaded bills, audit reports, and personal details.
+            </div>
+
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="flex-shrink-0"
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
+              Close My Account
+            </Button>
+          </div>
         </Card>
       </div>
+
+      {/* Delete Account Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Are you sure you want to delete your account?"
+        description="This action is immediate and cannot be undone. All your bills, dispute notices, and financial analysis will be permanently erased."
+      >
+        <div className="p-3.5 bg-danger-bg rounded-md text-xs text-danger mb-4 flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+          <span>Under the DPDP Act 2023, all your encrypted files and database records will be erased immediately.</span>
+        </div>
+
+        <div className="flex gap-2 justify-end">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => setIsDeleteModalOpen(false)}
+            disabled={isDeleting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            size="md"
+            onClick={handleDeleteAccount}
+            isLoading={isDeleting}
+          >
+            Permanently Delete
+          </Button>
+        </div>
+      </Modal>
     </PageShell>
   );
 }
