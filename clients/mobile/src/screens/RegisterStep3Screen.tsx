@@ -129,7 +129,7 @@ export function RegisterStep3Screen({
                 activeOpacity={0.8}
               >
                 <View style={[styles.checkbox, dpdpConsent && styles.checkedBox]}>
-                  {dpdpConsent && <Text style={styles.checkMark}>✓</Text>}
+                  {dpdpConsent && <View style={{ width: 10, height: 10, backgroundColor: '#fff', borderRadius: 2 }} />}
                 </View>
                 <Text style={styles.checkboxLabel}>
                   I agree to the Privacy Policy and consent to data processing under the DPDP Act 2023.
