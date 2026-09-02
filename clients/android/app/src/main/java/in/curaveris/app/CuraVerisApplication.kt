@@ -1,11 +1,11 @@
-package in.curaveris.app
+package `in`.curaveris.app
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import in.curaveris.app.core.network.NetworkMonitor
-import in.curaveris.app.core.storage.SecureStorage
+import `in`.curaveris.app.core.network.NetworkMonitor
+import `in`.curaveris.app.core.storage.SecureStorage
 
 /**
  * Global Application Lifecycle & Component Initializer.
