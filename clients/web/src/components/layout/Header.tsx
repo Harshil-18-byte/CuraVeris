@@ -8,6 +8,11 @@ import { useAuth } from '../../hooks/useAuth';
 export function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navLinks = [
     { label: 'Overview', href: '/' },
@@ -93,7 +98,7 @@ export function Header() {
 
         {/* User Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {isAuthenticated ? (
+          {mounted && isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span className="badge badge-completed" style={{ fontSize: '11px' }}>
                 {user?.role || 'ADVOCATE'}
