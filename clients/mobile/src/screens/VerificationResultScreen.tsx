@@ -53,7 +53,7 @@ export function VerificationResultScreen({
           <Text style={styles.responsibilityAmount}>
             ₹{verifiedResponsibility.toLocaleString('en-IN')}
           </Text>
-          <Text style={styles.confidenceText}>✓ {confidence}</Text>
+          <Text style={styles.confidenceText}>{confidence}</Text>
         </View>
 
         {/* Authoritative Financial Reconciliation Flow */}
@@ -97,7 +97,7 @@ export function VerificationResultScreen({
           {unexplainedVariance > 0 && (
             <View style={styles.mismatchBanner}>
               <Text style={styles.mismatchTitle}>
-                ⚠ ₹{unexplainedVariance.toLocaleString('en-IN')} needs clarification
+                ₹{unexplainedVariance.toLocaleString('en-IN')} needs clarification
               </Text>
               <Text style={styles.mismatchBody}>
                 Hospital requested amount exceeds statutory rate ceilings on medical implants and infection control kits.
