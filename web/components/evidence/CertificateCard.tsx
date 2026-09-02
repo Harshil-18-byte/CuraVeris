@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Copy, Check, ShieldCheck, RefreshCw, Download, Lock } from "lucide-react";
+import { Copy, Check, ShieldCheck, RefreshCw, Download, Lock, Info } from "lucide-react";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -22,10 +23,11 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
     integrity_valid: boolean;
   } | null>(null);
 
-  const copyToClipboard = (text: string, field: string) => {
+  const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedField(field);
-    setTimeout(() => setCopiedField(null), 2000);
+    setCopiedField(fieldName);
+    toast.success(`${fieldName} copied to clipboard`);
+    setTimeout(() => setCopiedField(null), 1500);
   };
 
   const handleVerify = async () => {
@@ -33,137 +35,181 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
     try {
       const res = await api.evidence.verify(evidence.id);
       setVerificationResult(res);
+      if (res.integrity_valid) {
+        toast.success("Live certificate verified: 0 modifications detected");
+      }
     } catch {
       setVerificationResult({ status: "TAMPER_DETECTED", integrity_valid: false });
+      toast.error("Integrity check failed");
     } finally {
       setIsVerifying(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <Card accentColor="primary" padding="lg" className="space-y-6">
+    <div className="space-y-4">
+      <Card padding="lg" className="space-y-6">
         {/* Certificate Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-neutral-300">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-primary-surface border border-primary/20 flex items-center justify-center text-primary">
-              <ShieldCheck className="w-6 h-6" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border-subtle">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-success-bg text-success flex items-center justify-center flex-shrink-0">
+              <ShieldCheck className="w-6 h-6" strokeWidth={1.5} />
             </div>
             <div>
-              <h3 className="font-heading font-bold text-lg text-neutral-900">
-                Section 65B Cryptographic Evidence Record
+              <h3 className="font-heading font-bold text-lg text-text-primary">
+                Report verified — nothing has been changed
               </h3>
-              <p className="text-xs text-neutral-600 mt-0.5">
-                Indian Evidence Act / BSA 2023 Tamper-Evident Digital Certificate
+              <p className="text-xs text-text-secondary mt-0.5">
+                Section 65B Electronic Proof Certificate (Indian Evidence Act / BSA 2023)
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="success" size="md">
-              <Lock className="w-3 h-3 mr-1" />
-              INTEGRITY SEALED
-            </Badge>
-          </div>
+
+          <Badge variant="success" size="md">
+            <Lock className="w-3.5 h-3.5 mr-1" strokeWidth={1.5} />
+            Verified Genuine
+          </Badge>
         </div>
 
-        {/* Cryptographic Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 bg-neutral-50 rounded-card border border-neutral-300">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold uppercase text-neutral-600">
-                Evidence Certificate ID
+        {/* Cryptographic Fields with Copy Chip */}
+        <div className="space-y-3">
+          {/* Field 1: Certificate ID */}
+          <div className="p-3.5 bg-bg-secondary rounded-md flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block">
+                Certificate Number
               </span>
-              <button
-                onClick={() => copyToClipboard(evidence.id, "id")}
-                className="text-neutral-600 hover:text-primary transition-colors"
-                title="Copy ID"
-              >
-                {copiedField === "id" ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
+              <span className="font-mono text-xs text-text-primary truncate block mt-0.5">
+                {evidence.id}
+              </span>
             </div>
-            <span className="font-mono text-xs text-neutral-900 break-all">{evidence.id}</span>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 px-2.5 text-xs flex-shrink-0"
+              onClick={() => copyToClipboard(evidence.id, "Certificate ID")}
+            >
+              {copiedField === "Certificate ID" ? (
+                <Check className="w-3.5 h-3.5 text-success" strokeWidth={2} />
+              ) : (
+                <Copy className="w-3.5 h-3.5" strokeWidth={1.5} />
+              )}
+            </Button>
           </div>
 
-          <div className="p-4 bg-neutral-50 rounded-card border border-neutral-300">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold uppercase text-neutral-600">
-                Issued At (Timestamp)
+          {/* Field 2: Issued At */}
+          <div className="p-3.5 bg-bg-secondary rounded-md flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block">
+                Certificate Issued On
+              </span>
+              <span className="font-mono text-xs text-text-primary truncate block mt-0.5">
+                {formatDate(evidence.issued_at)}
               </span>
             </div>
-            <span className="font-mono text-xs text-neutral-900 block">
-              {formatDate(evidence.issued_at)}
-            </span>
           </div>
 
-          <div className="p-4 bg-neutral-50 rounded-card border border-neutral-300 md:col-span-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold uppercase text-neutral-600">
-                Merkle Tree Root (SHA-256)
+          {/* Field 3: Merkle Root */}
+          <div className="p-3.5 bg-bg-secondary rounded-md flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block">
+                Security Code (SHA-256 Merkle Root)
               </span>
-              <button
-                onClick={() => copyToClipboard(evidence.merkle_root, "root")}
-                className="text-neutral-600 hover:text-primary transition-colors"
-                title="Copy Merkle Root"
-              >
-                {copiedField === "root" ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
+              <span className="font-mono text-xs text-brand-accent font-semibold truncate block mt-0.5">
+                {evidence.merkle_root}
+              </span>
             </div>
-            <span className="font-mono text-xs text-primary font-bold break-all">
-              {evidence.merkle_root}
-            </span>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 px-2.5 text-xs flex-shrink-0"
+              onClick={() => copyToClipboard(evidence.merkle_root, "Security Code")}
+            >
+              {copiedField === "Security Code" ? (
+                <Check className="w-3.5 h-3.5 text-success" strokeWidth={2} />
+              ) : (
+                <Copy className="w-3.5 h-3.5" strokeWidth={1.5} />
+              )}
+            </Button>
           </div>
 
-          <div className="p-4 bg-neutral-50 rounded-card border border-neutral-300 md:col-span-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold uppercase text-neutral-600">
-                HMAC-SHA256 Digital Signature
+          {/* Field 4: Digital Signature */}
+          <div className="p-3.5 bg-bg-secondary rounded-md flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block">
+                Verification Signature (HMAC-SHA256)
               </span>
-              <button
-                onClick={() => copyToClipboard(evidence.hmac_signature, "hmac")}
-                className="text-neutral-600 hover:text-primary transition-colors"
-                title="Copy Signature"
-              >
-                {copiedField === "hmac" ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
+              <span className="font-mono text-xs text-text-secondary truncate block mt-0.5">
+                {evidence.hmac_signature}
+              </span>
             </div>
-            <span className="font-mono text-xs text-neutral-600 break-all">
-              {evidence.hmac_signature}
-            </span>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 px-2.5 text-xs flex-shrink-0"
+              onClick={() => copyToClipboard(evidence.hmac_signature, "Verification Signature")}
+            >
+              {copiedField === "Verification Signature" ? (
+                <Check className="w-3.5 h-3.5 text-success" strokeWidth={2} />
+              ) : (
+                <Copy className="w-3.5 h-3.5" strokeWidth={1.5} />
+              )}
+            </Button>
           </div>
         </div>
 
         {/* Verification Status Banner */}
         {verificationResult && (
           <div
-            className={`p-4 rounded-card border flex items-center gap-3 ${
+            className={`p-4 rounded-md border flex items-center gap-3 animate-in fade-in-50 duration-150 ${
               verificationResult.integrity_valid
-                ? "bg-success-surface border-success/20 text-success"
-                : "bg-danger-surface border-danger/20 text-danger"
+                ? "bg-success-bg border-success/30 text-success"
+                : "bg-danger-bg border-danger/30 text-danger"
             }`}
           >
-            <ShieldCheck className="w-5 h-5 flex-shrink-0" />
+            <ShieldCheck className="w-5 h-5 flex-shrink-0" strokeWidth={1.5} />
             <div>
-              <p className="text-sm font-semibold">
+              <p className="text-xs font-semibold">
                 {verificationResult.integrity_valid
-                  ? "Live Merkle Hash Match Verified: 0 Modifications"
-                  : "Integrity Mismatch Detected"}
+                  ? "✓ Report is genuine — all calculations match the original audit seal"
+                  : "✗ Integrity check failed — please contact support"}
               </p>
-              <p className="text-xs opacity-90 mt-0.5">
-                Every line item, rate benchmark, and timestamp matches the original audit seal.
+              <p className="text-[11px] opacity-90 mt-0.5">
+                Every line item, statutory benchmark, and timestamp matches the original seal.
               </p>
             </div>
           </div>
         )}
 
-        {/* Actions Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-neutral-300">
-          <Button variant="outline" size="sm" onClick={handleVerify} isLoading={isVerifying}>
-            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
-            Re-verify Live Root
+        {/* Explanatory Info Box */}
+        <div className="p-3.5 bg-bg-secondary rounded-md text-xs text-text-secondary flex items-start gap-2.5">
+          <Info className="w-4 h-4 text-text-tertiary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+          <span>
+            This digital certificate proves that your CuraVeris audit was generated at a specific time and has not been altered. You can present this certificate if the hospital or insurance company questions whether your findings are genuine.
+          </span>
+        </div>
+
+        {/* Action Row */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border-subtle">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={handleVerify}
+            isLoading={isVerifying}
+            className="w-full sm:w-auto"
+          >
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
+            Check Again
           </Button>
-          <a href={`/api/v1/legal-docs/bills/${billId}/dispute-notice`} target="_blank" rel="noopener noreferrer">
-            <Button size="sm">
-              <Download className="w-3.5 h-3.5 mr-1.5" />
+
+          <a
+            href={`/api/v1/legal-docs/bills/${billId}/dispute-notice`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto"
+          >
+            <Button variant="primary" size="md" className="w-full sm:w-auto">
+              <Download className="w-4 h-4 mr-2" strokeWidth={1.5} />
               Download Legal Dispute Notice
             </Button>
           </a>
