@@ -1,12 +1,13 @@
-package in.curaveris.app.core.realtime
+package `in`.curaveris.app.core.realtime
 
-import in.curaveris.app.CuraVerisApplication
+import `in`.curaveris.app.CuraVerisApplication
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import okhttp3.*
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Realtime WebSocket Client with Automatic Exponential Backoff Reconnection.
@@ -48,7 +49,7 @@ class RealtimeManager(
                 isConnected = false
                 scope.launch {
                     _events.emit("{\"type\":\"connection\",\"status\":\"disconnected\"}")
-                    delay(3000)
+                    delay(3.seconds)
                     connect()
                 }
             }
