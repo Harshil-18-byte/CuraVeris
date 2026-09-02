@@ -4,8 +4,8 @@ import { Providers } from "@/app/providers";
 import { ToastProvider } from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
-  title: "CuraVeris — Medical Bill Check",
-  description: "Check your hospital bills against government price rules and get fair complaint letters.",
+  title: "CuraVeris — Your bills, your rights.",
+  description: "Your bills, your rights. CuraVeris automatically audits hospital bills against official government price benchmarks and generates Section 65B dispute notices.",
 };
 
 export default function RootLayout({
