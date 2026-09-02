@@ -28,6 +28,14 @@ from app.schemas.payment import (
     PaymentVerificationRequest,
     PaymentResponse,
 )
+from app.schemas.frm import (
+    FRMInputRequest,
+    FinancialRiskAssessmentResponse,
+    StressScenarioResponse,
+    LossDistributionResponse,
+    ModelRiskResponse,
+    FRMAsyncResponse,
+)
 
 __all__ = [
     "RegisterRequest",
@@ -50,4 +58,10 @@ __all__ = [
     "CreateOrderRequest",
     "PaymentVerificationRequest",
     "PaymentResponse",
+    "FRMInputRequest",
+    "FinancialRiskAssessmentResponse",
+    "StressScenarioResponse",
+    "LossDistributionResponse",
+    "ModelRiskResponse",
+    "FRMAsyncResponse",
 ]
