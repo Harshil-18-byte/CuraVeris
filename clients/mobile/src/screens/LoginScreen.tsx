@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,13 @@ import {
   Platform,
 } from 'react-native';
 import { Colors } from '../theme/colors';
+
+const LOGIN_MESSAGES = [
+  'Over 800+ medicines and implants checked against NPPA & DPCO ceilings.',
+  'Section 65B tamper-evident proof certificates generated for disputes.',
+  'Full right to privacy and encryption under the DPDP Act 2023.',
+  'Instant verification of ICU charges and duplicate bill line items.',
+];
 
 export function LoginScreen({
   onLoginSuccess,
@@ -24,6 +31,14 @@ export function LoginScreen({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLockedOut, setIsLockedOut] = useState(false);
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % LOGIN_MESSAGES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSignIn = () => {
     if (identifier && password) {
@@ -42,6 +57,14 @@ export function LoginScreen({
           <Text style={styles.wordmark}>CURAVERIS</Text>
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subTitle}>Sign in to access your audited medical bills.</Text>
+
+          {/* Rotating Trust Message Banner */}
+          <View style={styles.messageBanner}>
+            <Text style={styles.messageBannerTag}>BENCHMARK</Text>
+            <Text style={styles.messageBannerText} numberOfLines={2}>
+              {LOGIN_MESSAGES[messageIndex]}
+            </Text>
+          </View>
 
           {/* Account Lockout Banner (if applicable) */}
           {isLockedOut && (
@@ -152,7 +175,34 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 14,
     color: Colors.neutral600,
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  messageBanner: {
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.neutral300,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  messageBannerTag: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.primary,
+    backgroundColor: Colors.primarySurface,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  messageBannerText: {
+    flex: 1,
+    fontSize: 12,
+    color: Colors.neutral600,
+    lineHeight: 16,
   },
   lockoutBanner: {
     backgroundColor: Colors.warningSurface,
