@@ -44,7 +44,6 @@ import { RegisterStep3Screen } from './src/screens/RegisterStep3Screen';
 import { UploadBillScreen } from './src/screens/UploadBillScreen';
 
 const Stack = createNativeStackNavigator();
-
 type Nav = NavigationProp<Record<string, object | undefined>>;
 
 const FLOW: Record<string, string> = {
@@ -55,10 +54,11 @@ const FLOW: Record<string, string> = {
   consent: 'home',
   home: 'addDocuments',
   addDocuments: 'documentReview',
-  cameraScanner: 'documentReview',
   uploadBill: 'documentReview',
+  cameraScanner: 'documentReview',
   documentReview: 'processing',
-  processing: 'verification',
+  processing: 'auditReport',
+  auditReport: 'verification',
   verification: 'payment',
   breakdown: 'lineItemDetail',
   lineItemDetail: 'evidence',
@@ -81,7 +81,6 @@ const FLOW: Record<string, string> = {
   aiExplanation: 'notifications',
   notifications: 'profile',
   profile: 'home',
-  auditReport: 'legalDocumentsHub',
   legalDocumentsHub: 'verification',
   loginScreen: 'home',
   registerStep1: 'registerStep2',
@@ -96,11 +95,11 @@ function go(nav: Nav, route: string) {
 function routeProps(route: string, navigation: Nav) {
   const callbacks: Record<string, (...args: any[]) => void> = {
     onBack: () => navigation.goBack(),
-    onFinish: () => go(navigation, 'auth'),
+    onFinish: () => go(navigation, route === 'registerStep3' ? 'consent' : 'auth'),
     onSkip: () => go(navigation, 'auth'),
     onContinue: () => go(navigation, FLOW[route] ?? 'home'),
     onNext: () => go(navigation, FLOW[route] ?? 'home'),
-    onOtpSent: (phone?: string) => go(navigation, 'otpVerification'),
+    onOtpSent: () => go(navigation, 'otpVerification'),
     onVerified: () => go(navigation, 'consent'),
     onLoginSuccess: () => go(navigation, 'home'),
     onNavigateRegister: () => go(navigation, 'registerStep1'),
@@ -113,7 +112,7 @@ function routeProps(route: string, navigation: Nav) {
     onCaptureDone: () => go(navigation, 'documentReview'),
     onCancel: () => navigation.goBack(),
     onAnalyze: () => go(navigation, 'processing'),
-    onViewReport: () => go(navigation, 'verification'),
+    onViewReport: () => go(navigation, 'auditReport'),
     onGenerateDispute: () => go(navigation, 'legalDocumentsHub'),
     onViewEvidence: () => go(navigation, 'evidence'),
     onViewBreakdown: () => go(navigation, 'breakdown'),
@@ -124,9 +123,10 @@ function routeProps(route: string, navigation: Nav) {
     onViewReceipt: () => go(navigation, 'paymentDetail'),
     onDone: () => go(navigation, 'reconciliation'),
     onSeeCalculation: () => go(navigation, 'timeline'),
+    onAddPage: () => go(navigation, 'addDocuments'),
     onUploadDoc: () => {},
     onTrackStatus: () => go(navigation, 'resolution'),
-    onSelectBill: (id?: string) => go(navigation, 'billDetail'),
+    onSelectBill: () => go(navigation, 'billDetail'),
     onUploadBill: () => go(navigation, 'addDocuments'),
     onStartAnalysis: () => go(navigation, 'documentReview'),
     onNavigateTab: (tab?: string) => {
@@ -141,7 +141,6 @@ function routeProps(route: string, navigation: Nav) {
     onSelectPayment: () => go(navigation, 'paymentDetail'),
     onSelectCategory: () => go(navigation, 'aiExplanation'),
     onLogout: () => go(navigation, 'loginScreen'),
-    onFinishRegistration: () => go(navigation, 'consent'),
   };
 
   return new Proxy(callbacks, {
