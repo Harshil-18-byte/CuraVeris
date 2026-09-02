@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
-import { SkeletonCard, SkeletonRow, SkeletonText } from "@/components/ui/Skeleton";
+import { SkeletonCard, SkeletonText } from "@/components/ui/Skeleton";
 import { useAuthStore } from "@/store/authStore";
 
 export default function DashboardLayout({
@@ -13,19 +13,21 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const { isAuthenticated, isLoading, initialize } = useAuthStore();
 
   useEffect(() => {
+    setMounted(true);
     initialize();
   }, [initialize]);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (mounted && !isLoading && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [mounted, isLoading, isAuthenticated, router]);
 
-  if (isLoading) {
+  if (!mounted || isLoading) {
     return (
       <div className="min-h-screen bg-[#F4F6FB] flex relative overflow-hidden">
         {/* Liquid Mesh */}
@@ -64,15 +66,6 @@ export default function DashboardLayout({
               <SkeletonCard />
               <SkeletonCard />
             </div>
-            <div className="glass-card p-6">
-              <table className="w-full">
-                <tbody>
-                  <SkeletonRow />
-                  <SkeletonRow />
-                  <SkeletonRow />
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
       </div>
@@ -93,10 +86,12 @@ export default function DashboardLayout({
       </div>
 
       <Sidebar />
-      <TopBar />
-      <main className="lg:ml-60 pt-16 p-6 sm:p-8 flex-1 relative z-10">
-        <div className="max-w-7xl mx-auto">{children}</div>
-      </main>
+      <div className="lg:ml-60 flex flex-col min-h-screen">
+        <TopBar />
+        <main className="p-6 sm:p-8 flex-1 relative z-10">
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
