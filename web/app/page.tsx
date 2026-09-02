@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { CountUp } from "@/components/ui/CountUp";
+import { Logo } from "@/components/ui/Logo";
 
 export default function LandingPage() {
   const [statsVisible, setStatsVisible] = useState(false);
@@ -46,14 +47,7 @@ export default function LandingPage() {
       {/* 1. STICKY NAVBAR */}
       <header className="sticky top-0 z-50 h-16 bg-white/90 backdrop-blur-md border-b border-border-subtle">
         <div className="max-w-[1200px] h-full mx-auto px-6 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-md bg-brand-accent flex items-center justify-center text-white font-heading font-bold text-base shadow-xs">
-              C
-            </div>
-            <span className="font-heading font-bold text-xl text-text-primary tracking-tight">
-              CuraVeris
-            </span>
-          </Link>
+          <Logo href="/" size="md" showTagline={false} />
 
           <div className="flex items-center gap-3">
             <Link href="/login">
@@ -367,14 +361,9 @@ export default function LandingPage() {
       <footer className="bg-brand-primary text-white py-12 mt-auto">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-white/10">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-md bg-brand-accent text-white flex items-center justify-center font-heading font-bold text-sm">
-                  C
-                </div>
-                <span className="font-heading font-bold text-lg text-white">CuraVeris</span>
-              </div>
-              <p className="text-xs text-white/60">
+            <div className="space-y-2">
+              <Logo showTagline={true} theme="light" size="md" />
+              <p className="text-xs text-white/60 max-w-sm">
                 India&apos;s automated medical billing verification engine.
               </p>
             </div>
