@@ -4,29 +4,15 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Bell,
-  ShieldCheck,
-  Menu,
-  X,
-  LayoutDashboard,
-  FileStack,
-  UploadCloud,
-  User as UserIcon,
-  LogOut,
-  ShieldAlert,
-  Layers,
-  Users,
-} from "lucide-react";
+import { Bell, LogOut, User as UserIcon, ShieldCheck } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/api";
-import { cn } from "@/lib/utils";
 
 export const TopBar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { data: unreadData } = useQuery({
     queryKey: ["notifications", "unread-count"],
@@ -37,10 +23,17 @@ export const TopBar: React.FC = () => {
 
   const unreadCount = unreadData?.count ?? 0;
 
-  const getBreadcrumbs = () => {
-    const parts = pathname.split("/").filter(Boolean);
-    if (parts.length === 0) return "Home";
-    return parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" / ");
+  const getPageTitle = () => {
+    if (pathname === "/dashboard") return "Dashboard";
+    if (pathname === "/bills") return "Your Bills";
+    if (pathname === "/bills/upload") return "Check a Bill";
+    if (pathname.includes("/risk")) return "Financial Risk";
+    if (pathname.includes("/audit")) return "Bill Results";
+    if (pathname.startsWith("/bills/")) return "Bill Details";
+    if (pathname === "/notifications") return "Notifications";
+    if (pathname === "/account") return "Profile & Settings";
+    if (pathname.startsWith("/admin")) return "Administration";
+    return "CuraVeris";
   };
 
   const handleLogout = () => {
@@ -48,169 +41,85 @@ export const TopBar: React.FC = () => {
     router.replace("/login");
   };
 
-  const navItems = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "My Bills", href: "/bills", icon: FileStack },
-    { label: "Upload Bill", href: "/bills/upload", icon: UploadCloud },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: unreadCount },
-    { label: "Account", href: "/account", icon: UserIcon },
-  ];
-
-  const adminItems = [
-    { label: "Admin Overview", href: "/admin", icon: ShieldAlert },
-    { label: "Worker Jobs", href: "/admin/jobs", icon: Layers },
-    { label: "User Directory", href: "/admin/users", icon: Users },
-  ];
-
   return (
-    <>
-      <header className="fixed top-0 right-0 left-0 lg:left-60 h-16 glass-nav z-20 flex items-center justify-between px-4 sm:px-6">
-        {/* Left: Mobile Toggle & Breadcrumbs */}
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-neutral-600 hover:text-neutral-900 hover:bg-white/80 rounded-button transition-colors"
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+    <header className="sticky top-0 z-30 h-[60px] bg-white border-b border-border-subtle flex items-center justify-between px-6 select-none">
+      {/* Page Title */}
+      <div className="flex items-center gap-3">
+        <h1 className="font-heading font-semibold text-lg text-text-primary tracking-tight">
+          {getPageTitle()}
+        </h1>
+      </div>
 
-          {/* Breadcrumb Capsule */}
-          <div className="flex items-center gap-2 px-3 py-1 bg-white/60 border border-white/80 rounded-badge shadow-2xs backdrop-blur-xs">
-            <span className="text-xs font-semibold text-primary">
-              CuraVeris
-            </span>
-            <span className="text-neutral-300 text-xs">/</span>
-            <span className="text-xs font-bold text-neutral-900 truncate">
-              {getBreadcrumbs()}
-            </span>
-          </div>
+      {/* Right Controls */}
+      <div className="flex items-center gap-3">
+        {/* DPDP Trust Pill */}
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-success-bg border border-success/20 rounded-full text-xs font-medium text-success">
+          <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
+          <span>DPDP 2023 Protected</span>
         </div>
 
-        {/* Right Action Icons & Badges */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5">
-          {/* DPDP Compliance Indicator */}
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-success-surface/80 border border-success/30 rounded-badge text-xs font-semibold text-success shadow-2xs backdrop-blur-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>DPDP Act 2023</span>
-          </div>
+        {/* Notification Bell */}
+        <Link
+          href="/notifications"
+          aria-label="Notifications"
+          className="relative w-9 h-9 rounded-md bg-bg-secondary text-text-secondary hover:bg-border-default hover:text-text-primary flex items-center justify-center transition-colors"
+        >
+          <Bell className="w-4 h-4" strokeWidth={1.5} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </Link>
 
-          {/* Notifications Icon with Unread Badge */}
-          <Link
-            href="/notifications"
-            className="relative p-2 text-neutral-600 hover:text-primary hover:bg-white/80 border border-transparent hover:border-white/80 rounded-button transition-all duration-200 shadow-2xs"
-            title="Notifications"
-          >
-            <Bell className="w-4 h-4" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 px-1.5 py-0.5 min-w-[17px] text-[9px] font-bold text-white bg-primary rounded-full flex items-center justify-center shadow-xs">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
-          </Link>
-
-          {/* User Avatar */}
-          <Link href="/account" className="flex items-center gap-2" title="My Account">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-primary-light border-2 border-white text-white flex items-center justify-center font-heading font-bold text-xs shadow-[0_2px_8px_rgba(27,79,114,0.25)] hover:scale-105 transition-transform duration-200">
+        {/* User Avatar Menu */}
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button
+              type="button"
+              aria-label="User profile menu"
+              className="w-8 h-8 rounded-full bg-brand-primary text-white text-xs font-heading font-semibold flex items-center justify-center hover:opacity-90 transition-opacity focus:outline-none"
+            >
               {user?.full_name?.charAt(0).toUpperCase() || "U"}
-            </div>
-          </Link>
-        </div>
-      </header>
+            </button>
+          </DropdownMenu.Trigger>
 
-      {/* Mobile Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-neutral-900/30 backdrop-blur-sm"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              align="end"
+              sideOffset={8}
+              className="w-56 bg-white rounded-lg p-1.5 shadow-lg border border-border-subtle z-50 text-left animate-in fade-in-80 zoom-in-95 duration-100"
+            >
+              <div className="px-3 py-2 border-b border-border-subtle mb-1">
+                <p className="text-sm font-semibold text-text-primary truncate">
+                  {user?.full_name || "Patient Account"}
+                </p>
+                <p className="text-xs text-text-secondary truncate">{user?.email}</p>
+              </div>
 
-          {/* Drawer Menu */}
-          <div className="fixed top-16 left-0 bottom-0 w-64 glass-sidebar p-4 flex flex-col justify-between overflow-y-auto animate-in slide-in-from-left duration-200">
-            <nav className="space-y-1.5">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive =
-                  pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "flex items-center justify-between px-3.5 py-2.5 rounded-button text-sm font-medium transition-all duration-200",
-                      isActive
-                        ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-[0_4px_16px_rgba(27,79,114,0.22)] border border-white/20"
-                        : "text-neutral-600 hover:text-neutral-900 hover:bg-white/60 hover:shadow-xs"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-neutral-600")} />
-                      <span>{item.label}</span>
-                    </div>
-                    {item.badge !== undefined && item.badge > 0 && (
-                      <span
-                        className={cn(
-                          "px-2 py-0.5 text-xs font-semibold rounded-badge",
-                          isActive ? "bg-white text-primary font-bold" : "bg-primary text-white"
-                        )}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+              <DropdownMenu.Item asChild>
+                <Link
+                  href="/account"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-secondary cursor-pointer transition-colors focus:outline-none"
+                >
+                  <UserIcon className="w-4 h-4 text-text-secondary" strokeWidth={1.5} />
+                  <span>Profile & Settings</span>
+                </Link>
+              </DropdownMenu.Item>
 
-              {user?.role === "admin" && (
-                <div className="pt-4 mt-3 border-t border-white/60">
-                  <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-neutral-600/80 block mb-2">
-                    Administration
-                  </span>
-                  {adminItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={cn(
-                          "flex items-center gap-3 px-3.5 py-2 rounded-button text-sm font-medium transition-all duration-200",
-                          isActive
-                            ? "bg-gradient-to-r from-primary to-primary-light text-white shadow-[0_4px_16px_rgba(27,79,114,0.22)] border border-white/20"
-                            : "text-neutral-600 hover:text-neutral-900 hover:bg-white/60 hover:shadow-xs"
-                        )}
-                      >
-                        <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-neutral-600")} />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </nav>
+              <DropdownMenu.Separator className="h-px bg-border-subtle my-1" />
 
-            <div className="pt-4 border-t border-white/60">
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  handleLogout();
-                }}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-danger hover:bg-danger-surface/80 rounded-button transition-colors"
+              <DropdownMenu.Item
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-danger rounded-md hover:bg-danger-bg cursor-pointer transition-colors focus:outline-none"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 text-danger" strokeWidth={1.5} />
                 <span>Sign Out</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      </div>
+    </header>
   );
 };
