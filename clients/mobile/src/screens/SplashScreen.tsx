@@ -8,8 +8,11 @@ export function SplashScreen() {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
       
       <View style={styles.centerContent}>
+        <View style={styles.logoBadge}>
+          <Text style={styles.logoBadgeText}>CV</Text>
+        </View>
         <Text style={styles.wordmark}>CURAVERIS</Text>
-        <Text style={styles.tagline}>India's Medical Bill Auditor</Text>
+        <Text style={styles.tagline}>Your bills, your rights.</Text>
       </View>
 
       <View style={styles.bottomFootnote}>
@@ -32,6 +35,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logoBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    backgroundColor: Colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  logoBadgeText: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: Colors.primary,
+    letterSpacing: -1,
   },
   wordmark: {
     fontSize: 28,
