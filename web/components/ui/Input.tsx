@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import React, { forwardRef, useId } from "react";
+import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -9,45 +12,76 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   rightAddon?: React.ReactNode;
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type = "text", label, error, hint, leftAddon, rightAddon, id, ...props }, ref) => {
-    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      className,
+      label,
+      error,
+      hint,
+      leftAddon,
+      rightAddon,
+      id,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const generatedId = useId();
+    const inputId = id || generatedId;
 
     return (
-      <div className="w-full flex flex-col">
+      <div className="w-full text-left">
         {label && (
-          <label htmlFor={inputId} className="font-medium text-sm text-neutral-900 mb-1">
+          <label
+            htmlFor={inputId}
+            className="block text-sm font-medium text-text-secondary mb-1.5 tracking-[0.01em]"
+          >
             {label}
           </label>
         )}
-        <div className="relative flex items-center w-full">
+
+        <div className="relative flex items-center">
           {leftAddon && (
-            <div className="absolute left-3 z-10 flex items-center pointer-events-none text-neutral-600">
+            <div className="absolute left-3.5 flex items-center pointer-events-none text-text-secondary text-base font-medium z-10">
               {leftAddon}
             </div>
           )}
+
           <input
             id={inputId}
-            type={type}
             ref={ref}
+            disabled={disabled}
             className={cn(
-              "w-full h-12 px-4 border rounded-button text-sm text-neutral-900 bg-white transition-colors placeholder:text-neutral-600/50",
-              "focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary",
-              error ? "border-danger focus:border-danger focus:ring-danger" : "border-neutral-300",
-              leftAddon && "pl-10",
+              "w-full h-[44px] px-3.5 bg-white text-text-primary text-base font-normal rounded-md border border-border-default outline-none transition-all duration-150",
+              "placeholder:text-text-tertiary",
+              "focus:border-border-focus focus:shadow-[0_0_0_3px_rgba(37,99,235,0.12)]",
+              error && "border-danger focus:border-danger focus:shadow-[0_0_0_3px_rgba(220,38,38,0.10)]",
+              disabled && "bg-bg-secondary text-text-tertiary cursor-not-allowed border-border-subtle",
+              leftAddon && "pl-9",
               rightAddon && "pr-10",
               className
             )}
             {...props}
           />
+
           {rightAddon && (
-            <div className="absolute right-3 z-10 flex items-center text-neutral-600">
+            <div className="absolute right-3 flex items-center text-text-secondary text-sm z-10">
               {rightAddon}
             </div>
           )}
         </div>
-        {error && <span className="text-danger text-xs mt-1">{error}</span>}
-        {!error && hint && <span className="text-neutral-600 text-xs mt-1">{hint}</span>}
+
+        {error && (
+          <p className="mt-1.5 text-xs text-danger flex items-center gap-1 font-normal animate-in fade-in-50 duration-150">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
+            <span>{error}</span>
+          </p>
+        )}
+
+        {!error && hint && (
+          <p className="mt-1.5 text-xs text-text-tertiary font-normal">{hint}</p>
+        )}
       </div>
     );
   }
