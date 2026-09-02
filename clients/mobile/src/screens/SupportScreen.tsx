@@ -10,10 +10,10 @@ import {
 import { Colors } from '../theme/colors';
 
 const CATEGORIES = [
-  { id: '1', icon: '🔍', title: 'Understand a Charge', desc: 'Questions on ICU tariffs, room limits, and DPCO price caps.' },
-  { id: '2', icon: '🛡️', title: 'Understand Insurance & TPA', desc: 'Why certain consumables or sanitization items were deducted.' },
-  { id: '3', icon: '💳', title: 'Understand Payment & Settlements', desc: 'Verification of Razorpay transactions and hospital receipts.' },
-  { id: '4', icon: '⚖️', title: 'Dispute a Discrepancy', desc: 'Serving formal legal notices under the Consumer Protection Act.' },
+  { id: '1', title: 'Understand a Charge', desc: 'Questions on ICU tariffs, room limits, and DPCO price caps.' },
+  { id: '2', title: 'Understand Insurance & TPA', desc: 'Why certain consumables or sanitization items were deducted.' },
+  { id: '3', title: 'Understand Payment & Settlements', desc: 'Verification of Razorpay transactions and hospital receipts.' },
+  { id: '4', title: 'Dispute a Discrepancy', desc: 'Serving formal legal notices under the Consumer Protection Act.' },
 ];
 
 export function SupportScreen({
@@ -42,7 +42,6 @@ export function SupportScreen({
               onPress={() => onSelectCategory?.(cat.id)}
               activeOpacity={0.8}
             >
-              <Text style={{ fontSize: 24 }}>{cat.icon}</Text>
               <View style={{ flex: 1 }}>
                 <Text style={styles.cardTitle}>{cat.title}</Text>
                 <Text style={styles.cardDesc}>{cat.desc}</Text>
