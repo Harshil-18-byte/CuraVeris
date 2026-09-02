@@ -28,7 +28,7 @@ export function ReconciliationResultScreen({
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Payment Reconciliation</Text>
         <View style={{ width: 40 }} />
@@ -38,7 +38,7 @@ export function ReconciliationResultScreen({
         <View style={[styles.card, isMatched ? styles.matchedCard : styles.alertCard]}>
           <Text style={styles.statusLabel}>RECONCILIATION AUDIT</Text>
           <Text style={[styles.statusTitle, { color: isMatched ? Colors.success : Colors.warning }]}>
-            {isMatched ? 'RECONCILED ✓' : 'REVIEW REQUIRED ⚠'}
+            {isMatched ? 'RECONCILED' : 'REVIEW REQUIRED'}
           </Text>
           <Text style={styles.reasonText}>{varianceReason}</Text>
         </View>
