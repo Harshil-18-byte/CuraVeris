@@ -69,7 +69,6 @@ export function HomeScreen({
           <Text style={styles.dateText}>Saturday, 30 August</Text>
         </View>
         <TouchableOpacity style={styles.notificationBell}>
-          <Text style={{ fontSize: 18 }}>🔔</Text>
           <View style={styles.badgeDot} />
         </TouchableOpacity>
       </View>
@@ -85,21 +84,21 @@ export function HomeScreen({
           <View style={[styles.statCard, { borderLeftColor: Colors.primary }]}>
             <Text style={styles.statLabel}>Bills Uploaded</Text>
             <Text style={[styles.statNumber, { color: Colors.neutral900 }]}>3</Text>
-            <Text style={styles.statSubText}>📄 All records</Text>
+            <Text style={styles.statSubText}>All records</Text>
           </View>
 
           {/* Card 2 */}
           <View style={[styles.statCard, { borderLeftColor: Colors.success }]}>
             <Text style={styles.statLabel}>Audits Done</Text>
             <Text style={[styles.statNumber, { color: Colors.success }]}>2</Text>
-            <Text style={styles.statSubText}>🛡️ Law verified</Text>
+            <Text style={styles.statSubText}>Law verified</Text>
           </View>
 
           {/* Card 3 */}
           <View style={[styles.statCard, { borderLeftColor: Colors.danger }]}>
             <Text style={styles.statLabel}>Overcharges Found</Text>
             <Text style={[styles.statNumber, { color: Colors.danger }]}>₹1,10,200</Text>
-            <Text style={styles.statSubText}>⚠️ Refund eligible</Text>
+            <Text style={styles.statSubText}>Refund eligible</Text>
           </View>
         </ScrollView>
 
@@ -168,7 +167,6 @@ export function HomeScreen({
         ) : (
           /* Empty State */
           <View style={styles.emptyStateContainer}>
-            <Text style={{ fontSize: 48, marginBottom: 12 }}>📄</Text>
             <Text style={styles.emptyTitle}>No bills yet</Text>
             <Text style={styles.emptyBody}>
               Upload your first hospital bill to check for illegal overcharges.
@@ -182,25 +180,21 @@ export function HomeScreen({
 
       {/* Floating Action Button (FAB) */}
       <TouchableOpacity style={styles.fab} onPress={onUploadBill} activeOpacity={0.9}>
-        <Text style={styles.fabIcon}>📷</Text>
+        <Text style={styles.fabIcon}>Upload</Text>
       </TouchableOpacity>
 
       {/* Bottom Tab Bar */}
       <View style={styles.tabBar}>
         <TouchableOpacity style={styles.tabItem}>
-          <Text style={styles.activeTabIcon}>⌂</Text>
           <Text style={styles.activeTabLabel}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem} onPress={() => onNavigateTab?.('bills')}>
-          <Text style={styles.inactiveTabIcon}>📄</Text>
           <Text style={styles.inactiveTabLabel}>Bills</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem} onPress={() => onNavigateTab?.('notifications')}>
-          <Text style={styles.inactiveTabIcon}>🔔</Text>
           <Text style={styles.inactiveTabLabel}>Notifications</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.tabItem} onPress={() => onNavigateTab?.('account')}>
-          <Text style={styles.inactiveTabIcon}>👤</Text>
           <Text style={styles.inactiveTabLabel}>Account</Text>
         </TouchableOpacity>
       </View>
