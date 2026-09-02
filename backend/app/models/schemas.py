@@ -78,8 +78,13 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
-    email: str = Field(..., min_length=3)
+    email: Optional[str] = None
+    email_or_phone: Optional[str] = None
+    username: Optional[str] = None
     password: str
+
+    def get_identifier(self) -> str:
+        return (self.email or self.email_or_phone or self.username or "").strip()
 
 
 
