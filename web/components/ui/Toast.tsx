@@ -1,20 +1,19 @@
 "use client";
 
-import { Toaster as SonnerToaster, toast as sonnerToast } from "sonner";
+import React from "react";
+import { Toaster as SonnerToaster } from "sonner";
 
-export const ToastProvider = () => {
+export const ToastProvider: React.FC = () => {
   return (
     <SonnerToaster
-      position="top-right"
+      position="bottom-right"
       toastOptions={{
-        className: "bg-white border border-neutral-300 text-neutral-900 shadow-card font-body rounded-card",
+        className:
+          "bg-white text-text-primary border border-border-subtle rounded-lg shadow-xl p-3.5 font-body text-sm",
         style: {
-          border: "1px solid #C8C8D8",
-          color: "#1A1A2E",
+          borderRadius: "var(--radius-lg)",
         },
       }}
     />
   );
 };
-
-export const toast = sonnerToast;
