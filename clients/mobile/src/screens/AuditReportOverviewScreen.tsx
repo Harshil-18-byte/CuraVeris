@@ -184,7 +184,7 @@ export function AuditReportOverviewScreen({
             {/* Amber Info Banner */}
             <View style={styles.amberBanner}>
               <Text style={styles.amberBannerText}>
-                ⚠️ AI Prediction — Not a Formal Legal Finding
+                AI Prediction — Not a Formal Legal Finding
               </Text>
             </View>
 
@@ -199,7 +199,7 @@ export function AuditReportOverviewScreen({
               <Text style={styles.shapTitle}>Why this score?</Text>
 
               <View style={styles.factorRow}>
-                <Text style={styles.factorIconRed}>↑</Text>
+                <Text style={styles.factorIconRed}>+</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.factorName}>Stent Rate Ratio (+38.4%)</Text>
                   <Text style={styles.factorDesc}>Invoiced price is 1.70x above notified ceiling.</Text>
@@ -207,7 +207,7 @@ export function AuditReportOverviewScreen({
               </View>
 
               <View style={styles.factorRow}>
-                <Text style={styles.factorIconRed}>↑</Text>
+                <Text style={styles.factorIconRed}>+</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.factorName}>High Consumables Overhead (+22.1%)</Text>
                   <Text style={styles.factorDesc}>Consumables exceed 20% of total invoiced bill.</Text>
@@ -215,7 +215,7 @@ export function AuditReportOverviewScreen({
               </View>
 
               <View style={styles.factorRow}>
-                <Text style={styles.factorIconGreen}>↓</Text>
+                <Text style={styles.factorIconGreen}>-</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.factorName}>Standard Pharmacy MRP (-9.2%)</Text>
                   <Text style={styles.factorDesc}>Oral tablets conform to DPCO retail price schedule.</Text>
@@ -233,7 +233,7 @@ export function AuditReportOverviewScreen({
       {/* Bottom Primary Button */}
       <View style={styles.bottomArea}>
         <TouchableOpacity style={styles.primaryButton} onPress={onGenerateDispute}>
-          <Text style={styles.buttonText}>Generate Dispute Documents →</Text>
+          <Text style={styles.buttonText}>Generate Dispute Documents</Text>
         </TouchableOpacity>
       </View>
 
@@ -246,7 +246,7 @@ export function AuditReportOverviewScreen({
               <View style={styles.sheetHeader}>
                 <Text style={styles.sheetTitle}>{selectedFinding.name}</Text>
                 <TouchableOpacity onPress={() => setSelectedFinding(null)}>
-                  <Text style={{ fontSize: 18, color: Colors.neutral600 }}>✕</Text>
+                  <Text style={{ fontSize: 14, color: Colors.neutral600, fontWeight: '600' }}>Close</Text>
                 </TouchableOpacity>
               </View>
 
