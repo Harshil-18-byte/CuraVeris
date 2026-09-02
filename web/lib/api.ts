@@ -8,6 +8,12 @@ import {
   Notification,
   EvidenceRecord,
   PaginatedResponse,
+  FinancialRiskAssessment,
+  StressScenarioResult,
+  VaRResult,
+  ModelRiskResult,
+  FRMInputs,
+  FRMAsyncResponse,
 } from "@/types";
 
 export interface AppError {
@@ -186,14 +192,23 @@ apiClient.interceptors.response.use(
 
 // Auth API
 export const authApi = {
-  register: (data: RegisterRequest) =>
-    apiClient.post("/auth/register", data).then((r) => r.data),
+  register: (data: RegisterRequest | { email: string; password: string; full_name: string; phone_number?: string }) => {
+    const payload = {
+      ...data,
+      dpdp_consent: true,
+    };
+    return apiClient.post("/auth/register", payload).then((r) => r.data);
+  },
 
   verifyOtp: (data: VerifyOtpRequest) =>
     apiClient.post("/auth/verify-otp", data).then((r) => r.data),
 
-  login: (data: LoginRequest) =>
-    apiClient.post("/auth/login", data).then((r) => r.data),
+  login: (email_or_phone: string | LoginRequest, password?: string) => {
+    const payload = typeof email_or_phone === "string"
+      ? { email_or_phone, password: password || "" }
+      : email_or_phone;
+    return apiClient.post("/auth/login", payload).then((r) => r.data);
+  },
 
   refresh: (refreshToken: string) =>
     apiClient.post("/auth/refresh", { refresh_token: refreshToken }).then((r) => r.data),
@@ -206,6 +221,9 @@ export const authApi = {
 
   resetPassword: (data: ResetPasswordRequest) =>
     apiClient.post("/auth/reset-password", data).then((r) => r.data),
+
+  deleteAccount: () =>
+    apiClient.delete("/users/me").then((r) => r.data),
 };
 
 // Bills API
@@ -238,6 +256,9 @@ export const auditsApi = {
   getByBillId: (billId: string): Promise<Audit> =>
     apiClient.get(`/bills/${billId}/audit`).then((r) => r.data),
 
+  getReport: (billId: string): Promise<Audit> =>
+    apiClient.get(`/bills/${billId}/audit`).then((r) => r.data),
+
   getFindings: (billId: string, params?: FindingsParams): Promise<PaginatedResponse<AuditFinding>> =>
     apiClient.get(`/bills/${billId}/audit/findings`, { params }).then((r) => r.data),
 
@@ -256,7 +277,13 @@ export const notificationsApi = {
   markRead: (id: string): Promise<void> =>
     apiClient.post(`/notifications/${id}/read`).then((r) => r.data),
 
+  markAsRead: (id: string): Promise<void> =>
+    apiClient.post(`/notifications/${id}/read`).then((r) => r.data),
+
   markAllRead: (): Promise<void> =>
+    apiClient.post("/notifications/read-all").then((r) => r.data),
+
+  markAllAsRead: (): Promise<void> =>
     apiClient.post("/notifications/read-all").then((r) => r.data),
 };
 
@@ -276,16 +303,42 @@ export const usersApi = {
 
   updateMe: (data: UpdateUserRequest): Promise<User> =>
     apiClient.patch("/users/me", data).then((r) => r.data),
+
+  deleteMe: (): Promise<void> =>
+    apiClient.delete("/users/me").then((r) => r.data),
+};
+
+// Financial Risk Management (FRM) API
+export const frmApi = {
+  startAssessment: (billId: string, inputs: FRMInputs): Promise<FRMAsyncResponse> =>
+    apiClient.post(`/bills/${billId}/frm/assess`, inputs).then((r) => r.data),
+
+  triggerAssessment: (billId: string, inputs: FRMInputs): Promise<FRMAsyncResponse> =>
+    apiClient.post(`/bills/${billId}/frm/assess`, inputs).then((r) => r.data),
+
+  getAssessment: (billId: string): Promise<FinancialRiskAssessment> =>
+    apiClient.get(`/bills/${billId}/frm/assess`).then((r) => r.data),
+
+  getStressScenarios: (billId: string): Promise<StressScenarioResult[]> =>
+    apiClient.get(`/bills/${billId}/frm/stress-scenarios`).then((r) => r.data),
+
+  getLossDistribution: (billId: string): Promise<VaRResult> =>
+    apiClient.get(`/bills/${billId}/frm/loss-distribution`).then((r) => r.data),
+
+  getModelRisk: (billId: string): Promise<ModelRiskResult> =>
+    apiClient.get(`/bills/${billId}/frm/model-risk`).then((r) => r.data),
 };
 
 // Unified api object for backward compatibility
 export const api = {
   auth: authApi,
   bills: billsApi,
+  audit: auditsApi,
   audits: auditsApi,
   notifications: notificationsApi,
   evidence: evidenceApi,
   users: usersApi,
+  frm: frmApi,
 };
 
 export default apiClient;
