@@ -1,4 +1,4 @@
-package in.curaveris.app
+package `in`.curaveris.app
 
 import android.content.Intent
 import android.net.Uri
@@ -10,8 +10,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import in.curaveris.app.ui.screens.DashboardScreen
-import in.curaveris.app.ui.theme.CuraVerisTheme
+import `in`.curaveris.app.ui.screens.DashboardScreen
+import `in`.curaveris.app.ui.theme.CuraVerisTheme
 
 /**
  * Main Activity Hosting Jetpack Compose Navigation & Deep Link Handling.
@@ -37,13 +37,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleDeepLink(intent: Intent?) {
-        val data: Uri? = intent?.data
-        if (data != null) {
-            // curaveris://audit/{bill_id} or https://app.curaveris.internal/bill/{bill_id}
-            val billId = data.lastPathSegment
-            if (!billId.isNullOrEmpty()) {
-                // Route to bill audit detail
-            }
+        val data: Uri = intent?.data ?: return
+        // curaveris://audit/{bill_id} or https://app.curaveris.internal/bill/{bill_id}
+        val billId = data.lastPathSegment
+        if (!billId.isNullOrEmpty()) {
+            android.util.Log.d("MainActivity", "Deep link received for bill ID: $billId")
         }
     }
 }
