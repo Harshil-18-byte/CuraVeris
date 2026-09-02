@@ -63,7 +63,7 @@ export function ConsentScreen({
           activeOpacity={0.8}
         >
           <View style={[styles.checkbox, agreed && styles.checkedBox]}>
-            {agreed && <Text style={styles.checkMark}>✓</Text>}
+            {agreed && <View style={{ width: 10, height: 10, backgroundColor: '#fff', borderRadius: 2 }} />}
           </View>
           <Text style={styles.checkboxLabel}>
             I consent to document processing for medical bill verification under the Privacy Policy.
