@@ -5,12 +5,4 @@ plugins {
     id("com.facebook.react") apply false
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url = uri("../mobile/node_modules/react-native/android") }
-    }
-}
-
 apply(plugin = "com.facebook.react.rootproject")
