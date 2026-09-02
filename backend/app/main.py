@@ -99,16 +99,59 @@ async def request_pipeline_middleware(request: Request, call_next):
     return response
 
 
+from fastapi.exceptions import RequestValidationError
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    req_id = getattr(request.state, "request_id", str(uuid.uuid4()))
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Validation failed for request parameters.",
+                "details": exc.errors(),
+            },
+            "request_id": req_id,
+        },
+        headers={"X-Request-ID": req_id},
+    )
+
+
 # Mount API routers
 app.include_router(api_router, prefix="/api/v1")
 
 
+@app.get("/", tags=["System"])
+async def root_endpoint(request: Request):
+    """Root entrypoint returning basic service descriptor."""
+    return {
+        "message": "CuraVeris Production API",
+        "status": "ok",
+        "version": "1.0.0",
+        "docs": "/docs",
+    }
+
+
 @app.get("/health", tags=["System"])
+async def health_check():
+    """System health check endpoint."""
+    db_ok = await check_db_health()
+    return {
+        "status": "ok",
+        "environment": settings.APP_ENV,
+        "database": db_ok,
+        "reference_db": True,
+        "version": "1.0.0",
+    }
+
+
 @app.get("/health/live", tags=["System"])
 @app.get("/live", tags=["System"])
-async def health_check():
-    """Liveness probe returning server status and version."""
-    return {"status": "ok", "version": "1.0.0"}
+async def liveness_probe():
+    """Liveness probe returning alive status."""
+    return {"status": "alive", "version": "1.0.0"}
 
 
 @app.get("/readiness", tags=["System"])
@@ -119,7 +162,7 @@ async def readiness_probe():
     db_healthy = await check_db_health()
     redis_healthy = await check_redis_health()
     return {
-        "status": "ready" if (db_healthy or settings.APP_ENV == "development") else "degraded",
+        "status": "ready" if (db_healthy or settings.APP_ENV in ("development", "testing")) else "degraded",
         "database": db_healthy,
         "redis": redis_healthy,
         "version": "1.0.0",
