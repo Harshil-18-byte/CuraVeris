@@ -12,6 +12,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import or_
 from app.db.database import get_db
 from app.db.models import User, RefreshToken, Organization, Patient, Device
 from app.models.schemas import UserRegister, UserLogin, UserResponse, Token, RefreshTokenRequest, DeviceRegistrationRequest, DeviceResponse, PushTokenRequest
@@ -157,10 +158,12 @@ async def login(
     """
     Authenticate user and return JWT access token + persisted refresh token.
     """
-    identifier = credentials.email.lower().strip()
+    identifier = credentials.get_identifier().lower()
+    if not identifier:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Email or phone is required")
     check_login_locked(identifier)
 
-    result = await db.execute(select(User).where(User.email == identifier))
+    result = await db.execute(select(User).where(or_(User.email == identifier, User.phone_number == identifier)))
     user = result.scalars().first()
 
     if not user or not user.is_active or not verify_password(credentials.password, user.hashed_password):
