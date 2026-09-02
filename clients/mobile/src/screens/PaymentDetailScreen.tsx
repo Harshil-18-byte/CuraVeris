@@ -43,7 +43,7 @@ export function PaymentDetailScreen({
           <Text style={styles.amountLabel}>SETTLED AMOUNT</Text>
           <Text style={styles.amountValue}>₹{amount.toLocaleString('en-IN')}</Text>
           <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>✓ {status}</Text>
+            <Text style={styles.statusText}>{status}</Text>
           </View>
         </View>
 
