@@ -141,13 +141,12 @@ export function LegalDocumentsHubScreen({
               <View style={styles.sheetHeader}>
                 <Text style={styles.sheetTitle}>{selectedDoc.title}</Text>
                 <TouchableOpacity onPress={() => setSelectedDoc(null)}>
-                  <Text style={{ fontSize: 18, color: Colors.neutral600 }}>✕</Text>
+                  <Text style={{ fontSize: 14, color: Colors.neutral600, fontWeight: '600' }}>Close</Text>
                 </TouchableOpacity>
               </View>
 
               {generatedReady ? (
                 <View style={styles.sheetReadyArea}>
-                  <Text style={{ fontSize: 36, marginBottom: 8 }}>📄</Text>
                   <Text style={styles.readyTitle}>Document Ready for Filing</Text>
                   <Text style={styles.readySub}>
                     Signed and formatted under {selectedState} jurisdiction.
