@@ -1,12 +1,12 @@
-package in.curaveris.app.core.notifications
+package `in`.curaveris.app.core.notifications
 
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import in.curaveris.app.CuraVerisApplication
-import in.curaveris.app.MainActivity
+import `in`.curaveris.app.CuraVerisApplication
+import `in`.curaveris.app.MainActivity
 
 /**
  * Push Notification and Statutory Overcharge Alert Dispatcher.
