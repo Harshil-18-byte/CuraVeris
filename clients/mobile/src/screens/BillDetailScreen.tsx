@@ -87,7 +87,7 @@ export function BillDetailScreen({
         {activeTab === 'PAYMENTS' && (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Payment Status</Text>
-            <Text style={styles.bodyText}>₹73,400 settled via Razorpay UPI · Reconciliation: MATCHED ✓</Text>
+            <Text style={styles.bodyText}>₹73,400 settled via Razorpay UPI · Reconciliation: MATCHED</Text>
           </View>
         )}
 
