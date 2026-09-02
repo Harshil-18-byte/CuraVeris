@@ -19,7 +19,7 @@ const NOTIFICATIONS = [
   },
   {
     id: '2',
-    title: 'Payment Reconciled ✓',
+    title: 'Payment Reconciled',
     body: 'Your ₹73,400 settlement has been matched against the hospital ledger.',
     time: '2 hours ago',
     unread: false,
