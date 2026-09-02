@@ -17,9 +17,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Ensure UUID generation extension is active in PostgreSQL
-    op.execute('CREATE EXTENSION IF NOT EXISTS "pgcrypto";')
-    op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    bind = op.get_bind()
+    if bind.dialect.name == "postgresql":
+        op.execute('CREATE EXTENSION IF NOT EXISTS "pgcrypto";')
+        op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
 
     # 1. users table
     op.create_table(
