@@ -13,7 +13,7 @@ export function PaymentSuccessScreen({
   paidAmount = 73400,
   expectedAmount = 73400,
   transactionId = 'pay_P92kL18vQa910Z',
-  reconciliationStatus = 'MATCHED ✓',
+  reconciliationStatus = 'MATCHED',
   onViewReceipt,
   onDone,
 }: {
@@ -32,7 +32,7 @@ export function PaymentSuccessScreen({
         {/* Success Check Header */}
         <View style={styles.successHeader}>
           <View style={styles.checkCircle}>
-            <Text style={styles.checkMark}>✓</Text>
+            <View style={{ width: 14, height: 14, backgroundColor: '#fff', borderRadius: 7 }} />
           </View>
           <Text style={styles.paidAmountText}>₹{paidAmount.toLocaleString('en-IN')} Paid</Text>
           <Text style={styles.verifiedSub}>Payment Verified by Razorpay & CuraVeris</Text>
