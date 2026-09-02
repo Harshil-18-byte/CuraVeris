@@ -16,7 +16,7 @@ const PAYMENTS = [
     amount: 73400,
     date: '16 Aug 2026',
     status: 'CAPTURED',
-    reconciliation: 'MATCHED ✓',
+    reconciliation: 'MATCHED',
   },
   {
     id: 'pay_K71vN43xPz881Q',
@@ -24,7 +24,7 @@ const PAYMENTS = [
     amount: 62000,
     date: '22 Jul 2026',
     status: 'CAPTURED',
-    reconciliation: 'MATCHED ✓',
+    reconciliation: 'MATCHED',
   },
 ];
 
