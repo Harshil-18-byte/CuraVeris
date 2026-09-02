@@ -47,7 +47,7 @@ export function LoginScreen({
           {isLockedOut && (
             <View style={styles.lockoutBanner}>
               <Text style={styles.lockoutText}>
-                ⚠️ Account locked. Try again in 12 minutes.
+                Account locked. Try again in 12 minutes.
               </Text>
             </View>
           )}
