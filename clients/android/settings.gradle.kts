@@ -7,6 +7,14 @@ pluginManagement {
     includeBuild("../mobile/node_modules/@react-native/gradle-plugin")
 }
 
+plugins {
+    id("com.facebook.react.settings")
+}
+
+extensions.configure<com.facebook.react.ReactSettingsExtension> {
+    autolinkLibrariesFromCommand()
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -18,7 +26,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "CuraVeris"
 include(":app")
-include(":react-native-safe-area-context")
-project(":react-native-safe-area-context").projectDir = file("../mobile/node_modules/react-native-safe-area-context/android")
-include(":react-native-screens")
-project(":react-native-screens").projectDir = file("../mobile/node_modules/react-native-screens/android")
