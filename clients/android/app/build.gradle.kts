@@ -22,8 +22,8 @@ android {
         applicationId = "in.curaveris.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -63,5 +63,7 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.4.1")
     implementation("androidx.camera:camera-lifecycle:1.4.1")
 
-    // React Native dependencies are supplied by the React Native Gradle plugin.
+    // React Native runtime used by the Android launcher.
+    implementation("com.facebook.react:react-android:0.73.4")
+    implementation("com.facebook.react:hermes-android:0.73.4")
 }
