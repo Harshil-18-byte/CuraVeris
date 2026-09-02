@@ -1,6 +1,6 @@
-package in.curaveris.app.core.network
+package `in`.curaveris.app.core.network
 
-import in.curaveris.app.CuraVerisApplication
+import `in`.curaveris.app.CuraVerisApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.*
