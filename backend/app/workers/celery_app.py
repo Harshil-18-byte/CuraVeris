@@ -25,6 +25,7 @@ celery_app.conf.update(
     task_time_limit=360,
     task_queues=[
         Queue("bill_processing", routing_key="bill.#"),
+        Queue("frm_analysis", routing_key="frm.#"),
         Queue("notifications", routing_key="notify.#"),
         Queue("default", routing_key="default"),
     ],
@@ -38,4 +39,5 @@ celery_app.autodiscover_tasks([
     "app.workers.ml_task",
     "app.workers.evidence_task",
     "app.workers.notification_task",
+    "app.workers.frm_task",
 ])
