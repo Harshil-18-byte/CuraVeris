@@ -19,6 +19,10 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.cache = false;
+    return config;
+  },
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://curaveris.onrender.com";
     return [
