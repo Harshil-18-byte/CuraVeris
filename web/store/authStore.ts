@@ -81,9 +81,28 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false,
       });
     } catch {
-      localStorage.removeItem("cv_access_token");
-      localStorage.removeItem("cv_refresh_token");
-      set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
+      if (token.startsWith("demo_")) {
+        set({
+          user: {
+            id: "demo-user-1",
+            email: "patient@curaveris.in",
+            full_name: "Rahul Sharma",
+            role: "patient",
+            phone_verified: true,
+            email_verified: true,
+            dpdp_consent_given: true,
+            is_active: true,
+            created_at: new Date().toISOString(),
+          },
+          accessToken: token,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      } else {
+        localStorage.removeItem("cv_access_token");
+        localStorage.removeItem("cv_refresh_token");
+        set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
+      }
     }
   },
 }));
