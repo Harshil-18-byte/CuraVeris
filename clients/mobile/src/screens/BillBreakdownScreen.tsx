@@ -79,7 +79,7 @@ export function BillBreakdownScreen({
                         −₹{cat.variance.toLocaleString('en-IN')} discrepancy
                       </Text>
                     ) : (
-                      <Text style={styles.verifiedText}>✓ Verified</Text>
+                      <Text style={styles.verifiedText}>Verified</Text>
                     )}
                   </View>
                 </TouchableOpacity>
