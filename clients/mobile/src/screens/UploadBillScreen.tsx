@@ -60,7 +60,6 @@ export function UploadBillScreen({
             onPress={() => handleSimulateFileSelect('camera')}
             activeOpacity={0.8}
           >
-            <Text style={{ fontSize: 28, marginBottom: 4 }}>📷</Text>
             <Text style={styles.tileTitle}>Take a Photo</Text>
             <Text style={styles.tileSub}>Photograph your paper bill</Text>
           </TouchableOpacity>
@@ -71,7 +70,6 @@ export function UploadBillScreen({
             onPress={() => handleSimulateFileSelect('file')}
             activeOpacity={0.8}
           >
-            <Text style={{ fontSize: 28, marginBottom: 4 }}>📁</Text>
             <Text style={styles.tileTitle}>Choose File</Text>
             <Text style={styles.tileSub}>PDF, PNG, JPEG · Max 50MB</Text>
           </TouchableOpacity>
@@ -80,14 +78,11 @@ export function UploadBillScreen({
         {/* Selected File Preview Area */}
         {selectedFile && (
           <View style={styles.previewCard}>
-            <View style={styles.fileIconBox}>
-              <Text style={{ fontSize: 16 }}>{selectedFile.type.includes('pdf') ? '📄' : '🖼️'}</Text>
-            </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.fileName}>{selectedFile.name}</Text>
               <Text style={styles.fileSize}>{(selectedFile.size / 1024 / 1024).toFixed(1)} MB</Text>
             </View>
-            <Text style={styles.checkMark}>✓</Text>
+            <Text style={styles.checkMark}>Ready</Text>
           </View>
         )}
 
