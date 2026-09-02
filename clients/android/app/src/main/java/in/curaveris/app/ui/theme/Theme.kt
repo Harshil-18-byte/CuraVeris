@@ -1,4 +1,4 @@
-package in.curaveris.app.ui.theme
+package `in`.curaveris.app.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -19,6 +19,6 @@ private val DarkColorScheme = darkColorScheme(
 fun CuraVerisTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = DarkColorScheme,
-        content = content
+        content = content,
     )
 }
