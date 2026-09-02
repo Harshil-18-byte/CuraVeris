@@ -48,7 +48,7 @@ export default function AdminUsersPage() {
                 <td className="py-3.5 px-4 font-semibold text-neutral-900">{u.full_name}</td>
                 <td className="py-3.5 px-4 text-neutral-600">{u.email}</td>
                 <td className="py-3.5 px-4">
-                  <Badge variant={u.role === "admin" ? "primary" : "secondary"}>
+                  <Badge variant={u.role === "admin" ? "brand" : "default"}>
                     {u.role.toUpperCase()}
                   </Badge>
                 </td>
