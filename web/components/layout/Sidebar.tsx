@@ -17,32 +17,44 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/Logo";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
 
-  const { data: unreadData } = useQuery({
+  const { data: unreadNotifications } = useQuery({
     queryKey: ["notifications", "unread-count"],
-    queryFn: () => api.notifications.getUnreadCount(),
-    refetchInterval: 60 * 1000,
-    staleTime: 30 * 1000,
+    queryFn: async () => {
+      try {
+        const res = await api.notifications.getUnreadCount();
+        return res.count || 0;
+      } catch {
+        return 0;
+      }
+    },
+    refetchInterval: 30000,
   });
-
-  const unreadCount = unreadData?.count ?? 0;
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Your Bills", href: "/bills", icon: FileStack },
-    { label: "Notifications", href: "/notifications", icon: Bell, badge: unreadCount },
-    { label: "Profile & Settings", href: "/account", icon: UserIcon },
+    { label: "Medical Bills", href: "/bills", icon: FileStack },
+    {
+      label: "Notifications",
+      href: "/notifications",
+      icon: Bell,
+      badge: unreadNotifications && unreadNotifications > 0 ? unreadNotifications : undefined,
+    },
+    { label: "Profile", href: "/profile", icon: UserIcon },
+    { label: "Financial Risk", href: "/frm", icon: ShieldAlert },
+    { label: "ABHA Health", href: "/abha", icon: Layers },
   ];
 
   const adminItems = [
     { label: "Admin Overview", href: "/admin", icon: ShieldAlert },
-    { label: "Worker Jobs", href: "/admin/jobs", icon: Layers },
     { label: "User Directory", href: "/admin/users", icon: Users },
+    { label: "Worker Jobs", href: "/admin/jobs", icon: Layers },
   ];
 
   const handleLogout = () => {
@@ -54,15 +66,8 @@ export const Sidebar: React.FC = () => {
     <aside className="fixed inset-y-0 left-0 z-40 w-[240px] bg-brand-primary flex flex-col justify-between hidden lg:flex select-none">
       <div>
         {/* Brand Header */}
-        <div className="h-[60px] flex items-center px-5 border-b border-white/10">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-md bg-brand-accent flex items-center justify-center text-white font-heading font-bold text-base shadow-xs group-hover:bg-[#1D4ED8] transition-colors">
-              C
-            </div>
-            <span className="font-heading font-bold text-lg text-white tracking-tight">
-              CuraVeris
-            </span>
-          </Link>
+        <div className="h-[64px] flex items-center px-4 border-b border-white/10">
+          <Logo href="/dashboard" showTagline={true} theme="light" size="sm" />
         </div>
 
         {/* Navigation Section */}
