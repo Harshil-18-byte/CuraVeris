@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Rounded Base Container -->
+  <rect width="512" height="512" rx="110" fill="#F8FAFC"/>
+  <rect x="8" y="8" width="496" height="496" rx="102" stroke="#E2E8F0" stroke-width="8" opacity="0.6"/>
+
+  <!-- Main C Mark (Deep Navy) -->
+  <path d="M260 148C218.4 148 184 182.4 184 224C184 265.6 218.4 300 260 300C276.8 300 292.4 294.4 305 284.8L324 309.2C306.4 322.8 284.4 331 260 331C201.2 331 153 282.8 153 224C153 165.2 201.2 117 260 117C285.6 117 308.8 126 326.8 141L306 166.4C293.2 155.2 277.6 148 260 148Z" fill="#0F1C2E"/>
+
+  <!-- V with Arrow Mark (Vibrant Blue) -->
+  <g>
+    <!-- Shadow/Overlap Depth -->
+    <path d="M276 226L310 186L324 202L290 242Z" fill="#0B132B" opacity="0.2"/>
+    <!-- V Shape with Rising Arrow -->
+    <path d="M274 232L306 278L368 182V216L398 172L348 166L364 188L306 254L288 226L274 232Z" fill="#2563EB"/>
+    <!-- Arrow Head Precision Shape -->
+    <path d="M398 172L346 168L366 190L308 274L280 234L266 242L306 298L378 198L398 220L398 172Z" fill="#3B82F6"/>
+  </g>
+</svg>
