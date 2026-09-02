@@ -14,7 +14,7 @@ export const InlineError: React.FC<InlineErrorProps> = ({
   requestId,
 }) => {
   return (
-    <div className="bg-danger-surface border-l-4 border-danger rounded-card p-4">
+    <div className="bg-danger/10 border-l-4 border-danger rounded-md p-4">
       <h4 className="font-semibold text-danger text-sm">{title}</h4>
       <p className="text-danger/80 text-sm mt-1">{message}</p>
       {onRetry && (

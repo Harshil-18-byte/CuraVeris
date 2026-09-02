@@ -31,7 +31,7 @@ export default function AdminUsersPage() {
       title={`User Directory (${total})`}
       description="Registered patients and administrators with active DPDP records."
     >
-      <div className="w-full overflow-x-auto bg-white rounded-card shadow-card border border-neutral-300">
+      <div className="w-full overflow-x-auto bg-white rounded-lg shadow-sm border border-border-subtle">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-neutral-50 border-b border-neutral-300 text-xs font-semibold uppercase tracking-wider text-neutral-600">

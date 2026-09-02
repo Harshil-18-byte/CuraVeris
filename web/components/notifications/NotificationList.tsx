@@ -65,7 +65,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
         return <AlertTriangle className="w-5 h-5 text-danger" />;
       case "BILL_UPLOADED":
       default:
-        return <FileText className="w-5 h-5 text-primary" />;
+        return <FileText className="w-5 h-5 text-brand-accent" />;
     }
   };
 
@@ -112,9 +112,9 @@ export const NotificationList: React.FC<NotificationListProps> = ({
           <button
             onClick={() => setFilter("all")}
             className={cn(
-              "px-3 py-1.5 text-xs font-semibold rounded-badge transition-colors",
+              "px-3 py-1.5 text-xs font-semibold rounded-full transition-colors",
               filter === "all"
-                ? "bg-primary text-white"
+                ? "bg-brand-accent text-white"
                 : "bg-white border border-neutral-300 text-neutral-600 hover:bg-neutral-50"
             )}
           >
@@ -123,9 +123,9 @@ export const NotificationList: React.FC<NotificationListProps> = ({
           <button
             onClick={() => setFilter("unread")}
             className={cn(
-              "px-3 py-1.5 text-xs font-semibold rounded-badge transition-colors",
+              "px-3 py-1.5 text-xs font-semibold rounded-full transition-colors",
               filter === "unread"
-                ? "bg-primary text-white"
+                ? "bg-brand-accent text-white"
                 : "bg-white border border-neutral-300 text-neutral-600 hover:bg-neutral-50"
             )}
           >
@@ -139,7 +139,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
       </div>
 
       {/* List Container */}
-      <div className="bg-white rounded-card shadow-card border border-neutral-300 divide-y divide-neutral-300">
+      <div className="bg-white rounded-lg shadow-sm border border-border-subtle divide-y divide-border-subtle">
         {filtered.length === 0 ? (
           <div className="p-12 text-center text-neutral-600">
             <Bell className="w-8 h-8 mx-auto text-neutral-300 mb-2" />
@@ -153,7 +153,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
               onClick={() => handleMarkAsRead(notif)}
               className={cn(
                 "p-4 flex items-start gap-3.5 hover:bg-neutral-50 cursor-pointer transition-colors",
-                !notif.is_read && "bg-primary-surface/30"
+                !notif.is_read && "bg-brand-accent-light/30"
               )}
             >
               <div className="w-10 h-10 rounded-lg bg-white border border-neutral-300 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -173,7 +173,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
                 </p>
               </div>
               {!notif.is_read && (
-                <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2" />
+                <div className="w-2 h-2 rounded-full bg-brand-accent flex-shrink-0 mt-2" />
               )}
             </div>
           ))

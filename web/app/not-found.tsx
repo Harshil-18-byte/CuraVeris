@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/Button";
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center px-6 py-12">
-      <div className="max-w-md w-full text-center space-y-6 bg-white p-8 sm:p-10 rounded-2xl border border-neutral-300 shadow-card">
-        <div className="w-16 h-16 bg-primary-surface text-primary rounded-2xl flex items-center justify-center mx-auto border border-primary/20">
+      <div className="max-w-md w-full text-center space-y-6 bg-white p-8 sm:p-10 rounded-2xl border border-neutral-300 shadow-sm">
+        <div className="w-16 h-16 bg-brand-accent-light text-brand-accent rounded-2xl flex items-center justify-center mx-auto border border-brand-accent/20">
           <FileQuestion className="w-8 h-8" />
         </div>
 
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 rounded-badge text-xs font-semibold text-amber-700">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs font-semibold text-amber-700">
             <span>Page not found</span>
           </div>
           <h1 className="font-heading font-bold text-3xl text-neutral-900 tracking-tight">
