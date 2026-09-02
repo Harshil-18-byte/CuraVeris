@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ExternalLink, FileText } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
 import { Badge, getStatusBadgeVariant } from "@/components/ui/Badge";
@@ -30,7 +30,7 @@ export default function BillDetailPage() {
     },
   });
 
-  const { status: wsStatus, isConnected, isPolling } = useBillStatusSocket(
+  const { status: wsStatus, isConnected } = useBillStatusSocket(
     billId,
     bill?.processing_status
   );
@@ -43,7 +43,7 @@ export default function BillDetailPage() {
     return (
       <PageShell
         title={<SkeletonText width="md" className="h-8" />}
-        description="Retrieving invoice details and statutory validation progress…"
+        description="Retrieving bill details and checking progress…"
       >
         <div className="space-y-6">
           <SkeletonCard />
@@ -57,32 +57,34 @@ export default function BillDetailPage() {
     const is404 = (error as any)?.status === 404;
     return (
       <PageShell
-        title={is404 ? "Bill Not Found" : "Error Loading Invoice"}
-        description="Could not load details for this invoice."
+        title={is404 ? "Bill Not Found" : "Could not load bill"}
+        description="Could not load details for this bill."
         action={
           <Link href="/bills">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Back to My Bills
+            <Button variant="secondary" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
+              Back to Your Bills
             </Button>
           </Link>
         }
       >
         <Card padding="lg" className="text-center py-12">
           {is404 ? (
-            <div>
-              <h2 className="font-heading font-bold text-lg text-neutral-900">
-                Invoice Record Not Found
+            <div className="space-y-3 max-w-sm mx-auto">
+              <h2 className="font-heading font-bold text-lg text-text-primary">
+                Bill not found
               </h2>
-              <p className="text-xs text-neutral-600 mt-1 mb-6">
-                The requested invoice does not exist or you do not have permission to view it.
+              <p className="text-xs text-text-secondary">
+                The requested bill does not exist or you do not have permission to view it.
               </p>
-              <Link href="/bills">
-                <Button size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-1.5" />
-                  Back to My Bills
-                </Button>
-              </Link>
+              <div className="pt-3">
+                <Link href="/bills">
+                  <Button size="sm" variant="primary">
+                    <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
+                    Back to Your Bills
+                  </Button>
+                </Link>
+              </div>
             </div>
           ) : (
             <InlineError
@@ -96,22 +98,39 @@ export default function BillDetailPage() {
     );
   }
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "COMPLETED":
+        return "Check complete";
+      case "PROCESSING":
+      case "AUDITING":
+        return "Checking prices";
+      case "EXTRACTING":
+        return "Reading bill";
+      case "FAILED":
+        return "Needs re-upload";
+      case "QUEUED":
+      default:
+        return "In queue";
+    }
+  };
+
   return (
     <PageShell
-      title={bill.hospital_name || "Extracting Hospital Information…"}
-      description={`Reference: #${bill.reference_number || bill.id.slice(0, 8)} · Submitted on ${formatDate(bill.created_at)}`}
+      title={bill.hospital_name || "Hospital Bill"}
+      description={`Reference #${bill.reference_number || bill.id.slice(0, 8)} · Submitted on ${formatDate(bill.created_at)}`}
       action={
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Link href="/bills">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
+            <Button variant="secondary" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
               All Bills
             </Button>
           </Link>
           {bill.file_url && (
             <a href={bill.file_url} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm">
-                <ExternalLink className="w-4 h-4 mr-1.5" />
+              <Button variant="secondary" size="sm">
+                <ExternalLink className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
                 Original Document
               </Button>
             </a>
@@ -120,43 +139,43 @@ export default function BillDetailPage() {
       }
     >
       {/* Bill Overview Header Card */}
-      <Card padding="lg" className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <Card padding="md" className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
         <div>
-          <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider block">
-            Hospital Facility
+          <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
+            Hospital or Clinic
           </span>
-          <p className="font-heading font-bold text-lg text-neutral-900 mt-1">
+          <p className="font-heading font-bold text-lg text-text-primary mt-1">
             {bill.hospital_name || "—"}
           </p>
-          <span className="text-xs text-neutral-600 font-mono mt-0.5 block truncate">
+          <span className="text-xs text-text-secondary mt-0.5 block truncate">
             {bill.file_name_original}
           </span>
         </div>
 
         <div>
-          <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider block">
-            Admission & Stay
+          <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
+            Hospital Stay
           </span>
-          <p className="font-medium text-sm text-neutral-900 mt-1">
+          <p className="font-medium text-sm text-text-primary mt-1">
             {bill.admission_date
               ? `${formatDate(bill.admission_date)}${bill.discharge_date ? ` – ${formatDate(bill.discharge_date)}` : ""}`
               : "—"}
           </p>
-          <span className="text-xs text-neutral-600 mt-0.5 block">
-            Scheme: {bill.insurance_type || "Self Pay"}
+          <span className="text-xs text-text-secondary mt-0.5 block">
+            Payment: {bill.insurance_type || "Self Pay"}
           </span>
         </div>
 
         <div className="sm:text-right">
-          <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider block">
-            Gross Billed Amount
+          <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
+            Total on Your Bill
           </span>
-          <p className="font-mono font-bold text-2xl text-neutral-900 mt-1">
+          <p className="font-mono font-bold text-2xl text-text-primary mt-1">
             {formatCurrency(bill.total_billed_amount)}
           </p>
           <div className="mt-1 sm:justify-end flex">
             <Badge variant={getStatusBadgeVariant(effectiveStatus)}>
-              {effectiveStatus}
+              {getStatusText(effectiveStatus)}
             </Badge>
           </div>
         </div>
@@ -167,6 +186,7 @@ export default function BillDetailPage() {
         billId={bill.id}
         initialStatus={effectiveStatus}
         failureReason={bill.failure_reason}
+        onRetry={() => refetch()}
       />
     </PageShell>
   );
