@@ -157,7 +157,9 @@ async def verify_otp_endpoint(req: VerifyOtpRequest, db: AsyncSession = Depends(
 @router.post("/login", response_model=TokenResponse)
 async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)):
     """Authenticates user with password and account lockout enforcement."""
-    identifier = req.email_or_phone.strip()
+    identifier = req.get_identifier()
+    if not identifier:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Email or phone number is required")
     stmt = select(User).where(
         and_(
             or_(User.email == identifier.lower(), User.phone_number == identifier),
