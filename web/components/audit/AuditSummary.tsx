@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { AlertTriangle, ShieldCheck, FileSpreadsheet, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, TrendingDown, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatCurrency } from "@/lib/utils";
@@ -10,118 +12,106 @@ interface AuditSummaryProps {
 }
 
 export const AuditSummary: React.FC<AuditSummaryProps> = ({ audit }) => {
+  const getRiskBadgeVariant = (label?: string | null) => {
+    switch (label) {
+      case "CRITICAL":
+      case "HIGH":
+        return "danger";
+      case "MEDIUM":
+        return "warning";
+      default:
+        return "success";
+    }
+  };
+
+  const getRiskLabelText = (label?: string | null) => {
+    switch (label) {
+      case "CRITICAL":
+        return "Very high concern";
+      case "HIGH":
+        return "High concern";
+      case "MEDIUM":
+        return "Some concern";
+      default:
+        return "Low concern";
+    }
+  };
+
+  const findingsCount = audit.finding_count || (audit.findings ? audit.findings.length : 0);
+  const totalOvercharge = audit.total_overcharge_deterministic ?? 0;
+
   return (
     <div className="space-y-6">
       {/* 4 Info Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card padding="md">
+        {/* Card 1: Confirmed Overcharges */}
+        <Card padding="sm" variant="stat">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-              Total Overcharges
+            <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+              Possible Extra Charges
             </span>
-            <div className="w-8 h-8 rounded-lg bg-danger-surface text-danger flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
+            <AlertTriangle className="w-4 h-4 text-danger" strokeWidth={1.5} />
           </div>
-          <p className="font-mono font-bold text-2xl text-danger mt-2">
-            {formatCurrency(audit.total_overcharge_deterministic)}
+          <p className="font-mono font-bold text-3xl text-danger mt-3">
+            {formatCurrency(totalOvercharge)}
           </p>
-          <span className="text-xs text-neutral-600 block mt-1">Confirmed statutory violations</span>
+          <span className="text-xs text-text-secondary mt-1 block">Exceeding government rules</span>
         </Card>
 
-        <Card padding="md">
+        {/* Card 2: Questionable Line Items */}
+        <Card padding="sm" variant="stat">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-              Violations Flagged
+            <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+              Questionable Items
             </span>
-            <div className="w-8 h-8 rounded-lg bg-warning-surface text-warning flex items-center justify-center">
-              <FileSpreadsheet className="w-4 h-4" />
-            </div>
+            <TrendingDown className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
           </div>
-          <p className="font-heading font-bold text-2xl text-neutral-900 mt-2">
-            {audit.finding_count} Items
+          <p className="font-heading font-bold text-3xl text-text-primary mt-3">
+            {findingsCount}
           </p>
-          <span className="text-xs text-neutral-600 block mt-1">Breaching price gazettes</span>
+          <span className="text-xs text-text-secondary mt-1 block">Charges flagged for dispute</span>
         </Card>
 
-        <Card padding="md">
+        {/* Card 3: Concern Level */}
+        <Card padding="sm" variant="stat">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-              Ensemble Risk Score
+            <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+              Overall Concern Level
             </span>
-            <div className="w-8 h-8 rounded-lg bg-primary-surface text-primary flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
+            <ShieldCheck className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
           </div>
-          <div className="flex items-baseline gap-2 mt-2">
-            <p className="font-heading font-bold text-2xl text-neutral-900">
-              {Math.round((audit.risk_score || 0) * 100)}%
+          <div className="flex items-baseline gap-2 mt-3">
+            <p className="font-heading font-bold text-3xl text-text-primary">
+              {Math.round((Number(audit.risk_score) || 0) * 100)}
             </p>
-            <Badge
-              variant={
-                audit.risk_label === "CRITICAL"
-                  ? "danger"
-                  : audit.risk_label === "HIGH"
-                  ? "warning"
-                  : "success"
-              }
-            >
-              {audit.risk_label || "LOW"}
+            <span className="text-xs text-text-tertiary">/ 100</span>
+            <Badge variant={getRiskBadgeVariant(audit.risk_label)}>
+              {getRiskLabelText(audit.risk_label)}
             </Badge>
           </div>
-          <span className="text-xs text-neutral-600 block mt-1">Predictive ML assessment</span>
+          <span className="text-xs text-text-secondary mt-1 block">Our overall assessment</span>
         </Card>
 
-        <Card padding="md">
+        {/* Card 4: Shadow Billing */}
+        <Card padding="sm" variant="stat">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-              Shadow Billing
+            <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+              Duplicate Billing
             </span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-50 text-neutral-600 border border-neutral-300 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
+            <CheckCircle2 className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
           </div>
-          <p className="font-heading font-bold text-2xl mt-2 text-neutral-900">
-            {audit.shadow_bill_detected ? "Detected" : "Clean"}
-          </p>
-          <span className="text-xs text-neutral-600 block mt-1">
+          <div className="mt-3">
+            <Badge variant={audit.shadow_bill_detected ? "danger" : "success"} size="md">
+              {audit.shadow_bill_detected ? "Detected" : "None Found"}
+            </Badge>
+          </div>
+          <span className="text-xs text-text-secondary mt-1 block">
             {audit.shadow_bill_detected
-              ? "Duplicate entries identified"
-              : "No duplicate charges detected"}
+              ? "Items billed both separately & in package"
+              : "No duplicate package charges"}
           </span>
         </Card>
       </div>
-
-      {/* Recommendations Section */}
-      {audit.recommendations && audit.recommendations.length > 0 && (
-        <Card padding="lg">
-          <h3 className="font-heading font-bold text-lg text-neutral-900 mb-4">
-            Recommended Action Steps
-          </h3>
-          <div className="space-y-4">
-            {audit.recommendations.map((rec, idx) => (
-              <div key={idx} className="flex items-start gap-3.5 pb-4 last:pb-0 border-b last:border-b-0 border-neutral-300">
-                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-heading font-bold text-xs flex-shrink-0 mt-0.5">
-                  {idx + 1}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-heading font-semibold text-sm text-neutral-900">
-                      {rec.title}
-                    </h4>
-                    {rec.priority === "URGENT" && (
-                      <Badge variant="danger" size="sm">Urgent</Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-neutral-600 mt-1 font-body leading-relaxed">
-                    {rec.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
     </div>
   );
 };
