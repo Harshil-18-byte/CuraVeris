@@ -55,6 +55,8 @@ class User(Base):
     full_name = Column(String, nullable=False)
     role = Column(String, default="PATIENT", index=True)  # PATIENT, HOSPITAL_ADMIN, HOSPITAL_FINANCE, HOSPITAL_BILLING, HOSPITAL_AUDITOR, TPA_REVIEWER, TPA_ADMIN, INSURER_REVIEWER, INSURER_ADMIN, PLATFORM_ADMIN
     encrypted_phone = Column(String, nullable=True)
+    phone_verified = Column(Boolean, default=False, nullable=True)
+    email_verified = Column(Boolean, default=False, nullable=True)
     is_active = Column(Boolean, default=True)
     mfa_enabled = Column(Boolean, default=False)
     mfa_secret = Column(String, nullable=True)
@@ -540,7 +542,7 @@ class Payment(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     tenant_id = Column(String, index=True, nullable=True)
-    invoice_id = Column(String, ForeignKey("invoices.id"), index=True, nullable=False)
+    invoice_id = Column(String, ForeignKey("invoices.id"), index=True, nullable=True)
     patient_id = Column(String, ForeignKey("patients.id"), index=True, nullable=True)
     
     gateway = Column(String, default="RAZORPAY", nullable=False)
