@@ -15,7 +15,15 @@ from app.core.config import settings
 from app.core.logging import logger
 from app.db.reference_data import CGHS_SEEDS
 
-from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
+try:
+    import chromadb
+    from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
+except ImportError:
+    class EmbeddingFunction:
+        pass
+    Documents = list
+    Embeddings = list
+    chromadb = None
 
 CHROMA_PERSIST_DIR = getattr(settings, "CHROMA_PERSIST_DIR", os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "chroma_db"))
 
@@ -178,7 +186,9 @@ def get_chroma_client():
     """Singleton getter for ChromaDB persistent client."""
     global _chroma_client
     if _chroma_client is None:
-        import chromadb
+        if chromadb is None:
+            logger.warning("ChromaDB package is not installed; vector store operations will be mocked.")
+            return None
         from chromadb.config import Settings as ChromaSettings
 
         os.makedirs(CHROMA_PERSIST_DIR, exist_ok=True)
@@ -197,6 +207,9 @@ def init_chroma_collections():
     3. dpco_collection (drug names+formulation, metadata: mrp)
     """
     client = get_chroma_client()
+    if client is None:
+        return {}
+
     ef = get_biobert_ef()
 
     # 1. CGHS Collection
