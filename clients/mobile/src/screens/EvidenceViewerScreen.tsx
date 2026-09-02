@@ -34,7 +34,7 @@ export function EvidenceViewerScreen({
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Evidence Viewer</Text>
         <View style={{ width: 40 }} />
@@ -44,7 +44,7 @@ export function EvidenceViewerScreen({
         {/* Document Preview Box with Bounding Box Region */}
         <View style={styles.previewBox}>
           <View style={styles.previewHeader}>
-            <Text style={styles.docName} numberOfLines={1}>📄 {sourceDoc}</Text>
+            <Text style={styles.docName} numberOfLines={1}>{sourceDoc}</Text>
             <Text style={styles.pageNumber}>Page {page}</Text>
           </View>
 
