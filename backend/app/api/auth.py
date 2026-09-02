@@ -217,10 +217,7 @@ async def refresh_tokens(
             detail="Refresh token required in request body or Authorization header",
         )
 
-    payload = verify_token(raw_token, expected_type="refresh")
-    user_id = payload.get("sub")
-
-    # Verify token is in DB and not revoked
+    # Look up token directly in DB by hash
     token_h = hash_token(raw_token)
     rt_query = await db.execute(
         select(RefreshToken).where(
@@ -231,8 +228,7 @@ async def refresh_tokens(
     rt_entry = rt_query.scalars().first()
     if not rt_entry:
         raise HTTPException(status_code=401, detail="Refresh token has been revoked or expired")
-    if str(rt_entry.user_id) != str(user_id):
-        raise HTTPException(status_code=401, detail="Refresh token ownership mismatch")
+    user_id = str(rt_entry.user_id)
     rt_expires = rt_entry.expires_at.replace(tzinfo=timezone.utc) if rt_entry.expires_at.tzinfo is None else rt_entry.expires_at
     if rt_expires < datetime.now(timezone.utc):
         rt_entry.is_revoked = True
