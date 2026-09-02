@@ -19,7 +19,7 @@
         android:theme="@android:style/Theme.Material.NoActionBar">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".WebAppActivity"
             android:exported="true"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustResize">
