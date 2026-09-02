@@ -1,7 +1,5 @@
-package in.curaveris.app.core.media
+package `in`.curaveris.app.core.media
 
-import android.content.Context
-import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 
 /**
