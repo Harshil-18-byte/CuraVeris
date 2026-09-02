@@ -3,23 +3,29 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { FileStack, ShieldCheck, IndianRupee, FileText, UploadCloud, ArrowRight, BarChart3 } from "lucide-react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
+import {
+  FileStack,
+  ShieldCheck,
+  IndianRupee,
+  FileText,
+  UploadCloud,
+  ArrowRight,
+  Bell,
+  Clock,
+} from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { SkeletonCard, SkeletonRow, SkeletonText } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { InlineError } from "@/components/ui/InlineError";
+import { SkeletonStat, SkeletonCard } from "@/components/ui/Skeleton";
 import { BillTable } from "@/components/bills/BillTable";
+import { CountUp } from "@/components/ui/CountUp";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatTimeAgo } from "@/lib/utils";
 
 export default function DashboardPage() {
   const user = useAuthStore((state) => state.user);
 
-  // Time-of-day greeting calculation
   const greetingTimeOfDay = useMemo(() => {
     const hour = new Date().getHours();
     if (hour >= 0 && hour <= 11) return "morning";
@@ -27,21 +33,20 @@ export default function DashboardPage() {
     return "evening";
   }, []);
 
-  // Query 1: Bills summary
+  // Fetch Bills summary
   const billsQuery = useQuery({
     queryKey: ["bills", "summary"],
     queryFn: () => api.bills.list({ page: 1, per_page: 5 }),
     staleTime: 30 * 1000,
   });
 
-  // Query 2: Unread notifications
+  // Fetch Notifications preview
   const notificationsQuery = useQuery({
-    queryKey: ["notifications", "unread-count"],
-    queryFn: () => api.notifications.getUnreadCount(),
+    queryKey: ["notifications", "preview"],
+    queryFn: () => api.notifications.list({ page: 1, per_page: 5 }),
     staleTime: 30 * 1000,
   });
 
-  // Computed Real Metrics
   const bills = billsQuery.data?.items ?? [];
   const totalBills = billsQuery.data?.total ?? 0;
   const auditsComplete = bills.filter((b) => b.processing_status === "COMPLETED").length;
@@ -49,200 +54,183 @@ export default function DashboardPage() {
     (sum, b) => sum + (b.total_overcharge ?? 0),
     0
   );
+  const notifications = notificationsQuery.data?.items ?? [];
 
-  // Grouped findings by category for chart (from real completed bills)
-  const chartData = useMemo(() => {
-    const categoryCounts: Record<string, number> = {};
-    bills.forEach((b) => {
-      if (b.total_overcharge && b.total_overcharge > 0) {
-        const cat = b.hospital_name || "General Facility";
-        categoryCounts[cat] = (categoryCounts[cat] || 0) + b.total_overcharge;
-      }
-    });
-
-    return Object.entries(categoryCounts).map(([name, amount]) => ({
-      name,
-      amount,
-    }));
-  }, [bills]);
+  const currentDateFormatted = new Intl.DateTimeFormat("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
 
   return (
-    <PageShell
-      title={
-        user?.full_name ? (
-          `Good ${greetingTimeOfDay}, ${user.full_name.split(" ")[0]}`
-        ) : (
-          <SkeletonText width="md" className="h-8" />
-        )
-      }
-      description="Automated statutory healthcare billing verification and Section 65B legal evidence dashboard."
-      action={
+    <PageShell>
+      {/* Top Greeting Section */}
+      <div className="bg-white rounded-lg border border-border-subtle p-6 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xs">
+        <div>
+          <h1 className="font-heading font-bold text-2xl text-text-primary tracking-tight">
+            Good {greetingTimeOfDay}, {user?.full_name ? user.full_name.split(" ")[0] : "there"}
+          </h1>
+          <p className="text-sm text-text-secondary mt-0.5">{currentDateFormatted}</p>
+        </div>
+
         <Link href="/bills/upload">
-          <Button size="md">
-            <UploadCloud className="w-4 h-4 mr-2" />
-            Upload Bill
+          <Button variant="primary" size="md">
+            <UploadCloud className="w-4 h-4 mr-2" strokeWidth={1.5} />
+            Check a Bill
           </Button>
         </Link>
-      }
-    >
-      {/* 4 Stat Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      </div>
+
+      {/* Stat Cards Row (4 Columns) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {billsQuery.isLoading ? (
           <>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
+            <SkeletonStat />
+            <SkeletonStat />
+            <SkeletonStat />
+            <SkeletonStat />
           </>
-        ) : billsQuery.isError ? (
-          <div className="col-span-full">
-            <InlineError
-              title="Failed to load dashboard metrics"
-              message={(billsQuery.error as any)?.message || "Unable to reach server."}
-              onRetry={() => billsQuery.refetch()}
-            />
-          </div>
         ) : (
           <>
-            <Card padding="md">
+            {/* Stat 1 */}
+            <Card variant="stat" padding="sm">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                  Bills Uploaded
+                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                  Bills Checked
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-primary-surface text-primary flex items-center justify-center">
-                  <FileStack className="w-5 h-5" />
-                </div>
+                <FileStack className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
               </div>
-              <p className="font-heading font-bold text-3xl text-neutral-900 mt-2">
-                {totalBills}
+              <p className="font-heading font-bold text-3xl text-text-primary mt-3">
+                <CountUp end={totalBills} />
               </p>
-              <span className="text-xs text-neutral-600 block mt-1">Total submitted invoices</span>
+              <span className="text-xs text-text-secondary mt-1 block">Total submitted</span>
             </Card>
 
-            <Card padding="md">
+            {/* Stat 2 */}
+            <Card variant="stat" padding="sm">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                  Audits Completed
+                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                  Checks Finished
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-success-surface text-success flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
+                <ShieldCheck className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
               </div>
-              <p className="font-heading font-bold text-3xl text-neutral-900 mt-2">
-                {auditsComplete}
+              <p className="font-heading font-bold text-3xl text-text-primary mt-3">
+                <CountUp end={auditsComplete} />
               </p>
-              <span className="text-xs text-neutral-600 block mt-1">Statutorily sealed records</span>
+              <span className="text-xs text-text-secondary mt-1 block">Bills completed</span>
             </Card>
 
-            <Card padding="md">
+            {/* Stat 3 */}
+            <Card variant="stat" padding="sm">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                  Overcharges Flagged
+                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                  Possible Extra Charges
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-danger-surface text-danger flex items-center justify-center">
-                  <IndianRupee className="w-5 h-5" />
-                </div>
+                <IndianRupee className="w-4 h-4 text-danger" strokeWidth={1.5} />
               </div>
-              <p className="font-mono font-bold text-3xl text-danger mt-2">
+              <p className="font-mono font-bold text-3xl text-danger mt-3">
                 {formatCurrency(totalOvercharge)}
               </p>
-              <span className="text-xs text-neutral-600 block mt-1">Confirmed excess fees</span>
+              <span className="text-xs text-text-secondary mt-1 block">Identified above government rates</span>
             </Card>
 
-            <Card padding="md">
+            {/* Stat 4 */}
+            <Card variant="stat" padding="sm">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
-                  Dispute Petitions
+                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                  Complaint Letters
                 </span>
-                <div className="w-9 h-9 rounded-lg bg-neutral-50 text-neutral-600 border border-neutral-300 flex items-center justify-center">
-                  <FileText className="w-5 h-5" />
-                </div>
+                <FileText className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
               </div>
-              <p className="font-heading font-bold text-3xl text-neutral-900 mt-2">
-                {auditsComplete}
+              <p className="font-heading font-bold text-3xl text-text-primary mt-3">
+                <CountUp end={auditsComplete} />
               </p>
-              <span className="text-xs text-neutral-600 block mt-1">Section 65B legal notices</span>
+              <span className="text-xs text-text-secondary mt-1 block">Ready to send</span>
             </Card>
           </>
         )}
       </div>
 
-      {/* Real Overcharge Distribution Chart Section */}
-      <Card padding="lg" className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="font-heading font-bold text-lg text-neutral-900">
-              Overcharge Recoveries by Healthcare Provider
+      {/* Main Grid: Left Column 65% / Right Column 35% */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column (Recent Bills) */}
+        <div className="lg:col-span-8 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading font-semibold text-base text-text-primary">
+              Your Recent Bills
             </h2>
-            <p className="text-xs text-neutral-600 mt-0.5">
-              Live aggregated statutory overcharge recovery opportunities
-            </p>
+            {totalBills > 0 && (
+              <Link href="/bills">
+                <Button variant="ghost" size="sm">
+                  See all
+                  <ArrowRight className="w-3.5 h-3.5 ml-1" strokeWidth={1.5} />
+                </Button>
+              </Link>
+            )}
           </div>
-        </div>
 
-        {chartData.length === 0 ? (
-          <EmptyState
-            icon={BarChart3}
-            title="Not enough data yet to show chart"
-            description="Upload hospital bills and run automated audits to generate overcharge visualizations."
-            action={{
-              label: "Upload Bill",
-              href: "/bills/upload",
-            }}
+          <BillTable
+            bills={bills}
+            isLoading={billsQuery.isLoading}
+            isError={billsQuery.isError}
+            errorMessage={(billsQuery.error as any)?.message}
+            onRetry={() => billsQuery.refetch()}
           />
-        ) : (
-          <div className="h-64 w-full pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 20 }}>
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#4A4A6A" }} />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "#4A4A6A" }}
-                  tickFormatter={(val) => `₹${val}`}
-                />
-                <Tooltip
-                  formatter={(val: number) => [formatCurrency(val), "Flagged Overcharge"]}
-                  contentStyle={{
-                    backgroundColor: "#FFFFFF",
-                    border: "1px solid #C8C8D8",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-                  {chartData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill="#922B21" />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </Card>
-
-      {/* Recent Bills Section */}
-      <div className="space-y-4 pt-2">
-        <div className="flex items-center justify-between">
-          <h2 className="font-heading font-bold text-xl text-neutral-900">
-            Recent Hospital Invoices
-          </h2>
-          {totalBills > 0 && (
-            <Link
-              href="/bills"
-              className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
-            >
-              <span>View All Bills ({totalBills})</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          )}
         </div>
 
-        <BillTable
-          bills={bills}
-          isLoading={billsQuery.isLoading}
-          isError={billsQuery.isError}
-          errorMessage={(billsQuery.error as any)?.message}
-          onRetry={() => billsQuery.refetch()}
-        />
+        {/* Right Column (Recent Activity) */}
+        <div className="lg:col-span-4 space-y-4">
+          <h2 className="font-heading font-semibold text-base text-text-primary">
+            Recent Activity
+          </h2>
+
+          <Card padding="md" className="space-y-3">
+            {notificationsQuery.isLoading ? (
+              <div className="space-y-3">
+                <SkeletonCard className="p-3" />
+                <SkeletonCard className="p-3" />
+              </div>
+            ) : notifications.length === 0 ? (
+              <div className="py-8 text-center text-text-tertiary space-y-2">
+                <Bell className="w-7 h-7 mx-auto opacity-40" strokeWidth={1.5} />
+                <p className="text-xs font-medium text-text-secondary">No recent updates</p>
+                <p className="text-[11px]">We&apos;ll notify you when bill checks complete.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border-subtle">
+                {notifications.slice(0, 5).map((notif) => (
+                  <div key={notif.id} className="py-3 first:pt-0 last:pb-0 flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-bg-secondary text-text-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Clock className="w-4 h-4" strokeWidth={1.5} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-text-primary truncate">
+                        {notif.title}
+                      </p>
+                      <p className="text-[11px] text-text-secondary line-clamp-2 mt-0.5">
+                        {notif.body}
+                      </p>
+                      <span className="text-[10px] text-text-tertiary block mt-1">
+                        {formatTimeAgo(notif.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="pt-3 border-t border-border-subtle text-center">
+              <Link
+                href="/notifications"
+                className="text-xs font-medium text-brand-accent hover:underline inline-flex items-center gap-1"
+              >
+                <span>View all notifications</span>
+                <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+              </Link>
+            </div>
+          </Card>
+        </div>
       </div>
     </PageShell>
   );
