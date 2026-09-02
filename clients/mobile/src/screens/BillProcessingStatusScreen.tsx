@@ -91,7 +91,7 @@ export function BillProcessingStatusScreen({
                       isDone || isActive ? styles.whiteText : styles.neutralText,
                     ]}
                   >
-                    {isDone ? '✓' : s.step}
+                    {s.step}
                   </Text>
                 </View>
 
