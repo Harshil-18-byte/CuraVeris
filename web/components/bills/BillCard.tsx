@@ -15,7 +15,8 @@ export const BillCard: React.FC<BillCardProps> = ({ bill }) => {
 
   return (
     <Card
-      accentColor={hasOvercharge ? "danger" : "none"}
+      variant={hasOvercharge ? "accent-left" : "interactive"}
+      accentColor={hasOvercharge ? "danger" : undefined}
       className="hover:border-primary/40 transition-colors duration-200"
     >
       <div className="flex items-start justify-between">
