@@ -2,6 +2,7 @@ import uuid
 from sqlalchemy import (
     Column,
     String,
+    Boolean,
     Integer,
     BigInteger,
     Numeric,
@@ -27,28 +28,42 @@ class Bill(Base):
         default=uuid.uuid4,
         server_default=text("gen_random_uuid()"),
     )
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
     reference_number = Column(String(100), nullable=True)
     hospital_name = Column(String(500), nullable=True)
+    city = Column(String(255), nullable=True)
+    tier = Column(Integer, default=1, nullable=True)
+    is_nabh = Column(Boolean, default=True, nullable=True)
     patient_name = Column(String(255), nullable=True)
+    patient_name_enc = Column(String(255), nullable=True)
+    diagnosis = Column(String(500), nullable=True)
     admission_date = Column(Date, nullable=True)
     discharge_date = Column(Date, nullable=True)
+    days_admitted = Column(Integer, default=1, nullable=True)
     total_billed_amount = Column(Numeric(14, 2), nullable=True)
+    total_billed = Column(Numeric(14, 2), default=0.0, nullable=True)
+    total_fair_estimate = Column(Numeric(14, 2), default=0.0, nullable=True)
+    total_overcharge = Column(Numeric(14, 2), default=0.0, nullable=True)
+    risk_score = Column(Numeric(5, 2), default=0.0, nullable=True)
+    status = Column(String(50), default="pending", nullable=True)
+    plain_summary = Column(Text, nullable=True)
+    risk_flags_summary = Column(JSON, default=list, nullable=True)
+    raw_ocr_text = Column(Text, nullable=True)
     bill_type = Column(String(50), nullable=True)
     insurance_type = Column(String(50), nullable=True)
 
-    processing_status = Column(String(50), default="QUEUED", nullable=False, index=True)
+    processing_status = Column(String(50), default="QUEUED", nullable=True, index=True)
     processing_job_id = Column(String(255), nullable=True)
     processing_started_at = Column(DateTime(timezone=True), nullable=True)
     processing_completed_at = Column(DateTime(timezone=True), nullable=True)
     failure_reason = Column(Text, nullable=True)
-    retry_count = Column(Integer, default=0, nullable=False)
+    retry_count = Column(Integer, default=0, nullable=True)
 
-    file_key = Column(String(1000), nullable=False)
-    file_name_original = Column(String(500), nullable=False)
-    file_size_bytes = Column(BigInteger, nullable=False)
-    file_mime_type = Column(String(100), nullable=False)
-    file_hash_sha256 = Column(String(64), nullable=False, index=True)
+    file_key = Column(String(1000), nullable=True)
+    file_name_original = Column(String(500), nullable=True)
+    file_size_bytes = Column(BigInteger, nullable=True)
+    file_mime_type = Column(String(100), nullable=True)
+    file_hash_sha256 = Column(String(64), nullable=True, index=True)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     created_at = Column(
@@ -68,6 +83,7 @@ class Bill(Base):
     line_items = relationship("BillLineItem", back_populates="bill", cascade="all, delete-orphan", order_by="BillLineItem.item_sequence")
     audit = relationship("Audit", back_populates="bill", uselist=False, cascade="all, delete-orphan")
     evidence = relationship("EvidenceRecord", back_populates="bill", uselist=False, cascade="all, delete-orphan")
+    frm_assessment = relationship("FinancialRiskAssessment", back_populates="bill", uselist=False, cascade="all, delete-orphan")
 
 
 class BillLineItem(Base):
