@@ -1,139 +1,262 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { UploadCloud, FileText, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  UploadCloud,
+  FileText,
+  X,
+  AlertCircle,
+  ShieldCheck,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
 
-interface UploadZoneProps {
-  onFileSelect: (file: File | null) => void;
-  selectedFile: File | null;
-  error?: string | null;
-}
+const uploadFormSchema = z.object({
+  hospital_name: z.string().min(2, "Please enter the hospital name"),
+  total_billed_amount: z.coerce
+    .number()
+    .min(1, "Please enter the total bill amount"),
+  admission_date: z.string().optional(),
+  discharge_date: z.string().optional(),
+  insurance_type: z.string().default("Self Pay"),
+});
 
-export const UploadZone: React.FC<UploadZoneProps> = ({
-  onFileSelect,
-  selectedFile,
-  error,
-}) => {
-  const [isDragOver, setIsDragOver] = useState(false);
+type UploadFormValues = z.infer<typeof uploadFormSchema>;
+
+export const UploadZone: React.FC = () => {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<UploadFormValues>({
+    resolver: zodResolver(uploadFormSchema),
+    defaultValues: {
+      insurance_type: "Self Pay",
+    },
+  });
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
+  const handleFileChange = (file: File | null) => {
+    setUploadError(null);
+    if (!file) return;
+
+    // Validate type
+    const validTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+    if (!validTypes.includes(file.type)) {
+      setUploadError("Please upload a PDF document or an image (JPG, PNG, WEBP).");
+      return;
+    }
+
+    // Validate size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      setUploadError("File is too large. Maximum size allowed is 20MB.");
+      return;
+    }
+
+    setSelectedFile(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragOver(false);
+    setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      validateAndSet(e.dataTransfer.files[0]);
+      handleFileChange(e.dataTransfer.files[0]);
     }
   };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      validateAndSet(e.target.files[0]);
-    }
-  };
-
-  const validateAndSet = (file: File) => {
-    const validTypes = ["application/pdf", "image/png", "image/jpeg", "image/tiff"];
-    if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|png|jpe?g|tiff?)$/i)) {
-      onFileSelect(null);
+  const onSubmit = async (data: UploadFormValues) => {
+    if (!selectedFile) {
+      setUploadError("Please select or drop your bill file.");
       return;
     }
-    if (file.size > 50 * 1024 * 1024) {
-      onFileSelect(null);
-      return;
-    }
-    onFileSelect(file);
-  };
 
-  const handleRemove = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onFileSelect(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      if (data.hospital_name) formData.append("hospital_name", data.hospital_name);
+      if (data.total_billed_amount) formData.append("total_billed_amount", data.total_billed_amount.toString());
+      if (data.admission_date) formData.append("admission_date", data.admission_date);
+      if (data.discharge_date) formData.append("discharge_date", data.discharge_date);
+      if (data.insurance_type) formData.append("insurance_type", data.insurance_type);
+
+      const res = await api.bills.upload(formData);
+      toast.success("Bill uploaded! We are now checking the prices.");
+      router.push(`/bills/${res.bill_id}`);
+    } catch (err: any) {
+      const detail = err?.message || err?.response?.data?.detail;
+      setUploadError(
+        typeof detail === "string" ? detail : "Failed to upload bill. Please try again."
+      );
     }
   };
 
   return (
-    <div className="w-full">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".pdf,.png,.jpg,.jpeg,.tiff"
-        onChange={handleFileInput}
-        className="hidden"
-      />
+    <div className="max-w-2xl mx-auto space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Drag & Drop File Zone */}
+        <div>
+          <label className="block text-sm font-semibold text-text-primary mb-2">
+            Upload Hospital Bill or Discharge Summary
+          </label>
 
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => !selectedFile && fileInputRef.current?.click()}
-        className={cn(
-          "w-full min-h-[220px] rounded-card border-2 border-dashed transition-all flex flex-col items-center justify-center p-6 text-center cursor-pointer",
-          isDragOver
-            ? "border-primary bg-primary-surface"
-            : error
-            ? "border-danger bg-danger-surface/20"
-            : "border-neutral-300 bg-neutral-50 hover:bg-neutral-50/80"
-        )}
-      >
-        {selectedFile ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-success-surface border border-success/20 flex items-center justify-center text-success">
-              <CheckCircle2 className="w-7 h-7" />
-            </div>
-            <div>
-              <p className="font-semibold text-neutral-900 text-base">{selectedFile.name}</p>
-              <p className="text-xs text-neutral-600 mt-0.5">
-                {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · Ready for statutory audit
-              </p>
-            </div>
-            <button
-              onClick={handleRemove}
-              className="mt-2 text-xs font-semibold text-danger hover:underline inline-flex items-center gap-1"
+          {!selectedFile ? (
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all duration-150 ${
+                isDragging
+                  ? "border-brand-accent bg-brand-accent-light"
+                  : "border-border-default hover:border-brand-accent bg-white"
+              }`}
             >
-              <X className="w-3.5 h-3.5" />
-              <span>Remove Document</span>
-            </button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-14 h-14 rounded-full bg-primary-surface border border-primary/20 flex items-center justify-center text-primary mb-1">
-              <UploadCloud className="w-7 h-7" />
-            </div>
-            <p className="font-semibold text-neutral-900 text-base">
-              Drag and drop your hospital bill here
-            </p>
-            <p className="text-sm text-neutral-600">
-              or{" "}
-              <span className="text-primary font-medium hover:underline">
-                browse files on your device
-              </span>
-            </p>
-            <p className="text-xs text-neutral-600 mt-2">
-              PDF, PNG, JPEG, TIFF · Maximum 50MB
-            </p>
-          </div>
-        )}
-      </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+              />
 
-      {error && (
-        <div className="mt-3 p-3 bg-danger-surface border border-danger/20 rounded-button flex items-center gap-2 text-danger text-sm">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>{error}</span>
+              <div className="w-14 h-14 rounded-full bg-brand-accent-light text-brand-accent flex items-center justify-center mx-auto mb-4">
+                <UploadCloud className="w-7 h-7" strokeWidth={1.5} />
+              </div>
+
+              <h3 className="font-heading font-semibold text-base text-text-primary">
+                Click to choose a file or drag it here
+              </h3>
+              <p className="text-xs text-text-secondary mt-1 font-normal">
+                Supported formats: PDF, JPG, PNG, WEBP (up to 20MB)
+              </p>
+
+              <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-bg-secondary rounded-full text-xs text-text-secondary font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-success" strokeWidth={1.5} />
+                <span>Your bill is encrypted & never shared</span>
+              </div>
+            </div>
+          ) : (
+            <Card padding="md" className="flex items-center justify-between gap-4 border-brand-accent/30 bg-brand-accent-light/30">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-5 h-5" strokeWidth={1.5} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-text-primary truncate">
+                    {selectedFile.name}
+                  </p>
+                  <p className="text-xs text-text-secondary">
+                    {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedFile(null)}
+                className="text-text-tertiary hover:text-danger"
+              >
+                <X className="w-4 h-4" strokeWidth={1.5} />
+              </Button>
+            </Card>
+          )}
+
+          {uploadError && (
+            <p className="mt-2 text-xs text-danger flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
+              <span>{uploadError}</span>
+            </p>
+          )}
         </div>
-      )}
+
+        {/* Form Details */}
+        <Card padding="lg" className="space-y-4">
+          <h4 className="font-heading font-semibold text-sm text-text-primary border-b border-border-subtle pb-3">
+            Hospital & Bill Details
+          </h4>
+
+          <Input
+            label="Hospital or Clinic Name"
+            placeholder="e.g. Apollo Hospital, Fortis Healthcare, AIIMS"
+            error={errors.hospital_name?.message}
+            {...register("hospital_name")}
+          />
+
+          <Input
+            label="Total Bill Amount (₹)"
+            type="number"
+            leftAddon={<span className="text-xs font-semibold">₹</span>}
+            placeholder="e.g. 1,45,000"
+            hint="Total amount before any insurance discount or payment."
+            error={errors.total_billed_amount?.message}
+            {...register("total_billed_amount")}
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              label="Admission Date (Optional)"
+              type="date"
+              error={errors.admission_date?.message}
+              {...register("admission_date")}
+            />
+
+            <Input
+              label="Discharge Date (Optional)"
+              type="date"
+              error={errors.discharge_date?.message}
+              {...register("discharge_date")}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">
+              Payment Method / Insurance
+            </label>
+            <select
+              className="w-full h-[44px] px-3.5 bg-white text-text-primary text-base font-normal rounded-md border border-border-default outline-none focus:border-border-focus focus:shadow-[0_0_0_3px_rgba(37,99,235,0.12)] transition-all"
+              {...register("insurance_type")}
+            >
+              <option value="Self Pay">Self Pay / Cash</option>
+              <option value="Private Health Insurance">Private Health Insurance (Mediclaim)</option>
+              <option value="CGHS / ECHS">CGHS / ECHS (Central Govt)</option>
+              <option value="PM-JAY Ayushman Bharat">PM-JAY Ayushman Bharat</option>
+              <option value="Corporate / Employer">Corporate / Employer Group Plan</option>
+            </select>
+          </div>
+        </Card>
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="w-full"
+          isLoading={isSubmitting}
+        >
+          Check My Bill Now
+        </Button>
+      </form>
     </div>
   );
 };
