@@ -177,9 +177,11 @@ export default function LandingPage() {
 
               {/* Mockup Action Button */}
               <div className="mt-5 pt-3 border-t border-border-subtle">
-                <div className="h-10 bg-brand-accent text-white rounded-md flex items-center justify-center font-medium text-xs shadow-xs">
-                  Create Complaint Letter →
-                </div>
+                <Link href="/register" className="block">
+                  <div className="h-10 bg-brand-accent hover:bg-brand-accent/90 transition-colors text-white rounded-md flex items-center justify-center font-medium text-xs shadow-xs cursor-pointer">
+                    Create Complaint Letter →
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -200,7 +202,7 @@ export default function LandingPage() {
 
           <div className="pt-4 sm:pt-0">
             <p className="font-heading font-bold text-4xl text-text-primary">
-              {statsVisible ? <CountUp end={42000} prefix="₹" formatter={(v) => `₹${(v / 1000).toFixed(0)}k`} /> : "₹42k"}
+              {statsVisible ? <CountUp end={42000} prefix="₹" formatter={(v) => `${(v / 1000).toFixed(0)}k`} /> : "₹42k"}
             </p>
             <p className="text-sm text-text-secondary mt-1">
               average overcharge found per audited bill
