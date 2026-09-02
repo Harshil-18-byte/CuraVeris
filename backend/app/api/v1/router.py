@@ -26,8 +26,8 @@ api_router.include_router(legacy_bills_router)
 api_router.include_router(bills_v1_router)
 
 # Mount auth routes (combining both v1 and legacy helper endpoints like /anonymize-me)
-api_router.include_router(legacy_auth_router)
 api_router.include_router(auth_v1_router)
+api_router.include_router(legacy_auth_router)
 
 # Mount domain and integration routers
 api_router.include_router(audits_router)
