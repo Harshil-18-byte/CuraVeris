@@ -37,7 +37,7 @@ fun DashboardScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "⚖️ CuraVeris",
+                            text = "CuraVeris",
                             fontSize = 20.sp,
                             color = TextPrimary
                         )
@@ -52,7 +52,7 @@ fun DashboardScreen(
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = if (isBackendHealthy == true) "● Healthy" else "● Checking",
+                                text = if (isBackendHealthy == true) "Healthy" else "Checking",
                                 fontSize = 11.sp,
                                 color = if (isBackendHealthy == true) SuccessGreen else WarningAmber
                             )
@@ -80,7 +80,7 @@ fun DashboardScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "⚡ Device is offline. Network requests will queue.",
+                        text = "Device is offline. Network requests will queue.",
                         color = DangerRed,
                         modifier = Modifier.padding(12.dp),
                         fontSize = 13.sp
@@ -120,10 +120,10 @@ fun DashboardScreen(
                         color = TextPrimary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "✓ NPPA Cardiac & Orthopedic Implant Ceilings", fontSize = 12.sp, color = SuccessGreen)
-                    Text(text = "✓ DPCO 2013 NLEM Pharmaceutical MRP Caps", fontSize = 12.sp, color = SuccessGreen)
-                    Text(text = "✓ CGHS 2024 Benchmark Procedure Tariffs", fontSize = 12.sp, color = SuccessGreen)
-                    Text(text = "✓ IRDAI 199 Excluded Consumable Rules", fontSize = 12.sp, color = SuccessGreen)
+                    Text(text = "NPPA Cardiac & Orthopedic Implant Ceilings", fontSize = 12.sp, color = SuccessGreen)
+                    Text(text = "DPCO 2013 NLEM Pharmaceutical MRP Caps", fontSize = 12.sp, color = SuccessGreen)
+                    Text(text = "CGHS 2024 Benchmark Procedure Tariffs", fontSize = 12.sp, color = SuccessGreen)
+                    Text(text = "IRDAI 199 Excluded Consumable Rules", fontSize = 12.sp, color = SuccessGreen)
                 }
             }
         }
