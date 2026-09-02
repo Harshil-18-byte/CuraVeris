@@ -13,9 +13,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "types": [],
-    "typeRoots": []
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*",
