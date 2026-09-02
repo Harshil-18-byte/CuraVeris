@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FileText, ShieldAlert, CheckCircle2, Bell, AlertTriangle } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
+import { FileText, CheckCircle2, Bell, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { formatTimeAgo, cn } from "@/lib/utils";
 import { Notification } from "@/types";
@@ -62,12 +60,47 @@ export const NotificationList: React.FC<NotificationListProps> = ({
       case "AUDIT_COMPLETED":
         return <CheckCircle2 className="w-5 h-5 text-success" />;
       case "STATUTORY_VIOLATION":
-        return <ShieldAlert className="w-5 h-5 text-danger" />;
+        return <AlertTriangle className="w-5 h-5 text-danger" />;
       case "BILL_PROCESSING_FAILED":
         return <AlertTriangle className="w-5 h-5 text-danger" />;
       case "BILL_UPLOADED":
       default:
         return <FileText className="w-5 h-5 text-primary" />;
+    }
+  };
+
+  const getPlainTitle = (title: string, eventType: string) => {
+    switch (eventType) {
+      case "BILL_UPLOADED":
+        return "We've got your bill";
+      case "AUDIT_COMPLETED":
+        return "Your bill check is ready";
+      case "HIGH_RISK_FINDING":
+        return "We found something significant";
+      case "STATUTORY_VIOLATION":
+        return "We found a possible overcharge";
+      case "EXTRACTION_FAILED":
+        return "We had trouble reading your bill";
+      case "BILL_PROCESSING_FAILED":
+        return "Something went wrong";
+      case "LEGAL_DOCUMENT_READY":
+        return "Your complaint letter is ready";
+      case "EVIDENCE_CERTIFICATE_READY":
+        return "Your proof document is ready";
+      case "PAYMENT_CAPTURED":
+        return "Payment received";
+      case "PAYMENT_FAILED":
+        return "Payment didn't go through";
+      case "LOGIN_NEW_DEVICE":
+        return "New sign-in to your account";
+      case "ACCOUNT_LOCKED":
+        return "Your account is temporarily locked";
+      case "FRM_ANALYSIS_COMPLETE":
+        return "Your financial assessment is ready";
+      case "FRM_ANALYSIS_FAILED":
+        return "Financial assessment couldn't be completed";
+      default:
+        return title;
     }
   };
 
@@ -100,7 +133,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
           </button>
         </div>
 
-        <Button variant="outline" size="sm" onClick={handleMarkAllRead}>
+        <Button variant="secondary" size="sm" onClick={handleMarkAllRead}>
           Mark All as Read
         </Button>
       </div>
@@ -110,8 +143,8 @@ export const NotificationList: React.FC<NotificationListProps> = ({
         {filtered.length === 0 ? (
           <div className="p-12 text-center text-neutral-600">
             <Bell className="w-8 h-8 mx-auto text-neutral-300 mb-2" />
-            <p className="font-semibold text-neutral-900">No notifications</p>
-            <p className="text-xs text-neutral-600 mt-1">You are all caught up!</p>
+            <p className="font-semibold text-neutral-900">Nothing here yet.</p>
+            <p className="text-xs text-neutral-600 mt-1">We&apos;ll let you know as soon as your bill check is done.</p>
           </div>
         ) : (
           filtered.map((notif) => (
@@ -129,7 +162,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <h4 className="font-heading font-semibold text-sm text-neutral-900 truncate">
-                    {notif.title}
+                    {getPlainTitle(notif.title, notif.event_type)}
                   </h4>
                   <span className="text-[11px] text-neutral-600 whitespace-nowrap">
                     {formatTimeAgo(notif.created_at)}
