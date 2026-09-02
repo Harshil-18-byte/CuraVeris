@@ -39,7 +39,7 @@ export function CameraScannerScreen({
         <Text style={styles.pageCountText}>Page {pageCount} of {pageCount}</Text>
 
         <TouchableOpacity onPress={() => setFlashOn(!flashOn)}>
-          <Text style={styles.topBarText}>{flashOn ? '⚡ On' : '⚡ Off'}</Text>
+          <Text style={styles.topBarText}>{flashOn ? 'Flash On' : 'Flash Off'}</Text>
         </TouchableOpacity>
       </View>
 
