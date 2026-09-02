@@ -51,7 +51,7 @@ export default function LandingPage() {
               Sign In
             </Link>
             <Link
-              href="/scan"
+              href="/register"
               className="btn btn-primary btn-sm"
               style={{ fontWeight: 600 }}
             >
@@ -84,12 +84,11 @@ export default function LandingPage() {
                 fontWeight: 700,
                 lineHeight: 1.2,
                 color: 'var(--color-neutral-900)',
-                letterSpacing: '-1px',
+                letterSpacing: '-1.5px',
                 marginBottom: '16px',
               }}
             >
-              Your Hospital Bill, <br />
-              <span style={{ color: 'var(--color-primary)' }}>Audited by Law.</span>
+              Your Hospital Bill,<br />Audited by Law.
             </h1>
 
             <p
@@ -106,7 +105,7 @@ export default function LandingPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', gap: '12px' }}>
                 <Link
-                  href="/scan"
+                  href="/register"
                   className="btn btn-primary btn-lg"
                   style={{ fontWeight: 600 }}
                 >
