@@ -49,6 +49,8 @@ class Audit(Base):
     recommendations = Column(JSON, nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
+    frm_assessment_id = Column(UUID(as_uuid=True), ForeignKey("financial_risk_assessments.id", ondelete="SET NULL", use_alter=True), nullable=True)
+
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -64,6 +66,7 @@ class Audit(Base):
     # Relationships
     bill = relationship("Bill", back_populates="audit")
     findings = relationship("AuditFinding", back_populates="audit", cascade="all, delete-orphan", order_by="AuditFinding.overcharge_amount.desc()")
+    frm_assessment = relationship("FinancialRiskAssessment", back_populates="audit", uselist=False, foreign_keys="FinancialRiskAssessment.audit_id")
 
 
 class AuditFinding(Base):
