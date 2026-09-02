@@ -1,101 +1,141 @@
+"use client";
+
 import React from "react";
 import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
 import { RiskLabel } from "@/types";
 
 interface RiskGaugeProps {
-  score: number;
-  label: RiskLabel | string;
-  lowerBound?: number;
-  upperBound?: number;
+  score?: number | null;
+  label?: RiskLabel | null;
+  uncertaintyLower?: number | null;
+  uncertaintyUpper?: number | null;
 }
 
 export const RiskGauge: React.FC<RiskGaugeProps> = ({
-  score,
-  label,
-  lowerBound,
-  upperBound,
+  score = 0,
+  label = "LOW",
+  uncertaintyLower,
+  uncertaintyUpper,
 }) => {
-  const percentage = Math.round(score * 100);
-  const lowerPct = Math.round((lowerBound || Math.max(0, score - 0.08)) * 100);
-  const upperPct = Math.round((upperBound || Math.min(1, score + 0.08)) * 100);
+  const numericScore = Math.min(Math.max(Number(score || 0) * 100, 0), 100);
 
-  // SVG circular gauge geometry
-  const radius = 70;
+  // SVG Dial Math
+  const size = 200;
+  const strokeWidth = 14;
+  const center = size / 2;
+  const radius = center - strokeWidth;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (score * circumference);
+  // Arc of 270 degrees (3/4 circle)
+  const arcLength = circumference * 0.75;
+  const strokeDashoffset = arcLength - (numericScore / 100) * arcLength;
 
-  const getStrokeColor = () => {
-    if (score < 0.25) return "#1E8449"; // Success
-    if (score <= 0.55) return "#B7770D"; // Warning
-    return "#922B21"; // Danger
+  const getDialColor = (lvl?: string | null) => {
+    switch (lvl) {
+      case "CRITICAL":
+      case "HIGH":
+        return "#DC2626"; // danger
+      case "MEDIUM":
+        return "#D97706"; // warning
+      default:
+        return "#16A34A"; // success
+    }
   };
 
-  return (
-    <Card padding="lg" className="flex flex-col items-center justify-center text-center">
-      <h3 className="font-heading font-bold text-base text-neutral-900 mb-4">
-        Overall Risk Probability
-      </h3>
+  const getRiskLabelText = (lvl?: string | null) => {
+    switch (lvl) {
+      case "CRITICAL":
+        return "Very High Concern";
+      case "HIGH":
+        return "High Concern";
+      case "MEDIUM":
+        return "Some Concern";
+      default:
+        return "Low Concern";
+    }
+  };
 
-      <div className="relative w-44 h-44 flex items-center justify-center">
-        <svg className="w-full h-full transform -rotate-90">
-          {/* Background circle */}
+  const getRiskBadgeVariant = (lvl?: string | null) => {
+    switch (lvl) {
+      case "CRITICAL":
+      case "HIGH":
+        return "danger";
+      case "MEDIUM":
+        return "warning";
+      default:
+        return "success";
+    }
+  };
+
+  const dialColor = getDialColor(label);
+
+  return (
+    <div className="flex flex-col items-center justify-center p-6 text-center">
+      <span className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-4">
+        Overall Concern Level
+      </span>
+
+      {/* 200x200 Custom SVG Dial */}
+      <div className="relative w-[200px] h-[200px] flex items-center justify-center">
+        <svg
+          className="w-[200px] h-[200px] transform rotate-[135deg]"
+          viewBox={`0 0 ${size} ${size}`}
+        >
+          {/* Background Track Ring */}
           <circle
-            cx="88"
-            cy="88"
+            cx={center}
+            cy={center}
             r={radius}
-            stroke="#C8C8D8"
-            strokeWidth="12"
-            fill="transparent"
-            className="opacity-40"
+            fill="none"
+            stroke="#F1F5F9"
+            strokeWidth={strokeWidth}
+            strokeDasharray={`${arcLength} ${circumference}`}
+            strokeLinecap="round"
           />
-          {/* Active progress circle */}
+
+          {/* Active Score Ring */}
           <circle
-            cx="88"
-            cy="88"
+            cx={center}
+            cy={center}
             r={radius}
-            stroke={getStrokeColor()}
-            strokeWidth="12"
-            fill="transparent"
-            strokeDasharray={circumference}
+            fill="none"
+            stroke={dialColor}
+            strokeWidth={strokeWidth}
+            strokeDasharray={`${arcLength} ${circumference}`}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className="transition-all duration-1000 ease-out"
+            className="transition-all duration-700 ease-out"
           />
         </svg>
 
-        {/* Inner centered text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-heading font-bold text-4xl text-neutral-900 tracking-tight">
-            {percentage}%
+        {/* Center Score Readout */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
+          <span className="font-heading font-extrabold text-4xl text-text-primary tracking-tight">
+            {Math.round(numericScore)}
           </span>
-          <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider mt-0.5">
-            Audit Risk
-          </span>
+          <span className="text-xs text-text-tertiary mt-0.5">out of 100</span>
         </div>
       </div>
 
+      {/* Risk Badge */}
       <div className="mt-4">
-        <Badge
-          variant={
-            label === "CRITICAL" || label === "HIGH"
-              ? "danger"
-              : label === "MEDIUM"
-              ? "warning"
-              : "success"
-          }
-          size="md"
-        >
-          {label} RISK LEVEL
+        <Badge variant={getRiskBadgeVariant(label)} size="md">
+          {getRiskLabelText(label)}
         </Badge>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-neutral-300 w-full text-xs text-neutral-600">
-        <span>Monte Carlo Confidence Interval: </span>
-        <span className="font-semibold text-neutral-900 font-mono">
-          {lowerPct}% – {upperPct}%
-        </span>
-      </div>
-    </Card>
+      {/* Confidence Band */}
+      {uncertaintyLower !== undefined &&
+        uncertaintyLower !== null &&
+        uncertaintyUpper !== undefined &&
+        uncertaintyUpper !== null && (
+          <p className="text-xs text-text-secondary mt-2 font-medium">
+            Estimated range: {Math.round(uncertaintyLower * 100)} – {Math.round(uncertaintyUpper * 100)}
+          </p>
+        )}
+
+      <p className="text-[11px] text-text-tertiary mt-2 max-w-xs">
+        Based on pattern analysis from similar Indian hospital bills
+      </p>
+    </div>
   );
 };
