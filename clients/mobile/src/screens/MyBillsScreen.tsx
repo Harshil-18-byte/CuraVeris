@@ -165,7 +165,6 @@ export function MyBillsScreen({
           </View>
         ) : (
           <View style={styles.emptyContainer}>
-            <Text style={{ fontSize: 36, marginBottom: 8 }}>🔍</Text>
             <Text style={styles.emptyTitle}>No bills in {activeFilter}</Text>
             <Text style={styles.emptySub}>No medical bills matching this status filter.</Text>
           </View>
@@ -174,7 +173,7 @@ export function MyBillsScreen({
 
       {/* FAB */}
       <TouchableOpacity style={styles.fab} onPress={onUploadBill} activeOpacity={0.9}>
-        <Text style={styles.fabIcon}>📷</Text>
+        <Text style={styles.fabIcon}>Upload</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
