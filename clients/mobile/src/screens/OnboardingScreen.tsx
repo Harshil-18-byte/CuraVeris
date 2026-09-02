@@ -9,19 +9,16 @@ const SLIDES = [
     step: 1,
     title: 'Upload Your Hospital Bill',
     body: 'PDF, image, or photo — we accept any format. We\'ll extract every line item automatically.',
-    iconPlaceholder: '📄🔍',
   },
   {
     step: 2,
     title: 'We Check Every Charge By Law',
     body: 'Our engine cross-checks each item against CGHS rates, NPPA implant caps, DPCO drug ceilings, and IRDAI guidelines.',
-    iconPlaceholder: '⚖️📋',
   },
   {
     step: 3,
     title: 'Fight Back With Evidence',
     body: 'Get a cryptographically signed audit report and ready-to-file dispute documents — ombudsman petitions, anti-detention notices, and more.',
-    iconPlaceholder: '🛡️📑',
   },
 ];
 
@@ -51,7 +48,7 @@ export function OnboardingScreen({ onFinish }: { onFinish?: () => void }) {
       {/* Top 45%: Illustration Area */}
       <View style={styles.illustrationArea}>
         <View style={styles.geometricIconContainer}>
-          <Text style={{ fontSize: 64 }}>{slide.iconPlaceholder}</Text>
+          <Text style={{ fontSize: 36, fontWeight: '700', color: Colors.primary }}>Step {slide.step}</Text>
         </View>
       </View>
 
