@@ -233,7 +233,7 @@ export default function App() {
           <Stack.Screen
             key={name}
             name={name}
-            children={({ navigation }) =>
+            children={({ navigation }: any) =>
               name === 'splash' ? (
                 <SplashRoute navigation={navigation as Nav} />
               ) : (
