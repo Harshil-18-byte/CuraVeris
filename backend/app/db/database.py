@@ -1,4 +1,5 @@
 import os
+import re
 import logging
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base, sessionmaker
@@ -8,14 +9,39 @@ from app.core.config import settings
 logger = logging.getLogger("curaveris.db")
 
 
+def _normalize_async_url(url: str) -> str:
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    elif url.startswith("sqlite://") and not url.startswith("sqlite+aiosqlite://"):
+        url = url.replace("sqlite://", "sqlite+aiosqlite://", 1)
+
+    if "sslmode=" in url:
+        url = url.replace("sslmode=", "ssl=")
+    if "channel_binding=" in url:
+        url = re.sub(r"&?channel_binding=[^&]*", "", url)
+        if url.endswith("?") or url.endswith("&"):
+            url = url[:-1]
+    return url
+
+
+def _normalize_sync_url(url: str) -> str:
+    if url.startswith("postgresql+asyncpg://"):
+        url = url.replace("postgresql+asyncpg://", "postgresql://", 1)
+    elif url.startswith("sqlite+aiosqlite://"):
+        url = url.replace("sqlite+aiosqlite://", "sqlite://", 1)
+    return url
+
+
 def _get_active_urls():
     if os.environ.get("ENV") == "testing" or settings.ENV == "testing":
         test_url = os.environ.get("DATABASE_URL") or settings.FALLBACK_DATABASE_URL
         test_sync = os.environ.get("SYNC_DATABASE_URL") or settings.FALLBACK_SYNC_DATABASE_URL
-        return test_url, test_sync
+        return _normalize_async_url(test_url), _normalize_sync_url(test_sync)
     db_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL
     sync_url = os.environ.get("SYNC_DATABASE_URL") or settings.SYNC_DATABASE_URL
-    return db_url, sync_url
+    return _normalize_async_url(db_url), _normalize_sync_url(sync_url)
 
 
 def _build_engines(url: str, sync_url: str):
