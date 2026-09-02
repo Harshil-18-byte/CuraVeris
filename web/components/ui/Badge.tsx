@@ -1,62 +1,74 @@
+"use client";
+
 import React from "react";
 import { cn } from "@/lib/utils";
-import { ProcessingStatus } from "@/types";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "success" | "warning" | "danger" | "primary" | "secondary";
+  variant?: "default" | "success" | "warning" | "danger" | "accent" | "brand";
   size?: "sm" | "md";
+  hasDot?: boolean;
+  isPulsing?: boolean;
 }
 
-export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = "default", size = "sm", children, ...props }, ref) => {
-    const variantStyles = {
-      default: "bg-neutral-50 text-neutral-600 border border-neutral-300",
-      success: "bg-success-surface text-success border border-success/20",
-      warning: "bg-warning-surface text-warning border border-warning/20",
-      danger: "bg-danger-surface text-danger border border-danger/20",
-      primary: "bg-primary-surface text-primary border border-primary/20",
-      secondary: "bg-neutral-50 text-neutral-900 border border-neutral-300",
-    };
+export const Badge: React.FC<BadgeProps> = ({
+  className,
+  variant = "default",
+  size = "sm",
+  hasDot = false,
+  isPulsing = false,
+  children,
+  ...props
+}) => {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full font-medium tracking-[0.01em] whitespace-nowrap select-none",
+        
+        // Variants
+        variant === "default" && "bg-[#F1F5F9] text-[#475569]",
+        variant === "success" && "bg-success-bg text-success",
+        variant === "warning" && "bg-warning-bg text-warning",
+        variant === "danger" && "bg-danger-bg text-danger",
+        variant === "accent" && "bg-brand-accent-light text-brand-accent",
+        variant === "brand" && "bg-brand-primary text-white",
 
-    const sizeStyles = {
-      sm: "text-xs px-2 py-0.5",
-      md: "text-xs px-2.5 py-1",
-    };
+        // Sizes
+        size === "sm" && "px-2.5 py-0.5 text-xs",
+        size === "md" && "px-3.5 py-1 text-sm font-semibold",
 
-    return (
-      <span
-        ref={ref}
-        className={cn(
-          "rounded-badge font-semibold inline-flex items-center tracking-wide",
-          variantStyles[variant],
-          sizeStyles[size],
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </span>
-    );
-  }
-);
+        className
+      )}
+      {...props}
+    >
+      {(hasDot || isPulsing) && (
+        <span
+          className={cn(
+            "w-1.5 h-1.5 rounded-full bg-currentColor",
+            isPulsing && "animate-pulse-glow"
+          )}
+        />
+      )}
+      {children}
+    </span>
+  );
+};
 
-Badge.displayName = "Badge";
-
-export function getStatusBadgeVariant(status: ProcessingStatus | string): BadgeProps["variant"] {
+export function getStatusBadgeVariant(status?: string): BadgeProps["variant"] {
   switch (status) {
     case "COMPLETED":
       return "success";
-    case "FAILED":
-      return "danger";
-    case "RETRYING":
-      return "warning";
-    case "EXTRACTING":
+    case "PROCESSING":
     case "AUDITING":
+    case "EXTRACTING":
     case "ML_ANALYSIS":
     case "FINANCIAL_ANALYSIS":
     case "GENERATING_REPORT":
     case "GENERATING_EVIDENCE":
-      return "primary";
+      return "accent";
+    case "FAILED":
+      return "danger";
+    case "RETRYING":
+      return "warning";
     case "QUEUED":
     default:
       return "default";
