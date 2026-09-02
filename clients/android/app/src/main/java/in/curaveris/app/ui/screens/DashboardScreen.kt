@@ -1,4 +1,4 @@
-package in.curaveris.app.ui.screens
+package `in`.curaveris.app.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,9 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import in.curaveris.app.CuraVerisApplication
-import in.curaveris.app.core.network.ApiClient
-import in.curaveris.app.ui.theme.*
+import `in`.curaveris.app.CuraVerisApplication
+import `in`.curaveris.app.core.network.ApiClient
+import `in`.curaveris.app.ui.theme.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
