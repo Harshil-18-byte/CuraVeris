@@ -1,203 +1,259 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, AlertTriangle, ShieldCheck, FileText, ArrowRight, RefreshCw, Zap } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  X,
+  ArrowRight,
+  Clock,
+  Download,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { useBillStatusSocket } from "@/hooks/useBillStatusSocket";
 import { ProcessingStatus } from "@/types";
-import { cn } from "@/lib/utils";
 
 interface ProcessingTrackerProps {
   billId: string;
-  initialStatus?: ProcessingStatus;
+  initialStatus: ProcessingStatus;
   failureReason?: string | null;
+  onRetry?: () => void;
 }
 
 const STEPS = [
-  { label: "Reading Bill Document", sub: "OCR text extraction and structured line-item normalization" },
-  { label: "Statutory Rule Auditing", sub: "Cross-referencing against CGHS, NPPA, DPCO, IRDAI & GST gazette caps" },
-  { label: "ML Risk Ensemble", sub: "XGBoost + PyTorch uncertainty evaluation and SHAP factor attribution" },
-  { label: "Financial Analysis", sub: "Reconciling recoverable overcharges and duplicate billing patterns" },
-  { label: "Cryptographic Report Ready", sub: "Section 65B Indian Evidence Act Merkle tree sealing & HMAC signing" },
+  { id: 1, label: "Reading your bill", sub: "Extracting line items, medicines, and prices" },
+  { id: 2, label: "Checking the prices", sub: "Comparing against NPPA, CGHS, PM-JAY and DPCO price caps" },
+  { id: 3, label: "Running our analysis", sub: "Checking for double billing and hidden charges" },
+  { id: 4, label: "Working out your options", sub: "Assessing how this bill affects your personal finances" },
+  { id: 5, label: "Preparing your report", sub: "Creating your complaint letter and proof certificate" },
 ];
 
 export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
   billId,
   initialStatus,
   failureReason,
+  onRetry,
 }) => {
-  const { status, isConnected } = useBillStatusSocket(billId, initialStatus);
+  const [currentStep, setCurrentStep] = useState<number>(1);
 
-  const getActiveStepIndex = (st: ProcessingStatus): number => {
-    switch (st) {
+  // Map backend processing status to 1-5 step index
+  useEffect(() => {
+    switch (initialStatus) {
       case "QUEUED":
-        return 0;
+        setCurrentStep(1);
+        break;
       case "EXTRACTING":
-        return 0;
+        setCurrentStep(1);
+        break;
       case "AUDITING":
-        return 1;
+        setCurrentStep(2);
+        break;
       case "ML_ANALYSIS":
-        return 2;
+        setCurrentStep(3);
+        break;
       case "FINANCIAL_ANALYSIS":
-        return 3;
+        setCurrentStep(4);
+        break;
       case "GENERATING_REPORT":
       case "GENERATING_EVIDENCE":
-        return 4;
+        setCurrentStep(5);
+        break;
       case "COMPLETED":
-        return 5;
+        setCurrentStep(6);
+        break;
       case "FAILED":
-        return -1;
       default:
-        return 0;
+        break;
     }
-  };
+  }, [initialStatus]);
 
-  const activeIndex = getActiveStepIndex(status);
-  const isComplete = status === "COMPLETED";
-  const isFailed = status === "FAILED";
+  const isComplete = initialStatus === "COMPLETED";
+  const isFailed = initialStatus === "FAILED";
+
+  // SVG Circular progress computation for active state
+  const radius = 34;
+  const circumference = 2 * Math.PI * radius;
+  const progressPercent = Math.min(Math.max((currentStep / 5) * 100, 10), 100);
+  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
-    <div className="space-y-6">
-      <Card padding="lg" className="space-y-6">
-        {/* Header with live connection indicator */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-white/60 gap-3">
+    <div className="bg-white rounded-xl border border-border-subtle p-8 sm:p-12 shadow-sm text-center max-w-xl mx-auto">
+      {/* 1. COMPLETED STATE */}
+      {isComplete && (
+        <div className="space-y-6 animate-in fade-in-50 zoom-in-95 duration-300">
+          <div className="w-20 h-20 rounded-full bg-success-bg border-2 border-success flex items-center justify-center mx-auto text-success">
+            <Check className="w-10 h-10" strokeWidth={2.5} />
+          </div>
+
           <div>
-            <h2 className="font-heading font-bold text-xl text-neutral-900 tracking-tight">
-              Audit Pipeline Progress
+            <h2 className="font-heading font-bold text-2xl text-text-primary">
+              Your bill has been checked!
             </h2>
-            <p className="text-xs text-neutral-600 mt-0.5">
-              Automated validation against official Indian healthcare regulatory price gazettes
+            <p className="text-sm text-text-secondary mt-1 max-w-sm mx-auto font-normal">
+              We&apos;ve verified your bill against government rules and prepared your dispute report.
             </p>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1 bg-white/70 border border-white/80 rounded-badge shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-            <span className="text-xs font-semibold text-neutral-900">
-              Live Audit Engine Connected
-            </span>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <Link href={`/bills/${billId}/audit`} className="w-full sm:w-auto">
+              <Button variant="primary" size="lg" className="w-full sm:w-auto">
+                See What We Found
+                <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.5} />
+              </Button>
+            </Link>
+
+            <a
+              href={`/api/v1/legal-docs/bills/${billId}/dispute-notice`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
+            >
+              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                <Download className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                Download Proof Document
+              </Button>
+            </a>
           </div>
         </div>
+      )}
 
-        {/* 5-Step Vertical Pipeline */}
-        <div className="space-y-6 relative pl-2">
-          {STEPS.map((step, idx) => {
-            const isDone = isComplete || (activeIndex > idx && !isFailed);
-            const isCurrent = !isComplete && activeIndex === idx && !isFailed;
-            const isPending = !isComplete && activeIndex < idx && !isFailed;
-            const isError = isFailed && idx === Math.max(0, activeIndex);
+      {/* 2. FAILED STATE */}
+      {isFailed && (
+        <div className="space-y-6 animate-in fade-in-50 duration-200">
+          <div className="w-20 h-20 rounded-full bg-danger-bg border-2 border-danger/40 flex items-center justify-center mx-auto text-danger">
+            <X className="w-10 h-10" strokeWidth={2} />
+          </div>
 
-            return (
-              <div key={idx} className="flex items-start gap-4 relative">
-                {/* Step Connector Line */}
-                {idx < STEPS.length - 1 && (
-                  <div
-                    className={cn(
-                      "absolute left-4 top-8 bottom-[-24px] w-0.5 transition-colors duration-300",
-                      isDone ? "bg-success" : "bg-neutral-300/60"
-                    )}
-                  />
-                )}
+          <div>
+            <h2 className="font-heading font-bold text-2xl text-text-primary">
+              Something went wrong
+            </h2>
+            <p className="text-sm text-text-secondary mt-1.5 max-w-sm mx-auto font-normal">
+              {failureReason || "We had trouble reading parts of your bill. Please upload a clearer photo or PDF."}
+            </p>
+          </div>
 
-                {/* Step Icon Circle */}
-                <div
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 z-10 transition-all duration-300",
-                    isDone
-                      ? "bg-gradient-to-tr from-success to-emerald-400 text-white shadow-[0_2px_8px_rgba(30,132,73,0.3)]"
-                      : isCurrent
-                      ? "bg-gradient-to-tr from-primary to-primary-light text-white shadow-[0_2px_12px_rgba(27,79,114,0.4)] animate-pulse"
-                      : isError
-                      ? "bg-danger text-white shadow-[0_2px_8px_rgba(146,43,33,0.3)]"
-                      : "bg-white/80 border-2 border-neutral-300/80 text-neutral-400 backdrop-blur-xs"
-                  )}
-                >
-                  {isDone ? (
-                    <CheckCircle2 className="w-4 h-4" />
-                  ) : isError ? (
-                    <AlertTriangle className="w-4 h-4" />
-                  ) : (
-                    <span className="text-xs font-bold">{idx + 1}</span>
-                  )}
-                </div>
-
-                {/* Step Content */}
-                <div className="flex-1 pt-0.5">
-                  <div className="flex items-center gap-2">
-                    <h3
-                      className={cn(
-                        "font-heading font-semibold text-sm transition-colors",
-                        isDone || isCurrent ? "text-neutral-900 font-bold" : "text-neutral-600"
-                      )}
-                    >
-                      {step.label}
-                    </h3>
-                    {isCurrent && (
-                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded-badge bg-primary-surface text-primary border border-primary/20 animate-pulse">
-                        Analyzing
-                      </span>
-                    )}
-                    {isDone && (
-                      <span className="text-success text-xs font-semibold">Verified</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-neutral-600 mt-0.5 font-body">{step.sub}</p>
-                </div>
-              </div>
-            );
-          })}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <Link href="/bills/upload" className="w-full sm:w-auto">
+              <Button variant="primary" size="md" className="w-full sm:w-auto">
+                <RefreshCw className="w-4 h-4 mr-2" strokeWidth={1.5} />
+                Try Again
+              </Button>
+            </Link>
+            <Link href="/bills" className="w-full sm:w-auto">
+              <Button variant="ghost" size="md" className="w-full sm:w-auto">
+                Back to Bills
+              </Button>
+            </Link>
+          </div>
         </div>
+      )}
 
-        {/* Failed State Card */}
-        {isFailed && (
-          <div className="p-4 bg-danger-surface/80 border border-danger/30 rounded-card backdrop-blur-xs">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-danger flex-shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-heading font-bold text-sm text-danger">
-                  Processing Interrupted
-                </h4>
-                <p className="text-xs text-neutral-600 mt-1">
-                  {failureReason || "We could not process this bill. Please verify the document format or re-upload."}
-                </p>
-                <div className="mt-4 flex items-center gap-3">
-                  <Link href="/bills/upload">
-                    <Button size="sm" variant="destructive">
-                      <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
-                      Try Re-uploading
-                    </Button>
-                  </Link>
-                  <a
-                    href="mailto:support@curaveris.in"
-                    className="text-xs font-semibold text-neutral-600 hover:underline"
-                  >
-                    Contact Support →
-                  </a>
-                </div>
-              </div>
+      {/* 3. ACTIVE PROCESSING STATE */}
+      {!isComplete && !isFailed && (
+        <div className="space-y-8">
+          {/* Custom SVG 80px Circular Progress */}
+          <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
+            <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
+              <circle
+                cx="40"
+                cy="40"
+                r={radius}
+                className="text-border-default"
+                strokeWidth="4"
+                stroke="currentColor"
+                fill="transparent"
+              />
+              <circle
+                cx="40"
+                cy="40"
+                r={radius}
+                className="text-brand-accent transition-all duration-500 ease-out"
+                strokeWidth="4"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="transparent"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="font-heading font-semibold text-sm text-text-primary">
+                {currentStep} of 5
+              </span>
             </div>
           </div>
-        )}
 
-        {/* Completed State Action Buttons */}
-        {isComplete && (
-          <div className="pt-5 border-t border-white/60 flex flex-col sm:flex-row items-center gap-3">
-            <Link href={`/bills/${billId}/audit`} className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto">
-                <FileText className="w-4 h-4 mr-2" />
-                View Full Audit Report
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-            <Link href={`/bills/${billId}/audit?tab=evidence`} className="w-full sm:w-auto">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                <ShieldCheck className="w-4 h-4 mr-2 text-primary" />
-                View Cryptographic Certificate
-              </Button>
-            </Link>
+          <div>
+            <h2 className="font-heading font-bold text-2xl text-text-primary">
+              We&apos;re checking your bill
+            </h2>
+            <p className="text-sm text-text-secondary mt-1">
+              This usually takes 1 to 2 minutes. Feel free to stay on this page or come back later.
+            </p>
           </div>
-        )}
-      </Card>
+
+          {/* Vertical Step Tracker */}
+          <div className="max-w-xs mx-auto text-left space-y-4">
+            {STEPS.map((stepItem) => {
+              const isStepDone = currentStep > stepItem.id;
+              const isStepActive = currentStep === stepItem.id;
+              const isStepPending = currentStep < stepItem.id;
+
+              return (
+                <div key={stepItem.id} className="relative flex items-start gap-3.5">
+                  {/* Step Icon Circle */}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                      isStepDone
+                        ? "bg-success-bg border border-success text-success"
+                        : isStepActive
+                        ? "bg-brand-accent-light border-2 border-brand-accent text-brand-accent ring-4 ring-brand-accent/10"
+                        : "bg-white border border-border-default text-text-tertiary"
+                    }`}
+                  >
+                    {isStepDone ? (
+                      <Check className="w-4 h-4" strokeWidth={2.5} />
+                    ) : isStepActive ? (
+                      <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} />
+                    ) : (
+                      <span className="w-2 h-2 rounded-full bg-border-strong" />
+                    )}
+                  </div>
+
+                  {/* Step Content */}
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <p
+                      className={`text-sm font-medium leading-tight ${
+                        isStepActive
+                          ? "text-text-primary font-semibold"
+                          : isStepDone
+                          ? "text-text-primary"
+                          : "text-text-tertiary"
+                      }`}
+                    >
+                      {stepItem.label}
+                    </p>
+                    {isStepActive && (
+                      <p className="text-xs text-text-secondary mt-0.5 animate-in fade-in-50 duration-200">
+                        {stepItem.sub}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Time Estimate Pill */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-secondary rounded-full text-xs font-medium text-text-secondary">
+            <Clock className="w-3.5 h-3.5 text-text-tertiary" strokeWidth={1.5} />
+            <span>Estimated time: ~1 minute</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
