@@ -4,7 +4,11 @@ import io
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 from PIL import Image
-import fitz
+
+try:
+    import fitz
+except ImportError:
+    fitz = None
 
 from app.core.config import settings
 from app.core.logging import logger
@@ -81,10 +85,20 @@ class OCRPipeline:
         try:
             images = []
             if mime_type == "application/pdf":
-                doc = fitz.open(stream=file_bytes, filetype="pdf")
-                for page in doc:
-                    pix = page.get_pixmap(dpi=200)
-                    images.append(Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGB"))
+                if fitz is not None:
+                    doc = fitz.open(stream=file_bytes, filetype="pdf")
+                    for page in doc:
+                        pix = page.get_pixmap(dpi=200)
+                        images.append(Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGB"))
+                else:
+                    try:
+                        import pypdfium2 as pdfium
+                        pdf = pdfium.PdfDocument(file_bytes)
+                        for page in pdf:
+                            image = page.render(scale=2.0).to_pil()
+                            images.append(image.convert("RGB"))
+                    except Exception as e:
+                        logger.warning(f"PDF rendering fallback note: {e}")
             else:
                 images.append(Image.open(io.BytesIO(file_bytes)).convert("RGB"))
 
