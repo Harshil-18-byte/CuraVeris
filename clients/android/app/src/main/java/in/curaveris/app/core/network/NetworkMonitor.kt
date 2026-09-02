@@ -1,4 +1,4 @@
-package in.curaveris.app.core.network
+package `in`.curaveris.app.core.network
 
 import android.content.Context
 import android.net.ConnectivityManager
