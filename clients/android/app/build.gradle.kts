@@ -10,7 +10,7 @@ react {
     reactNativeDir = file("../mobile/node_modules/react-native")
     codegenDir = file("../mobile/node_modules/@react-native/codegen")
     entryFile = file("../mobile/index.js")
-    debuggableVariants.clear()
+    debuggableVariants = emptyList()
     autolinkLibrariesWithApp()
 }
 
@@ -63,9 +63,5 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.4.1")
     implementation("androidx.camera:camera-lifecycle:1.4.1")
 
-    // React Native runtime used by the complete mobile UI
-    implementation("com.facebook.react:react-android")
-    implementation("com.facebook.react:hermes-android")
-    implementation(project(":react-native-safe-area-context"))
-    implementation(project(":react-native-screens"))
+    // React Native dependencies are supplied by the React Native Gradle plugin.
 }
