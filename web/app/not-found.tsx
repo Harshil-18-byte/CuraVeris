@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileQuestion, Home, ArrowLeft, ShieldAlert } from "lucide-react";
+import { FileQuestion, Home, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export default function NotFound() {
@@ -12,14 +12,13 @@ export default function NotFound() {
 
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 rounded-badge text-xs font-semibold text-amber-700">
-            <ShieldAlert className="w-3.5 h-3.5" />
-            <span>404 — Page Not Found</span>
+            <span>Page not found</span>
           </div>
           <h1 className="font-heading font-bold text-3xl text-neutral-900 tracking-tight">
-            Resource Unavailable
+            We couldn&apos;t find that page
           </h1>
           <p className="text-sm text-neutral-600 font-body leading-relaxed">
-            The page or statutory audit record you requested could not be located. It may have been moved, deleted, or the URL might be incorrect.
+            The page you are looking for may have moved or doesn&apos;t exist. Let&apos;s get you back on track.
           </p>
         </div>
 
@@ -31,7 +30,7 @@ export default function NotFound() {
             </Button>
           </Link>
           <Link href="/" className="w-full sm:w-auto">
-            <Button variant="outline" size="md" className="w-full flex items-center justify-center gap-2">
+            <Button variant="secondary" size="md" className="w-full flex items-center justify-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               <span>Home Page</span>
             </Button>
@@ -39,8 +38,8 @@ export default function NotFound() {
         </div>
       </div>
 
-      <p className="mt-8 text-xs text-neutral-400 font-mono">
-        CuraVeris Automated Statutory Medical Audit Engine
+      <p className="mt-8 text-xs text-neutral-400">
+        CuraVeris · Medical Bill Check
       </p>
     </div>
   );
