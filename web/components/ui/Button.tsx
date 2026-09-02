@@ -1,14 +1,16 @@
-import React from "react";
+"use client";
+
+import React, { forwardRef } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "destructive" | "ghost" | "outline" | "glass";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "icon";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
@@ -21,36 +23,73 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-button glass-button transition-all duration-250 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]";
-
-    const variantStyles = {
-      primary: "bg-gradient-to-r from-primary to-primary-light text-white shadow-[0_4px_14px_rgba(27,79,114,0.28)] hover:shadow-[0_6px_20px_rgba(27,79,114,0.38)] hover:brightness-105",
-      secondary: "bg-white/80 backdrop-blur-md border border-primary/30 text-primary hover:bg-primary-surface hover:border-primary shadow-xs",
-      destructive: "bg-gradient-to-r from-danger to-danger/90 text-white shadow-[0_4px_14px_rgba(146,43,33,0.25)] hover:shadow-[0_6px_20px_rgba(146,43,33,0.35)] hover:brightness-105",
-      ghost: "text-primary hover:bg-primary-surface/60 bg-transparent",
-      outline: "border border-neutral-300/80 bg-white/70 backdrop-blur-md text-neutral-900 hover:bg-white hover:border-neutral-400 shadow-xs",
-      glass: "bg-white/60 backdrop-blur-lg border border-white/80 text-neutral-900 hover:bg-white/80 shadow-[0_4px_16px_rgba(0,0,0,0.04)]",
-    };
-
-    const sizeStyles = {
-      sm: "h-9 px-3.5 text-xs font-semibold",
-      md: "h-11 px-5 text-sm font-semibold",
-      lg: "h-13 px-6 text-base font-semibold",
-    };
+    const isIconOnly = variant === "icon";
 
     return (
       <button
         ref={ref}
         disabled={disabled || isLoading}
-        className={cn(baseStyles, variantStyles[variant], sizeStyles[size], className)}
+        className={cn(
+          "inline-flex items-center justify-center font-body select-none transition-all duration-150 ease-out focus:outline-none",
+          // Tactile micro-interaction on press
+          "active:scale-[0.98] disabled:pointer-events-none disabled:active:scale-100",
+          
+          // Primary Variant
+          variant === "primary" && [
+            "bg-brand-accent text-white font-semibold shadow-xs border-0",
+            "hover:bg-[#1D4ED8] hover:shadow-[0_4px_12px_rgba(37,99,235,0.30)]",
+            "active:bg-[#1E40AF]",
+            "disabled:bg-[#93C5FD] disabled:shadow-none disabled:text-white/80",
+          ],
+
+          // Secondary Variant
+          variant === "secondary" && [
+            "bg-white text-text-primary font-medium border border-border-default shadow-xs",
+            "hover:bg-bg-secondary hover:border-border-strong",
+            "active:bg-bg-tertiary",
+            "disabled:bg-bg-secondary disabled:text-text-tertiary disabled:border-border-subtle",
+          ],
+
+          // Ghost Variant
+          variant === "ghost" && [
+            "bg-transparent text-text-secondary font-medium border-0",
+            "hover:bg-bg-secondary hover:text-text-primary",
+            "active:bg-bg-tertiary",
+            "disabled:text-text-tertiary",
+          ],
+
+          // Danger Variant
+          variant === "danger" && [
+            "bg-danger text-white font-semibold border-0 shadow-xs",
+            "hover:bg-[#B91C1C] hover:shadow-[0_4px_12px_rgba(220,38,38,0.25)]",
+            "active:bg-[#991B1B]",
+            "disabled:bg-danger/40 disabled:shadow-none",
+          ],
+
+          // Icon Variant
+          variant === "icon" && [
+            "bg-bg-secondary text-text-secondary border-0 p-0",
+            "hover:bg-border-default hover:text-text-primary",
+            "active:bg-border-strong",
+            "disabled:text-text-tertiary",
+          ],
+
+          // Sizing (unless icon-only)
+          !isIconOnly && size === "sm" && "h-[36px] px-3 text-sm rounded-md",
+          !isIconOnly && size === "md" && "h-[44px] px-5 text-base rounded-md tracking-[-0.01em]",
+          !isIconOnly && size === "lg" && "h-[52px] px-8 text-base font-semibold rounded-md",
+
+          // Sizing (icon-only)
+          isIconOnly && size === "sm" && "w-8 h-8 rounded-md",
+          isIconOnly && size === "md" && "w-9 h-9 rounded-md",
+          isIconOnly && size === "lg" && "w-11 h-11 rounded-md",
+
+          className
+        )}
         {...props}
       >
         {isLoading ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            <span>Processing…</span>
-          </>
+          <Loader2 className="w-4 h-4 animate-spin text-current" strokeWidth={1.5} />
         ) : (
           children
         )}
