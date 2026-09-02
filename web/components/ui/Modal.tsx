@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -6,7 +8,7 @@ import { cn } from "@/lib/utils";
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title?: string;
   description?: string;
   children: React.ReactNode;
   maxWidth?: "sm" | "md" | "lg" | "xl";
@@ -20,41 +22,72 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   maxWidth = "md",
 }) => {
-  const maxWStyles = {
-    sm: "max-w-sm",
-    md: "max-w-md",
-    lg: "max-w-lg",
-    xl: "max-w-2xl",
-  };
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  const maxWidthClass =
+    maxWidth === "sm"
+      ? "max-w-[400px]"
+      : maxWidth === "md"
+      ? "max-w-[480px]"
+      : maxWidth === "lg"
+      ? "max-w-[560px]"
+      : "max-w-[680px]";
 
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm transition-opacity animate-in fade-in-0" />
-        <DialogPrimitive.Content
-          className={cn(
-            "fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 border border-neutral-300 bg-white p-6 shadow-xl rounded-card duration-200 animate-in fade-in-0 zoom-in-95",
-            maxWStyles[maxWidth]
-          )}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogPrimitive.Title className="text-lg font-heading font-bold text-neutral-900">
-                {title}
-              </DialogPrimitive.Title>
-              {description && (
-                <DialogPrimitive.Description className="text-sm text-neutral-600 mt-1">
-                  {description}
-                </DialogPrimitive.Description>
-              )}
-            </div>
-            <DialogPrimitive.Close className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none">
-              <X className="h-5 w-5 text-neutral-600" />
-              <span className="sr-only">Close</span>
+        {/* Backdrop (40% opacity with 4px blur) */}
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[4px] transition-opacity duration-200" />
+
+        {/* Content Container */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <DialogPrimitive.Content
+            className={cn(
+              "relative w-full bg-white rounded-xl shadow-xl overflow-hidden border border-border-subtle",
+              "animate-modal-enter text-left",
+              maxWidthClass
+            )}
+          >
+            {/* Header */}
+            {(title || description) && (
+              <div className="pt-6 px-6 pb-2 pr-12">
+                {title && (
+                  <DialogPrimitive.Title className="font-heading font-bold text-lg text-text-primary tracking-tight">
+                    {title}
+                  </DialogPrimitive.Title>
+                )}
+                {description && (
+                  <DialogPrimitive.Description className="mt-1 text-sm text-text-secondary font-normal">
+                    {description}
+                  </DialogPrimitive.Description>
+                )}
+              </div>
+            )}
+
+            {/* Close Button */}
+            <DialogPrimitive.Close asChild>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close modal"
+                className="absolute top-5 right-5 w-8 h-8 rounded-md bg-bg-secondary text-text-secondary flex items-center justify-center hover:bg-border-default hover:text-text-primary transition-colors focus:outline-none"
+              >
+                <X className="w-4 h-4" strokeWidth={1.5} />
+              </button>
             </DialogPrimitive.Close>
-          </div>
-          <div className="mt-2">{children}</div>
-        </DialogPrimitive.Content>
+
+            {/* Body */}
+            <div className="p-6">{children}</div>
+          </DialogPrimitive.Content>
+        </div>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
