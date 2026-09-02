@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Sora, Inter, JetBrains_Mono } from "next/font/google";
-import "@/styles/globals.css";
+import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import "../styles/globals.css";
 import { Providers } from "@/app/providers";
 import { ToastProvider } from "@/components/ui/Toast";
 
-const sora = Sora({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-sora",
+  weight: ["600", "700", "800"],
+  variable: "--font-heading",
   display: "swap",
   fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
@@ -15,7 +15,7 @@ const sora = Sora({
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-inter",
+  variable: "--font-body",
   display: "swap",
   fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
@@ -23,14 +23,14 @@ const inter = Inter({
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-jetbrains-mono",
+  variable: "--font-mono",
   display: "swap",
   fallback: ["monospace"],
 });
 
 export const metadata: Metadata = {
-  title: "CuraVeris — Medical Bill Auditor",
-  description: "India's automated statutory medical billing audit engine",
+  title: "CuraVeris — Medical Bill Check",
+  description: "Check your hospital bills against government price rules and get fair complaint letters.",
 };
 
 export default function RootLayout({
@@ -39,8 +39,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${sora.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-body bg-neutral-50 text-neutral-900 min-h-screen antialiased">
+    <html
+      lang="en"
+      className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="font-body bg-bg-secondary text-text-primary min-h-screen antialiased selection:bg-brand-accent/20 selection:text-brand-accent">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-accent focus:text-white focus:rounded-md focus:shadow-lg focus:outline-none"
+        >
+          Skip to main content
+        </a>
         <Providers>
           {children}
           <ToastProvider />
