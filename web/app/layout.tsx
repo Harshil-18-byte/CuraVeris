@@ -1,35 +1,7 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { Providers } from "@/app/providers";
 import { ToastProvider } from "@/components/ui/Toast";
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-heading",
-  display: "swap",
-  preload: false,
-  fallback: ["system-ui", "-apple-system", "sans-serif"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-body",
-  display: "swap",
-  preload: false,
-  fallback: ["system-ui", "-apple-system", "sans-serif"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-mono",
-  display: "swap",
-  preload: false,
-  fallback: ["monospace"],
-});
 
 export const metadata: Metadata = {
   title: "CuraVeris — Medical Bill Check",
@@ -42,10 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}
-    >
+    <html lang="en">
       <body className="font-body bg-bg-secondary text-text-primary min-h-screen antialiased selection:bg-brand-accent/20 selection:text-brand-accent">
         <a
           href="#main-content"
