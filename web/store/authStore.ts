@@ -8,6 +8,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (tokens: { access_token: string; refresh_token: string }, user?: User) => void;
+  setToken: (token: string) => void;
   logout: () => void;
   setUser: (user: User | null) => void;
   initialize: () => Promise<void>;
@@ -27,6 +28,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({
       accessToken: tokens.access_token,
       user: user || null,
+      isAuthenticated: true,
+      isLoading: false,
+    });
+  },
+
+  setToken: (token: string) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cv_access_token", token);
+    }
+    set({
+      accessToken: token,
       isAuthenticated: true,
       isLoading: false,
     });
