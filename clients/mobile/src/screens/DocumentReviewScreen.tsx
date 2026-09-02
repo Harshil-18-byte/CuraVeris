@@ -40,7 +40,7 @@ export function DocumentReviewScreen({
         <View style={styles.statusRow}>
           <Text style={styles.countText}>{pageList.length} Pages Attached</Text>
           <View style={styles.readabilityPill}>
-            <Text style={styles.readabilityText}>✓ High Readability</Text>
+            <Text style={styles.readabilityText}>High Readability</Text>
           </View>
         </View>
 
@@ -49,7 +49,6 @@ export function DocumentReviewScreen({
           {pageList.map((pageTitle: string, idx: number) => (
             <View key={idx} style={styles.pageCard}>
               <View style={styles.pageThumbnail}>
-                <Text style={{ fontSize: 28 }}>📄</Text>
                 <Text style={styles.pageBadge}>P.{idx + 1}</Text>
               </View>
 
@@ -59,10 +58,10 @@ export function DocumentReviewScreen({
 
                 <View style={styles.pageActions}>
                   <TouchableOpacity style={styles.smallAction}>
-                    <Text style={styles.actionText}>↻ Rotate</Text>
+                    <Text style={styles.actionText}>Rotate</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.smallAction} onPress={() => handleDelete(idx)}>
-                    <Text style={[styles.actionText, { color: Colors.danger }]}>✕ Remove</Text>
+                    <Text style={[styles.actionText, { color: Colors.danger }]}>Remove</Text>
                   </TouchableOpacity>
                 </View>
               </View>
