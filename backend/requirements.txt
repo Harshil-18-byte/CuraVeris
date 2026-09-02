@@ -32,3 +32,4 @@ slowapi>=0.1.9
 pytest>=8.0.0
 pytest-asyncio>=0.23.0
 psycopg[binary]
+psycopg2-binary
