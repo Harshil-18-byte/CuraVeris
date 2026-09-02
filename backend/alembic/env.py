@@ -15,8 +15,10 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-db_url = settings.DATABASE_URL
-if db_url.startswith("postgresql://"):
+db_url = config.get_main_option("sqlalchemy.url") or settings.DATABASE_URL
+if db_url.startswith("sqlite://") and not db_url.startswith("sqlite+aiosqlite://"):
+    db_url = db_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
+elif db_url.startswith("postgresql://"):
     db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
 elif db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
