@@ -57,7 +57,6 @@ export function PaymentScreen({
             activeOpacity={0.8}
           >
             <View style={styles.methodLeft}>
-              <Text style={{ fontSize: 20 }}>⚡</Text>
               <View>
                 <Text style={styles.methodTitle}>UPI (Google Pay, PhonePe, Paytm)</Text>
                 <Text style={styles.methodSub}>Instant settlement · Zero extra surcharge</Text>
@@ -73,7 +72,6 @@ export function PaymentScreen({
             activeOpacity={0.8}
           >
             <View style={styles.methodLeft}>
-              <Text style={{ fontSize: 20 }}>🏦</Text>
               <View>
                 <Text style={styles.methodTitle}>Net Banking</Text>
                 <Text style={styles.methodSub}>All major Indian retail banks</Text>
@@ -89,7 +87,6 @@ export function PaymentScreen({
             activeOpacity={0.8}
           >
             <View style={styles.methodLeft}>
-              <Text style={{ fontSize: 20 }}>💳</Text>
               <View>
                 <Text style={styles.methodTitle}>Debit / Credit Card</Text>
                 <Text style={styles.methodSub}>Visa, MasterCard, RuPay</Text>
@@ -101,7 +98,7 @@ export function PaymentScreen({
 
         <View style={styles.securityNote}>
           <Text style={styles.securityText}>
-            🔒 Secured with 256-bit bank encryption via Razorpay.
+            Secured with 256-bit bank encryption via Razorpay.
           </Text>
         </View>
       </ScrollView>
