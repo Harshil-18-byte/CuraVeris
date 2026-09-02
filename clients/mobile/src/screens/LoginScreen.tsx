@@ -53,8 +53,16 @@ export function LoginScreen({
         style={styles.keyboardContainer}
       >
         <View style={styles.content}>
-          {/* Brand Wordmark */}
-          <Text style={styles.wordmark}>CURAVERIS</Text>
+          {/* Brand Wordmark & Tagline */}
+          <View style={styles.brandRow}>
+            <View style={styles.brandLogo}>
+              <Text style={styles.brandLogoText}>CV</Text>
+            </View>
+            <View>
+              <Text style={styles.wordmark}>CURAVERIS</Text>
+              <Text style={styles.tagline}>Your bills, your rights.</Text>
+            </View>
+          </View>
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subTitle}>Sign in to access your audited medical bills.</Text>
 
@@ -159,12 +167,45 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 20,
+  },
+  brandLogo: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.neutral300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  brandLogoText: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.primary,
+    letterSpacing: -0.5,
+  },
   wordmark: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: Colors.primary,
     letterSpacing: -0.5,
-    marginBottom: 16,
+    lineHeight: 22,
+  },
+  tagline: {
+    fontSize: 12,
+    color: Colors.neutral600,
+    fontWeight: '500',
+    lineHeight: 14,
   },
   title: {
     fontSize: 24,
