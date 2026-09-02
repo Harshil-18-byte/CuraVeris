@@ -27,6 +27,34 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+const LOGIN_MESSAGES = [
+  {
+    quote: "Trusted by patients and families across India to audit medical bills and recover unfair charges.",
+    author: "CuraVeris Patient Network",
+    tag: "Patient Protection",
+  },
+  {
+    quote: "Found ₹48,000 in duplicate ICU charges within 5 minutes of uploading our hospital discharge bill.",
+    author: "Rajesh M., Bengaluru",
+    tag: "Real Audit Outcome",
+  },
+  {
+    quote: "Every medicine and medical implant is automatically verified against official NPPA & DPCO price ceilings.",
+    author: "Statutory Price Engine",
+    tag: "Price Ceilings",
+  },
+  {
+    quote: "Cryptographically signed audit reports with Section 65B legal certificates ready for insurance disputes.",
+    author: "Legal Compliance",
+    tag: "BSA 2023 Certified",
+  },
+  {
+    quote: "Your health records are processed with bank-grade encryption under the DPDP Act 2023.",
+    author: "Data Privacy & Safety",
+    tag: "100% Confidential",
+  },
+];
+
 export default function LoginPage() {
   const router = useRouter();
   const { setToken, setUser } = useAuthStore();
@@ -34,6 +62,15 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutRemaining, setLockoutRemaining] = useState<number>(0);
+  const [activeMessageIndex, setActiveMessageIndex] = useState(0);
+
+  // Auto-rotate login messages every 4.5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveMessageIndex((prev) => (prev + 1) % LOGIN_MESSAGES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
 
   const {
     register,
@@ -102,14 +139,45 @@ export default function LoginPage() {
           </span>
         </Link>
 
-        {/* Middle Feature Quote */}
-        <div className="my-auto space-y-6 py-12 max-w-sm">
-          <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-brand-accent-light">
-            <Sparkles className="w-6 h-6" strokeWidth={1.5} />
+        {/* Middle Feature Quote Carousel */}
+        <div className="my-auto space-y-6 py-8 max-w-sm">
+          <div className="flex items-center justify-between">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-brand-accent-light">
+              <Sparkles className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+            <span className="px-2.5 py-1 bg-white/10 rounded-full text-[11px] font-semibold text-brand-accent-light tracking-wide">
+              {LOGIN_MESSAGES[activeMessageIndex].tag}
+            </span>
           </div>
-          <p className="text-xl font-heading font-medium text-white/90 leading-relaxed">
-            &ldquo;Trusted by patients and families across India to audit medical bills and recover unfair charges.&rdquo;
-          </p>
+
+          <div className="min-h-[110px] flex flex-col justify-center">
+            <p
+              key={activeMessageIndex}
+              className="text-lg font-heading font-medium text-white/95 leading-relaxed transition-all duration-500 ease-in-out animate-in fade-in-50"
+            >
+              &ldquo;{LOGIN_MESSAGES[activeMessageIndex].quote}&rdquo;
+            </p>
+            <p className="text-xs text-white/60 mt-3 font-normal">
+              — {LOGIN_MESSAGES[activeMessageIndex].author}
+            </p>
+          </div>
+
+          {/* Carousel Dots */}
+          <div className="flex items-center gap-1.5 pt-2">
+            {LOGIN_MESSAGES.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActiveMessageIndex(idx)}
+                className={`h-1.5 rounded-full transition-all duration-300 focus:outline-none ${
+                  idx === activeMessageIndex
+                    ? "w-6 bg-brand-accent"
+                    : "w-1.5 bg-white/30 hover:bg-white/50"
+                }`}
+                aria-label={`Go to message ${idx + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Bottom Trust Points */}
