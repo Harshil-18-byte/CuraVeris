@@ -41,7 +41,6 @@ export function EvidenceCertificateScreen({
           <View style={styles.topBand} />
 
           <View style={styles.cardHeader}>
-            <Text style={{ fontSize: 24, marginRight: 8 }}>🛡️</Text>
             <Text style={styles.cardTitle}>CuraVeris Audit Certificate</Text>
           </View>
 
@@ -86,7 +85,7 @@ export function EvidenceCertificateScreen({
 
           {/* Integrity Status Row */}
           <View style={styles.statusChip}>
-            <Text style={styles.statusChipText}>✓ Verified — Data Intact</Text>
+            <Text style={styles.statusChipText}>Verified — Data Intact</Text>
           </View>
 
           {/* Legal Disclaimer Accordion */}
