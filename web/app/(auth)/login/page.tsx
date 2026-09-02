@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/ui/Logo";
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/api";
 
@@ -130,14 +131,7 @@ export default function LoginPage() {
       {/* LEFT PANEL (40% width on desktop) */}
       <div className="lg:w-[40%] bg-brand-primary text-white p-8 lg:p-12 flex flex-col justify-between hidden lg:flex">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-md bg-brand-accent flex items-center justify-center text-white font-heading font-bold text-base shadow-xs">
-            C
-          </div>
-          <span className="font-heading font-bold text-xl text-white tracking-tight">
-            CuraVeris
-          </span>
-        </Link>
+        <Logo href="/" showTagline={true} theme="light" size="md" />
 
         {/* Middle Feature Quote Carousel */}
         <div className="my-auto space-y-6 py-8 max-w-sm">
@@ -201,12 +195,7 @@ export default function LoginPage() {
       <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-white">
         {/* Mobile Header */}
         <div className="w-full max-w-[380px] lg:hidden mb-8 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-brand-accent text-white flex items-center justify-center font-heading font-bold text-sm">
-              C
-            </div>
-            <span className="font-heading font-bold text-lg text-text-primary">CuraVeris</span>
-          </Link>
+          <Logo href="/" showTagline={true} size="sm" />
         </div>
 
         <div className="w-full max-w-[380px] space-y-6">
