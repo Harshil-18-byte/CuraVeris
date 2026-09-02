@@ -1,222 +1,244 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Eye, EyeOff, Check, AlertCircle, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import {
+  ShieldCheck,
+  CheckCircle2,
+  AlertTriangle,
+  Lock,
+  Eye,
+  EyeOff,
+  Sparkles,
+} from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { api } from "@/lib/api";
+import { Button } from "@/components/ui/Button";
 import { useAuthStore } from "@/store/authStore";
+import { api } from "@/lib/api";
 
 const loginSchema = z.object({
-  email_or_phone: z.string().min(3, "Please enter a valid email address or phone number."),
-  password: z.string().min(1, "Password is required."),
+  username: z.string().min(1, "Please enter your email or mobile number"),
+  password: z.string().min(1, "Please enter your password"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const loginToStore = useAuthStore((state) => state.login);
+  const { setToken, setUser } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [lockedMinutes, setLockedMinutes] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutRemaining, setLockoutRemaining] = useState<number>(0);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email_or_phone: "",
-      password: "",
-    },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true);
-    setErrorMessage(null);
-    setLockedMinutes(null);
+  // Countdown timer for lockout
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (lockoutRemaining > 0) {
+      interval = setInterval(() => {
+        setLockoutRemaining((prev) => {
+          if (prev <= 1) {
+            setIsLocked(false);
+            setErrorMessage(null);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [lockoutRemaining]);
 
+  const onSubmit = async (data: LoginFormValues) => {
+    setErrorMessage(null);
     try {
-      const res = await api.auth.login(data);
-      loginToStore(
-        {
-          access_token: res.access_token,
-          refresh_token: res.refresh_token,
-        },
-        {
-          id: res.user_id,
-          email: res.email,
-          full_name: res.full_name,
-          role: res.role as any,
-          phone_verified: false,
-          email_verified: true,
-          is_active: true,
-          dpdp_consent_given: true,
-          created_at: new Date().toISOString(),
-        }
-      );
-      router.push("/dashboard");
+      const res = await api.auth.login(data.username, data.password);
+      setToken(res.access_token);
+      setUser(res.user);
+      router.replace("/dashboard");
     } catch (err: any) {
       const status = err?.status || err?.response?.status;
       const detail = err?.message || err?.response?.data?.detail;
 
-      if (status === 423 && typeof detail === "object" && detail?.retry_after_seconds) {
-        setLockedMinutes(Math.ceil(detail.retry_after_seconds / 60));
-      } else if (status === 401) {
-        setErrorMessage("Invalid email/phone or password. Please verify your credentials.");
+      if (status === 429 || (typeof detail === "string" && detail.includes("locked"))) {
+        setIsLocked(true);
+        setLockoutRemaining(15 * 60); // 15 minutes
+        setErrorMessage("Your account is locked for 15 minutes for your security.");
+      } else if (status === 401 || (typeof detail === "string" && detail.includes("Incorrect"))) {
+        setErrorMessage("Incorrect email or password. Please try again.");
       } else {
         setErrorMessage(
           typeof detail === "string"
             ? detail
-            : "Unable to connect to authentication server. Please check your connection and retry."
+            : "Could not sign in. Please check your internet connection."
         );
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-white">
-      {/* Left Brand Panel */}
-      <div className="hidden lg:flex lg:col-span-5 bg-primary p-12 flex-col justify-between text-white">
-        <div>
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-white text-primary flex items-center justify-center font-heading font-bold text-xl">
-              C
-            </div>
-            <span className="font-heading font-bold text-2xl tracking-tight">CuraVeris</span>
+    <div className="min-h-screen flex flex-col lg:flex-row bg-white selection:bg-brand-accent/20 selection:text-brand-accent">
+      {/* LEFT PANEL (40% width on desktop) */}
+      <div className="lg:w-[40%] bg-brand-primary text-white p-8 lg:p-12 flex flex-col justify-between hidden lg:flex">
+        {/* Brand */}
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-md bg-brand-accent flex items-center justify-center text-white font-heading font-bold text-base shadow-xs">
+            C
           </div>
+          <span className="font-heading font-bold text-xl text-white tracking-tight">
+            CuraVeris
+          </span>
+        </Link>
 
-          <h2 className="font-heading font-bold text-3xl leading-snug tracking-tight mb-4">
-            Automated Statutory Healthcare Billing Verification
-          </h2>
-
-          <p className="text-sm text-primary-surface/90 font-body leading-relaxed mb-8">
-            Securing patient financial transparency across India with real-time statutory gazette compliance and cryptographic Section 65B dispute records.
+        {/* Middle Feature Quote */}
+        <div className="my-auto space-y-6 py-12 max-w-sm">
+          <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-brand-accent-light">
+            <Sparkles className="w-6 h-6" strokeWidth={1.5} />
+          </div>
+          <p className="text-xl font-heading font-medium text-white/90 leading-relaxed">
+            &ldquo;Trusted by patients and families across India to audit medical bills and recover unfair charges.&rdquo;
           </p>
-
-          <div className="space-y-4 pt-6 border-t border-primary-light/40">
-            <div className="flex items-start gap-3 text-sm">
-              <div className="w-5 h-5 rounded-full bg-success text-white flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Check className="w-3.5 h-3.5" />
-              </div>
-              <span>CGHS, NPPA, DPCO & IRDAI gazette rules engine</span>
-            </div>
-
-            <div className="flex items-start gap-3 text-sm">
-              <div className="w-5 h-5 rounded-full bg-success text-white flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Check className="w-3.5 h-3.5" />
-              </div>
-              <span>Tamper-evident Merkle tree Section 65B certification</span>
-            </div>
-
-            <div className="flex items-start gap-3 text-sm">
-              <div className="w-5 h-5 rounded-full bg-success text-white flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Check className="w-3.5 h-3.5" />
-              </div>
-              <span>Full compliance with Digital Personal Data Protection Act 2023</span>
-            </div>
-          </div>
         </div>
 
-        <div className="text-xs text-primary-surface/80 pt-8 border-t border-primary-light/40">
-          <p>© 2026 CuraVeris. All rights reserved.</p>
+        {/* Bottom Trust Points */}
+        <div className="space-y-3 pt-6 border-t border-white/10 text-xs text-white/70">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <span>Government price benchmarks (NPPA, CGHS, DPCO)</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <span>Section 65B tamper-evident legal certificate</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <span>Digital Personal Data Protection (DPDP) Act 2023 certified</span>
+          </div>
         </div>
       </div>
 
-      {/* Right Form Panel */}
-      <div className="lg:col-span-7 flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-12">
-        <div className="max-w-md w-full mx-auto space-y-8">
+      {/* RIGHT PANEL (60% width on desktop) */}
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-white">
+        {/* Mobile Header */}
+        <div className="w-full max-w-[380px] lg:hidden mb-8 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-brand-accent text-white flex items-center justify-center font-heading font-bold text-sm">
+              C
+            </div>
+            <span className="font-heading font-bold text-lg text-text-primary">CuraVeris</span>
+          </Link>
+        </div>
+
+        <div className="w-full max-w-[380px] space-y-6">
+          {/* Header */}
           <div>
-            <h1 className="font-heading font-bold text-3xl text-neutral-900 tracking-tight">
-              Welcome Back
-            </h1>
-            <p className="text-sm text-neutral-600 mt-1.5 font-body">
-              Sign in to your CuraVeris account to audit and manage hospital bills.
+            <h2 className="font-heading font-bold text-2xl sm:text-[28px] text-text-primary tracking-tight">
+              Welcome back
+            </h2>
+            <p className="text-sm text-text-secondary mt-1 font-normal">
+              Sign in to your account
             </p>
           </div>
 
-          {/* Account Lockout Banner */}
-          {lockedMinutes && (
-            <div className="p-4 bg-warning-surface border border-warning/30 rounded-card flex items-start gap-3 text-warning text-sm">
-              <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          {/* Error Banner */}
+          {errorMessage && (
+            <div
+              className={`p-3.5 rounded-md border flex items-start gap-2.5 text-xs animate-in fade-in-50 duration-150 ${
+                isLocked
+                  ? "bg-danger-bg border-danger/30 text-danger"
+                  : "bg-warning-bg border-warning/30 text-[#92400E]"
+              }`}
+            >
+              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
               <div>
-                <p className="font-semibold">Account Temporarily Locked</p>
-                <p className="text-xs mt-0.5">
-                  Too many unsuccessful login attempts. Please retry in {lockedMinutes} minute{lockedMinutes > 1 ? "s" : ""}.
-                </p>
+                <p className="font-medium">{errorMessage}</p>
+                {isLocked && lockoutRemaining > 0 && (
+                  <p className="mt-1 font-mono text-[11px] opacity-90">
+                    Try again in: {Math.floor(lockoutRemaining / 60)}m {lockoutRemaining % 60}s
+                  </p>
+                )}
               </div>
             </div>
           )}
 
-          {/* General Error Banner */}
-          {errorMessage && (
-            <div className="p-4 bg-danger-surface border border-danger/30 rounded-card flex items-start gap-3 text-danger text-sm">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
-              label="Email Address or Phone Number"
-              placeholder="Enter your registered email or phone"
-              error={errors.email_or_phone?.message}
-              {...register("email_or_phone")}
+              label="Email address or phone number"
+              placeholder="e.g. rahul@example.com or 9876543210"
+              error={errors.username?.message}
+              disabled={isSubmitting || isLocked}
+              {...register("username")}
             />
 
-            <div className="space-y-1">
+            <div>
               <Input
                 label="Password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your account password"
+                placeholder="Enter your password"
                 error={errors.password?.message}
+                disabled={isSubmitting || isLocked}
                 rightAddon={
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="hover:text-primary transition-colors focus:outline-none"
                     tabIndex={-1}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-text-tertiary hover:text-text-primary transition-colors focus:outline-none"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" strokeWidth={1.5} />
+                    ) : (
+                      <Eye className="w-4 h-4" strokeWidth={1.5} />
+                    )}
                   </button>
                 }
                 {...register("password")}
               />
 
-              <div className="flex justify-end pt-1">
-                <Link
-                  href="/register"
-                  className="text-xs font-semibold text-primary hover:underline"
+              <div className="mt-2 text-right">
+                <button
+                  type="button"
+                  onClick={() => alert("Password reset link will be sent to your email.")}
+                  className="text-xs font-medium text-brand-accent hover:underline focus:outline-none"
                 >
-                  Forgot password?
-                </Link>
+                  Forgot your password?
+                </button>
               </div>
             </div>
 
             <Button
               type="submit"
-              size="lg"
-              className="w-full h-12 text-base font-semibold"
-              isLoading={isLoading}
+              variant="primary"
+              size="md"
+              className="w-full mt-2"
+              isLoading={isSubmitting}
+              disabled={isLocked}
             >
               Sign In
             </Button>
           </form>
 
-          <div className="pt-6 border-t border-neutral-300 text-center text-sm text-neutral-600">
-            Don’t have an account?{" "}
-            <Link href="/register" className="font-semibold text-primary hover:underline">
-              Create one now
+          {/* Footer Navigation */}
+          <div className="pt-4 border-t border-border-subtle text-center text-xs text-text-secondary">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="text-brand-accent font-medium hover:underline focus:outline-none"
+            >
+              Create one
             </Link>
           </div>
         </div>
