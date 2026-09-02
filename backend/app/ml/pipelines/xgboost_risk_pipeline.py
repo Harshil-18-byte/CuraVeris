@@ -33,8 +33,11 @@ import joblib
 import numpy as np
 import xgboost as xgb
 from typing import List, Dict, Any, Optional, Tuple
-from imblearn.over_sampling import SMOTE
 from dataclasses import dataclass
+try:
+    from imblearn.over_sampling import SMOTE
+except ImportError:
+    SMOTE = None
 
 LABEL_NAMES = [
     "above_mrp",
