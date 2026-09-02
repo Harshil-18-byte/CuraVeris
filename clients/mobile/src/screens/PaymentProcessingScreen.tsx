@@ -56,7 +56,7 @@ export function PaymentProcessingScreen({
                     isActive && styles.circleActive,
                   ]}
                 >
-                  <Text style={styles.circleText}>{isDone ? '✓' : s.step}</Text>
+                  <Text style={styles.circleText}>{s.step}</Text>
                 </View>
 
                 <View style={{ flex: 1 }}>
