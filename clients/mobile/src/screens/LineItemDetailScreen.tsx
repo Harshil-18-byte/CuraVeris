@@ -51,7 +51,7 @@ export function LineItemDetailScreen({
         <View style={styles.card}>
           <View style={styles.badgeRow}>
             <View style={styles.assessmentBadge}>
-              <Text style={styles.assessmentText}>⚠ {assessment}</Text>
+              <Text style={styles.assessmentText}>{assessment}</Text>
             </View>
             <View style={styles.originBadge}>
               <Text style={styles.originText}>Origin: {analysisOrigin}</Text>
