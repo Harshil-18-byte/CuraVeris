@@ -1,237 +1,214 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Bell,
   CheckCircle2,
-  ShieldAlert,
   AlertTriangle,
-  FileText,
-  ChevronLeft,
-  ChevronRight,
+  FileCheck2,
+  Lock,
+  ArrowRight,
+  Clock,
+  ShieldCheck,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
+import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { SkeletonRow } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { InlineError } from "@/components/ui/InlineError";
+import { Badge } from "@/components/ui/Badge";
+import { SkeletonCard } from "@/components/ui/Skeleton";
 import { api } from "@/lib/api";
-import { formatTimeAgo, cn } from "@/lib/utils";
+import { formatTimeAgo } from "@/lib/utils";
 import { Notification } from "@/types";
 
 export default function NotificationsPage() {
-  const router = useRouter();
   const queryClient = useQueryClient();
-  const [filter, setFilter] = useState<"all" | "unread">("all");
-  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState<"ALL" | "UNREAD">("ALL");
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["notifications", { filter, page }],
-    queryFn: () =>
-      api.notifications.list({
-        page,
-        per_page: 20,
-        filter: filter === "unread" ? "unread" : undefined,
-      }),
-    staleTime: 30 * 1000,
-  });
-
-  const markReadMutation = useMutation({
-    mutationFn: (id: string) => api.notifications.markRead(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
-    },
+  const { data: notificationsData, isLoading } = useQuery({
+    queryKey: ["notifications", "list"],
+    queryFn: () => api.notifications.list({ page: 1, per_page: 50 }),
+    staleTime: 15 * 1000,
   });
 
   const markAllReadMutation = useMutation({
-    mutationFn: () => api.notifications.markAllRead(),
+    mutationFn: () => api.notifications.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
     },
   });
 
-  const items = data?.items || [];
-  const total = data?.total || 0;
-  const totalPages = Math.ceil(total / 20) || 1;
+  const markOneReadMutation = useMutation({
+    mutationFn: (id: string) => api.notifications.markAsRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
 
-  const handleNotificationClick = (notif: Notification) => {
-    if (!notif.is_read) {
-      markReadMutation.mutate(notif.id);
-    }
+  const items = notificationsData?.items || [];
+  const unreadCount = items.filter((n) => !n.is_read).length;
 
-    const type = (notif.entity_type || "").toLowerCase();
-    const id = notif.entity_id;
+  const filteredItems = items.filter((n) => {
+    if (filter === "UNREAD") return !n.is_read;
+    return true;
+  });
 
-    if (type === "bill" && id) {
-      router.push(`/bills/${id}`);
-    } else if (type === "audit" && id) {
-      router.push(`/bills/${id}/audit`);
-    } else if (type === "payment") {
-      router.push(`/payments`);
-    }
-  };
-
-  const getEventIcon = (eventType: string) => {
-    switch (eventType) {
+  const getEventIcon = (type?: string) => {
+    switch (type) {
       case "AUDIT_COMPLETED":
-        return <CheckCircle2 className="w-5 h-5 text-success" />;
-      case "STATUTORY_VIOLATION":
-        return <ShieldAlert className="w-5 h-5 text-danger" />;
-      case "BILL_PROCESSING_FAILED":
-        return <AlertTriangle className="w-5 h-5 text-danger" />;
-      case "BILL_UPLOADED":
+        return (
+          <div className="w-9 h-9 rounded-full bg-success-bg text-success flex items-center justify-center flex-shrink-0">
+            <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
+          </div>
+        );
+      case "HIGH_RISK_DETECTED":
+        return (
+          <div className="w-9 h-9 rounded-full bg-danger-bg text-danger flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="w-4 h-4" strokeWidth={1.5} />
+          </div>
+        );
+      case "SECURITY_ALERT":
+        return (
+          <div className="w-9 h-9 rounded-full bg-warning-bg text-warning flex items-center justify-center flex-shrink-0">
+            <Lock className="w-4 h-4" strokeWidth={1.5} />
+          </div>
+        );
+      case "EVIDENCE_SEALED":
+        return (
+          <div className="w-9 h-9 rounded-full bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
+            <FileCheck2 className="w-4 h-4" strokeWidth={1.5} />
+          </div>
+        );
       default:
-        return <FileText className="w-5 h-5 text-primary" />;
+        return (
+          <div className="w-9 h-9 rounded-full bg-bg-secondary text-text-secondary flex items-center justify-center flex-shrink-0">
+            <Bell className="w-4 h-4" strokeWidth={1.5} />
+          </div>
+        );
     }
   };
 
   return (
     <PageShell
-      title="Notifications"
-      description="Stay informed on audit completions, statutory overcharges, and processing status updates."
-    >
-      <div className="space-y-4">
-        {/* Controls Bar */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setFilter("all");
-                setPage(1);
-              }}
-              className={cn(
-                "px-3.5 py-1.5 text-xs font-semibold rounded-badge transition-colors",
-                filter === "all"
-                  ? "bg-primary text-white"
-                  : "bg-white border border-neutral-300 text-neutral-600 hover:bg-neutral-50"
-              )}
-            >
-              All
-            </button>
-            <button
-              onClick={() => {
-                setFilter("unread");
-                setPage(1);
-              }}
-              className={cn(
-                "px-3.5 py-1.5 text-xs font-semibold rounded-badge transition-colors",
-                filter === "unread"
-                  ? "bg-primary text-white"
-                  : "bg-white border border-neutral-300 text-neutral-600 hover:bg-neutral-50"
-              )}
-            >
-              Unread
-            </button>
-          </div>
-
+      title="Notifications & Updates"
+      description="Stay informed about your bill check progress, new overcharge findings, and security alerts."
+      action={
+        unreadCount > 0 && (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => markAllReadMutation.mutate()}
-            disabled={markAllReadMutation.isPending || items.length === 0}
+            isLoading={markAllReadMutation.isPending}
           >
-            Mark All as Read
+            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-success" strokeWidth={1.5} />
+            Mark all as read
           </Button>
-        </div>
+        )
+      }
+    >
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          onClick={() => setFilter("ALL")}
+          className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            filter === "ALL"
+              ? "bg-brand-primary text-white font-semibold"
+              : "bg-white text-text-secondary hover:bg-bg-secondary border border-border-subtle"
+          }`}
+        >
+          All ({items.length})
+        </button>
 
-        {/* Notification List Container */}
-        <div className="bg-white rounded-card shadow-card border border-neutral-300 divide-y divide-neutral-300">
-          {isLoading ? (
-            <div className="p-8 space-y-4">
-              <div className="flex items-center gap-4 animate-pulse">
-                <div className="w-10 h-10 bg-neutral-200 rounded-lg" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-neutral-200 rounded w-1/3" />
-                  <div className="h-3 bg-neutral-200 rounded w-2/3" />
-                </div>
-              </div>
-              <div className="flex items-center gap-4 animate-pulse">
-                <div className="w-10 h-10 bg-neutral-200 rounded-lg" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-neutral-200 rounded w-1/4" />
-                  <div className="h-3 bg-neutral-200 rounded w-1/2" />
-                </div>
-              </div>
-            </div>
-          ) : isError ? (
-            <div className="p-6">
-              <InlineError
-                title="Failed to load notifications"
-                message={(error as any)?.message || "Could not retrieve notification updates."}
-                onRetry={() => refetch()}
-              />
-            </div>
-          ) : items.length === 0 ? (
-            <EmptyState
-              icon={Bell}
-              title="No notifications yet"
-              description="You'll be notified here when your audits complete."
-            />
-          ) : (
-            items.map((notif) => (
-              <div
-                key={notif.id}
-                onClick={() => handleNotificationClick(notif)}
-                className={cn(
-                  "p-4 flex items-start gap-3.5 hover:bg-neutral-50 cursor-pointer transition-colors",
-                  !notif.is_read && "bg-primary-surface/30"
-                )}
+        <button
+          onClick={() => setFilter("UNREAD")}
+          className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+            filter === "UNREAD"
+              ? "bg-brand-primary text-white font-semibold"
+              : "bg-white text-text-secondary hover:bg-bg-secondary border border-border-subtle"
+          }`}
+        >
+          Unread ({unreadCount})
+        </button>
+      </div>
+
+      {/* Notifications List */}
+      <div className="space-y-2.5">
+        {isLoading ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : filteredItems.length === 0 ? (
+          <Card padding="lg" className="text-center py-12 space-y-3">
+            <Bell className="w-10 h-10 text-border-default mx-auto" strokeWidth={1.5} />
+            <h3 className="font-heading font-semibold text-base text-text-primary">
+              No notifications
+            </h3>
+            <p className="text-xs text-text-secondary max-w-sm mx-auto font-normal">
+              {filter === "UNREAD"
+                ? "You have caught up on all your notifications."
+                : "When our system completes checks or finds overcharges, updates will appear here."}
+            </p>
+          </Card>
+        ) : (
+          filteredItems.map((n) => {
+            const isUnread = !n.is_read;
+
+            return (
+              <Card
+                key={n.id}
+                padding="sm"
+                className={`transition-all duration-150 hover:bg-bg-secondary cursor-pointer ${
+                  isUnread ? "bg-white border-brand-accent/30 shadow-xs" : "bg-white/80 opacity-90"
+                }`}
+                onClick={() => {
+                  if (isUnread) markOneReadMutation.mutate(n.id);
+                }}
               >
-                <div className="w-10 h-10 rounded-lg bg-white border border-neutral-300 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  {getEventIcon(notif.event_type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-heading font-semibold text-sm text-neutral-900 truncate">
-                      {notif.title}
-                    </h4>
-                    <span className="text-[11px] text-neutral-600 whitespace-nowrap">
-                      {formatTimeAgo(notif.created_at)}
-                    </span>
+                <div className="flex items-start gap-3.5">
+                  {getEventIcon(n.event_type)}
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4
+                        className={`text-sm text-text-primary ${
+                          isUnread ? "font-semibold" : "font-medium"
+                        }`}
+                      >
+                        {n.title}
+                      </h4>
+                      {isUnread && (
+                        <span className="w-2 h-2 rounded-full bg-brand-accent flex-shrink-0" />
+                      )}
+                    </div>
+
+                    <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
+                      {n.body}
+                    </p>
+
+                    <div className="flex items-center gap-4 mt-2 text-[11px] text-text-tertiary">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" strokeWidth={1.5} />
+                        {formatTimeAgo(n.created_at)}
+                      </span>
+
+                      {n.link && (
+                        <Link
+                          href={n.link}
+                          className="text-brand-accent font-medium hover:underline inline-flex items-center gap-1"
+                        >
+                          <span>View Details</span>
+                          <ArrowRight className="w-3 h-3" strokeWidth={1.5} />
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-xs text-neutral-600 mt-0.5 font-body line-clamp-2">
-                    {notif.body}
-                  </p>
                 </div>
-                {!notif.is_read && (
-                  <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2" />
-                )}
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Pagination Controls */}
-        {total > 20 && (
-          <div className="flex items-center justify-between pt-4 border-t border-neutral-300">
-            <span className="text-xs text-neutral-600">
-              Showing {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total} notifications
-            </span>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-              >
-                Next
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
-          </div>
+              </Card>
+            );
+          })
         )}
       </div>
     </PageShell>
