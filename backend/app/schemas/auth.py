@@ -40,8 +40,18 @@ class VerifyOtpRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email_or_phone: str = Field(..., min_length=3)
+    email_or_phone: Optional[str] = None
+    email: Optional[str] = None
+    username: Optional[str] = None
     password: str = Field(..., min_length=1)
+
+    @field_validator("email_or_phone", mode="before")
+    @classmethod
+    def extract_identifier(cls, v, info):
+        return v
+
+    def get_identifier(self) -> str:
+        return (self.email_or_phone or self.email or self.username or "").strip()
 
 
 class RefreshTokenRequest(BaseModel):
