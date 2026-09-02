@@ -33,6 +33,15 @@ import {
   NotificationsScreen,
   ProfileSettingsScreen,
 } from './src';
+import { AuditReportOverviewScreen } from './src/screens/AuditReportOverviewScreen';
+import { EvidenceCertificateScreen } from './src/screens/EvidenceCertificateScreen';
+import { LegalDocumentsHubScreen } from './src/screens/LegalDocumentsHubScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
+import { OtpVerificationScreen } from './src/screens/OtpVerificationScreen';
+import { RegisterStep1Screen } from './src/screens/RegisterStep1Screen';
+import { RegisterStep2Screen } from './src/screens/RegisterStep2Screen';
+import { RegisterStep3Screen } from './src/screens/RegisterStep3Screen';
+import { UploadBillScreen } from './src/screens/UploadBillScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,18 +50,21 @@ type Nav = NavigationProp<Record<string, object | undefined>>;
 const FLOW: Record<string, string> = {
   splash: 'onboarding',
   onboarding: 'auth',
-  auth: 'consent',
+  auth: 'otpVerification',
+  otpVerification: 'consent',
   consent: 'home',
   home: 'addDocuments',
   addDocuments: 'documentReview',
   cameraScanner: 'documentReview',
+  uploadBill: 'documentReview',
   documentReview: 'processing',
   processing: 'verification',
   verification: 'payment',
   breakdown: 'lineItemDetail',
   lineItemDetail: 'evidence',
-  whyPaying: 'evidence',
-  evidence: 'insurance',
+  whyPaying: 'payment',
+  evidence: 'evidenceCertificate',
+  evidenceCertificate: 'verification',
   insurance: 'timeline',
   timeline: 'payment',
   payment: 'paymentProcessing',
@@ -69,6 +81,12 @@ const FLOW: Record<string, string> = {
   aiExplanation: 'notifications',
   notifications: 'profile',
   profile: 'home',
+  auditReport: 'legalDocumentsHub',
+  legalDocumentsHub: 'verification',
+  loginScreen: 'home',
+  registerStep1: 'registerStep2',
+  registerStep2: 'registerStep3',
+  registerStep3: 'consent',
 };
 
 function go(nav: Nav, route: string) {
@@ -82,9 +100,13 @@ function routeProps(route: string, navigation: Nav) {
     onSkip: () => go(navigation, 'auth'),
     onContinue: () => go(navigation, FLOW[route] ?? 'home'),
     onNext: () => go(navigation, FLOW[route] ?? 'home'),
-    onOtpSent: () => go(navigation, 'consent'),
+    onOtpSent: (phone?: string) => go(navigation, 'otpVerification'),
+    onVerified: () => go(navigation, 'consent'),
+    onLoginSuccess: () => go(navigation, 'home'),
+    onNavigateRegister: () => go(navigation, 'registerStep1'),
+    onForgotPassword: () => go(navigation, 'otpVerification'),
     onScanBill: () => go(navigation, 'cameraScanner'),
-    onUploadBillPdf: () => go(navigation, 'documentReview'),
+    onUploadBillPdf: () => go(navigation, 'uploadBill'),
     onUploadInsurance: () => {},
     onUploadTpa: () => {},
     onUploadProof: () => {},
@@ -92,8 +114,10 @@ function routeProps(route: string, navigation: Nav) {
     onCancel: () => navigation.goBack(),
     onAnalyze: () => go(navigation, 'processing'),
     onViewReport: () => go(navigation, 'verification'),
+    onGenerateDispute: () => go(navigation, 'legalDocumentsHub'),
     onViewEvidence: () => go(navigation, 'evidence'),
     onViewBreakdown: () => go(navigation, 'breakdown'),
+    onSelectItem: () => go(navigation, 'lineItemDetail'),
     onPayVerified: () => go(navigation, 'payment'),
     onProceedPayment: () => go(navigation, 'paymentProcessing'),
     onComplete: () => go(navigation, 'paymentSuccess'),
@@ -104,6 +128,7 @@ function routeProps(route: string, navigation: Nav) {
     onTrackStatus: () => go(navigation, 'resolution'),
     onSelectBill: (id?: string) => go(navigation, 'billDetail'),
     onUploadBill: () => go(navigation, 'addDocuments'),
+    onStartAnalysis: () => go(navigation, 'documentReview'),
     onNavigateTab: (tab?: string) => {
       const map: Record<string, string> = {
         bills: 'myBills',
@@ -115,7 +140,8 @@ function routeProps(route: string, navigation: Nav) {
     },
     onSelectPayment: () => go(navigation, 'paymentDetail'),
     onSelectCategory: () => go(navigation, 'aiExplanation'),
-    onLogout: () => go(navigation, 'auth'),
+    onLogout: () => go(navigation, 'loginScreen'),
+    onFinishRegistration: () => go(navigation, 'consent'),
   };
 
   return new Proxy(callbacks, {
@@ -130,8 +156,7 @@ function routeProps(route: string, navigation: Nav) {
 }
 
 function RoutedScreen({ component: Component, route, navigation }: any) {
-  const props = routeProps(route, navigation);
-  return React.createElement(Component as any, props);
+  return React.createElement(Component as any, routeProps(route, navigation));
 }
 
 function SplashRoute({ navigation }: { navigation: Nav }) {
@@ -147,17 +172,21 @@ export default function App() {
     ['splash', SplashScreen],
     ['onboarding', OnboardingScreen],
     ['auth', AuthScreen],
+    ['otpVerification', OtpVerificationScreen],
     ['consent', ConsentScreen],
     ['home', HomeScreen],
     ['addDocuments', AddDocumentsScreen],
+    ['uploadBill', UploadBillScreen],
     ['cameraScanner', CameraScannerScreen],
     ['documentReview', DocumentReviewScreen],
     ['processing', BillProcessingStatusScreen],
+    ['auditReport', AuditReportOverviewScreen],
     ['verification', VerificationResultScreen],
     ['breakdown', BillBreakdownScreen],
     ['lineItemDetail', LineItemDetailScreen],
     ['whyPaying', WhyPayingScreen],
     ['evidence', EvidenceViewerScreen],
+    ['evidenceCertificate', EvidenceCertificateScreen],
     ['insurance', InsuranceSummaryScreen],
     ['timeline', FinancialTimelineScreen],
     ['payment', PaymentScreen],
@@ -174,10 +203,26 @@ export default function App() {
     ['aiExplanation', AiExplanationScreen],
     ['notifications', NotificationsScreen],
     ['profile', ProfileSettingsScreen],
+    ['legalDocumentsHub', LegalDocumentsHubScreen],
+    ['loginScreen', LoginScreen],
+    ['registerStep1', RegisterStep1Screen],
+    ['registerStep2', RegisterStep2Screen],
+    ['registerStep3', RegisterStep3Screen],
   ];
 
+  const linking = {
+    prefixes: ['curaveris://', 'https://app.curaveris.internal', 'https://cura-veris.vercel.app'],
+    config: {
+      screens: {
+        home: '',
+        billDetail: 'bill/:billId',
+        auditReport: 'audit/:billId',
+      },
+    },
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator
         initialRouteName="splash"
         screenOptions={{
