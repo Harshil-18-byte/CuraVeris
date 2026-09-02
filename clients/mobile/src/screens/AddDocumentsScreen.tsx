@@ -53,7 +53,7 @@ export function AddDocumentsScreen({
               <Text style={styles.docTitle}>Hospital Bill</Text>
               <Text style={styles.badgeRequired}>REQUIRED</Text>
             </View>
-            {hasBill && <Text style={styles.checkIcon}>✓ Added</Text>}
+            {hasBill && <Text style={styles.checkIcon}>Added</Text>}
           </View>
 
           <View style={styles.actionRow}>
@@ -64,7 +64,7 @@ export function AddDocumentsScreen({
                 onScanBill();
               }}
             >
-              <Text style={styles.actionButtonText}>📷 Take Photo</Text>
+              <Text style={styles.actionButtonText}>Take Photo</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionButton}
@@ -73,7 +73,7 @@ export function AddDocumentsScreen({
                 onUploadBillPdf();
               }}
             >
-              <Text style={styles.actionButtonText}>📁 Upload PDF</Text>
+              <Text style={styles.actionButtonText}>Upload PDF</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -86,7 +86,7 @@ export function AddDocumentsScreen({
               <Text style={styles.badgeRecommended}>RECOMMENDED</Text>
             </View>
             {hasInsurance ? (
-              <Text style={styles.checkIcon}>✓ Added</Text>
+              <Text style={styles.checkIcon}>Added</Text>
             ) : (
               <TouchableOpacity
                 style={styles.smallUploadButton}
@@ -107,7 +107,7 @@ export function AddDocumentsScreen({
               <Text style={styles.badgeOptional}>OPTIONAL</Text>
             </View>
             {hasTpa ? (
-              <Text style={styles.checkIcon}>✓ Added</Text>
+              <Text style={styles.checkIcon}>Added</Text>
             ) : (
               <TouchableOpacity
                 style={styles.smallUploadButton}
@@ -128,7 +128,7 @@ export function AddDocumentsScreen({
               <Text style={styles.badgeOptional}>OPTIONAL</Text>
             </View>
             {hasProof ? (
-              <Text style={styles.checkIcon}>✓ Added</Text>
+              <Text style={styles.checkIcon}>Added</Text>
             ) : (
               <TouchableOpacity
                 style={styles.smallUploadButton}
