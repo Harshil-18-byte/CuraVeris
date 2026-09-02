@@ -151,6 +151,7 @@ export interface Notification {
   entity_id?: string | null;
   is_read: boolean;
   read_at?: string | null;
+  link?: string;
   created_at: string;
 }
 
@@ -180,4 +181,167 @@ export interface ApiError {
   retryable: boolean;
   requestId?: string;
   retryAfterSeconds?: number;
+}
+
+export interface FRMInputs {
+  monthly_income: number;
+  monthly_expenses: number;
+  verified_savings: number;
+  insurance_coverage_claimed: number;
+  already_paid: number;
+}
+
+export interface StressScenarioResult {
+  scenario_code: string;
+  scenario_name: string;
+  description?: string;
+  assumption_changes?: Record<string, any>;
+  resulting_ead?: number;
+  resulting_pd?: number;
+  resulting_lgd?: number;
+  resulting_el?: number;
+  delta_el?: number;
+  resulting_lcr?: number;
+  delta_lcr?: number;
+  resulting_time_to_insolvency?: number;
+  stress_severity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+}
+
+export interface HistogramBin {
+  bin_start: number;
+  bin_end: number;
+  count: number;
+  frequency: number;
+}
+
+export interface DistributionSummary {
+  percentiles: Record<string, number>;
+  histogram: HistogramBin[];
+  mean: number;
+  median: number;
+  std: number;
+  min: number;
+  max: number;
+}
+
+export interface VaRResult {
+  mc_sample_count: number;
+  el_mean?: number;
+  el_std?: number;
+  var_90?: number;
+  var_95?: number;
+  cvar_95?: number;
+  el_distribution_summary?: DistributionSummary;
+  plain_english_var95?: string;
+  plain_english_cvar95?: string;
+  disclaimer: string;
+}
+
+export interface ModelRiskResult {
+  prediction_confidence?: number;
+  data_quality_score?: number;
+  ood_ratio?: number;
+  ood_features?: string[];
+  model_risk_level?: "LOW" | "MEDIUM" | "HIGH";
+  requires_human_review: boolean;
+  human_review_reasons?: string[];
+  confidence_interpretation?: string;
+  disclaimer: string;
+}
+
+export interface FinancialRecommendation {
+  priority: number;
+  action: string;
+  rationale: string;
+}
+
+export interface CashFlowTimelinePoint {
+  month: number;
+  running_savings: number;
+  cumulative_paid: number;
+  insurance_received: number;
+  is_deficit: boolean;
+}
+
+export interface FinancialRiskAssessment {
+  id: string;
+  bill_id: string;
+  audit_id: string;
+  user_id: string;
+
+  // Inputs
+  monthly_income?: number;
+  monthly_expenses?: number;
+  verified_savings?: number;
+  insurance_coverage_claimed?: number;
+  insurance_type?: string;
+  tpa_name?: string;
+  already_paid: number;
+
+  // EL Components
+  ead?: number;
+  pd?: number;
+  lgd?: number;
+  recovery_rate?: number;
+  expected_loss?: number;
+
+  // Recovery Components
+  p_insurance_pays?: number;
+  p_dispute_succeeds?: number;
+  p_hospital_waives?: number;
+  expected_insurance_amount?: number;
+
+  // Liquidity Risk
+  immediate_obligation?: number;
+  available_liquid_resources?: number;
+  liquidity_gap?: number;
+  lcr?: number;
+  lcr_category?: "DEFICIT" | "MARGINAL" | "ADEQUATE" | "STRONG";
+  dsti_ratio?: number;
+  time_to_insolvency_months?: number;
+
+  // VaR / CVaR
+  mc_sample_count: number;
+  el_mean?: number;
+  el_std?: number;
+  var_90?: number;
+  var_95?: number;
+  cvar_95?: number;
+  el_distribution_summary?: DistributionSummary;
+
+  // Stress Test Results
+  stress_scenarios?: StressScenarioResult[];
+  worst_case_el?: number;
+  worst_case_lcr?: number;
+
+  // Model Risk
+  prediction_confidence?: number;
+  data_quality_score?: number;
+  ood_ratio?: number;
+  model_risk_level?: "LOW" | "MEDIUM" | "HIGH";
+  requires_human_review: boolean;
+  human_review_reasons?: string[];
+
+  // Recommendations & Hardship
+  financial_recommendations?: FinancialRecommendation[];
+  hardship_category?: "MANAGEABLE" | "MODERATE" | "SEVERE" | "CRITICAL";
+
+  // Metadata
+  frm_engine_version: string;
+  computed_at: string;
+  created_at: string;
+  updated_at: string;
+
+  // Disclaimers
+  disclaimer_el?: string;
+  disclaimer_var?: string;
+  disclaimer_model_risk?: string;
+  disclaimer_stress?: string;
+  disclaimer_legal?: string;
+}
+
+export interface FRMAsyncResponse {
+  assessment_id?: string;
+  status: "COMPUTING" | "COMPLETED" | "FAILED";
+  message: string;
 }
