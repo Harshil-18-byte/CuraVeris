@@ -1,4 +1,4 @@
-package in.curaveris.app.core.storage
+package `in`.curaveris.app.core.storage
 
 import android.content.Context
 import android.content.SharedPreferences
