@@ -53,7 +53,6 @@ export function DiscrepancyResolutionScreen({
 
         <View style={styles.actionsList}>
           <TouchableOpacity style={styles.actionCard} onPress={onViewEvidence}>
-            <Text style={{ fontSize: 20 }}>📑</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitle}>View Statutory Evidence</Text>
               <Text style={styles.actionSub}>Review Gazette notifications cited in this finding</Text>
@@ -62,7 +61,6 @@ export function DiscrepancyResolutionScreen({
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionCard} onPress={onUploadDoc}>
-            <Text style={{ fontSize: 20 }}>📁</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitle}>Upload Supporting Document</Text>
               <Text style={styles.actionSub}>Attach hospital response or revised discharge summary</Text>
@@ -71,7 +69,6 @@ export function DiscrepancyResolutionScreen({
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionCard} onPress={onTrackStatus}>
-            <Text style={{ fontSize: 20 }}>⏱️</Text>
             <View style={{ flex: 1 }}>
               <Text style={styles.actionTitle}>Track Resolution Timeline</Text>
               <Text style={styles.actionSub}>Follow dispute progression through hospital billing desk</Text>
