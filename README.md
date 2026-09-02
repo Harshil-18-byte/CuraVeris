@@ -766,6 +766,68 @@ See [`docs/STATUTORY_FRAMEWORK.md`](./docs/STATUTORY_FRAMEWORK.md).
 
 ---
 
+---
+
+## Quantitative Financial Risk Framework (FRM) Layer
+
+CuraVeris incorporates a mathematical Financial Risk Management (FRM) engine adapted from quantitative banking and credit risk paradigms to quantify household medical debt distress:
+
+```
+                  ┌─────────────────────────────────────────────────────────┐
+                  │                 CuraVeris FRM Engine                    │
+                  └────────────────────────────┬────────────────────────────┘
+                                               │
+             ┌───────────────────┬─────────────┴─────┬───────────────────┐
+             ▼                   ▼                   ▼                   ▼
+    ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+    │  Expected Loss  │ │ Liquidity Risk  │ │ Stress Testing  │ │    VaR / CVaR   │
+    │  EL = EAD×PD×LGD│ │ LCR & DSTI Gap  │ │ 5 Macro Scenarios││ Monte Carlo 5000│
+    └─────────────────┘ └─────────────────┘ └─────────────────┘ └─────────────────┘
+             │                   │                   │                   │
+             └───────────────────┼───────────────────┴───────────────────┘
+                                 ▼
+                  ┌───────────────────────────────┐
+                  │ Model Risk Management (SR 11-7│
+                  │   Data Quality & OOD Bounds   │
+                  └───────────────────────────────┘
+```
+
+1. **Expected Loss (EL)**: Computes exposure-at-default ($EAD$), default probability ($PD$), and loss-given-default ($LGD$) factoring recovery rates from insurers, hospital waivers, and grievance desks.
+2. **Liquidity Coverage Ratio (LCR)**: Quantifies household liquid reserves relative to immediate 30-day out-of-pocket obligations and monthly burn rate.
+3. **Parametric & Historical Stress Testing**: Evaluates resilience under 5 adverse scenarios: Full Insurance Denial, Out-of-Network Penalties, Prolonged ICU Length of Stay, Critical Implant Dispute, and Co-Pay Surge.
+4. **Value at Risk (VaR) & Conditional VaR (CVaR)**: 5,000-sample Monte Carlo distribution characterizing the 90th, 95th, and tail-expectation (CVaR 95%) catastrophic loss boundaries.
+5. **Model Risk Management**: Adheres to Federal Reserve SR 11-7 / OCC 2011-12 validation standards with out-of-distribution (OOD) detection and automated human-in-the-loop review triggers.
+
+---
+
+## 4-Way Financial Reconciliation Engine & Exception Routing
+
+CuraVeris guarantees deterministic mathematical reconciliation across four distinct counterparties:
+- **Hospital Gross Inpatient Billing**
+- **Insurer Approved Share & TPA Line-Item Deductions**
+- **Razorpay Authorized & Captured Patient Co-Pay Deposits**
+- **Statutory Overcharge Liability & Refund Entitlements**
+
+```
+   ┌────────────────────┐          ┌──────────────────────┐
+   │  Hospital Invoice  │ ◄──────► │ TPA Settlement Sheet │
+   └─────────┬──────────┘          └──────────┬───────────┘
+             │                                │
+             ▼                                ▼
+   ┌────────────────────┐          ┌──────────────────────┐
+   │ Patient Co-Pay RZP │ ◄──────► │ Statutory Benchmark  │
+   └────────────────────┘          └──────────────────────┘
+             │                                │
+             └───────────────┬────────────────┘
+                             ▼
+              ┌───────────────────────────────┐
+              │ 4-Way Reconciliation Balance  │
+              │  Exception Queue & Auto-Claim │
+              └───────────────────────────────┘
+```
+
+---
+
 ## Documentation Index
 
 - [`MODELS.md`](./MODELS.md) — Comprehensive ML/DL Model Architecture Specification, training pipelines, and benchmarks
@@ -797,3 +859,4 @@ This software is an engineering platform for medical billing audit workflows. It
 Copyright 2026 CuraVeris. All rights reserved.
 
 Licensed under the MIT License. See [`LICENSE`](./LICENSE).
+
