@@ -9,6 +9,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ["600", "700", "800"],
   variable: "--font-heading",
   display: "swap",
+  preload: false,
   fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
 
@@ -17,6 +18,7 @@ const inter = Inter({
   weight: ["400", "500", "600"],
   variable: "--font-body",
   display: "swap",
+  preload: false,
   fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
 
@@ -25,6 +27,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
   variable: "--font-mono",
   display: "swap",
+  preload: false,
   fallback: ["monospace"],
 });
 
