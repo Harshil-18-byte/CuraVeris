@@ -26,10 +26,10 @@ export const PageShell: React.FC<PageShellProps> = ({
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="lg:pl-[240px] flex-1 flex flex-col pb-20 lg:pb-8">
+      <div className="lg:pl-[240px] flex-1 flex flex-col pb-20 lg:pb-8 w-full min-w-0">
         <TopBar />
 
-        <main id="main-content" className="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto">
+        <main id="main-content" className="flex-1 px-4 sm:px-6 lg:px-8 py-6 w-full max-w-[1600px] mx-auto">
           {(title || action || description) && (
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
