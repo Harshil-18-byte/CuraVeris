@@ -82,23 +82,23 @@ export function HomeScreen({
         >
           {/* Card 1 */}
           <View style={[styles.statCard, { borderLeftColor: Colors.primary }]}>
-            <Text style={styles.statLabel}>Bills Uploaded</Text>
+            <Text style={styles.statLabel}>Bills Checked</Text>
             <Text style={[styles.statNumber, { color: Colors.neutral900 }]}>3</Text>
-            <Text style={styles.statSubText}>All records</Text>
+            <Text style={styles.statSubText}>Total submitted</Text>
           </View>
 
           {/* Card 2 */}
           <View style={[styles.statCard, { borderLeftColor: Colors.success }]}>
-            <Text style={styles.statLabel}>Audits Done</Text>
+            <Text style={styles.statLabel}>Checks Finished</Text>
             <Text style={[styles.statNumber, { color: Colors.success }]}>2</Text>
-            <Text style={styles.statSubText}>Law verified</Text>
+            <Text style={styles.statSubText}>Bills completed</Text>
           </View>
 
           {/* Card 3 */}
           <View style={[styles.statCard, { borderLeftColor: Colors.danger }]}>
-            <Text style={styles.statLabel}>Overcharges Found</Text>
+            <Text style={styles.statLabel}>Extra Charges Found</Text>
             <Text style={[styles.statNumber, { color: Colors.danger }]}>₹1,10,200</Text>
-            <Text style={styles.statSubText}>Refund eligible</Text>
+            <Text style={styles.statSubText}>Possible refund</Text>
           </View>
         </ScrollView>
 
@@ -139,7 +139,7 @@ export function HomeScreen({
                         bill.status === 'COMPLETED' ? styles.statusCompletedText : styles.statusProcessingText,
                       ]}
                     >
-                      {bill.status}
+                      {bill.status === 'COMPLETED' ? 'Check complete' : 'Checking'}
                     </Text>
                   </View>
                 </View>
@@ -150,15 +150,15 @@ export function HomeScreen({
 
                 <View style={styles.billCardBottom}>
                   <Text style={styles.billedText}>
-                    Billed: ₹{bill.totalBilled.toLocaleString('en-IN')}
+                    Bill Total: ₹{bill.totalBilled.toLocaleString('en-IN')}
                   </Text>
 
                   {bill.overchargeAmount > 0 ? (
                     <Text style={styles.overchargeText}>
-                      Overcharge: ₹{bill.overchargeAmount.toLocaleString('en-IN')}
+                      Extra Charged: ₹{bill.overchargeAmount.toLocaleString('en-IN')}
                     </Text>
                   ) : (
-                    <Text style={styles.processingText}>Processing statutory rates...</Text>
+                    <Text style={styles.processingText}>Checking government prices...</Text>
                   )}
                 </View>
               </TouchableOpacity>
@@ -167,12 +167,12 @@ export function HomeScreen({
         ) : (
           /* Empty State */
           <View style={styles.emptyStateContainer}>
-            <Text style={styles.emptyTitle}>No bills yet</Text>
+            <Text style={styles.emptyTitle}>You haven&apos;t uploaded any bills yet</Text>
             <Text style={styles.emptyBody}>
-              Upload your first hospital bill to check for illegal overcharges.
+              Take a photo of your hospital bill and we&apos;ll check it for overcharges.
             </Text>
             <TouchableOpacity style={styles.emptyButton} onPress={onUploadBill}>
-              <Text style={styles.emptyButtonText}>Upload Your First Bill</Text>
+              <Text style={styles.emptyButtonText}>Check a Bill</Text>
             </TouchableOpacity>
           </View>
         )}
