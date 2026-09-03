@@ -60,7 +60,7 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
                 Report verified — nothing has been changed
               </h3>
               <p className="text-xs text-text-secondary mt-0.5">
-                Section 65B Electronic Proof Certificate (Indian Evidence Act / BSA 2023)
+                This certificate proves that this report has not been changed since it was created.
               </p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
           <div className="p-3.5 bg-bg-secondary rounded-md flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block">
-                Certificate Issued On
+                Certificate Created On
               </span>
               <span className="font-mono text-xs text-text-primary truncate block mt-0.5">
                 {formatDate(evidence.issued_at)}
@@ -113,7 +113,7 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
           <div className="p-3.5 bg-bg-secondary rounded-md flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block">
-                Security Code (SHA-256 Merkle Root)
+                Security Code
               </span>
               <span className="font-mono text-xs text-brand-accent font-semibold truncate block mt-0.5">
                 {evidence.merkle_root}
@@ -137,7 +137,7 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
           <div className="p-3.5 bg-bg-secondary rounded-md flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block">
-                Verification Signature (HMAC-SHA256)
+                Verification Stamp
               </span>
               <span className="font-mono text-xs text-text-secondary truncate block mt-0.5">
                 {evidence.hmac_signature}
@@ -147,9 +147,9 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
               variant="secondary"
               size="sm"
               className="h-8 px-2.5 text-xs flex-shrink-0"
-              onClick={() => copyToClipboard(evidence.hmac_signature, "Verification Signature")}
+              onClick={() => copyToClipboard(evidence.hmac_signature, "Verification Stamp")}
             >
-              {copiedField === "Verification Signature" ? (
+              {copiedField === "Verification Stamp" ? (
                 <Check className="w-3.5 h-3.5 text-success" strokeWidth={2} />
               ) : (
                 <Copy className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -171,11 +171,11 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
             <div>
               <p className="text-xs font-semibold">
                 {verificationResult.integrity_valid
-                  ? "✓ Report is genuine — all calculations match the original audit seal"
-                  : "✗ Integrity check failed — please contact support"}
+                  ? "✓ Report verified — nothing has been changed"
+                  : "✗ Check failed — please contact support"}
               </p>
               <p className="text-[11px] opacity-90 mt-0.5">
-                Every line item, statutory benchmark, and timestamp matches the original seal.
+                All lines and calculations match the original audit record.
               </p>
             </div>
           </div>
@@ -210,7 +210,7 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({ evidence, bill
           >
             <Button variant="primary" size="md" className="w-full sm:w-auto">
               <Download className="w-4 h-4 mr-2" strokeWidth={1.5} />
-              Download Legal Dispute Notice
+              Download Ready Complaint Letter
             </Button>
           </a>
         </div>
