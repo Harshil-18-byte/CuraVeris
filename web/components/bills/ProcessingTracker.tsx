@@ -23,11 +23,11 @@ interface ProcessingTrackerProps {
 }
 
 const STEPS = [
-  { id: 1, label: "Reading your bill", sub: "Extracting line items, medicines, and prices" },
-  { id: 2, label: "Checking the prices", sub: "Comparing against NPPA, CGHS, PM-JAY and DPCO price caps" },
-  { id: 3, label: "Running our analysis", sub: "Checking for double billing and hidden charges" },
-  { id: 4, label: "Working out your options", sub: "Assessing how this bill affects your personal finances" },
-  { id: 5, label: "Preparing your report", sub: "Creating your complaint letter and proof certificate" },
+  { id: 1, label: "Reading your bill", sub: "We're scanning the text from your document" },
+  { id: 2, label: "Checking the prices", sub: "We're comparing each charge to government-approved rates" },
+  { id: 3, label: "Running our analysis", sub: "We're calculating the risk and potential overcharges" },
+  { id: 4, label: "Working out your options", sub: "We're figuring out what you can do about the overcharges" },
+  { id: 5, label: "Preparing your report", sub: "Almost done — putting together your results" },
 ];
 
 export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
@@ -92,7 +92,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
               Your bill has been checked!
             </h2>
             <p className="text-sm text-text-secondary mt-1 max-w-sm mx-auto font-normal">
-              We&apos;ve verified your bill against government rules and prepared your dispute report.
+              We&apos;ve checked your bill against government rules and prepared your results.
             </p>
           </div>
 
@@ -104,17 +104,11 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
               </Button>
             </Link>
 
-            <a
-              href={`/api/v1/legal-docs/bills/${billId}/dispute-notice`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto"
-            >
+            <Link href={`/bills/${billId}/risk`} className="w-full sm:w-auto">
               <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                <Download className="w-4 h-4 mr-2" strokeWidth={1.5} />
-                Download Proof Document
+                Check My Financial Situation
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       )}
@@ -128,10 +122,12 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
 
           <div>
             <h2 className="font-heading font-bold text-2xl text-text-primary">
-              Something went wrong
+              Something went wrong while checking your bill.
             </h2>
             <p className="text-sm text-text-secondary mt-1.5 max-w-sm mx-auto font-normal">
-              {failureReason || "We had trouble reading parts of your bill. Please upload a clearer photo or PDF."}
+              {failureReason?.includes("read") || failureReason?.includes("OCR")
+                ? "We had trouble reading your bill. Please try uploading a clearer photo with better lighting."
+                : "Our team has been notified. Please try uploading again."}
             </p>
           </div>
 
@@ -154,7 +150,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
       {/* 3. ACTIVE PROCESSING STATE */}
       {!isComplete && !isFailed && (
         <div className="space-y-8">
-          {/* Custom SVG 80px Circular Progress */}
+          {/* Custom SVG Circular Progress */}
           <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
             <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
               <circle
@@ -188,10 +184,10 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
 
           <div>
             <h2 className="font-heading font-bold text-2xl text-text-primary">
-              We&apos;re checking your bill
+              We&apos;re checking your bill now
             </h2>
             <p className="text-sm text-text-secondary mt-1">
-              This usually takes 1 to 2 minutes. Feel free to stay on this page or come back later.
+              Usually takes 3–8 minutes. We&apos;ll notify you when it&apos;s ready.
             </p>
           </div>
 
@@ -200,7 +196,6 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
             {STEPS.map((stepItem) => {
               const isStepDone = currentStep > stepItem.id;
               const isStepActive = currentStep === stepItem.id;
-              const isStepPending = currentStep < stepItem.id;
 
               return (
                 <div key={stepItem.id} className="relative flex items-start gap-3.5">
@@ -250,7 +245,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
           {/* Time Estimate Pill */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-secondary rounded-full text-xs font-medium text-text-secondary">
             <Clock className="w-3.5 h-3.5 text-text-tertiary" strokeWidth={1.5} />
-            <span>Estimated time: ~1 minute</span>
+            <span>Usually takes 3–8 minutes. We&apos;ll notify you when it&apos;s ready.</span>
           </div>
         </div>
       )}
