@@ -237,7 +237,7 @@ export default function RegisterPage() {
                     Let&apos;s get started
                   </h2>
                   <p className="text-sm text-text-secondary mt-1">
-                    Enter your name and email to create your account.
+                    We&apos;ll use these details to set up your account.
                   </p>
                 </div>
 
@@ -277,7 +277,7 @@ export default function RegisterPage() {
                     What&apos;s your phone number?
                   </h2>
                   <p className="text-sm text-text-secondary mt-1">
-                    We use this to send report updates and secure your account.
+                    We&apos;ll send you a one-time code to confirm this is your number.
                   </p>
                 </div>
 
@@ -285,14 +285,14 @@ export default function RegisterPage() {
                   label="Mobile Number"
                   placeholder="9876543210"
                   leftAddon={<span className="text-xs font-semibold text-text-secondary">+91</span>}
-                  hint="We'll send a confirmation code to your email to verify."
+                  hint="We found this number or enter your active number."
                   error={errors.phone_number?.message}
                   {...register("phone_number")}
                 />
 
                 <div className="p-3 bg-brand-accent-light rounded-md flex items-start gap-2.5 text-xs text-text-secondary">
                   <PhoneCall className="w-4 h-4 text-brand-accent flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-                  <span>Your number is private and never shared with hospitals or marketers.</span>
+                  <span>Your number is private and never shared with hospitals or anyone else.</span>
                 </div>
 
                 <div className="flex gap-2 pt-2">
@@ -327,7 +327,7 @@ export default function RegisterPage() {
                     Create a password
                   </h2>
                   <p className="text-sm text-text-secondary mt-1">
-                    Choose a strong password to protect your health records.
+                    Choose a password to keep your account safe.
                   </p>
                 </div>
 
@@ -411,7 +411,7 @@ export default function RegisterPage() {
                       className={`w-3.5 h-3.5 ${/[A-Z]/.test(passwordVal) ? "text-success" : "text-text-tertiary"}`}
                       strokeWidth={1.5}
                     />
-                    <span>One uppercase letter</span>
+                    <span>One capital letter</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2
@@ -461,19 +461,7 @@ export default function RegisterPage() {
                     One last thing — your privacy
                   </h2>
                   <p className="text-sm text-text-secondary mt-1">
-                    Your health data belongs to you. Here is our simple promise:
-                  </p>
-                </div>
-
-                <div className="p-4 bg-bg-secondary rounded-md border border-border-subtle max-h-[120px] overflow-y-auto text-xs text-text-secondary leading-relaxed space-y-2">
-                  <p>
-                    <strong>1. Confidentiality:</strong> Your hospital bills are used exclusively to find overcharges on your behalf.
-                  </p>
-                  <p>
-                    <strong>2. Security:</strong> All records are encrypted under the Digital Personal Data Protection (DPDP) Act 2023.
-                  </p>
-                  <p>
-                    <strong>3. Right to Erasure:</strong> You can permanently delete your entire account and all bills at any time.
+                    CuraVeris uses your hospital bill information only to check for overcharges on your behalf. We keep your data secure and never sell it to anyone. You can ask us to delete your data at any time.
                   </p>
                 </div>
 
@@ -489,14 +477,14 @@ export default function RegisterPage() {
                     </CheckboxPrimitive.Indicator>
                   </CheckboxPrimitive.Root>
                   <label htmlFor="consent-checkbox" className="text-xs text-text-primary font-medium cursor-pointer leading-tight">
-                    I agree to let CuraVeris check my bills and I understand my data is protected under the DPDP Act 2023.
+                    I understand how CuraVeris uses my information and I agree.
                   </label>
                 </div>
 
                 {errors.consent && (
                   <p className="text-xs text-danger flex items-center gap-1 font-normal">
                     <AlertCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
-                    <span>{errors.consent.message}</span>
+                    <span>Please agree to continue.</span>
                   </p>
                 )}
 
@@ -519,7 +507,7 @@ export default function RegisterPage() {
                     disabled={!consentVal || isSubmitting}
                     isLoading={isSubmitting}
                   >
-                    Create Free Account
+                    Start Using CuraVeris
                   </Button>
                 </div>
               </div>
