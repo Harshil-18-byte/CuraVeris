@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { TopBar } from "@/components/layout/TopBar";
 import { SkeletonCard, SkeletonText } from "@/components/ui/Skeleton";
 import { useAuthStore } from "@/store/authStore";
 
@@ -76,22 +74,5 @@ export default function DashboardLayout({
     return null;
   }
 
-  return (
-    <div className="min-h-screen bg-[#F4F6FB] flex flex-col relative overflow-hidden">
-      {/* Liquid Glass Ambient Mesh */}
-      <div className="liquid-mesh">
-        <div className="liquid-orb-1" />
-        <div className="liquid-orb-2" />
-        <div className="liquid-orb-3" />
-      </div>
-
-      <Sidebar />
-      <div className="lg:ml-60 flex flex-col min-h-screen">
-        <TopBar />
-        <main className="p-6 sm:p-8 flex-1 relative z-10">
-          <div className="max-w-7xl mx-auto">{children}</div>
-        </main>
-      </div>
-    </div>
-  );
+  return <>{children}</>;
 }
