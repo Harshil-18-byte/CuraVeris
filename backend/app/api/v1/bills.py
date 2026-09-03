@@ -146,22 +146,27 @@ async def upload_bill(
     )
     await db.commit()
 
-    # 7. Enqueue Celery task pipeline
+    # 7. Launch processing pipeline (Instant background async execution)
+    async def _run_full_bill_pipeline_background(bill_id_str: str):
+        try:
+            from app.workers.ocr_task import _run_ocr_async
+            from app.workers.audit_task import _run_audit_async
+            from app.workers.ml_task import _run_ml_async
+            from app.workers.evidence_task import _generate_evidence_async
+
+            await _run_ocr_async(bill_id_str)
+            await _run_audit_async(bill_id_str)
+            await _run_ml_async(bill_id_str)
+            await _generate_evidence_async(bill_id_str)
+        except Exception as e:
+            pass
+
     try:
-        pipeline = chain(
-            process_bill_ocr.s(str(bill_id)),
-            run_statutory_audit.s(),
-            run_ml_analysis.s(),
-            generate_evidence.s(),
-        )
-        job = pipeline.apply_async()
-        bill.processing_job_id = job.id
-        await db.commit()
+        asyncio.create_task(_run_full_bill_pipeline_background(str(bill_id)))
     except Exception:
-        # If celery is in eager or offline mode, allow local processing
         pass
 
-    return BillUploadResponse(bill_id=bill_id, status="QUEUED", message="Processing started")
+    return BillUploadResponse(bill_id=bill_id, status="PROCESSING", message="Processing started")
 
 
 @router.get("", response_model=dict)
