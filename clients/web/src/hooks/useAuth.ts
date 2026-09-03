@@ -27,6 +27,8 @@ export function useAuth() {
         });
       } catch (err: any) {
         if (err.message?.includes('fetch') || err.message?.includes('Network') || !err.statusCode) {
+          const namePart = credentials.email ? credentials.email.split('@')[0] : 'Patient';
+          const derivedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
           return {
             access_token: 'demo_jwt_token_' + Date.now(),
             refresh_token: 'demo_refresh_token_' + Date.now(),
@@ -35,7 +37,7 @@ export function useAuth() {
             user: {
               id: 'demo-patient-1',
               email: credentials.email || 'patient@curaveris.in',
-              full_name: 'Rahul Sharma',
+              full_name: derivedName || 'Patient Account',
               role: 'PATIENT' as const,
               org_id: null,
               created_at: new Date().toISOString(),
