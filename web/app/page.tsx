@@ -111,12 +111,12 @@ export default function LandingPage() {
 
       {/* 1. TOP NAVIGATION BAR */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border-subtle shadow-xs">
-        <div className="max-w-[1360px] h-[64px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
+        <div className="max-w-[1360px] h-[60px] sm:h-[64px] mx-auto px-3.5 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <LogoIcon size={36} />
-            <div className="flex flex-col">
-              <span className="font-heading font-extrabold text-xl tracking-tight text-brand-primary leading-tight">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <LogoIcon size={32} />
+            <div className="flex flex-col truncate">
+              <span className="font-heading font-extrabold text-lg sm:text-xl tracking-tight text-brand-primary leading-tight truncate">
                 CuraVeris
               </span>
               <span className="hidden md:inline-flex items-center gap-1 text-[9px] font-bold text-brand-accent tracking-wider uppercase">
@@ -151,15 +151,16 @@ export default function LandingPage() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
             <Link href="/login">
-              <Button variant="ghost" size="sm" className="font-semibold text-xs">
+              <Button variant="ghost" size="sm" className="font-semibold text-xs px-2.5 sm:px-3 h-8 sm:h-9">
                 Sign In
               </Button>
             </Link>
             <Link href="/register">
-              <Button variant="primary" size="sm" className="font-semibold text-xs shadow-xs">
-                Check My Bill for Free
+              <Button variant="primary" size="sm" className="font-semibold text-xs shadow-xs px-3 sm:px-4 h-8 sm:h-9">
+                <span className="hidden sm:inline">Check My Bill for Free</span>
+                <span className="sm:hidden">Free Check</span>
               </Button>
             </Link>
           </div>
@@ -167,35 +168,35 @@ export default function LandingPage() {
       </header>
 
       {/* 2. HERO SECTION */}
-      <section className="relative z-10 pt-14 pb-18 lg:pt-20 lg:pb-24">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+      <section className="relative z-10 pt-8 sm:pt-14 pb-12 sm:pb-18 lg:pt-20 lg:pb-24">
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-14 items-center">
           {/* Left Column */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-accent-light border border-brand-accent/20 rounded-full text-brand-accent text-xs font-bold tracking-wide shadow-xs">
-              <Sparkles className="w-4 h-4 text-brand-accent" />
+          <div className="lg:col-span-7 space-y-4 sm:space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 bg-brand-accent-light border border-brand-accent/20 rounded-full text-brand-accent text-[11px] sm:text-xs font-bold tracking-wide shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-brand-accent flex-shrink-0" />
               <span>Free Patient Bill Check • Protect Your Family</span>
             </div>
 
-            <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-[54px] text-text-primary leading-[1.08] tracking-[-0.035em]">
-              Was Your Hospital Bill <br />
+            <h1 className="font-heading font-extrabold text-3xl sm:text-5xl lg:text-[54px] text-text-primary leading-[1.12] sm:leading-[1.08] tracking-[-0.03em]">
+              Was Your Hospital Bill <br className="hidden sm:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-brand-accent to-brand-primary">
                 Too High?
               </span>
             </h1>
 
-            <p className="text-lg text-text-secondary leading-[1.65] max-w-[560px] font-normal">
+            <p className="text-base sm:text-lg text-text-secondary leading-[1.6] sm:leading-[1.65] max-w-[560px] font-normal">
               We check your hospital bill line by line against government-approved prices. If they charged you too much, we find it — and help you fight back.
             </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Link href="/register">
-                <Button variant="primary" size="lg" className="w-full sm:w-auto h-[54px] px-8 text-base font-semibold shadow-md">
+                <Button variant="primary" size="lg" className="w-full sm:w-auto h-[48px] sm:h-[54px] px-6 sm:px-8 text-sm sm:text-base font-semibold shadow-md">
                   Check My Bill for Free
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
               <a href="#simulator">
-                <Button variant="ghost" size="lg" className="w-full sm:w-auto h-[54px] text-base border border-border-default hover:bg-bg-secondary">
+                <Button variant="ghost" size="lg" className="w-full sm:w-auto h-[48px] sm:h-[54px] text-sm sm:text-base border border-border-default hover:bg-bg-secondary">
                   <Calculator className="w-4 h-4 mr-2 text-brand-accent" />
                   Try Savings Calculator
                 </Button>
@@ -207,18 +208,18 @@ export default function LandingPage() {
             </p>
 
             {/* Trust Badges */}
-            <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-text-secondary font-medium">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-success" />
+            <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-6 text-xs text-text-secondary font-medium">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
                 <span>100% Free for Patients</span>
               </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-success" />
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-success flex-shrink-0" />
                 <span>Your Data is Private & Safe</span>
               </div>
-              <div className="flex items-center gap-2">
-                <FileCheck2 className="w-4 h-4 text-success" />
-                <span>Ready-to-Send Complaint Letters</span>
+              <div className="flex items-center gap-1.5">
+                <FileCheck2 className="w-4 h-4 text-success flex-shrink-0" />
+                <span>Ready Complaint Letters</span>
               </div>
             </div>
           </div>
@@ -310,31 +311,31 @@ export default function LandingPage() {
       </section>
 
       {/* 3. STATS BAR */}
-      <section ref={statsRef} className="relative z-10 bg-bg-secondary py-12 border-y border-border-subtle">
-        <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-border-default">
-          <div className="pt-4 sm:pt-0">
-            <p className="font-heading font-extrabold text-4xl text-text-primary">
+      <section ref={statsRef} className="relative z-10 bg-bg-secondary py-8 sm:py-12 border-y border-border-subtle">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-border-default">
+          <div className="pt-3 sm:pt-0">
+            <p className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary">
               {statsVisible ? <CountUp end={82} suffix="%" /> : "82%"}
             </p>
-            <p className="text-sm text-text-secondary mt-1 font-medium">
+            <p className="text-xs sm:text-sm text-text-secondary mt-1 font-medium">
               Bills Checked that contained extra charges
             </p>
           </div>
 
-          <div className="pt-4 sm:pt-0">
-            <p className="font-heading font-extrabold text-4xl text-text-primary">
+          <div className="pt-3 sm:pt-0">
+            <p className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary">
               {statsVisible ? <CountUp end={42000} prefix="₹" formatter={(v) => `${(v / 1000).toFixed(0)}k`} /> : "₹42k"}
             </p>
-            <p className="text-sm text-text-secondary mt-1 font-medium">
+            <p className="text-xs sm:text-sm text-text-secondary mt-1 font-medium">
               Extra Charges Found per patient on average
             </p>
           </div>
 
-          <div className="pt-4 sm:pt-0">
-            <p className="font-heading font-extrabold text-4xl text-text-primary">
+          <div className="pt-3 sm:pt-0">
+            <p className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary">
               {statsVisible ? <CountUp end={100} suffix="%" /> : "100%"}
             </p>
-            <p className="text-sm text-text-secondary mt-1 font-medium">
+            <p className="text-xs sm:text-sm text-text-secondary mt-1 font-medium">
               Complaint Letters Created and ready to send
             </p>
           </div>
@@ -342,30 +343,30 @@ export default function LandingPage() {
       </section>
 
       {/* 4. INTERACTIVE RECOVERY & SAVINGS CALCULATOR */}
-      <section id="simulator" className="relative z-10 py-20 lg:py-28">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-brand-accent-light rounded-full text-brand-accent text-xs font-bold">
+      <section id="simulator" className="relative z-10 py-12 sm:py-20 lg:py-28">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2.5 sm:space-y-3 mb-8 sm:mb-14">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 bg-brand-accent-light rounded-full text-brand-accent text-[11px] sm:text-xs font-bold">
               <Calculator className="w-3.5 h-3.5" />
               <span>Savings Calculator</span>
             </div>
-            <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary tracking-tight">
+            <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-text-primary tracking-tight">
               See what you could save in seconds
             </h2>
-            <p className="text-base text-text-secondary">
+            <p className="text-sm sm:text-base text-text-secondary">
               Adjust the slider and choose items on your bill to see potential extra charges based on government price limits.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-border-default rounded-3xl p-6 sm:p-10 shadow-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch bg-white border border-border-default rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-10 shadow-xl">
             {/* Controls */}
-            <div className="lg:col-span-7 space-y-6">
+            <div className="lg:col-span-7 space-y-5 sm:space-y-6">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-bold text-text-primary">
+                  <label className="text-xs sm:text-sm font-bold text-text-primary">
                     Total amount on the bill
                   </label>
-                  <span className="font-mono text-lg font-extrabold text-brand-primary">
+                  <span className="font-mono text-base sm:text-lg font-extrabold text-brand-primary">
                     ₹{billAmount.toLocaleString("en-IN")}
                   </span>
                 </div>
@@ -386,10 +387,10 @@ export default function LandingPage() {
               </div>
 
               <div>
-                <label className="text-sm font-bold text-text-primary block mb-2">
+                <label className="text-xs sm:text-sm font-bold text-text-primary block mb-2">
                   Type of Treatment / Hospital Stay
                 </label>
-                <div className="grid grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                   {[
                     { id: "cardiology", label: "Heart / Stent" },
                     { id: "orthopedic", label: "Knee / Joint" },
@@ -399,7 +400,7 @@ export default function LandingPage() {
                       key={t.id}
                       type="button"
                       onClick={() => setTreatmentType(t.id)}
-                      className={`p-3 rounded-xl border text-xs font-bold transition-all text-center ${
+                      className={`p-2 sm:p-3 rounded-xl border text-[11px] sm:text-xs font-bold transition-all text-center ${
                         treatmentType === t.id
                            ? "border-brand-primary bg-brand-primary text-white shadow-xs"
                           : "border-border-default bg-bg-secondary text-text-primary hover:border-brand-accent/40"
@@ -411,70 +412,70 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="space-y-3 pt-2">
-                <label className="text-sm font-bold text-text-primary block">
+              <div className="space-y-2.5 sm:space-y-3 pt-1 sm:pt-2">
+                <label className="text-xs sm:text-sm font-bold text-text-primary block">
                   Items to check on your bill
                 </label>
 
-                <label className="flex items-center justify-between p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
+                <label className="flex items-start sm:items-center justify-between p-3 sm:p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer gap-2">
+                  <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
                     <input
                       type="checkbox"
                       checked={hasStent}
                       onChange={(e) => setHasStent(e.target.checked)}
-                      className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0"
+                      className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0 mt-0.5 sm:mt-0"
                     />
                     <div>
                       <p className="text-xs font-bold text-text-primary">Stent / Implant Charged Above Price Limit</p>
-                      <span className="text-[11px] text-text-secondary">Government limit is ₹30,080</span>
+                      <span className="text-[11px] text-text-secondary block">Government limit is ₹30,080</span>
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-danger">+₹34,920 extra</span>
+                  <span className="font-mono text-xs font-bold text-danger whitespace-nowrap">+₹34,920 extra</span>
                 </label>
 
-                <label className="flex items-center justify-between p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
+                <label className="flex items-start sm:items-center justify-between p-3 sm:p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer gap-2">
+                  <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
                     <input
                       type="checkbox"
                       checked={hasDuplicateIcu}
                       onChange={(e) => setHasDuplicateIcu(e.target.checked)}
-                      className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0"
+                      className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0 mt-0.5 sm:mt-0"
                     />
                     <div>
                       <p className="text-xs font-bold text-text-primary">ICU Nursing & Daily Charges Billed Separately</p>
-                      <span className="text-[11px] text-text-secondary">Charges that should be included in the room package</span>
+                      <span className="text-[11px] text-text-secondary block">Included in room package</span>
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-danger">+₹22,500 extra</span>
+                  <span className="font-mono text-xs font-bold text-danger whitespace-nowrap">+₹22,500 extra</span>
                 </label>
 
-                <label className="flex items-center justify-between p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer">
-                  <div className="flex items-center gap-3">
+                <label className="flex items-start sm:items-center justify-between p-3 sm:p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer gap-2">
+                  <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
                     <input
                       type="checkbox"
                       checked={hasPharmacyMarkup}
                       onChange={(e) => setHasPharmacyMarkup(e.target.checked)}
-                      className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0"
+                      className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0 mt-0.5 sm:mt-0"
                     />
                     <div>
                       <p className="text-xs font-bold text-text-primary">Medicines Priced Above Government Cap</p>
-                      <span className="text-[11px] text-text-secondary">Medicines sold above government-regulated maximum price</span>
+                      <span className="text-[11px] text-text-secondary block">Sold above maximum regulated price</span>
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-danger">~8% of bill</span>
+                  <span className="font-mono text-xs font-bold text-danger whitespace-nowrap">~8% of bill</span>
                 </label>
               </div>
             </div>
 
             {/* Results Box */}
-            <div className="lg:col-span-5 bg-bg-secondary rounded-2xl p-6 sm:p-8 flex flex-col justify-between border border-border-subtle">
+            <div className="lg:col-span-5 bg-bg-secondary rounded-2xl p-4 sm:p-8 flex flex-col justify-between border border-border-subtle mt-4 lg:mt-0">
               <div className="space-y-4">
                 <span className="text-xs font-bold text-brand-accent uppercase tracking-wider block">
                   Possible Extra Charges
                 </span>
 
                 <div>
-                  <p className="font-mono font-extrabold text-4xl sm:text-5xl text-brand-primary">
+                  <p className="font-mono font-extrabold text-3xl sm:text-5xl text-brand-primary">
                     ₹{estimatedSavings.toLocaleString("en-IN")}
                   </p>
                   <p className="text-xs text-text-secondary mt-1 font-medium">
@@ -482,7 +483,7 @@ export default function LandingPage() {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-white border border-border-default space-y-2 text-xs">
+                <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-border-default space-y-2 text-xs">
                   <div className="flex justify-between text-text-secondary">
                     <span>Rules Used</span>
                     <span className="font-bold text-text-primary">Government Price Limits</span>
@@ -498,9 +499,9 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="pt-6 space-y-2.5">
+              <div className="pt-5 sm:pt-6 space-y-2.5">
                 <Link href="/register" className="block">
-                  <Button variant="primary" size="lg" className="w-full text-sm font-bold shadow-md h-[48px]">
+                  <Button variant="primary" size="lg" className="w-full text-sm font-bold shadow-md h-[46px] sm:h-[48px]">
                     Check My Bill for Free
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -515,39 +516,39 @@ export default function LandingPage() {
       </section>
 
       {/* 5. GOVERNMENT PRICE LIMITS LOOKUP */}
-      <section id="price-checker" className="relative z-10 py-18 bg-bg-secondary border-t border-border-subtle">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="text-center max-w-xl mx-auto space-y-2 mb-10">
+      <section id="price-checker" className="relative z-10 py-12 sm:py-18 bg-bg-secondary border-t border-border-subtle">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-xl mx-auto space-y-2 mb-8 sm:mb-10">
             <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-text-primary tracking-tight">
               Look Up Government Price Caps
             </h2>
-            <p className="text-sm text-text-secondary">
+            <p className="text-xs sm:text-sm text-text-secondary">
               Search official government-approved prices for stents, knee implants, common medicines, and hospital beds.
             </p>
           </div>
 
-          <div className="max-w-2xl mx-auto mb-8 relative">
+          <div className="max-w-2xl mx-auto mb-6 sm:mb-8 relative">
             <Search className="w-4 h-4 text-text-tertiary absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search medicine, stent, knee implant, bed rate (e.g. Stent, Paracetamol, Meropenem)..."
+              placeholder="Search medicine, stent, knee implant, bed rate..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-12 pl-11 pr-4 bg-white rounded-xl border border-border-default focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 text-sm font-medium placeholder:text-text-tertiary outline-none shadow-xs"
+              className="w-full h-11 sm:h-12 pl-11 pr-4 bg-white rounded-xl border border-border-default focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 text-xs sm:text-sm font-medium placeholder:text-text-tertiary outline-none shadow-xs"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1100px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 max-w-[1100px] mx-auto">
             {filteredItems.map((item) => (
               <div
                 key={item.name}
-                className="p-5 bg-white rounded-xl border border-border-subtle shadow-xs hover:shadow-md transition-shadow space-y-3"
+                className="p-4 sm:p-5 bg-white rounded-xl border border-border-subtle shadow-xs hover:shadow-md transition-shadow space-y-2.5 sm:space-y-3"
               >
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start gap-2">
                   <span className="px-2 py-0.5 rounded bg-brand-accent-light text-brand-accent text-[10px] font-extrabold uppercase">
                     {item.category === "NPPA Device" ? "Medical Device Cap" : item.category === "NPPA Ortho" ? "Joint Implant Cap" : item.category === "DPCO NLEM" ? "Medicine Price Cap" : "Government Rate"}
                   </span>
-                  <span className="text-[10px] text-text-tertiary font-mono">{item.citation}</span>
+                  <span className="text-[10px] text-text-tertiary font-mono truncate">{item.citation}</span>
                 </div>
 
                 <h4 className="font-heading font-bold text-sm text-text-primary line-clamp-1">
@@ -556,14 +557,14 @@ export default function LandingPage() {
 
                 <div className="pt-2 border-t border-border-subtle grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">Government Price Cap</span>
-                    <span className="font-mono font-bold text-success text-sm">
+                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">Government Cap</span>
+                    <span className="font-mono font-bold text-success text-xs sm:text-sm">
                       ₹{item.cap.toLocaleString("en-IN")}
                     </span>
                   </div>
                   <div>
-                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">What Hospitals Often Charge</span>
-                    <span className="font-mono font-bold text-danger text-sm line-through">
+                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">Typical Hospital Charge</span>
+                    <span className="font-mono font-bold text-danger text-xs sm:text-sm line-through">
                       ₹{item.typical.toLocaleString("en-IN")}
                     </span>
                   </div>
@@ -575,65 +576,65 @@ export default function LandingPage() {
       </section>
 
       {/* 6. HOW IT WORKS */}
-      <section id="how-it-works" className="relative z-10 py-20 lg:py-28">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="text-center max-w-lg mx-auto space-y-3">
+      <section id="how-it-works" className="relative z-10 py-12 sm:py-20 lg:py-28">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-lg mx-auto space-y-2 sm:space-y-3">
             <div className="inline-flex px-3.5 py-1 bg-brand-accent-light rounded-full text-brand-accent text-xs font-bold">
               How It Works
             </div>
-            <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary tracking-tight">
+            <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-text-primary tracking-tight">
               Three simple steps to check your bill
             </h2>
-            <p className="text-base text-text-secondary">
+            <p className="text-xs sm:text-base text-text-secondary">
               No technical or medical knowledge needed. We do all the checking for you.
             </p>
           </div>
 
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-8 sm:mt-14 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
             {/* Step 1 */}
-            <Card padding="lg" className="relative space-y-4 rounded-2xl hover:border-brand-accent/40 transition-colors">
-              <span className="text-5xl font-extrabold text-border-default font-heading select-none absolute top-6 right-6">
+            <Card padding="lg" className="relative space-y-3 sm:space-y-4 rounded-2xl hover:border-brand-accent/40 transition-colors p-4 sm:p-6">
+              <span className="text-4xl sm:text-5xl font-extrabold text-border-default font-heading select-none absolute top-4 sm:top-6 right-4 sm:right-6">
                 01
               </span>
-              <div className="w-12 h-12 rounded-xl bg-brand-accent-light text-brand-accent flex items-center justify-center">
-                <FileText className="w-6 h-6" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand-accent-light text-brand-accent flex items-center justify-center">
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-heading font-bold text-lg text-text-primary pt-2">
+              <h3 className="font-heading font-bold text-base sm:text-lg text-text-primary pt-1 sm:pt-2">
                 1. Send Us Your Bill
               </h3>
-              <p className="text-sm text-text-secondary leading-[1.6]">
+              <p className="text-xs sm:text-sm text-text-secondary leading-[1.6]">
                 Take a photo or upload a PDF. Any format works.
               </p>
             </Card>
 
             {/* Step 2 */}
-            <Card padding="lg" className="relative space-y-4 rounded-2xl hover:border-brand-accent/40 transition-colors">
-              <span className="text-5xl font-extrabold text-border-default font-heading select-none absolute top-6 right-6">
+            <Card padding="lg" className="relative space-y-3 sm:space-y-4 rounded-2xl hover:border-brand-accent/40 transition-colors p-4 sm:p-6">
+              <span className="text-4xl sm:text-5xl font-extrabold text-border-default font-heading select-none absolute top-4 sm:top-6 right-4 sm:right-6">
                 02
               </span>
-              <div className="w-12 h-12 rounded-xl bg-brand-accent-light text-brand-accent flex items-center justify-center">
-                <Scale className="w-6 h-6" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand-accent-light text-brand-accent flex items-center justify-center">
+                <Scale className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-heading font-bold text-lg text-text-primary pt-2">
+              <h3 className="font-heading font-bold text-base sm:text-lg text-text-primary pt-1 sm:pt-2">
                 2. We Check Every Charge
               </h3>
-              <p className="text-sm text-text-secondary leading-[1.6]">
+              <p className="text-xs sm:text-sm text-text-secondary leading-[1.6]">
                 Our system compares each item to the government&apos;s approved price list.
               </p>
             </Card>
 
             {/* Step 3 */}
-            <Card padding="lg" className="relative space-y-4 rounded-2xl hover:border-brand-accent/40 transition-colors">
-              <span className="text-5xl font-extrabold text-border-default font-heading select-none absolute top-6 right-6">
+            <Card padding="lg" className="relative space-y-3 sm:space-y-4 rounded-2xl hover:border-brand-accent/40 transition-colors p-4 sm:p-6">
+              <span className="text-4xl sm:text-5xl font-extrabold text-border-default font-heading select-none absolute top-4 sm:top-6 right-4 sm:right-6">
                 03
               </span>
-              <div className="w-12 h-12 rounded-xl bg-brand-accent-light text-brand-accent flex items-center justify-center">
-                <FileCheck2 className="w-6 h-6" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand-accent-light text-brand-accent flex items-center justify-center">
+                <FileCheck2 className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <h3 className="font-heading font-bold text-lg text-text-primary pt-2">
+              <h3 className="font-heading font-bold text-base sm:text-lg text-text-primary pt-1 sm:pt-2">
                 3. Get Your Results
               </h3>
-              <p className="text-sm text-text-secondary leading-[1.6]">
+              <p className="text-xs sm:text-sm text-text-secondary leading-[1.6]">
                 See exactly what was overcharged and what you can do about it.
               </p>
             </Card>
@@ -642,75 +643,75 @@ export default function LandingPage() {
       </section>
 
       {/* 7. WE CHECK YOUR BILL AGAINST */}
-      <section className="relative z-10 bg-bg-secondary py-18 lg:py-22 border-t border-border-subtle">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="text-center max-w-xl mx-auto space-y-2 mb-12">
+      <section className="relative z-10 bg-bg-secondary py-12 sm:py-18 lg:py-22 border-t border-border-subtle">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-xl mx-auto space-y-2 mb-8 sm:mb-12">
             <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-text-primary tracking-tight">
               We check your bill against:
             </h2>
-            <p className="text-sm text-text-secondary">
+            <p className="text-xs sm:text-sm text-text-secondary">
               Official government rules and consumer protection guidelines
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+            <div className="p-4 sm:p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3 sm:gap-3.5">
               <div className="w-8 h-8 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
                 <Scale className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">Medical device price caps</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Government limits on stents, implants, and lenses</p>
+                <h4 className="text-xs sm:text-sm font-bold text-text-primary">Medical device price caps</h4>
+                <p className="text-[11px] sm:text-xs text-text-secondary mt-0.5">Government limits on stents, implants, and lenses</p>
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3.5">
+            <div className="p-4 sm:p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3 sm:gap-3.5">
               <div className="w-8 h-8 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
                 <TrendingDown className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">Medicine price caps</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Government limits on drug prices</p>
+                <h4 className="text-xs sm:text-sm font-bold text-text-primary">Medicine price caps</h4>
+                <p className="text-[11px] sm:text-xs text-text-secondary mt-0.5">Government limits on drug prices</p>
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3.5">
+            <div className="p-4 sm:p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3 sm:gap-3.5">
               <div className="w-8 h-8 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">Central Government Health Scheme (CGHS)</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Official government procedure rates and hospital bed limits</p>
+                <h4 className="text-xs sm:text-sm font-bold text-text-primary">Central Government Health Scheme (CGHS)</h4>
+                <p className="text-[11px] sm:text-xs text-text-secondary mt-0.5">Official government procedure rates and hospital bed limits</p>
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3.5">
+            <div className="p-4 sm:p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3 sm:gap-3.5">
               <div className="w-8 h-8 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
                 <FileCheck2 className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">Insurance non-payable rules</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Items insurers are not allowed to charge you for</p>
+                <h4 className="text-xs sm:text-sm font-bold text-text-primary">Insurance non-payable rules</h4>
+                <p className="text-[11px] sm:text-xs text-text-secondary mt-0.5">Items insurers are not allowed to charge you for</p>
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3.5">
+            <div className="p-4 sm:p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3 sm:gap-3.5">
               <div className="w-8 h-8 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
                 <HelpCircle className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">GST rules</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Which hospital services are tax-exempt</p>
+                <h4 className="text-xs sm:text-sm font-bold text-text-primary">GST rules</h4>
+                <p className="text-[11px] sm:text-xs text-text-secondary mt-0.5">Which hospital services are tax-exempt</p>
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3.5">
+            <div className="p-4 sm:p-5 bg-white rounded-xl border border-border-subtle shadow-xs flex items-start gap-3 sm:gap-3.5">
               <div className="w-8 h-8 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
                 <Lock className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">PM-JAY package rates</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Limits for government health insurance beneficiaries</p>
+                <h4 className="text-xs sm:text-sm font-bold text-text-primary">PM-JAY package rates</h4>
+                <p className="text-[11px] sm:text-xs text-text-secondary mt-0.5">Limits for government health insurance beneficiaries</p>
               </div>
             </div>
           </div>
@@ -718,8 +719,8 @@ export default function LandingPage() {
       </section>
 
       {/* 8. FOOTER */}
-      <footer className="relative z-10 bg-brand-primary text-white py-14 mt-auto">
-        <div className="max-w-[1200px] mx-auto px-6">
+      <footer className="relative z-10 bg-brand-primary text-white py-10 sm:py-14 mt-auto">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-white/10">
             <div className="space-y-2">
               <div className="flex items-center gap-2.5">
@@ -733,7 +734,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 text-xs text-white/70 font-medium">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs text-white/70 font-medium">
               <Link href="/login" className="hover:text-white transition-colors">
                 Sign In
               </Link>
@@ -752,7 +753,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40 font-mono">
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-white/40 font-mono text-center sm:text-left">
             <p>© {new Date().getFullYear()} CuraVeris. All rights reserved.</p>
             <p>Your health data is 100% private and protected.</p>
           </div>
