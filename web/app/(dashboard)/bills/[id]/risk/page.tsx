@@ -139,13 +139,13 @@ export default function FinancialRiskPage() {
                 Bill Results
               </Link>
               <span>/</span>
-              <span className="text-white/90">Financial Risk</span>
+              <span className="text-white/90">Financial Impact</span>
             </div>
             <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white tracking-tight">
-              Financial Risk Assessment
+              What This Bill Means for Your Finances
             </h1>
             <p className="text-xs text-white/70 mt-1">
-              {bill?.hospital_name || "Hospital Bill"} · Reference #{bill?.reference_number || billId.slice(0, 8)}
+              We analyzed how paying this bill affects your household budget and savings
             </p>
           </div>
 
@@ -157,19 +157,8 @@ export default function FinancialRiskPage() {
               onClick={() => setIsInputModalOpen(true)}
             >
               <Settings className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
-              Update Your Info
+              Update Your Details
             </Button>
-
-            <a
-              href={`/api/v1/bills/${billId}/frm/report`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="primary" size="sm">
-                <Download className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
-                Download Report
-              </Button>
-            </a>
           </div>
         </div>
 
@@ -177,39 +166,39 @@ export default function FinancialRiskPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-white/15">
           <div className="bg-white/5 rounded-lg p-4 border border-white/10">
             <span className="text-xs text-white/60 uppercase font-semibold tracking-wider block">
-              Realistic Out-of-Pocket Risk
+              Money you may not get back
             </span>
             <p className="font-mono font-bold text-2xl text-white mt-1">
               {formatCurrency(assessment.expected_loss)}
             </p>
             <span className="text-[11px] text-white/60 mt-0.5 block">
-              Based on {Math.round((assessment.pd ?? 0) * 100)}% chance of insurer deduction
+              Our estimate of what you might end up paying out of pocket
             </span>
           </div>
 
           <div className="bg-white/5 rounded-lg p-4 border border-white/10">
             <span className="text-xs text-white/60 uppercase font-semibold tracking-wider block">
-              Emergency Savings Health
+              Can you afford this right now?
             </span>
             <p className="font-mono font-bold text-2xl text-white mt-1">
               {Math.round(lcrPercent)}%
             </p>
             <span className="text-[11px] text-white/60 mt-0.5 block">
               {lcrVal >= 1
-                ? "Sufficient savings buffer"
-                : "Tight buffer — payment plan recommended"}
+                ? "Your savings can cover this"
+                : "You may need to dip deep into savings"}
             </span>
           </div>
 
           <div className="bg-white/5 rounded-lg p-4 border border-white/10">
             <span className="text-xs text-white/60 uppercase font-semibold tracking-wider block">
-              Worst-Case Out-of-Pocket
+              Worst-case scenario
             </span>
             <p className="font-mono font-bold text-2xl text-white mt-1">
               {formatCurrency(assessment.cvar_95 || assessment.lgd || assessment.expected_loss)}
             </p>
             <span className="text-[11px] text-white/60 mt-0.5 block">
-              Under complete claim rejection (95% CVaR)
+              If insurance pays nothing and no discounts apply
             </span>
           </div>
         </div>
@@ -220,47 +209,47 @@ export default function FinancialRiskPage() {
         <section className="space-y-4">
           <div>
             <h2 className="font-heading font-bold text-xl text-text-primary">
-              1. Expected Out-of-Pocket Loss
+              1. Money you may not get back
             </h2>
             <p className="text-xs text-text-secondary mt-0.5">
-              How much you are realistically likely to pay after insurance settlement and hospital negotiations
+              How much you might have to pay after insurance and hospital negotiations
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card padding="md" variant="stat">
               <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
-                Realistic Loss (Expected Loss)
+                Estimated out-of-pocket
               </span>
               <p className="font-mono font-bold text-2xl text-text-primary mt-2">
                 {formatCurrency(assessment.expected_loss)}
               </p>
               <span className="text-xs text-text-secondary mt-1 block">
-                Probability × Severity weighted
+                Realistic amount you may end up paying
               </span>
             </Card>
 
             <Card padding="md" variant="stat">
               <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
-                Total At-Risk Exposure (EAD)
+                Total amount at risk
               </span>
               <p className="font-mono font-bold text-2xl text-text-primary mt-2">
                 {formatCurrency(assessment.ead)}
               </p>
               <span className="text-xs text-text-secondary mt-1 block">
-                Unsettled balance & copay
+                Unsettled balance and co-pay amount
               </span>
             </Card>
 
             <Card padding="md" variant="stat">
               <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
-                Chances of Insurance Deduction
+                Chances of claim deductions
               </span>
               <p className="font-heading font-bold text-2xl text-text-primary mt-2">
                 {Math.round((assessment.pd ?? 0) * 100)}%
               </p>
               <span className="text-xs text-text-secondary mt-1 block">
-                Historical insurer deduction rate
+                Probability that the insurer cuts some items
               </span>
             </Card>
           </div>
@@ -270,7 +259,7 @@ export default function FinancialRiskPage() {
             <Info className="w-5 h-5 text-brand-accent flex-shrink-0 mt-0.5" strokeWidth={1.5} />
             <div className="text-xs text-text-secondary leading-relaxed">
               <strong className="text-text-primary">What this means for you: </strong>
-              If you submit your dispute notice with government rate citations, you have a high probability of having unjustified deductions reversed before hospital final settlement.
+              If you submit your complaint letter with government rate proofs, you have a strong chance of having unfair charges removed before final payment.
             </div>
           </div>
         </section>
@@ -279,10 +268,10 @@ export default function FinancialRiskPage() {
         <section className="space-y-4">
           <div>
             <h2 className="font-heading font-bold text-xl text-text-primary">
-              2. Ability to Pay Without Distress (Liquidity Health)
+              2. Can you afford to pay this bill right now?
             </h2>
             <p className="text-xs text-text-secondary mt-0.5">
-              Evaluating your emergency cushion against out-of-pocket medical expenses
+              Comparing your emergency savings against your expected hospital payment
             </p>
           </div>
 
@@ -290,7 +279,7 @@ export default function FinancialRiskPage() {
             {/* Horizontal Fuel Gauge */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-text-primary">Savings Coverage Ratio (LCR)</span>
+                <span className="font-semibold text-text-primary">Savings buffer strength</span>
                 <span className="font-mono font-bold text-text-primary">{Math.round(lcrPercent)}%</span>
               </div>
               <div className="h-3 w-full bg-border-subtle rounded-full overflow-hidden">
@@ -300,9 +289,9 @@ export default function FinancialRiskPage() {
                 />
               </div>
               <div className="flex items-center justify-between text-[11px] text-text-tertiary pt-0.5">
-                <span>Critical (&lt;80%)</span>
-                <span>Adequate (80–99%)</span>
-                <span>Strong (&gt;100%)</span>
+                <span>Needs attention (&lt;80%)</span>
+                <span>Manageable (80–99%)</span>
+                <span>Good (&gt;100%)</span>
               </div>
             </div>
 
@@ -310,7 +299,7 @@ export default function FinancialRiskPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div className="p-3.5 bg-bg-secondary rounded-md">
                 <span className="text-[11px] font-semibold text-text-tertiary uppercase block">
-                  Available Liquid Savings
+                  Available savings
                 </span>
                 <p className="font-mono font-bold text-lg text-text-primary mt-1">
                   {formatCurrency(assessment.available_liquid_resources)}
@@ -319,7 +308,7 @@ export default function FinancialRiskPage() {
 
               <div className="p-3.5 bg-bg-secondary rounded-md">
                 <span className="text-[11px] font-semibold text-text-tertiary uppercase block">
-                  Liquidity Gap / Buffer
+                  Savings buffer / gap
                 </span>
                 <p className="font-mono font-bold text-lg text-text-primary mt-1">
                   {formatCurrency(assessment.liquidity_gap)}
@@ -328,7 +317,7 @@ export default function FinancialRiskPage() {
 
               <div className="p-3.5 bg-bg-secondary rounded-md">
                 <span className="text-[11px] font-semibold text-text-tertiary uppercase block">
-                  Months of Cushion
+                  Months your savings will last
                 </span>
                 <p className="font-heading font-bold text-lg text-text-primary mt-1">
                   {assessment.time_to_insolvency_months !== undefined
@@ -344,10 +333,10 @@ export default function FinancialRiskPage() {
         <section className="space-y-4">
           <div>
             <h2 className="font-heading font-bold text-xl text-text-primary">
-              3. Stress Testing (What-If Scenarios)
+              3. What if things go wrong?
             </h2>
             <p className="text-xs text-text-secondary mt-0.5">
-              Testing how unexpected hospital or insurance events would impact your total out-of-pocket costs
+              We tested different situations to see how your finances would hold up
             </p>
           </div>
 
@@ -369,22 +358,22 @@ export default function FinancialRiskPage() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <Badge variant={isWorstCase ? "danger" : "warning"} size="sm">
-                        {isWorstCase ? "Worst Case" : `Scenario ${idx + 1}`}
+                        {isWorstCase ? "Worst Case" : `Situation ${idx + 1}`}
                       </Badge>
                       <span className="font-mono text-xs text-text-tertiary">
-                        LCR: {Math.round((sc.resulting_lcr ?? 0) * 100)}%
+                        Buffer: {Math.round((sc.resulting_lcr ?? 0) * 100)}%
                       </span>
                     </div>
                     <h3 className="font-semibold text-sm text-text-primary">
                       {sc.scenario_name}
                     </h3>
                     <p className="text-xs text-text-secondary leading-relaxed">
-                      {sc.description || "Evaluation under stressed payment and dispute conditions."}
+                      {sc.description || "What happens if this unexpected event occurs."}
                     </p>
                   </div>
 
                   <div className="pt-2 border-t border-border-subtle flex items-center justify-between text-xs">
-                    <span className="text-text-tertiary">Stressed Loss:</span>
+                    <span className="text-text-tertiary">You might pay:</span>
                     <span className="font-mono font-bold text-danger">
                       {formatCurrency(sc.resulting_el)}
                     </span>
@@ -395,14 +384,14 @@ export default function FinancialRiskPage() {
           </div>
         </section>
 
-        {/* 5. VALUE AT RISK (VaR / CVaR) */}
+        {/* 5. VALUE AT RISK */}
         <section className="space-y-4">
           <div>
             <h2 className="font-heading font-bold text-xl text-text-primary">
-              4. Value at Risk (Loss Distribution)
+              4. Possible outcomes
             </h2>
             <p className="text-xs text-text-secondary mt-0.5">
-              Statistical model showing the maximum likely out-of-pocket loss across Monte Carlo simulations
+              Showing the most likely range of what you might end up paying
             </p>
           </div>
 
@@ -411,37 +400,37 @@ export default function FinancialRiskPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 bg-bg-secondary rounded-md border-l-4 border-l-brand-accent">
                 <span className="text-[11px] font-semibold text-text-tertiary uppercase block">
-                  90% Value at Risk (VaR)
+                  Most likely outcome
                 </span>
                 <p className="font-mono font-bold text-xl text-text-primary mt-1">
                   {formatCurrency(assessment.var_90)}
                 </p>
                 <span className="text-[10px] text-text-secondary mt-0.5 block">
-                  Loss will not exceed this in 90% of cases
+                  In 90 out of 100 cases, you won&apos;t pay more than this
                 </span>
               </div>
 
               <div className="p-4 bg-bg-secondary rounded-md border-l-4 border-l-warning">
                 <span className="text-[11px] font-semibold text-text-tertiary uppercase block">
-                  95% Value at Risk (VaR)
+                  Unfavourable outcome
                 </span>
                 <p className="font-mono font-bold text-xl text-text-primary mt-1">
                   {formatCurrency(assessment.var_95)}
                 </p>
                 <span className="text-[10px] text-text-secondary mt-0.5 block">
-                  Loss will not exceed this in 95% of cases
+                  In 95 out of 100 cases, you won&apos;t pay more than this
                 </span>
               </div>
 
               <div className="p-4 bg-bg-secondary rounded-md border-l-4 border-l-danger">
                 <span className="text-[11px] font-semibold text-text-tertiary uppercase block">
-                  95% Expected Shortfall (CVaR)
+                  Worst-case outcome
                 </span>
                 <p className="font-mono font-bold text-xl text-danger mt-1">
                   {formatCurrency(assessment.cvar_95)}
                 </p>
                 <span className="text-[10px] text-text-secondary mt-0.5 block">
-                  Average loss in the worst 5% of outcomes
+                  Average in the worst 5% of cases
                 </span>
               </div>
             </div>
@@ -460,7 +449,7 @@ export default function FinancialRiskPage() {
                   <YAxis stroke="#94A3B8" fontSize={11} />
                   <Tooltip
                     formatter={(val: any) => [val, "Probability"]}
-                    labelFormatter={(l: any) => `Out of Pocket: ₹${Number(l).toLocaleString("en-IN")}`}
+                    labelFormatter={(l: any) => `Estimated Out of Pocket: ₹${Number(l).toLocaleString("en-IN")}`}
                   />
                   <Area
                     type="monotone"
@@ -478,7 +467,7 @@ export default function FinancialRiskPage() {
               <div className="p-3.5 bg-warning-bg border border-warning/30 rounded-md text-xs text-[#92400E] leading-relaxed flex items-start gap-2">
                 <Info className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                 <span>
-                  <strong>Normal Case:</strong> In 95 out of 100 cases, your total loss will not exceed{" "}
+                  <strong>Normal outcome:</strong> In 95 out of 100 cases, your total payment will not exceed{" "}
                   <strong>{formatCurrency(assessment.var_95)}</strong>.
                 </span>
               </div>
@@ -486,7 +475,7 @@ export default function FinancialRiskPage() {
               <div className="p-3.5 bg-danger-bg border border-danger/30 rounded-md text-xs text-danger leading-relaxed flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
                 <span>
-                  <strong>Extreme Scenario:</strong> In the worst 5% of dispute outcomes, your expected loss is{" "}
+                  <strong>Worst outcome:</strong> In the worst 5% of dispute outcomes, you could pay{" "}
                   <strong>{formatCurrency(assessment.cvar_95)}</strong>.
                 </span>
               </div>
@@ -494,14 +483,14 @@ export default function FinancialRiskPage() {
           </Card>
         </section>
 
-        {/* 6. MODEL CONFIDENCE & CALIBRATION */}
+        {/* 6. MODEL CONFIDENCE */}
         <section className="space-y-4">
           <div>
             <h2 className="font-heading font-bold text-xl text-text-primary">
-              5. Model Reliability & Verification
+              5. How sure are we?
             </h2>
             <p className="text-xs text-text-secondary mt-0.5">
-              Statistical validation and calibration metrics for transparency
+              Transparency details about our estimate
             </p>
           </div>
 
@@ -512,8 +501,8 @@ export default function FinancialRiskPage() {
                   ? `${Math.round(assessment.prediction_confidence * 100)}%`
                   : "94%"}
               </div>
-              <h4 className="font-semibold text-xs text-text-primary mt-3">Confidence Score</h4>
-              <p className="text-[11px] text-text-tertiary mt-0.5">High mathematical certainty</p>
+              <h4 className="font-semibold text-xs text-text-primary mt-3">Confidence in our estimate</h4>
+              <p className="text-[11px] text-text-tertiary mt-0.5">High consistency with past bills</p>
             </div>
 
             <div>
@@ -522,16 +511,16 @@ export default function FinancialRiskPage() {
                   ? `${Math.round(assessment.data_quality_score * 100)}%`
                   : "98%"}
               </div>
-              <h4 className="font-semibold text-xs text-text-primary mt-3">Data Completeness</h4>
-              <p className="text-[11px] text-text-tertiary mt-0.5">All required bill fields verified</p>
+              <h4 className="font-semibold text-xs text-text-primary mt-3">Information checked</h4>
+              <p className="text-[11px] text-text-tertiary mt-0.5">All required bill details verified</p>
             </div>
 
             <div>
               <div className="w-16 h-16 rounded-full border-4 border-info flex items-center justify-center mx-auto text-info font-heading font-bold text-lg">
-                {assessment.frm_engine_version || "v2.4"}
+                Verified
               </div>
-              <h4 className="font-semibold text-xs text-text-primary mt-3">Framework Engine</h4>
-              <p className="text-[11px] text-text-tertiary mt-0.5">Calibrated on NPPA & DPCO Orders</p>
+              <h4 className="font-semibold text-xs text-text-primary mt-3">Price rules used</h4>
+              <p className="text-[11px] text-text-tertiary mt-0.5">Official government rate lists</p>
             </div>
           </Card>
         </section>
@@ -540,10 +529,10 @@ export default function FinancialRiskPage() {
         <section className="space-y-4">
           <div>
             <h2 className="font-heading font-bold text-xl text-text-primary">
-              6. Recommended Action Plan
+              6. What you should do next
             </h2>
             <p className="text-xs text-text-secondary mt-0.5">
-              Prioritised steps to minimize your financial exposure and recover overcharges
+              Clear steps you can take to protect your money and recover extra charges
             </p>
           </div>
 
@@ -571,14 +560,14 @@ export default function FinancialRiskPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h4 className="font-semibold text-sm text-text-primary">
-                        Submit Formal Dispute Notice to Hospital Billing Desk
+                        Send a complaint letter to the hospital billing desk
                       </h4>
                       <Badge variant="danger" size="sm">
                         High Priority
                       </Badge>
                     </div>
                     <p className="text-xs text-text-secondary mt-1 leading-relaxed">
-                      Serve the Section 65B certified notice highlighting NPPA and DPCO ceiling violations before final billing settlement.
+                      Give the hospital our ready complaint letter pointing out the items that exceed government price limits.
                     </p>
                   </div>
                 </Card>
@@ -590,14 +579,14 @@ export default function FinancialRiskPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h4 className="font-semibold text-sm text-text-primary">
-                        Request Itemised Bill Verification from TPA / Insurer
+                        Ask your insurance company to re-check the deductions
                       </h4>
                       <Badge variant="accent" size="sm">
                         Recommended
                       </Badge>
                     </div>
                     <p className="text-xs text-text-secondary mt-1 leading-relaxed">
-                      Provide the audit finding list to your insurance grievance officer to prevent deduction of legitimate medical expenses.
+                      Provide the list of findings to your insurance claims officer so they do not wrongly deduct valid medical costs.
                     </p>
                   </div>
                 </Card>
