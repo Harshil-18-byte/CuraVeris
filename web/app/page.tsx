@@ -618,7 +618,7 @@ export default function LandingPage() {
                 2. We Check Every Charge
               </h3>
               <p className="text-sm text-text-secondary leading-[1.6]">
-                Our system compares each item to the government's approved price list.
+                Our system compares each item to the government&apos;s approved price list.
               </p>
             </Card>
 
