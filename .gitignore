@@ -54,3 +54,25 @@ logs/
 *.key
 service-account.json
 firebase-service-account.json
+
+# Local temp & build caches
+.gradle/
+*.gradle/
+.neon/
+*.tsbuildinfo
+*.db
+*.pkl
+*.pt
+*.joblib
+backend/app/ml/weights/
+backend/ml_training/models/
+clients/web/.next/
+clients/web/.env.local
+clients/android/.gradle/
+data/
+reference_data/
+ml_models/
+models/
+backend/data/
+backend/ml_training/tmp/
+
