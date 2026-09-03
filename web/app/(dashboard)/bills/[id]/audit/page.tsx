@@ -146,13 +146,13 @@ export default function AuditReportPage() {
   const getRiskBannerText = (label: string) => {
     switch (label) {
       case "CRITICAL":
-        return "Critical Concern · Multiple significant violations found requiring immediate formal dispute";
+        return "Very High Concern · Major overcharges found. We recommend disputing these charges before paying.";
       case "HIGH":
-        return "High Concern · Substantial overcharges identified above statutory price limits";
+        return "High Concern · Multiple charges found above government-approved price limits.";
       case "MEDIUM":
-        return "Moderate Concern · Some charges appear higher than standard benchmarks";
+        return "Some Concern · A few charges appear higher than standard rates.";
       default:
-        return "Low Concern · All charges appear reasonable and within government price limits";
+        return "Low Concern · All charges look reasonable and within government price limits.";
     }
   };
 
