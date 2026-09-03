@@ -82,7 +82,7 @@ export default function AccountPage() {
   return (
     <PageShell
       title="Profile & Settings"
-      description="Manage your personal contact details, security credentials, and DPDP privacy settings."
+      description="Manage your personal details and privacy settings."
     >
       <div className="space-y-6 max-w-4xl">
         {/* 1. PROFILE OVERVIEW CARD */}
@@ -101,7 +101,7 @@ export default function AccountPage() {
             <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-success-bg border border-success/20 rounded-full text-xs font-medium text-success">
                 <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>DPDP 2023 Protected Account</span>
+                <span>Your Data is Protected & Private</span>
               </div>
 
               {user?.role === "admin" && (
@@ -121,7 +121,7 @@ export default function AccountPage() {
                 Personal Information
               </h4>
               <p className="text-xs text-text-secondary mt-0.5">
-                Contact details used for dispute letters and status updates
+                Contact details used for complaint letters and status updates
               </p>
             </div>
             <Button
@@ -180,26 +180,26 @@ export default function AccountPage() {
         <Card padding="lg" className="space-y-4">
           <div className="border-b border-border-subtle pb-3">
             <h4 className="font-heading font-semibold text-base text-text-primary">
-              Security & DPDP Privacy Rights
+              Your Privacy Rights
             </h4>
             <p className="text-xs text-text-secondary mt-0.5">
-              Under India&apos;s DPDP Act 2023, you have full control over your health records.
+              You have full control over your health records.
             </p>
           </div>
 
           <div className="space-y-3 text-xs">
             <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-md">
               <div>
-                <span className="font-semibold text-text-primary block">Right to Information</span>
-                <span className="text-text-secondary">Your data is only processed to find bill overcharges.</span>
+                <span className="font-semibold text-text-primary block">Used only for your bills</span>
+                <span className="text-text-secondary">Your information is only used to check for overcharges on your behalf.</span>
               </div>
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" strokeWidth={1.5} />
             </div>
 
             <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-md">
               <div>
-                <span className="font-semibold text-text-primary block">Right to Correction & Erasure</span>
-                <span className="text-text-secondary">You may permanently delete your data at any time.</span>
+                <span className="font-semibold text-text-primary block">Delete anytime</span>
+                <span className="text-text-secondary">You can permanently erase all your data and bills at any time.</span>
               </div>
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" strokeWidth={1.5} />
             </div>
@@ -210,7 +210,7 @@ export default function AccountPage() {
         <Card padding="lg" className="border-danger/30 space-y-4">
           <div className="border-b border-border-subtle pb-3">
             <h4 className="font-heading font-semibold text-base text-danger">
-              Danger Zone
+              Delete Account
             </h4>
             <p className="text-xs text-text-secondary mt-0.5">
               Permanent account actions that cannot be undone
@@ -220,7 +220,7 @@ export default function AccountPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="text-xs text-text-secondary">
               <strong className="text-text-primary block">Close and delete account</strong>
-              Permanently delete all your uploaded bills, audit reports, and personal details.
+              Permanently delete all your uploaded bills, check results, and personal details.
             </div>
 
             <Button
@@ -285,11 +285,11 @@ export default function AccountPage() {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title="Are you sure you want to delete your account?"
-        description="This action is immediate and cannot be undone. All your bills, dispute notices, and financial analysis will be permanently erased."
+        description="This action is immediate and cannot be undone. All your bills, complaint letters, and reports will be permanently deleted."
       >
         <div className="p-3.5 bg-danger-bg rounded-md text-xs text-danger mb-4 flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-          <span>Under the DPDP Act 2023, all your encrypted files and database records will be erased immediately.</span>
+          <span>All your uploaded documents and account details will be erased permanently.</span>
         </div>
 
         <div className="flex gap-2 justify-end">
@@ -307,7 +307,7 @@ export default function AccountPage() {
             onClick={handleDeleteAccount}
             isLoading={isDeleting}
           >
-            Permanently Delete
+            Yes, Delete Everything
           </Button>
         </div>
       </Modal>
