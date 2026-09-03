@@ -92,7 +92,7 @@ export default function NotificationsPage() {
   return (
     <PageShell
       title="Notifications & Updates"
-      description="Stay informed about your bill check progress, new overcharge findings, and security alerts."
+      description="Updates about your bills, completed checks, and ready complaint letters."
       action={
         unreadCount > 0 && (
           <Button
@@ -144,12 +144,12 @@ export default function NotificationsPage() {
           <Card padding="lg" className="text-center py-12 space-y-3">
             <Bell className="w-10 h-10 text-border-default mx-auto" strokeWidth={1.5} />
             <h3 className="font-heading font-semibold text-base text-text-primary">
-              No notifications
+              No notifications right now
             </h3>
             <p className="text-xs text-text-secondary max-w-sm mx-auto font-normal">
               {filter === "UNREAD"
                 ? "You have caught up on all your notifications."
-                : "When our system completes checks or finds overcharges, updates will appear here."}
+                : "When we finish checking your bills or find new updates, you'll see them here."}
             </p>
           </Card>
         ) : (
