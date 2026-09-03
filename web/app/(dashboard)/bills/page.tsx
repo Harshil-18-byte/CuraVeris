@@ -31,7 +31,7 @@ export default function BillsListPage() {
   return (
     <PageShell
       title="Your Bills"
-      description="View and manage all uploaded hospital bills, audits, and dispute notices."
+      description="View all the bills you've uploaded and check your results."
       action={
         <Link href="/bills/upload">
           <Button variant="primary" size="md">
