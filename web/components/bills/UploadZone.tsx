@@ -44,7 +44,7 @@ export const UploadZone: React.FC = () => {
   } = useForm<UploadFormValues>({
     resolver: zodResolver(uploadFormSchema),
     defaultValues: {
-      insurance_type: "Self Pay",
+      insurance_type: "No, I paid myself",
     },
   });
 
@@ -60,13 +60,13 @@ export const UploadZone: React.FC = () => {
       "image/webp",
     ];
     if (!validTypes.includes(file.type)) {
-      setUploadError("Please upload a PDF document or an image (JPG, PNG, WEBP).");
+      setUploadError("We can't read this file type. Please use a photo (JPG or PNG) or a PDF.");
       return;
     }
 
-    // Validate size (max 20MB)
-    if (file.size > 20 * 1024 * 1024) {
-      setUploadError("File is too large. Maximum size allowed is 20MB.");
+    // Validate size (max 50MB)
+    if (file.size > 50 * 1024 * 1024) {
+      setUploadError("This file is too large. Please upload a file smaller than 50MB.");
       return;
     }
 
@@ -97,13 +97,17 @@ export const UploadZone: React.FC = () => {
       if (data.insurance_type) formData.append("insurance_type", data.insurance_type);
 
       const res = await api.bills.upload(formData);
-      toast.success("Bill uploaded! We are now checking the prices.");
+      toast.success("Bill sent! We're checking the prices now.");
       router.push(`/bills/${res.bill_id}`);
     } catch (err: any) {
       const detail = err?.message || err?.response?.data?.detail;
-      setUploadError(
-        typeof detail === "string" ? detail : "Failed to upload bill. Please try again."
-      );
+      if (typeof detail === "string" && (detail.includes("duplicate") || detail.includes("already"))) {
+        setUploadError("Looks like you've already checked this bill.");
+      } else {
+        setUploadError(
+          typeof detail === "string" ? detail : "Something went wrong while uploading. Please try again."
+        );
+      }
     }
   };
 
@@ -113,7 +117,7 @@ export const UploadZone: React.FC = () => {
         {/* Drag & Drop File Zone */}
         <div>
           <label className="block text-sm font-semibold text-text-primary mb-2">
-            Upload Hospital Bill or Discharge Summary
+            Check Your Hospital Bill
           </label>
 
           {!selectedFile ? (
@@ -144,10 +148,10 @@ export const UploadZone: React.FC = () => {
               </div>
 
               <h3 className="font-heading font-semibold text-base text-text-primary">
-                Click to choose a file or drag it here
+                Drop your bill here, or tap to choose a file
               </h3>
               <p className="text-xs text-text-secondary mt-1 font-normal">
-                Supported formats: PDF, JPG, PNG, WEBP (up to 20MB)
+                Photo, PDF, or image file · Up to 50MB
               </p>
 
               <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-bg-secondary rounded-full text-xs text-text-secondary font-medium">
@@ -194,7 +198,7 @@ export const UploadZone: React.FC = () => {
         {/* Form Details */}
         <Card padding="lg" className="space-y-4">
           <h4 className="font-heading font-semibold text-sm text-text-primary border-b border-border-subtle pb-3">
-            Hospital & Bill Details
+            A few more details (not required)
           </h4>
 
           <Input
@@ -205,7 +209,7 @@ export const UploadZone: React.FC = () => {
           />
 
           <Input
-            label="Total Bill Amount (₹)"
+            label="Total amount on the bill (if you know it)"
             type="number"
             leftAddon={<span className="text-xs font-semibold">₹</span>}
             placeholder="e.g. 1,45,000"
@@ -232,17 +236,17 @@ export const UploadZone: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1.5">
-              Payment Method / Insurance
+              Did you use insurance for this bill?
             </label>
             <select
               className="w-full h-[44px] px-3.5 bg-white text-text-primary text-base font-normal rounded-md border border-border-default outline-none focus:border-border-focus focus:shadow-[0_0_0_3px_rgba(37,99,235,0.12)] transition-all"
               {...register("insurance_type")}
             >
-              <option value="Self Pay">Self Pay / Cash</option>
-              <option value="Private Health Insurance">Private Health Insurance (Mediclaim)</option>
-              <option value="CGHS / ECHS">CGHS / ECHS (Central Govt)</option>
-              <option value="PM-JAY Ayushman Bharat">PM-JAY Ayushman Bharat</option>
-              <option value="Corporate / Employer">Corporate / Employer Group Plan</option>
+              <option value="Self Pay">No, I paid myself</option>
+              <option value="Private Health Insurance">Yes — Private insurance</option>
+              <option value="CGHS / ECHS">Yes — Central Government (CGHS)</option>
+              <option value="PM-JAY Ayushman Bharat">Yes — Ayushman Bharat (PM-JAY)</option>
+              <option value="Other">Yes — other type</option>
             </select>
           </div>
         </Card>
@@ -254,7 +258,7 @@ export const UploadZone: React.FC = () => {
           className="w-full"
           isLoading={isSubmitting}
         >
-          Check My Bill Now
+          Check This Bill
         </Button>
       </form>
     </div>
