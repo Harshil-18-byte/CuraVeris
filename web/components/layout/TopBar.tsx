@@ -1,10 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, LogOut, User as UserIcon, ShieldCheck } from "lucide-react";
+import {
+  Bell,
+  LogOut,
+  User as UserIcon,
+  ShieldCheck,
+  PlusCircle,
+  Receipt,
+  Search
+} from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/api";
@@ -12,7 +20,7 @@ import { api } from "@/lib/api";
 export const TopBar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   const { data: unreadData } = useQuery({
     queryKey: ["notifications", "unread-count"],
@@ -25,13 +33,13 @@ export const TopBar: React.FC = () => {
 
   const getPageTitle = () => {
     if (pathname === "/dashboard") return "Dashboard";
-    if (pathname === "/bills") return "Your Bills";
+    if (pathname === "/bills") return "My Bills";
     if (pathname === "/bills/upload") return "Check a Bill";
     if (pathname.includes("/risk")) return "Financial Risk";
-    if (pathname.includes("/audit")) return "Bill Results";
+    if (pathname.includes("/audit")) return "Audit Results";
     if (pathname.startsWith("/bills/")) return "Bill Details";
     if (pathname === "/notifications") return "Notifications";
-    if (pathname === "/account") return "Profile & Settings";
+    if (pathname === "/account") return "Profile & Security";
     if (pathname.startsWith("/admin")) return "Administration";
     return "CuraVeris";
   };
@@ -43,7 +51,7 @@ export const TopBar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-30 h-[60px] bg-white border-b border-border-subtle flex items-center justify-between px-6 select-none">
-      {/* Page Title */}
+      {/* Left: Current Page Title & Breadcrumb */}
       <div className="flex items-center gap-3">
         <h1 className="font-heading font-semibold text-lg text-text-primary tracking-tight">
           {getPageTitle()}
@@ -57,6 +65,15 @@ export const TopBar: React.FC = () => {
           <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
           <span>DPDP 2023 Protected</span>
         </div>
+
+        {/* Quick Check a Bill Button */}
+        <Link
+          href="/bills/upload"
+          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-accent-light text-brand-accent hover:bg-brand-accent/20 rounded-md text-xs font-semibold transition-colors"
+        >
+          <PlusCircle className="w-3.5 h-3.5" />
+          <span>Check a Bill</span>
+        </Link>
 
         {/* Notification Bell */}
         <Link
@@ -78,7 +95,7 @@ export const TopBar: React.FC = () => {
             <button
               type="button"
               aria-label="User profile menu"
-              className="w-8 h-8 rounded-full bg-brand-primary text-white text-xs font-heading font-semibold flex items-center justify-center hover:opacity-90 transition-opacity focus:outline-none"
+              className="w-8 h-8 rounded-full bg-brand-primary text-white text-xs font-heading font-semibold flex items-center justify-center hover:opacity-90 transition-opacity focus:outline-none cursor-pointer"
             >
               {user?.full_name?.charAt(0).toUpperCase() || "U"}
             </button>
@@ -103,7 +120,17 @@ export const TopBar: React.FC = () => {
                   className="flex items-center gap-2 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-secondary cursor-pointer transition-colors focus:outline-none"
                 >
                   <UserIcon className="w-4 h-4 text-text-secondary" strokeWidth={1.5} />
-                  <span>Profile & Settings</span>
+                  <span>Profile & Security</span>
+                </Link>
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Item asChild>
+                <Link
+                  href="/bills"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-text-primary rounded-md hover:bg-bg-secondary cursor-pointer transition-colors focus:outline-none"
+                >
+                  <Receipt className="w-4 h-4 text-text-secondary" strokeWidth={1.5} />
+                  <span>My Bills</span>
                 </Link>
               </DropdownMenu.Item>
 
@@ -123,3 +150,5 @@ export const TopBar: React.FC = () => {
     </header>
   );
 };
+
+
