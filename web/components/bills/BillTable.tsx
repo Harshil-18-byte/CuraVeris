@@ -25,7 +25,7 @@ export const BillTable: React.FC<BillTableProps> = ({
   isError = false,
   errorMessage,
   onRetry,
-  emptyTitle = "No bills yet",
+  emptyTitle = "You haven't uploaded any bills yet",
   emptyDescription = "Take a photo of your hospital bill and we'll check it for overcharges.",
 }) => {
   const getStatusText = (status: string) => {
@@ -95,7 +95,7 @@ export const BillTable: React.FC<BillTableProps> = ({
               <th className="py-3 px-4">Hospital / Clinic</th>
               <th className="py-3 px-4">Date</th>
               <th className="py-3 px-4 text-right">Bill Total</th>
-              <th className="py-3 px-4 text-right">Extra Charges</th>
+              <th className="py-3 px-4 text-right">Possible Extra Charges</th>
               <th className="py-3 px-4 text-center">Status</th>
               <th className="py-3 px-4 text-right">Action</th>
             </tr>
