@@ -93,7 +93,7 @@ export default function LandingPage() {
 
   const copySampleLetter = () => {
     navigator.clipboard.writeText(
-      `To,\nThe Medical Superintendent / Billing Dept,\nApollo Hospitals\n\nSubject: Formal Dispute regarding Hospital Bill (Estimated Overcharge: ₹${estimatedSavings.toLocaleString('en-IN')})\n\nUnder NPPA Medical Device Ceiling Order S.O. 1335(E) and DPCO 2013, the billed items exceed statutory caps. Furthermore, Section 65B (BSA 2023) audit indicates unjustified duplicate ICU nursing charges.\n\nPlease refund or adjust the surplus ₹${estimatedSavings.toLocaleString('en-IN')} within 7 working days.\n\nSincerely,\nPatient Representative`
+      `To,\nThe Medical Superintendent / Billing Department,\nApollo Hospitals\n\nSubject: Formal Complaint regarding Hospital Bill (Estimated Extra Charge: ₹${estimatedSavings.toLocaleString('en-IN')})\n\nAccording to government price caps for medical devices and medicines, the billed items exceed the allowed limits. Furthermore, duplicate ICU and nursing charges were applied.\n\nPlease refund or adjust the surplus ₹${estimatedSavings.toLocaleString('en-IN')} within 7 working days.\n\nSincerely,\nPatient Representative`
     );
     setCopiedLetter(true);
     setTimeout(() => setCopiedLetter(false), 2500);
@@ -120,7 +120,7 @@ export default function LandingPage() {
                 CuraVeris
               </span>
               <span className="hidden md:inline-flex items-center gap-1 text-[9px] font-bold text-brand-accent tracking-wider uppercase">
-                NPPA • CGHS • DPCO
+                Government Price Caps & Rules
               </span>
             </div>
           </Link>
@@ -134,22 +134,19 @@ export default function LandingPage() {
               Dashboard
             </Link>
             <Link href="/bills/upload" className="px-3 py-1.5 rounded-md text-brand-accent bg-brand-accent-light hover:bg-brand-accent/20 transition-colors">
-              Scan Bill
+              Check a Bill
             </Link>
             <Link href="/bills" className="px-3 py-1.5 rounded-md hover:text-text-primary hover:bg-bg-secondary transition-colors">
-              Reconciliation
-            </Link>
-            <Link href="/bills" className="px-3 py-1.5 rounded-md hover:text-text-primary hover:bg-bg-secondary transition-colors">
-              Audits
+              My Bills
             </Link>
             <a href="#simulator" className="px-3 py-1.5 rounded-md hover:text-text-primary hover:bg-bg-secondary transition-colors">
               Savings Calculator
             </a>
             <a href="#price-checker" className="px-3 py-1.5 rounded-md hover:text-text-primary hover:bg-bg-secondary transition-colors">
-              Price Caps
+              Government Price Limits
             </a>
             <Link href="/account" className="px-3 py-1.5 rounded-md hover:text-text-primary hover:bg-bg-secondary transition-colors">
-              DPDP Compliance
+              Privacy & Data
             </Link>
           </nav>
 
@@ -162,7 +159,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/register">
               <Button variant="primary" size="sm" className="font-semibold text-xs shadow-xs">
-                Check My Bill Free
+                Check My Bill for Free
               </Button>
             </Link>
           </div>
@@ -172,28 +169,28 @@ export default function LandingPage() {
       {/* 2. HERO SECTION */}
       <section className="relative z-10 pt-14 pb-18 lg:pt-20 lg:pb-24">
         <div className="max-w-[1360px] mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
-          {/* Left Column (58%) */}
+          {/* Left Column */}
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-accent-light border border-brand-accent/20 rounded-full text-brand-accent text-xs font-bold tracking-wide shadow-xs">
               <Sparkles className="w-4 h-4 text-brand-accent" />
-              <span>AI-Powered Healthcare Billing Intelligence • Statutory Auditing</span>
+              <span>Free Patient Bill Check • Protect Your Family</span>
             </div>
 
             <h1 className="font-heading font-extrabold text-4xl sm:text-5xl lg:text-[54px] text-text-primary leading-[1.08] tracking-[-0.035em]">
-              Stop Overpaying Hospital Bills. <br />
+              Was Your Hospital Bill <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-brand-accent to-brand-primary">
-                Verify Against Legal Caps.
+                Too High?
               </span>
             </h1>
 
             <p className="text-lg text-text-secondary leading-[1.65] max-w-[560px] font-normal">
-              Every charge in your hospital bill is audited against official Indian government price ceilings (NPPA, CGHS, DPCO) and tested for duplicate billing, unbundled packages, and phantom fees.
+              We check your hospital bill line by line against government-approved prices. If they charged you too much, we find it — and help you fight back.
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
               <Link href="/register">
                 <Button variant="primary" size="lg" className="w-full sm:w-auto h-[54px] px-8 text-base font-semibold shadow-md">
-                  Audit Your Hospital Bill Free
+                  Check My Bill for Free
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -205,24 +202,28 @@ export default function LandingPage() {
               </a>
             </div>
 
+            <p className="text-xs text-text-tertiary">
+              Free to use · Takes about 5–10 minutes · No technical knowledge needed
+            </p>
+
             {/* Trust Badges */}
-            <div className="pt-4 flex flex-wrap items-center gap-6 text-xs text-text-secondary font-medium">
+            <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-text-secondary font-medium">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-success" />
                 <span>100% Free for Patients</span>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-success" />
-                <span>DPDP Act 2023 Encrypted</span>
+                <span>Your Data is Private & Safe</span>
               </div>
               <div className="flex items-center gap-2">
                 <FileCheck2 className="w-4 h-4 text-success" />
-                <span>Section 65B Legal Proof</span>
+                <span>Ready-to-Send Complaint Letters</span>
               </div>
             </div>
           </div>
 
-          {/* Right Column (42%) — Interactive Live Bill Card */}
+          {/* Right Column — Interactive Sample Card */}
           <div className="lg:col-span-5 flex justify-center">
             <div className="w-full max-w-[460px] bg-white rounded-2xl shadow-2xl border border-border-default p-6 relative overflow-hidden backdrop-blur-sm">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-danger via-warning to-brand-accent" />
@@ -231,28 +232,28 @@ export default function LandingPage() {
               <div className="flex items-center justify-between border-b border-border-subtle pb-4">
                 <div>
                   <span className="text-[11px] font-bold uppercase tracking-wider text-text-tertiary block">
-                    LIVE STATUTORY AUDIT SAMPLE
+                    SAMPLE BILL CHECK
                   </span>
                   <p className="font-heading font-bold text-lg text-text-primary mt-0.5">
-                    Apollo Hospitals Multispeciality
+                    City Care Hospital
                   </p>
                 </div>
                 <Badge variant="danger" size="sm" isPulsing>
-                  High Risk (Overcharged)
+                  High Concern
                 </Badge>
               </div>
 
               {/* Overcharge Highlight Banner */}
               <div className="my-4 p-4 rounded-xl bg-danger-bg border border-danger/20 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-semibold text-danger block">Recoverable Overcharge</span>
+                  <span className="text-xs font-semibold text-danger block">You may have been overcharged</span>
                   <p className="font-mono font-extrabold text-3xl text-danger mt-0.5">
                     ₹47,800
                   </p>
                 </div>
                 <div className="text-right">
                   <span className="px-2.5 py-1 rounded-full bg-danger/10 text-danger text-xs font-bold">
-                    3 Statutory Violations
+                    3 Overcharges Found
                   </span>
                   <span className="text-[11px] text-text-secondary block mt-1">
                     Bill Total: ₹3,85,000
@@ -264,16 +265,16 @@ export default function LandingPage() {
               <div className="space-y-2.5">
                 <div className="p-3 bg-bg-secondary rounded-lg flex items-center justify-between border-l-4 border-l-danger">
                   <div>
-                    <p className="text-xs font-bold text-text-primary">Coronary Stent (DES)</p>
-                    <span className="text-[11px] text-text-tertiary">NPPA Order S.O. 1335(E) Cap ₹30,080</span>
+                    <p className="text-xs font-bold text-text-primary">Heart Stent (Drug Eluting)</p>
+                    <span className="text-[11px] text-text-tertiary">Charged above government price cap (₹30,080)</span>
                   </div>
                   <span className="font-mono text-xs font-bold text-danger">+₹22,500</span>
                 </div>
 
                 <div className="p-3 bg-bg-secondary rounded-lg flex items-center justify-between border-l-4 border-l-danger">
                   <div>
-                    <p className="text-xs font-bold text-text-primary">ICU Nursing & Bed (Duplicate)</p>
-                    <span className="text-[11px] text-text-tertiary">Billed separately despite package clause</span>
+                    <p className="text-xs font-bold text-text-primary">ICU Nursing & Bed (Charged Twice)</p>
+                    <span className="text-[11px] text-text-tertiary">This was already included in the room package</span>
                   </div>
                   <span className="font-mono text-xs font-bold text-danger">+₹18,000</span>
                 </div>
@@ -281,7 +282,7 @@ export default function LandingPage() {
                 <div className="p-3 bg-bg-secondary rounded-lg flex items-center justify-between border-l-4 border-l-warning">
                   <div>
                     <p className="text-xs font-bold text-text-primary">Paracetamol IV 100ml</p>
-                    <span className="text-[11px] text-text-tertiary">DPCO 2013 Table-1 Price ceiling ₹28.50</span>
+                    <span className="text-[11px] text-text-tertiary">Government price limit is ₹28.50</span>
                   </div>
                   <span className="font-mono text-xs font-bold text-warning">+₹7,300</span>
                 </div>
@@ -291,7 +292,7 @@ export default function LandingPage() {
               <div className="mt-5 pt-4 border-t border-border-subtle flex gap-2">
                 <Link href="/bills/upload" className="flex-1">
                   <Button variant="primary" size="sm" className="w-full text-xs font-semibold py-2.5">
-                    Scan My Bill Now
+                    Check My Bill for Free
                   </Button>
                 </Link>
                 <button
@@ -300,7 +301,7 @@ export default function LandingPage() {
                   className="px-3 py-2 bg-bg-secondary hover:bg-border-default text-text-primary rounded-md text-xs font-medium transition-colors flex items-center gap-1.5"
                 >
                   {copiedLetter ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedLetter ? "Copied!" : "Dispute Letter"}</span>
+                  <span>{copiedLetter ? "Copied!" : "Sample Letter"}</span>
                 </button>
               </div>
             </div>
@@ -316,7 +317,7 @@ export default function LandingPage() {
               {statsVisible ? <CountUp end={82} suffix="%" /> : "82%"}
             </p>
             <p className="text-sm text-text-secondary mt-1 font-medium">
-              of audited hospital bills in India contain overcharges
+              Bills Checked that contained extra charges
             </p>
           </div>
 
@@ -325,7 +326,7 @@ export default function LandingPage() {
               {statsVisible ? <CountUp end={42000} prefix="₹" formatter={(v) => `${(v / 1000).toFixed(0)}k`} /> : "₹42k"}
             </p>
             <p className="text-sm text-text-secondary mt-1 font-medium">
-              average recoverable overcharge found per patient
+              Extra Charges Found per patient on average
             </p>
           </div>
 
@@ -334,36 +335,35 @@ export default function LandingPage() {
               {statsVisible ? <CountUp end={100} suffix="%" /> : "100%"}
             </p>
             <p className="text-sm text-text-secondary mt-1 font-medium">
-              confidential, free & DPDP 2023 compliant
+              Complaint Letters Created and ready to send
             </p>
           </div>
         </div>
       </section>
 
-      {/* 4. INTERACTIVE RECOVERY & SAVINGS CALCULATOR (WIDGET) */}
+      {/* 4. INTERACTIVE RECOVERY & SAVINGS CALCULATOR */}
       <section id="simulator" className="relative z-10 py-20 lg:py-28">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-brand-accent-light rounded-full text-brand-accent text-xs font-bold">
               <Calculator className="w-3.5 h-3.5" />
-              <span>Interactive Savings Simulator</span>
+              <span>Savings Calculator</span>
             </div>
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary tracking-tight">
-              Estimate your bill recovery in seconds
+              See what you could save in seconds
             </h2>
             <p className="text-base text-text-secondary">
-              Adjust the slider and toggle suspected billing items to see your estimated statutory recovery under NPPA & DPCO regulations.
+              Adjust the slider and choose items on your bill to see potential extra charges based on government price limits.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch bg-white border border-border-default rounded-3xl p-6 sm:p-10 shadow-xl">
-            {/* Controls (60%) */}
+            {/* Controls */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Bill Amount Slider */}
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-sm font-bold text-text-primary">
-                    Total Hospital Bill Amount
+                    Total amount on the bill
                   </label>
                   <span className="font-mono text-lg font-extrabold text-brand-primary">
                     ₹{billAmount.toLocaleString("en-IN")}
@@ -385,15 +385,14 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Treatment Type Selection */}
               <div>
                 <label className="text-sm font-bold text-text-primary block mb-2">
-                  Treatment / Admission Category
+                  Type of Treatment / Hospital Stay
                 </label>
                 <div className="grid grid-cols-3 gap-2.5">
                   {[
-                    { id: "cardiology", label: "Cardiology / Stent" },
-                    { id: "orthopedic", label: "Joint / Orthopedic" },
+                    { id: "cardiology", label: "Heart / Stent" },
+                    { id: "orthopedic", label: "Knee / Joint" },
                     { id: "icu_general", label: "ICU & Surgery" },
                   ].map((t) => (
                     <button
@@ -402,7 +401,7 @@ export default function LandingPage() {
                       onClick={() => setTreatmentType(t.id)}
                       className={`p-3 rounded-xl border text-xs font-bold transition-all text-center ${
                         treatmentType === t.id
-                          ? "border-brand-primary bg-brand-primary text-white shadow-xs"
+                           ? "border-brand-primary bg-brand-primary text-white shadow-xs"
                           : "border-border-default bg-bg-secondary text-text-primary hover:border-brand-accent/40"
                       }`}
                     >
@@ -412,10 +411,9 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Suspected Overcharge Flags */}
               <div className="space-y-3 pt-2">
                 <label className="text-sm font-bold text-text-primary block">
-                  Suspected Flags in Your Bill
+                  Items to check on your bill
                 </label>
 
                 <label className="flex items-center justify-between p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer">
@@ -427,11 +425,11 @@ export default function LandingPage() {
                       className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0"
                     />
                     <div>
-                      <p className="text-xs font-bold text-text-primary">Implant / Stent Markup</p>
-                      <span className="text-[11px] text-text-secondary">Priced over NPPA cap ₹30,080</span>
+                      <p className="text-xs font-bold text-text-primary">Stent / Implant Charged Above Price Limit</p>
+                      <span className="text-[11px] text-text-secondary">Government limit is ₹30,080</span>
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-danger">+₹34,920 impact</span>
+                  <span className="font-mono text-xs font-bold text-danger">+₹34,920 extra</span>
                 </label>
 
                 <label className="flex items-center justify-between p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer">
@@ -443,11 +441,11 @@ export default function LandingPage() {
                       className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0"
                     />
                     <div>
-                      <p className="text-xs font-bold text-text-primary">Unbundled ICU & Nursing Day Fees</p>
-                      <span className="text-[11px] text-text-secondary">Separate charges for items included in package</span>
+                      <p className="text-xs font-bold text-text-primary">ICU Nursing & Daily Charges Billed Separately</p>
+                      <span className="text-[11px] text-text-secondary">Charges that should be included in the room package</span>
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-danger">+₹22,500 impact</span>
+                  <span className="font-mono text-xs font-bold text-danger">+₹22,500 extra</span>
                 </label>
 
                 <label className="flex items-center justify-between p-3.5 rounded-xl border border-border-subtle bg-bg-secondary hover:bg-border-subtle/40 transition-colors cursor-pointer">
@@ -459,8 +457,8 @@ export default function LandingPage() {
                       className="w-4 h-4 rounded text-brand-accent accent-brand-accent focus:ring-0"
                     />
                     <div>
-                      <p className="text-xs font-bold text-text-primary">DPCO Scheduled Pharmacy Markups</p>
-                      <span className="text-[11px] text-text-secondary">Injections and infusions sold above NLEM list</span>
+                      <p className="text-xs font-bold text-text-primary">Medicines Priced Above Government Cap</p>
+                      <span className="text-[11px] text-text-secondary">Medicines sold above government-regulated maximum price</span>
                     </div>
                   </div>
                   <span className="font-mono text-xs font-bold text-danger">~8% of bill</span>
@@ -468,11 +466,11 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Results Box (40%) */}
+            {/* Results Box */}
             <div className="lg:col-span-5 bg-bg-secondary rounded-2xl p-6 sm:p-8 flex flex-col justify-between border border-border-subtle">
               <div className="space-y-4">
                 <span className="text-xs font-bold text-brand-accent uppercase tracking-wider block">
-                  Estimated Statutory Recovery
+                  Possible Extra Charges
                 </span>
 
                 <div>
@@ -480,22 +478,22 @@ export default function LandingPage() {
                     ₹{estimatedSavings.toLocaleString("en-IN")}
                   </p>
                   <p className="text-xs text-text-secondary mt-1 font-medium">
-                    You may be overpaying by approx. <strong className="text-danger font-bold">{savingsPercent}%</strong> of your total bill.
+                    You may have been overcharged by approx. <strong className="text-danger font-bold">{savingsPercent}%</strong> of your total bill.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-white border border-border-default space-y-2 text-xs">
                   <div className="flex justify-between text-text-secondary">
-                    <span>Legal Recourse Framework</span>
-                    <span className="font-bold text-text-primary">NPPA + DPCO 2013</span>
+                    <span>Rules Used</span>
+                    <span className="font-bold text-text-primary">Government Price Limits</span>
                   </div>
                   <div className="flex justify-between text-text-secondary">
-                    <span>Evidence Certificate</span>
-                    <span className="font-bold text-text-primary">Section 65B BSA</span>
+                    <span>What We Provide</span>
+                    <span className="font-bold text-text-primary">Ready Complaint Letter</span>
                   </div>
                   <div className="flex justify-between text-text-secondary">
-                    <span>Resolution Probability</span>
-                    <span className="font-bold text-success">89% Settlement Rate</span>
+                    <span>Outcome</span>
+                    <span className="font-bold text-success">High Chance of Refund</span>
                   </div>
                 </div>
               </div>
@@ -503,12 +501,12 @@ export default function LandingPage() {
               <div className="pt-6 space-y-2.5">
                 <Link href="/register" className="block">
                   <Button variant="primary" size="lg" className="w-full text-sm font-bold shadow-md h-[48px]">
-                    Generate Free Dispute Letter
+                    Check My Bill for Free
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
                 <p className="text-center text-[11px] text-text-tertiary">
-                  Instant analysis • No registration fee • 100% confidential
+                  Takes 5 minutes · No payment needed · 100% private
                 </p>
               </div>
             </div>
@@ -516,15 +514,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 5. INTERACTIVE PRICE CAP CHECKER (NPPA / CGHS / DPCO) */}
+      {/* 5. GOVERNMENT PRICE LIMITS LOOKUP */}
       <section id="price-checker" className="relative z-10 py-18 bg-bg-secondary border-t border-border-subtle">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center max-w-xl mx-auto space-y-2 mb-10">
             <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-text-primary tracking-tight">
-              Instant Legal Price Ceiling Lookup
+              Look Up Government Price Caps
             </h2>
             <p className="text-sm text-text-secondary">
-              Search government-regulated ceiling prices for stents, implants, essential medicines, and ICU rates.
+              Search official government-approved prices for stents, knee implants, common medicines, and hospital beds.
             </p>
           </div>
 
@@ -532,7 +530,7 @@ export default function LandingPage() {
             <Search className="w-4 h-4 text-text-tertiary absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search medicine, stent, knee implant, ICU rate (e.g. Stent, Paracetamol, Meropenem)..."
+              placeholder="Search medicine, stent, knee implant, bed rate (e.g. Stent, Paracetamol, Meropenem)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 pl-11 pr-4 bg-white rounded-xl border border-border-default focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 text-sm font-medium placeholder:text-text-tertiary outline-none shadow-xs"
@@ -547,7 +545,7 @@ export default function LandingPage() {
               >
                 <div className="flex justify-between items-start">
                   <span className="px-2 py-0.5 rounded bg-brand-accent-light text-brand-accent text-[10px] font-extrabold uppercase">
-                    {item.category}
+                    {item.category === "NPPA Device" ? "Medical Device Cap" : item.category === "NPPA Ortho" ? "Joint Implant Cap" : item.category === "DPCO NLEM" ? "Medicine Price Cap" : "Government Rate"}
                   </span>
                   <span className="text-[10px] text-text-tertiary font-mono">{item.citation}</span>
                 </div>
@@ -558,13 +556,13 @@ export default function LandingPage() {
 
                 <div className="pt-2 border-t border-border-subtle grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">Govt Price Cap</span>
+                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">Government Price Cap</span>
                     <span className="font-mono font-bold text-success text-sm">
                       ₹{item.cap.toLocaleString("en-IN")}
                     </span>
                   </div>
                   <div>
-                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">Hospital Typical</span>
+                    <span className="text-text-tertiary block text-[10px] uppercase font-bold">What Hospitals Often Charge</span>
                     <span className="font-mono font-bold text-danger text-sm line-through">
                       ₹{item.typical.toLocaleString("en-IN")}
                     </span>
@@ -576,18 +574,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6. HOW IT WORKS (3 SIMPLE STEPS) */}
+      {/* 6. HOW IT WORKS */}
       <section id="how-it-works" className="relative z-10 py-20 lg:py-28">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center max-w-lg mx-auto space-y-3">
             <div className="inline-flex px-3.5 py-1 bg-brand-accent-light rounded-full text-brand-accent text-xs font-bold">
-              How it works
+              How It Works
             </div>
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary tracking-tight">
-              Three simple steps to fair billing
+              Three simple steps to check your bill
             </h2>
             <p className="text-base text-text-secondary">
-              No legal or technical knowledge required. We do all the statutory analysis.
+              No technical or medical knowledge needed. We do all the checking for you.
             </p>
           </div>
 
@@ -601,10 +599,10 @@ export default function LandingPage() {
                 <FileText className="w-6 h-6" />
               </div>
               <h3 className="font-heading font-bold text-lg text-text-primary pt-2">
-                1. Upload your bill
+                1. Send Us Your Bill
               </h3>
               <p className="text-sm text-text-secondary leading-[1.6]">
-                Upload a photo or PDF of your hospital bill. Our engine parses every medicine, stent, ICU day, and surgical procedure line by line.
+                Take a photo or upload a PDF. Any format works.
               </p>
             </Card>
 
@@ -617,10 +615,10 @@ export default function LandingPage() {
                 <Scale className="w-6 h-6" />
               </div>
               <h3 className="font-heading font-bold text-lg text-text-primary pt-2">
-                2. Automated Price Audit
+                2. We Check Every Charge
               </h3>
               <p className="text-sm text-text-secondary leading-[1.6]">
-                Every item is cross-referenced against NPPA, CGHS, and DPCO ceiling price gazettes, checking for hidden markups and unbundled packages.
+                Our system compares each item to the government's approved price list.
               </p>
             </Card>
 
@@ -633,25 +631,25 @@ export default function LandingPage() {
                 <FileCheck2 className="w-6 h-6" />
               </div>
               <h3 className="font-heading font-bold text-lg text-text-primary pt-2">
-                3. Download Legal Notice
+                3. Get Your Results
               </h3>
               <p className="text-sm text-text-secondary leading-[1.6]">
-                Receive a ready-to-send dispute petition and Section 65B Merkle electronic certificate to submit to the hospital billing desk or insurer.
+                See exactly what was overcharged and what you can do about it.
               </p>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* 7. STATUTORY FRAMEWORKS */}
+      {/* 7. WE CHECK YOUR BILL AGAINST */}
       <section className="relative z-10 bg-bg-secondary py-18 lg:py-22 border-t border-border-subtle">
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="text-center max-w-xl mx-auto space-y-2 mb-12">
             <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-text-primary tracking-tight">
-              Audited against 6 official statutory frameworks
+              We check your bill against:
             </h2>
             <p className="text-sm text-text-secondary">
-              Every finding quotes the exact gazette order number and statutory section.
+              Official government rules and consumer protection guidelines
             </p>
           </div>
 
@@ -661,8 +659,8 @@ export default function LandingPage() {
                 <Scale className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">NPPA Medical Device Orders</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Statutory ceiling prices on cardiac stents, knee implants, and medical oxygen</p>
+                <h4 className="text-sm font-bold text-text-primary">Medical device price caps</h4>
+                <p className="text-xs text-text-secondary mt-0.5">Government limits on stents, implants, and lenses</p>
               </div>
             </div>
 
@@ -671,8 +669,8 @@ export default function LandingPage() {
                 <TrendingDown className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">DPCO Essential Medicines (NLEM)</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Strict price control regulations on over 800+ scheduled life-saving drugs</p>
+                <h4 className="text-sm font-bold text-text-primary">Medicine price caps</h4>
+                <p className="text-xs text-text-secondary mt-0.5">Government limits on drug prices</p>
               </div>
             </div>
 
@@ -681,8 +679,8 @@ export default function LandingPage() {
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">CGHS / PM-JAY Package Rates</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Standardized benchmark procedure and bed pricing across Indian cities</p>
+                <h4 className="text-sm font-bold text-text-primary">Central Government Health Scheme (CGHS)</h4>
+                <p className="text-xs text-text-secondary mt-0.5">Official government procedure rates and hospital bed limits</p>
               </div>
             </div>
 
@@ -691,8 +689,8 @@ export default function LandingPage() {
                 <FileCheck2 className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">Section 65B Electronic Proof</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Cryptographic Merkle tree hash verification under Bharatiya Sakshya Adhiniyam 2023</p>
+                <h4 className="text-sm font-bold text-text-primary">Insurance non-payable rules</h4>
+                <p className="text-xs text-text-secondary mt-0.5">Items insurers are not allowed to charge you for</p>
               </div>
             </div>
 
@@ -701,8 +699,8 @@ export default function LandingPage() {
                 <HelpCircle className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">Consumer Protection Act 2019</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Legal recourse against hospital overbilling and unfair trade practices</p>
+                <h4 className="text-sm font-bold text-text-primary">GST rules</h4>
+                <p className="text-xs text-text-secondary mt-0.5">Which hospital services are tax-exempt</p>
               </div>
             </div>
 
@@ -711,8 +709,8 @@ export default function LandingPage() {
                 <Lock className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-text-primary">DPDP Act 2023 Privacy</h4>
-                <p className="text-xs text-text-secondary mt-0.5">Encrypted health data processing with patient consent and full right to erasure</p>
+                <h4 className="text-sm font-bold text-text-primary">PM-JAY package rates</h4>
+                <p className="text-xs text-text-secondary mt-0.5">Limits for government health insurance beneficiaries</p>
               </div>
             </div>
           </div>
@@ -731,7 +729,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="text-xs text-white/60 max-w-sm">
-                India&apos;s automated healthcare billing verification & statutory compliance engine.
+                Helping patients and families in India check hospital bills against government price limits.
               </p>
             </div>
 
@@ -743,7 +741,7 @@ export default function LandingPage() {
                 Create Free Account
               </Link>
               <Link href="/bills/upload" className="hover:text-white transition-colors">
-                Scan Hospital Bill
+                Check a Bill
               </Link>
               <a href="#simulator" className="hover:text-white transition-colors">
                 Savings Calculator
@@ -755,8 +753,8 @@ export default function LandingPage() {
           </div>
 
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40 font-mono">
-            <p>© {new Date().getFullYear()} CuraVeris Healthcare Intelligence. All rights reserved.</p>
-            <p>Processed in compliance with Digital Personal Data Protection (DPDP) Act 2023.</p>
+            <p>© {new Date().getFullYear()} CuraVeris. All rights reserved.</p>
+            <p>Your health data is 100% private and protected.</p>
           </div>
         </div>
       </footer>
