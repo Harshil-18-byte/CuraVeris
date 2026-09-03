@@ -15,34 +15,34 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
       ? shapValues.slice(0, 5)
       : [
           {
-            feature_label: "Total extra charges relative to bill size",
+            feature_label: "Total extra charges compared to the bill size",
             shap_value: 0.28,
             direction: "INCREASES_RISK",
-            explanation: "Charges on this item differ significantly from standard pricing patterns.",
+            explanation: "The amount of extra charges is large compared to the overall bill.",
           },
           {
-            feature_label: "NPPA / DPCO capped medicine pricing",
+            feature_label: "Medicines charged above government price caps",
             shap_value: 0.19,
             direction: "INCREASES_RISK",
-            explanation: "Essential medicines charged above government notified ceiling prices.",
+            explanation: "Some essential medicines cost more than government-mandated price limits.",
           },
           {
-            feature_label: "Simultaneous itemised & package charges",
+            feature_label: "Items charged separately that should be included",
             shap_value: 0.14,
             direction: "INCREASES_RISK",
-            explanation: "Standard consumables billed separately despite inclusion in room charges.",
+            explanation: "Certain routine supplies were billed on top of regular room charges.",
           },
           {
-            feature_label: "Accredited hospital tier benchmark consistency",
+            feature_label: "Hospital room charges within normal range",
             shap_value: -0.09,
             direction: "DECREASES_RISK",
-            explanation: "This item matches expected pricing benchmarks for this hospital category.",
+            explanation: "Room rent rates align with standard benchmarks for this category.",
           },
           {
-            feature_label: "Standard routine lab charges",
+            feature_label: "Standard routine lab test charges",
             shap_value: -0.05,
             direction: "DECREASES_RISK",
-            explanation: "Pathology and diagnostic investigation rates align with regional benchmarks.",
+            explanation: "Blood tests and lab investigations are priced fairly.",
           },
         ];
 
@@ -53,7 +53,7 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
           What affected this result
         </h3>
         <p className="text-xs text-text-secondary mt-0.5">
-          Key patterns in this bill that influenced our assessment
+          These factors had the biggest impact on our estimate:
         </p>
       </div>
 
@@ -91,13 +91,13 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
                       isRiskRaising ? "text-danger" : "text-success"
                     }`}
                   >
-                    {isRiskRaising ? "Raises concern" : "Lowers concern"}
+                    {isRiskRaising ? "Made concern higher" : "Made concern lower"}
                   </span>
                 </div>
                 <p className="text-[11px] text-text-secondary mt-0.5 leading-normal">
                   {factor.explanation || (isRiskRaising
-                    ? "Charges on this item differ significantly from standard government pricing patterns."
-                    : "This item matches expected pricing benchmarks for this hospital category.")}
+                    ? "Charges on this item differ from standard government pricing patterns."
+                    : "This item matches expected pricing benchmarks for this hospital.")}
                 </p>
               </div>
             </div>
@@ -109,7 +109,7 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
       <div className="mt-4 p-3 bg-bg-secondary rounded-md text-xs text-text-tertiary italic leading-relaxed flex items-start gap-2">
         <Info className="w-4 h-4 text-text-tertiary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
         <span>
-          This analysis shows patterns compared across thousands of medical bills in India to help you evaluate your bill.
+          We compared your bill to thousands of similar hospital bills across India to find these patterns.
         </span>
       </div>
     </div>
