@@ -1,0 +1,111 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: curaveris_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: testing
+      DATABASE_URL: postgresql+asyncpg://testuser:testpass@localhost:5432/curaveris_test
+      REDIS_URL: redis://localhost:6379/0
+      CELERY_BROKER_URL: redis://localhost:6379/1
+      CELERY_RESULT_BACKEND: db+postgresql://testuser:testpass@localhost:5432/curaveris_test
+      JWT_SECRET_KEY: test_jwt_secret_key_minimum_32_characters_long
+      APP_SECRET_KEY: test_app_secret_key_minimum_32_characters_long
+      EVIDENCE_HMAC_SECRET: test_evidence_hmac_secret_32_chars_long
+      AWS_ACCESS_KEY_ID: test_key
+      AWS_SECRET_ACCESS_KEY: test_secret
+      AWS_S3_BUCKET_NAME: test-bucket
+      AWS_S3_ENDPOINT_URL: http://localhost:9000
+      AWS_S3_REGION: auto
+      RESEND_API_KEY: test_resend_key
+      EMAIL_FROM_ADDRESS: test@test.com
+      ML_MODEL_PATH: ./ml_models
+      SENTRY_DSN: ""
+      STORAGE_BACKEND: local
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            tesseract-ocr \
+            tesseract-ocr-eng \
+            libmagic1 \
+            libgl1-mesa-glx \
+            libglib2.0-0
+
+      - name: Install Python dependencies
+        working-directory: backend
+        run: |
+          pip install --upgrade pip
+          pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[test]"
+
+      - name: Run linting
+        working-directory: backend
+        run: |
+          pip install ruff
+          ruff check app/ --select E,F,W --ignore E501
+
+      - name: Run type checking
+        working-directory: backend
+        run: |
+          pip install mypy types-passlib types-python-jose
+          mypy app/ --ignore-missing-imports --no-strict-optional
+
+      - name: Run database migrations
+        working-directory: backend
+        run: |
+          alembic upgrade head
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/curaveris_test
+
+      - name: Run tests
+        working-directory: backend
+        run: |
+          pytest tests/ -v --tb=short -x \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-fail-under=60
+        continue-on-error: false
