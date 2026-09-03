@@ -80,16 +80,23 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
   const getFindingTypeLabel = (type: string) => {
     switch (type) {
       case "NPPA_CEILING_VIOLATION":
-        return "Above government cap";
+        return "Charged more than the government price cap for medical devices";
       case "DPCO_OVERCHARGE":
-        return "Over medicine price cap";
+        return "Charged more than the government price cap for this medicine";
       case "CGHS_PACKAGE_UNBUNDLED":
+        return "Charged more than the government rate";
       case "DUPLICATE_CHARGE":
-        return "Double charge";
+      case "SHADOW_BILL":
+        return "This item may have been charged twice";
+      case "IRDAI_NON_PAYABLE":
+        return "This item cannot be charged to insurance";
+      case "GST_MISAPPLICATION":
+        return "Tax was wrongly applied to this item";
+      case "PMJAY_NON_COMPLIANT":
+        return "This charge is not allowed under Ayushman Bharat";
       case "CONSUMER_PROTECTION_VIOLATION":
-        return "Unfair extra fee";
       default:
-        return "Not on price list";
+        return "We found a charge that breaks the rules";
     }
   };
 
@@ -98,10 +105,10 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       "Item Description",
       "Finding Type",
       "Severity",
-      "Billed Amount (INR)",
-      "Benchmark Rate (INR)",
-      "Overcharge Amount (INR)",
-      "Statutory Reference",
+      "Hospital Charged (INR)",
+      "Government-Approved Rate (INR)",
+      "Extra You Were Charged (INR)",
+      "Source",
     ];
 
     const rows = findings.map((f) => [
@@ -132,10 +139,10 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       <div className="p-12 text-center bg-white rounded-lg border border-border-subtle shadow-xs space-y-3">
         <CheckCircle2 className="w-10 h-10 text-success mx-auto" strokeWidth={1.5} />
         <h3 className="font-heading font-semibold text-base text-text-primary">
-          No extra charges found
+          Great news — we didn&apos;t find any overcharges in this bill.
         </h3>
         <p className="text-sm text-text-secondary max-w-sm mx-auto">
-          All charges on this bill appear reasonable and within government price limits.
+          All the charges appear to be within the allowed limits.
         </p>
       </div>
     );
@@ -147,7 +154,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2">
         <div className="flex flex-wrap items-center gap-2.5">
           <Badge variant="danger" size="md">
-            {findings.length} overcharges found
+            {findings.length} possible overcharges found
           </Badge>
           <div className="px-3 py-1 bg-bg-secondary border border-border-subtle rounded-full text-xs font-semibold text-text-primary">
             Total extra: {formatCurrency(totalOvercharge)}
@@ -164,7 +171,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       <div className="p-3.5 bg-info-bg border border-info/20 rounded-lg text-xs text-text-secondary flex items-start gap-2.5">
         <Info className="w-4 h-4 text-info flex-shrink-0 mt-0.5" strokeWidth={1.5} />
         <span>
-          The confirmed overcharges below are based on official government rules (NPPA, CGHS, DPCO). You can include them in your formal complaint letter.
+          The confirmed overcharges below are based on official government rules. You can include them in your formal complaint letter.
         </span>
       </div>
 
@@ -202,7 +209,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                         </Badge>
                       ) : (
                         <Badge variant="accent" size="sm">
-                          AI estimate
+                          AI-estimated risk
                         </Badge>
                       )}
                     </div>
@@ -215,7 +222,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                         </strong>
                       </span>
                       <span>
-                        Government price:{" "}
+                        Government-approved price:{" "}
                         <strong className="font-mono text-text-primary">
                           {formatCurrency(f.benchmark_amount)}
                         </strong>
@@ -224,7 +231,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
 
                     {f.statutory_reference && (
                       <p className="text-[11px] text-text-tertiary italic">
-                        Rule: {f.statutory_reference}
+                        Source: {f.statutory_reference.includes("CGHS") ? "Central Government Health Scheme rate list" : f.statutory_reference.includes("NPPA") ? "Government price cap for medical devices" : f.statutory_reference.includes("DPCO") ? "Government price cap for medicines" : "Government price list"}
                       </p>
                     )}
                   </div>
@@ -234,7 +241,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                 <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pl-12 sm:pl-0">
                   <div className="text-right">
                     <span className="text-[11px] text-text-tertiary uppercase block">
-                      Extra Charged
+                      Extra you were charged
                     </span>
                     <span className="font-mono font-bold text-lg text-danger">
                       +{formatCurrency(f.overcharge_amount)}
@@ -257,12 +264,12 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                 <div className="mt-4 pt-4 border-t border-border-subtle space-y-3 text-xs animate-in fade-in-50 duration-150">
                   <div>
                     <span className="font-semibold text-text-primary block mb-0.5">
-                      Why this charge is unfair:
+                      Why this is wrong:
                     </span>
                     <p className="text-text-secondary leading-relaxed">
                       {f.user_explanation ||
                         f.legal_basis ||
-                        "This charge exceeds the prescribed maximum rate or constitutes a duplicate fee under applicable regulations."}
+                        "This charge exceeds the government-allowed price or was billed twice."}
                     </p>
                   </div>
 
@@ -271,7 +278,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                       In simple terms:
                     </span>
                     <p>
-                      The hospital charged you more than what the official guidelines allow for this item. You have the right to request a refund or bill correction.
+                      The hospital charged you more than what government rules allow for this item. You have the right to request a refund or bill correction.
                     </p>
                   </div>
 
@@ -286,7 +293,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                       }`}
                     >
                       <Plus className="w-3.5 h-3.5" strokeWidth={2} />
-                      <span>{isSelected ? "Added to complaint letter" : "Add to my complaint letter"}</span>
+                      <span>{isSelected ? "Included in complaint letter" : "Include in my complaint letter"}</span>
                     </button>
                   </div>
                 </div>
@@ -300,10 +307,10 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       <div className="p-5 bg-white rounded-lg border border-border-subtle shadow-xs flex items-center justify-between">
         <div>
           <span className="text-xs text-text-tertiary uppercase font-semibold tracking-wider block">
-            Total Confirmed Extra Charges
+            Total extra charges we confirmed
           </span>
           <p className="text-xs text-text-secondary mt-0.5">
-            Eligible for reimbursement or hospital dispute
+            Eligible for refund or hospital complaint
           </p>
         </div>
         <p className="font-mono font-bold text-2xl text-danger">
