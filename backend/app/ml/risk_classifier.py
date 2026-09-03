@@ -11,7 +11,10 @@ os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 import joblib
 import numpy as np
-import xgboost as xgb
+try:
+    import xgboost as xgb
+except ImportError:
+    xgb = None
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 
