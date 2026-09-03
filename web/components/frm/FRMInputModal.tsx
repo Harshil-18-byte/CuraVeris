@@ -67,11 +67,11 @@ export const FRMInputModal: React.FC<FRMInputModalProps> = ({
         insurance_coverage_claimed: data.insurance_coverage_claimed,
         already_paid: data.already_paid,
       });
-      toast.success("Financial risk recalculated successfully!");
+      toast.success("Updated your financial estimate!");
       onSuccess();
       onClose();
     } catch (err: any) {
-      toast.error(err?.message || "Failed to update financial assessment.");
+      toast.error(err?.message || "Could not update details. Please try again.");
     }
   };
 
@@ -79,8 +79,8 @@ export const FRMInputModal: React.FC<FRMInputModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Personalize Your Financial Risk"
-      description="Enter your household finances to calculate your realistic out-of-pocket costs and emergency savings health."
+      title="Tell us a bit about your finances"
+      description="This helps us give you a more accurate estimate of how this bill affects your savings."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
@@ -102,30 +102,31 @@ export const FRMInputModal: React.FC<FRMInputModalProps> = ({
         />
 
         <Input
-          label="Available Liquid Savings / Fixed Deposits (₹)"
+          label="Money in bank / Emergency savings (₹)"
           type="number"
           leftAddon={<span className="text-xs font-semibold">₹</span>}
           placeholder="e.g. 2,50,000"
-          hint="Savings that can be accessed immediately for medical payments."
+          hint="Money in your bank account, fixed deposits, or emergency fund that you can use right away."
           error={errors.verified_savings?.message}
           {...register("verified_savings")}
         />
 
         <Input
-          label="Health Insurance Sum Insured (₹)"
+          label="Health Insurance Coverage Limit (₹)"
           type="number"
           leftAddon={<span className="text-xs font-semibold">₹</span>}
           placeholder="e.g. 5,00,000"
+          hint="The maximum amount your insurance will pay for this hospital stay."
           error={errors.insurance_coverage_claimed?.message}
           {...register("insurance_coverage_claimed")}
         />
 
         <Input
-          label="Amount Already Paid (₹)"
+          label="Amount already paid to the hospital (₹)"
           type="number"
           leftAddon={<span className="text-xs font-semibold">₹</span>}
           placeholder="e.g. 0"
-          hint="Any advance deposit or initial payment already made to the hospital."
+          hint="Any advance deposit or payment you have already made."
           error={errors.already_paid?.message}
           {...register("already_paid")}
         />
@@ -135,7 +136,7 @@ export const FRMInputModal: React.FC<FRMInputModalProps> = ({
             Cancel
           </Button>
           <Button type="submit" variant="primary" size="md" className="w-2/3" isLoading={isSubmitting}>
-            Calculate Risk
+            Recalculate Estimate
           </Button>
         </div>
       </form>
