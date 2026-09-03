@@ -66,12 +66,25 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({
     }
   };
 
+  const getRiskExplanation = (lvl?: string | null) => {
+    switch (lvl) {
+      case "CRITICAL":
+        return "This bill has major overcharges. You should dispute these before paying.";
+      case "HIGH":
+        return "We found several charges that look higher than they should be. We recommend asking the hospital to explain them.";
+      case "MEDIUM":
+        return "There are a few charges you should look at before paying.";
+      default:
+        return "This bill looks mostly fine. We found only minor or no issues.";
+    }
+  };
+
   const dialColor = getDialColor(label);
 
   return (
     <div className="flex flex-col items-center justify-center p-6 text-center">
       <span className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-4">
-        Overall Concern Level
+        How concerned should you be about this bill?
       </span>
 
       {/* 200x200 Custom SVG Dial */}
@@ -123,18 +136,22 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({
         </Badge>
       </div>
 
+      <p className="text-xs text-text-secondary mt-2 max-w-xs font-normal">
+        {getRiskExplanation(label)}
+      </p>
+
       {/* Confidence Band */}
       {uncertaintyLower !== undefined &&
         uncertaintyLower !== null &&
         uncertaintyUpper !== undefined &&
         uncertaintyUpper !== null && (
-          <p className="text-xs text-text-secondary mt-2 font-medium">
-            Estimated range: {Math.round(uncertaintyLower * 100)} – {Math.round(uncertaintyUpper * 100)}
+          <p className="text-xs text-text-tertiary mt-2">
+            Our estimate could be between {Math.round(uncertaintyLower * 100)} and {Math.round(uncertaintyUpper * 100)}
           </p>
         )}
 
       <p className="text-[11px] text-text-tertiary mt-2 max-w-xs">
-        Based on pattern analysis from similar Indian hospital bills
+        We compared your bill to thousands of similar hospital bills across India to find these patterns.
       </p>
     </div>
   );
