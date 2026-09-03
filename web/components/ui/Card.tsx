@@ -1,71 +1,83 @@
-"use client";
-
-import React, { forwardRef } from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "interactive" | "elevated" | "accent-left" | "stat";
-  accentColor?: "primary" | "success" | "warning" | "danger" | "info";
-  padding?: "none" | "sm" | "md" | "lg";
+  children: React.ReactNode;
+  className?: string;
+  padding?: 'none' | 'sm' | 'md' | 'lg' | string;
+  variant?: 'default' | 'interactive' | 'elevated' | 'accent-left' | 'stat' | string;
+  interactive?: boolean;
+  accentColor?: 'success' | 'warning' | 'danger' | 'info' | 'primary' | 'none' | string;
+  onClick?: () => void;
 }
 
-export const Card = forwardRef<HTMLDivElement, CardProps>(
-  (
-    {
-      className,
-      variant = "default",
-      accentColor,
-      padding = "md",
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "bg-bg-elevated rounded-lg border border-border-subtle shadow-sm overflow-hidden text-left",
-          
-          // Variants
-          variant === "interactive" && [
-            "cursor-pointer transition-all duration-150 ease-out",
-            "hover:shadow-md hover:-translate-y-0.5 hover:border-border-default",
-            "active:shadow-xs active:translate-y-0",
-          ],
+const paddingStyles: Record<string, string> = {
+  none: '',
+  sm: 'p-4',
+  md: 'p-5 md:p-6',
+  lg: 'p-6 md:p-8',
+};
 
-          variant === "elevated" && [
-            "bg-brand-primary text-white border-0 shadow-lg",
-          ],
+const accentStyles: Record<string, string> = {
+  none: '',
+  primary: 'border-l-[3px] border-l-rzp-blue rounded-l-none',
+  success: 'border-l-[3px] border-l-success rounded-l-none',
+  warning: 'border-l-[3px] border-l-warning rounded-l-none',
+  danger: 'border-l-[3px] border-l-danger rounded-l-none',
+  info: 'border-l-[3px] border-l-info rounded-l-none',
+};
 
-          variant === "accent-left" && [
-            "border-l-[3px] rounded-l-none",
-            accentColor === "primary" && "border-l-brand-accent",
-            accentColor === "success" && "border-l-success",
-            accentColor === "warning" && "border-l-warning",
-            accentColor === "danger" && "border-l-danger",
-            accentColor === "info" && "border-l-info",
-            !accentColor && "border-l-brand-accent",
-          ],
+export function Card({
+  children,
+  className,
+  padding = 'md',
+  variant = 'default',
+  interactive = false,
+  accentColor = 'none',
+  onClick,
+  ...props
+}: CardProps) {
+  const isInteractive = interactive || variant === 'interactive' || !!onClick;
+  const isElevated = variant === 'elevated';
+  const effectiveAccent = accentColor !== 'none' ? accentColor : variant === 'accent-left' ? 'primary' : 'none';
 
-          variant === "stat" && [
-            "min-h-[100px] flex flex-col justify-between",
-          ],
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        'bg-surface border border-line-subtle rounded-lg shadow-card text-left',
+        isElevated && 'shadow-elevated',
+        paddingStyles[padding] ?? 'p-5 md:p-6',
+        accentStyles[effectiveAccent],
+        isInteractive &&
+          'cursor-pointer transition-all duration-120 ease-rzp hover:shadow-elevated hover:-translate-y-px active:translate-y-0 active:shadow-card',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
-          // Padding options
-          padding === "none" && "p-0",
-          padding === "sm" && "p-5",
-          padding === "md" && "p-6",
-          padding === "lg" && "p-8",
+export function CardHeader({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={cn('flex flex-col space-y-1.5 pb-4', className)}>{children}</div>;
+}
 
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+export function CardTitle({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <h3 className={cn('font-heading font-semibold text-lg text-ink-primary tracking-tight', className)}>{children}</h3>;
+}
 
-Card.displayName = "Card";
+export function CardDescription({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <p className={cn('font-body text-xs text-ink-secondary', className)}>{children}</p>;
+}
+
+export function CardContent({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={cn('pt-0', className)}>{children}</div>;
+}
+
+export function CardFooter({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={cn('flex items-center pt-4 border-t border-line-subtle', className)}>{children}</div>;
+}
+
+export default Card;

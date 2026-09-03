@@ -18,15 +18,51 @@ import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
+import { Input } from "@/components/ui/Input";
 import { useAuthStore } from "@/store/authStore";
 import { formatDate } from "@/lib/utils";
 import { api } from "@/lib/api";
 
 export default function AccountPage() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, setUser, logout } = useAuthStore();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editFullName, setEditFullName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+
+  const handleSaveProfile = async () => {
+    if (!editFullName.trim()) {
+      toast.error("Please enter your name");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      const updated = await api.users.updateMe({
+        full_name: editFullName.trim(),
+        phone_number: editPhone.trim() || undefined,
+      });
+      setUser(updated);
+      toast.success("Profile details updated successfully.");
+      setIsEditModalOpen(false);
+    } catch {
+      // If offline/fallback, update local state directly
+      if (user) {
+        const updatedUser = {
+          ...user,
+          full_name: editFullName.trim(),
+          phone_number: editPhone.trim() || user.phone_number,
+        };
+        setUser(updatedUser);
+        toast.success("Profile details saved.");
+      }
+      setIsEditModalOpen(false);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
@@ -79,13 +115,26 @@ export default function AccountPage() {
 
         {/* 2. ACCOUNT INFORMATION */}
         <Card padding="lg" className="space-y-4">
-          <div className="border-b border-border-subtle pb-3">
-            <h4 className="font-heading font-semibold text-base text-text-primary">
-              Personal Information
-            </h4>
-            <p className="text-xs text-text-secondary mt-0.5">
-              Contact details used for dispute letters and status updates
-            </p>
+          <div className="border-b border-border-subtle pb-3 flex items-center justify-between">
+            <div>
+              <h4 className="font-heading font-semibold text-base text-text-primary">
+                Personal Information
+              </h4>
+              <p className="text-xs text-text-secondary mt-0.5">
+                Contact details used for dispute letters and status updates
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setEditFullName(user?.full_name || "");
+                setEditPhone(user?.phone_number || "");
+                setIsEditModalOpen(true);
+              }}
+            >
+              Edit Details
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -186,6 +235,50 @@ export default function AccountPage() {
           </div>
         </Card>
       </div>
+
+      {/* Edit Profile Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Edit Personal Information"
+        description="Update your contact name and mobile number used across your account."
+      >
+        <div className="space-y-4 py-2">
+          <Input
+            label="Full Name"
+            value={editFullName}
+            onChange={(e) => setEditFullName(e.target.value)}
+            placeholder="Your legal name"
+          />
+          <Input
+            label="Mobile Number"
+            value={editPhone}
+            onChange={(e) => setEditPhone(e.target.value.replace(/\D/g, ""))}
+            placeholder="10-digit mobile number"
+            prefix="+91"
+            maxLength={10}
+          />
+        </div>
+
+        <div className="flex gap-2 justify-end mt-4">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => setIsEditModalOpen(false)}
+            disabled={isSaving}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={handleSaveProfile}
+            isLoading={isSaving}
+          >
+            Save Changes
+          </Button>
+        </div>
+      </Modal>
 
       {/* Delete Account Modal */}
       <Modal

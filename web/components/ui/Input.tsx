@@ -1,90 +1,81 @@
-"use client";
+'use client';
 
-import React, { forwardRef, useId } from "react";
-import { AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React, { forwardRef, InputHTMLAttributes } from 'react';
+import { AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   hint?: string;
+  prefix?: string;
+  suffix?: React.ReactNode;
   leftAddon?: React.ReactNode;
   rightAddon?: React.ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      className,
-      label,
-      error,
-      hint,
-      leftAddon,
-      rightAddon,
-      id,
-      disabled,
-      ...props
-    },
-    ref
-  ) => {
-    const generatedId = useId();
-    const inputId = id || generatedId;
+  ({ label, error, hint, prefix, suffix, leftAddon, rightAddon, className, id, ...props }, ref) => {
+    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
+    const effectivePrefix = prefix || (typeof leftAddon === 'string' ? leftAddon : null);
+    const effectiveSuffix = suffix || rightAddon;
 
     return (
-      <div className="w-full text-left">
+      <div className="flex flex-col gap-1.5 w-full text-left">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-text-secondary mb-1.5 tracking-[0.01em]"
+            className="font-body font-medium text-xs text-ink-secondary"
           >
             {label}
           </label>
         )}
-
-        <div className="relative flex items-center">
-          {leftAddon && (
-            <div className="absolute left-3.5 flex items-center pointer-events-none text-text-secondary text-base font-medium z-10">
+        <div className="relative flex items-center w-full">
+          {effectivePrefix ? (
+            <span className="absolute left-3 font-body font-medium text-sm text-ink-secondary pointer-events-none select-none">
+              {effectivePrefix}
+            </span>
+          ) : leftAddon ? (
+            <div className="absolute left-3 flex items-center pointer-events-none text-ink-secondary text-sm z-10">
               {leftAddon}
             </div>
-          )}
+          ) : null}
 
           <input
-            id={inputId}
             ref={ref}
-            disabled={disabled}
+            id={inputId}
             className={cn(
-              "w-full h-[44px] px-3.5 bg-white text-text-primary text-base font-normal rounded-md border border-border-default outline-none transition-all duration-150",
-              "placeholder:text-text-tertiary",
-              "focus:border-border-focus focus:shadow-[0_0_0_3px_rgba(37,99,235,0.12)]",
-              error && "border-danger focus:border-danger focus:shadow-[0_0_0_3px_rgba(220,38,38,0.10)]",
-              disabled && "bg-bg-secondary text-text-tertiary cursor-not-allowed border-border-subtle",
-              leftAddon && "pl-9",
-              rightAddon && "pr-10",
+              'w-full h-input bg-surface border border-line-default rounded font-body text-sm text-ink-primary placeholder:text-ink-tertiary outline-none transition-all duration-120 ease-rzp',
+              effectivePrefix ? 'pl-7 pr-3' : leftAddon ? 'pl-9 pr-3' : 'px-3',
+              effectiveSuffix ? 'pr-8' : '',
+              'hover:border-line-strong',
+              'focus:border-line-focus focus:ring-[3px] focus:ring-rzp-blue/10',
+              error && 'border-danger focus:border-danger focus:ring-danger/8',
+              props.disabled && 'bg-subtle text-ink-tertiary cursor-not-allowed border-line-subtle',
               className
             )}
             {...props}
           />
 
-          {rightAddon && (
-            <div className="absolute right-3 flex items-center text-text-secondary text-sm z-10">
-              {rightAddon}
-            </div>
+          {effectiveSuffix && (
+            <span className="absolute right-3 text-ink-tertiary">
+              {effectiveSuffix}
+            </span>
           )}
         </div>
-
         {error && (
-          <p className="mt-1.5 text-xs text-danger flex items-center gap-1 font-normal animate-in fade-in-50 duration-150">
-            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
-            <span>{error}</span>
+          <p className="flex items-center gap-1 font-body text-xs text-danger mt-0.5">
+            <AlertCircle size={12} strokeWidth={2} />
+            {error}
           </p>
         )}
-
-        {!error && hint && (
-          <p className="mt-1.5 text-xs text-text-tertiary font-normal">{hint}</p>
+        {hint && !error && (
+          <p className="font-body text-xs text-ink-tertiary mt-0.5">{hint}</p>
         )}
       </div>
     );
   }
 );
 
-Input.displayName = "Input";
+Input.displayName = 'Input';
+export default Input;

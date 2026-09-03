@@ -233,13 +233,28 @@ export const authApi = {
       .then((r) => r.data)
       .catch((err) => {
         if (!err.status || err.status === 0 || err.status >= 500) {
+          let fallbackName = "Patient Account";
+          if (typeof window !== "undefined") {
+            try {
+              const stored = localStorage.getItem("cv_user");
+              if (stored) {
+                const u = JSON.parse(stored);
+                if (u.full_name) fallbackName = u.full_name;
+              }
+            } catch {}
+          }
+          if (fallbackName === "Patient Account" && identifier) {
+            const raw = identifier.includes("@") ? identifier.split("@")[0] : identifier;
+            fallbackName = raw.charAt(0).toUpperCase() + raw.slice(1);
+          }
+
           return {
             access_token: "demo_token_" + Date.now(),
             refresh_token: "demo_refresh_" + Date.now(),
             user: {
               id: "demo-user-1",
-              email: identifier || "patient@curaveris.in",
-              full_name: "Rahul Sharma",
+              email: identifier || "patient@curaveris.ai",
+              full_name: fallbackName,
               role: "patient",
               phone_verified: true,
               email_verified: true,
@@ -281,8 +296,19 @@ export const billsApi = {
       },
     }).then((r) => r.data),
 
-  list: (params?: BillListParams): Promise<PaginatedResponse<BillSummary>> =>
-    apiClient.get("/bills", { params }).then((r) => r.data),
+  list: async (params?: BillListParams): Promise<PaginatedResponse<BillSummary>> => {
+    try {
+      const response = await apiClient.get("/bills", { params });
+      return response.data;
+    } catch (err) {
+      return {
+        items: [],
+        total: 0,
+        page: params?.page || 1,
+        per_page: params?.per_page || 10,
+      };
+    }
+  },
 
   getById: (billId: string): Promise<Bill> =>
     apiClient.get(`/bills/${billId}`).then((r) => r.data),
@@ -311,11 +337,28 @@ export const auditsApi = {
 
 // Notifications API
 export const notificationsApi = {
-  list: (params?: NotificationListParams): Promise<PaginatedResponse<Notification>> =>
-    apiClient.get("/notifications", { params }).then((r) => r.data),
+  list: async (params?: NotificationListParams): Promise<PaginatedResponse<Notification>> => {
+    try {
+      const response = await apiClient.get("/notifications", { params });
+      return response.data;
+    } catch (err) {
+      return {
+        items: [],
+        total: 0,
+        page: params?.page || 1,
+        per_page: params?.per_page || 10,
+      };
+    }
+  },
 
-  getUnreadCount: (): Promise<{ count: number }> =>
-    apiClient.get("/notifications/unread-count").then((r) => r.data),
+  getUnreadCount: async (): Promise<{ count: number }> => {
+    try {
+      const response = await apiClient.get("/notifications/unread-count");
+      return response.data;
+    } catch {
+      return { count: 0 };
+    }
+  },
 
   markRead: (id: string): Promise<void> =>
     apiClient.post(`/notifications/${id}/read`).then((r) => r.data),

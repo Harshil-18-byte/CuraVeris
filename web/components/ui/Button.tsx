@@ -1,101 +1,46 @@
-"use client";
+'use client';
 
-import React, { forwardRef } from "react";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React, { forwardRef, ButtonHTMLAttributes } from 'react';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger" | "icon";
-  size?: "sm" | "md" | "lg";
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant = "primary",
-      size = "md",
-      isLoading = false,
-      disabled,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const isIconOnly = variant === "icon";
+  ({ variant = 'primary', size = 'md', isLoading, disabled, children, className, ...props }, ref) => {
+    const base = 'inline-flex items-center justify-center font-body font-semibold transition-all duration-120 ease-rzp focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rzp-blue focus-visible:ring-offset-2 disabled:pointer-events-none select-none';
+
+    const variants = {
+      primary: 'bg-rzp-blue text-white shadow-btn-primary hover:bg-rzp-blue-dark hover:shadow-btn-primary-hover active:translate-y-px active:bg-[#1240C9] disabled:bg-[#C7D2FE] disabled:shadow-none',
+      secondary: 'bg-surface text-ink-primary border border-line-default shadow-card hover:bg-subtle hover:border-line-strong active:bg-canvas active:translate-y-px',
+      ghost: 'bg-transparent text-ink-secondary hover:bg-canvas hover:text-ink-primary',
+      danger: 'bg-danger-bg text-danger border border-danger-border hover:bg-[#FEE2E2] hover:border-[#FCA5A5] active:translate-y-px',
+    };
+
+    const sizes = {
+      sm: 'h-btn-sm px-3 text-xs rounded',
+      md: 'h-btn px-4 text-sm rounded',
+      lg: 'h-btn-lg px-5 text-md rounded-lg',
+    };
 
     return (
       <button
         ref={ref}
         disabled={disabled || isLoading}
-        className={cn(
-          "inline-flex items-center justify-center font-body select-none transition-all duration-150 ease-out focus:outline-none",
-          // Tactile micro-interaction on press
-          "active:scale-[0.98] disabled:pointer-events-none disabled:active:scale-100",
-          
-          // Primary Variant
-          variant === "primary" && [
-            "bg-brand-accent text-white font-semibold shadow-xs border-0",
-            "hover:bg-[#1D4ED8] hover:shadow-[0_4px_12px_rgba(37,99,235,0.30)]",
-            "active:bg-[#1E40AF]",
-            "disabled:bg-[#93C5FD] disabled:shadow-none disabled:text-white/80",
-          ],
-
-          // Secondary Variant
-          variant === "secondary" && [
-            "bg-white text-text-primary font-medium border border-border-default shadow-xs",
-            "hover:bg-bg-secondary hover:border-border-strong",
-            "active:bg-bg-tertiary",
-            "disabled:bg-bg-secondary disabled:text-text-tertiary disabled:border-border-subtle",
-          ],
-
-          // Ghost Variant
-          variant === "ghost" && [
-            "bg-transparent text-text-secondary font-medium border-0",
-            "hover:bg-bg-secondary hover:text-text-primary",
-            "active:bg-bg-tertiary",
-            "disabled:text-text-tertiary",
-          ],
-
-          // Danger Variant
-          variant === "danger" && [
-            "bg-danger text-white font-semibold border-0 shadow-xs",
-            "hover:bg-[#B91C1C] hover:shadow-[0_4px_12px_rgba(220,38,38,0.25)]",
-            "active:bg-[#991B1B]",
-            "disabled:bg-danger/40 disabled:shadow-none",
-          ],
-
-          // Icon Variant
-          variant === "icon" && [
-            "bg-bg-secondary text-text-secondary border-0 p-0",
-            "hover:bg-border-default hover:text-text-primary",
-            "active:bg-border-strong",
-            "disabled:text-text-tertiary",
-          ],
-
-          // Sizing (unless icon-only)
-          !isIconOnly && size === "sm" && "h-[36px] px-3 text-sm rounded-md",
-          !isIconOnly && size === "md" && "h-[44px] px-5 text-base rounded-md tracking-[-0.01em]",
-          !isIconOnly && size === "lg" && "h-[52px] px-8 text-base font-semibold rounded-md",
-
-          // Sizing (icon-only)
-          isIconOnly && size === "sm" && "w-8 h-8 rounded-md",
-          isIconOnly && size === "md" && "w-9 h-9 rounded-md",
-          isIconOnly && size === "lg" && "w-11 h-11 rounded-md",
-
-          className
-        )}
+        className={cn(base, variants[variant], sizes[size], className)}
         {...props}
       >
         {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin text-current" strokeWidth={1.5} />
-        ) : (
-          children
-        )}
+          <Loader2 size={14} className="animate-spin" strokeWidth={2} />
+        ) : children}
       </button>
     );
   }
 );
 
-Button.displayName = "Button";
+Button.displayName = 'Button';
+export default Button;

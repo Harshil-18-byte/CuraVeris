@@ -1,76 +1,77 @@
-"use client";
+import React from 'react';
+import { cn } from '@/lib/utils';
 
-import React from "react";
-import { cn } from "@/lib/utils";
-
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "success" | "warning" | "danger" | "accent" | "brand";
-  size?: "sm" | "md";
+export interface BadgeProps {
+  variant?: 'success' | 'warning' | 'danger' | 'info' | 'default' | 'processing' | 'accent' | 'brand';
+  size?: 'sm' | 'md' | 'lg' | string;
   hasDot?: boolean;
   isPulsing?: boolean;
+  children: React.ReactNode;
+  className?: string;
 }
 
-export const Badge: React.FC<BadgeProps> = ({
-  className,
-  variant = "default",
-  size = "sm",
+const variantStyles: Record<string, string> = {
+  success: 'bg-success-bg text-success border-0',
+  warning: 'bg-warning-bg text-warning border-0',
+  danger: 'bg-danger-bg text-danger border-0',
+  info: 'bg-info-bg text-info border-0',
+  accent: 'bg-info-bg text-info border-0',
+  brand: 'bg-rzp-primary text-white border-0',
+  default: 'bg-subtle text-ink-secondary border-0',
+  processing: 'bg-info-bg text-info border-0',
+};
+
+export function Badge({
+  variant = 'default',
+  size = 'sm',
   hasDot = false,
   isPulsing = false,
   children,
-  ...props
-}) => {
+  className,
+}: BadgeProps) {
+  const isProcessing = variant === 'processing' || isPulsing;
+
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full font-medium tracking-[0.01em] whitespace-nowrap select-none",
-        
-        // Variants
-        variant === "default" && "bg-[#F1F5F9] text-[#475569]",
-        variant === "success" && "bg-success-bg text-success",
-        variant === "warning" && "bg-warning-bg text-warning",
-        variant === "danger" && "bg-danger-bg text-danger",
-        variant === "accent" && "bg-brand-accent-light text-brand-accent",
-        variant === "brand" && "bg-brand-primary text-white",
-
-        // Sizes
-        size === "sm" && "px-2.5 py-0.5 text-xs",
-        size === "md" && "px-3.5 py-1 text-sm font-semibold",
-
+        'inline-flex items-center gap-1 h-[22px] px-2 rounded-full font-body font-semibold text-2xs tracking-wide whitespace-nowrap select-none',
+        size === 'md' && 'h-[26px] px-2.5 text-xs',
+        variantStyles[variant] || variantStyles.default,
         className
       )}
-      {...props}
     >
-      {(hasDot || isPulsing) && (
+      {(isProcessing || hasDot) && (
         <span
           className={cn(
-            "w-1.5 h-1.5 rounded-full bg-currentColor",
-            isPulsing && "animate-pulse-glow"
+            'w-[5px] h-[5px] rounded-full bg-current flex-shrink-0',
+            isProcessing && 'animate-pulse'
           )}
         />
       )}
       {children}
     </span>
   );
+}
+
+export const STATUS_BADGE_MAP: Record<string, { variant: BadgeProps['variant']; label: string }> = {
+  QUEUED: { variant: 'default', label: 'In queue' },
+  PROCESSING: { variant: 'processing', label: 'Processing' },
+  EXTRACTING: { variant: 'processing', label: 'Reading bill' },
+  AUDITING: { variant: 'processing', label: 'Checking prices' },
+  ML_ANALYSIS: { variant: 'processing', label: 'AI analysis' },
+  FINANCIAL_ANALYSIS: { variant: 'processing', label: 'Financial check' },
+  GENERATING_REPORT: { variant: 'processing', label: 'Preparing report' },
+  GENERATING_EVIDENCE: { variant: 'processing', label: 'Creating proof' },
+  COMPLETED: { variant: 'success', label: 'Check complete' },
+  AUDITED: { variant: 'success', label: 'Check complete' },
+  FAILED: { variant: 'danger', label: 'Something went wrong' },
+  RETRYING: { variant: 'warning', label: 'Trying again' },
+  CANCELLED: { variant: 'default', label: 'Cancelled' },
 };
 
-export function getStatusBadgeVariant(status?: string): BadgeProps["variant"] {
-  switch (status) {
-    case "COMPLETED":
-      return "success";
-    case "PROCESSING":
-    case "AUDITING":
-    case "EXTRACTING":
-    case "ML_ANALYSIS":
-    case "FINANCIAL_ANALYSIS":
-    case "GENERATING_REPORT":
-    case "GENERATING_EVIDENCE":
-      return "accent";
-    case "FAILED":
-      return "danger";
-    case "RETRYING":
-      return "warning";
-    case "QUEUED":
-    default:
-      return "default";
-  }
+export function getStatusBadgeVariant(status?: string): BadgeProps['variant'] {
+  if (!status) return 'default';
+  return STATUS_BADGE_MAP[status]?.variant || 'default';
 }
+
+export default Badge;

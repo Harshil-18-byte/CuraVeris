@@ -1,129 +1,90 @@
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cn } from '@/lib/utils';
 
-export const Skeleton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  className,
-  ...props
-}) => {
+export interface SkeletonProps {
+  className?: string;
+  width?: string;
+  height?: string;
+}
+
+export function Skeleton({ className, width, height }: SkeletonProps) {
   return (
     <div
-      className={cn(
-        "animate-shimmer rounded-sm bg-neutral-200/70",
-        className
-      )}
-      {...props}
+      className={cn('animate-shimmer bg-gradient-to-r from-canvas via-line-subtle to-canvas bg-[length:200%_100%] rounded', className)}
+      style={{ width, height }}
+      aria-hidden="true"
     />
   );
-};
+}
 
-export const SkeletonText: React.FC<{
-  width?: "sm" | "md" | "lg" | "full";
-  lines?: number;
+export function SkeletonText({
+  width = 'w-32',
+  className,
+  lines = 1,
+}: {
+  width?: string;
   className?: string;
-}> = ({ width = "md", lines = 1, className }) => {
-  const widthClass =
-    width === "sm"
-      ? "w-16"
-      : width === "md"
-      ? "w-32"
-      : width === "lg"
-      ? "w-48"
-      : "w-full";
-
+  lines?: number;
+}) {
   if (lines > 1) {
     return (
-      <div className="space-y-2">
+      <div className={cn('space-y-2', className)}>
         {Array.from({ length: lines }).map((_, i) => (
           <Skeleton
             key={i}
-            className={cn("h-3.5 rounded-sm", i === lines - 1 && width !== "full" ? widthClass : "w-full", className)}
+            className={cn('h-3.5 rounded', i === lines - 1 ? 'w-3/4' : 'w-full')}
           />
         ))}
       </div>
     );
   }
+  return <Skeleton className={cn('h-3.5 rounded', width, className)} />;
+}
 
-  return <Skeleton className={cn("h-3.5 rounded-sm", widthClass, className)} />;
-};
-
-export const SkeletonTitle: React.FC<{
-  width?: "sm" | "md" | "lg" | "full";
-  className?: string;
-}> = ({ width = "md", className }) => {
-  const widthClass =
-    width === "sm"
-      ? "w-28"
-      : width === "md"
-      ? "w-44"
-      : width === "lg"
-      ? "w-64"
-      : "w-full";
-
-  return <Skeleton className={cn("h-6 rounded-md", widthClass, className)} />;
-};
-
-export const SkeletonCard: React.FC<{ className?: string }> = ({ className }) => {
+export function SkeletonCard({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "p-6 rounded-lg bg-white border border-border-subtle shadow-sm space-y-4",
-        className
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <SkeletonTitle width="sm" />
-        <Skeleton className="w-16 h-5 rounded-full" />
-      </div>
-      <SkeletonText width="full" />
-      <SkeletonText width="lg" />
-      <div className="pt-2 flex items-center justify-between border-t border-border-subtle">
-        <SkeletonText width="sm" />
-        <Skeleton className="w-20 h-8 rounded-md" />
-      </div>
+    <div className={cn('bg-surface border border-line-subtle rounded-lg shadow-card p-5 space-y-3', className)}>
+      <SkeletonText width="w-24" />
+      <Skeleton className="h-8 w-36" />
+      <SkeletonText width="w-20" />
     </div>
   );
-};
+}
 
-export const SkeletonStat: React.FC<{ className?: string }> = ({ className }) => {
+export function SkeletonStat({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "p-5 rounded-lg bg-white border border-border-subtle shadow-sm min-h-[100px] flex flex-col justify-between",
-        className
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <SkeletonText width="sm" />
-        <Skeleton className="w-6 h-6 rounded-md" />
-      </div>
-      <Skeleton className="w-28 h-8 rounded-md mt-3" />
-      <SkeletonText width="md" className="mt-1" />
+    <div className={cn('bg-surface border border-line-subtle rounded-lg shadow-card p-5 space-y-3 min-h-[100px] flex flex-col justify-between', className)}>
+      <SkeletonText width="w-24" />
+      <Skeleton className="h-7 w-32" />
+      <SkeletonText width="w-16" />
     </div>
   );
-};
+}
 
-export const SkeletonAvatar: React.FC<{
-  size?: "sm" | "md" | "lg";
-  className?: string;
-}> = ({ size = "md", className }) => {
-  const sizeClass =
-    size === "sm" ? "w-8 h-8" : size === "md" ? "w-10 h-10" : "w-16 h-16";
-
-  return <Skeleton className={cn("rounded-full flex-shrink-0", sizeClass, className)} />;
-};
-
-export const SkeletonBadge: React.FC<{ className?: string }> = ({ className }) => {
-  return <Skeleton className={cn("w-16 h-[22px] rounded-full", className)} />;
-};
-
-export const SkeletonRow: React.FC<{ cols?: number }> = ({ cols = 5 }) => {
+export function SkeletonRow({ cols = 5, className }: { cols?: number; className?: string }) {
+  const widths = ['w-32', 'w-24', 'w-20', 'w-16', 'w-14'];
   return (
-    <tr className="border-b border-border-subtle animate-pulse">
+    <div className={cn('flex items-center gap-4 px-6 h-table-row border-b border-line-subtle', className)}>
       {Array.from({ length: cols }).map((_, i) => (
-        <td key={i} className="py-4 px-4">
-          <Skeleton className="h-4 rounded w-3/4" />
-        </td>
+        <SkeletonText key={i} width={widths[i % widths.length]} />
       ))}
-    </tr>
+    </div>
   );
-};
+}
+
+export function SkeletonButton({ className }: { className?: string }) {
+  return <Skeleton className={cn('h-btn w-24 rounded', className)} />;
+}
+
+export function SkeletonTableRow({ cols = 5, className }: { cols?: number; className?: string }) {
+  const widths = ['w-32', 'w-24', 'w-20', 'w-16', 'w-14'];
+  return (
+    <div className={cn('flex items-center gap-4 px-6 h-table-row border-b border-line-subtle', className)}>
+      {Array.from({ length: cols }).map((_, i) => (
+        <SkeletonText key={i} width={widths[i % widths.length]} />
+      ))}
+    </div>
+  );
+}
+
+export default Skeleton;
