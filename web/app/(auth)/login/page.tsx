@@ -30,28 +30,28 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LOGIN_MESSAGES = [
   {
-    quote: "Trusted by patients and families across India to audit medical bills and recover unfair charges.",
-    author: "CuraVeris Patient Network",
+    quote: "Trusted by patients and families across India to check hospital bills and recover unfair charges.",
+    author: "Patient Community",
     tag: "Patient Protection",
   },
   {
     quote: "Found ₹48,000 in duplicate ICU charges within 5 minutes of uploading our hospital discharge bill.",
     author: "Rajesh M., Bengaluru",
-    tag: "Real Audit Outcome",
+    tag: "Real Patient Story",
   },
   {
-    quote: "Every medicine and medical implant is automatically verified against official NPPA & DPCO price ceilings.",
-    author: "Statutory Price Engine",
-    tag: "Price Ceilings",
+    quote: "Every medicine and medical implant is automatically checked against official government price limits.",
+    author: "Price Protection",
+    tag: "Government Price Caps",
   },
   {
-    quote: "Cryptographically signed audit reports with Section 65B legal certificates ready for insurance disputes.",
-    author: "Legal Compliance",
-    tag: "BSA 2023 Certified",
+    quote: "Ready-to-send complaint letters and dispute documents prepared for you in minutes.",
+    author: "Patient Rights",
+    tag: "Ready Complaint Letters",
   },
   {
-    quote: "Your health records are processed with bank-grade encryption under the DPDP Act 2023.",
-    author: "Data Privacy & Safety",
+    quote: "Your hospital bills and information are 100% private and protected.",
+    author: "Privacy Protection",
     tag: "100% Confidential",
   },
 ];
@@ -112,10 +112,10 @@ export default function LoginPage() {
 
       if (status === 429 || (typeof detail === "string" && detail.includes("locked"))) {
         setIsLocked(true);
-        setLockoutRemaining(15 * 60); // 15 minutes
-        setErrorMessage("Your account is locked for 15 minutes for your security.");
-      } else if (status === 401 || (typeof detail === "string" && detail.includes("Incorrect"))) {
-        setErrorMessage("Incorrect email or password. Please try again.");
+        setLockoutRemaining(12 * 60); // 12 minutes
+        setErrorMessage("Your account is temporarily locked because of too many incorrect attempts. Please try again in 12 minutes.");
+      } else if (status === 401 || (typeof detail === "string" && (detail.includes("Incorrect") || detail.includes("Invalid")))) {
+        setErrorMessage("That email or password doesn't match. Please try again.");
       } else {
         setErrorMessage(
           typeof detail === "string"
