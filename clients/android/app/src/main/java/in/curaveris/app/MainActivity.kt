@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import `in`.curaveris.app.ui.screens.DashboardScreen
+import `in`.curaveris.app.ui.screens.ScanAuditScreen
+import `in`.curaveris.app.ui.screens.CopilotScreen
 import `in`.curaveris.app.ui.theme.CuraVerisTheme
 
 /**
@@ -51,11 +53,21 @@ fun AppNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "dashboard") {
         composable("dashboard") {
             DashboardScreen(
-                onNavigateToLogin = { navController.navigate("login") }
+                onNavigateToScan = { navController.navigate("scan") },
+                onNavigateToCopilot = { navController.navigate("copilot") },
+                onNavigateToDisputes = { navController.navigate("dashboard") },
+                onNavigateToTariffs = { navController.navigate("dashboard") }
             )
         }
-        composable("login") {
-            DashboardScreen()
+        composable("scan") {
+            ScanAuditScreen(
+                onNavigateToDispute = { navController.navigate("copilot") }
+            )
+        }
+        composable("copilot") {
+            CopilotScreen(
+                onNavigateToDispute = { navController.navigate("dashboard") }
+            )
         }
     }
 }
