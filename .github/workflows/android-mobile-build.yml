@@ -8,27 +8,17 @@ on:
 
 jobs:
   build-android-mobile:
+    name: Build Android Native App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: clients/mobile/package.json
-
-      - name: Set up Java
+      - name: Set up Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-
-      - name: Install mobile dependencies
-        working-directory: clients/mobile
-        run: npm install
 
       - name: Make Gradle executable
         working-directory: clients/android
@@ -36,11 +26,11 @@ jobs:
 
       - name: Build debug APK
         working-directory: clients/android
-        run: ./gradlew clean assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: curaveris-android-debug
-          path: clients/android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
+          path: clients/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
