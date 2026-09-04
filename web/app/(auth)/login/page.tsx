@@ -14,6 +14,7 @@ import {
   Eye,
   EyeOff,
   Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -65,7 +66,6 @@ export default function LoginPage() {
   const [lockoutRemaining, setLockoutRemaining] = useState<number>(0);
   const [activeMessageIndex, setActiveMessageIndex] = useState(0);
 
-  // Auto-rotate login messages every 4.5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveMessageIndex((prev) => (prev + 1) % LOGIN_MESSAGES.length);
@@ -81,7 +81,6 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  // Countdown timer for lockout
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (lockoutRemaining > 0) {
@@ -112,7 +111,7 @@ export default function LoginPage() {
 
       if (status === 429 || (typeof detail === "string" && detail.includes("locked"))) {
         setIsLocked(true);
-        setLockoutRemaining(12 * 60); // 12 minutes
+        setLockoutRemaining(12 * 60);
         setErrorMessage("Your account is temporarily locked because of too many incorrect attempts. Please try again in 12 minutes.");
       } else if (status === 401 || (typeof detail === "string" && (detail.includes("Incorrect") || detail.includes("Invalid")))) {
         setErrorMessage("That email or password doesn't match. Please try again.");
@@ -127,19 +126,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#090B10] selection:bg-brand-accent/30 selection:text-white">
-      {/* LEFT PANEL (40% width on desktop) */}
-      <div className="lg:w-[40%] bg-[#06080C] text-white p-8 lg:p-12 flex flex-col justify-between hidden lg:flex border-r border-[#1E2433]">
-        {/* Brand */}
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F5F7FB] selection:bg-[#DBF1F4] selection:text-[#202128]">
+      {/* LEFT PANEL (Grassfeld Soft Gradient Panel) */}
+      <div className="lg:w-[42%] bg-gradient-to-br from-[#DBF1F4]/70 via-[#EDF0FB] to-[#F5F7FB] text-[#202128] p-8 lg:p-14 flex flex-col justify-between hidden lg:flex border-r border-black/[0.06] relative overflow-hidden">
+        {/* Ambient background glow */}
+        <div className="absolute top-0 left-0 w-80 h-80 bg-white/60 rounded-full blur-3xl pointer-events-none" />
+
         <Logo href="/" showTagline={true} theme="light" size="md" />
 
-        {/* Middle Feature Quote Carousel */}
-        <div className="my-auto space-y-6 py-8 max-w-sm">
+        {/* Feature Quote Carousel */}
+        <div className="my-auto space-y-6 py-8 max-w-sm z-10">
           <div className="flex items-center justify-between">
-            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-brand-accent-light">
-              <Sparkles className="w-5 h-5" strokeWidth={1.5} />
+            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#202128] shadow-xs border border-black/[0.04]">
+              <Sparkles className="w-5 h-5 text-[#43A8B2]" strokeWidth={2} />
             </div>
-            <span className="px-2.5 py-1 bg-white/10 rounded-full text-[11px] font-semibold text-brand-accent-light tracking-wide">
+            <span className="px-3.5 py-1 bg-white rounded-full text-xs font-bold text-[#202128] border border-black/[0.04] shadow-xs">
               {LOGIN_MESSAGES[activeMessageIndex].tag}
             </span>
           </div>
@@ -147,16 +148,15 @@ export default function LoginPage() {
           <div className="min-h-[110px] flex flex-col justify-center">
             <p
               key={activeMessageIndex}
-              className="text-lg font-heading font-medium text-white/95 leading-relaxed transition-all duration-500 ease-in-out animate-in fade-in-50"
+              className="text-xl font-heading font-bold text-[#202128] leading-snug transition-all duration-500 ease-in-out animate-in fade-in-50"
             >
               &ldquo;{LOGIN_MESSAGES[activeMessageIndex].quote}&rdquo;
             </p>
-            <p className="text-xs text-white/60 mt-3 font-normal">
+            <p className="text-xs text-[#606470] mt-3 font-semibold">
               — {LOGIN_MESSAGES[activeMessageIndex].author}
             </p>
           </div>
 
-          {/* Carousel Dots */}
           <div className="flex items-center gap-1.5 pt-2">
             {LOGIN_MESSAGES.map((_, idx) => (
               <button
@@ -165,8 +165,8 @@ export default function LoginPage() {
                 onClick={() => setActiveMessageIndex(idx)}
                 className={`h-1.5 rounded-full transition-all duration-300 focus:outline-none ${
                   idx === activeMessageIndex
-                    ? "w-6 bg-brand-accent"
-                    : "w-1.5 bg-white/30 hover:bg-white/50"
+                    ? "w-7 bg-[#202128]"
+                    : "w-1.5 bg-black/20 hover:bg-black/40"
                 }`}
                 aria-label={`Go to message ${idx + 1}`}
               />
@@ -175,52 +175,51 @@ export default function LoginPage() {
         </div>
 
         {/* Bottom Trust Points */}
-        <div className="space-y-3 pt-6 border-t border-white/10 text-xs text-white/70">
+        <div className="space-y-3 pt-6 border-t border-black/[0.06] text-xs text-[#606470] font-semibold z-10">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <CheckCircle2 className="w-4 h-4 text-[#43A8B2] flex-shrink-0" strokeWidth={2} />
             <span>Government price benchmarks (NPPA, CGHS, DPCO)</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <CheckCircle2 className="w-4 h-4 text-[#43A8B2] flex-shrink-0" strokeWidth={2} />
             <span>Section 65B tamper-evident legal certificate</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <CheckCircle2 className="w-4 h-4 text-[#43A8B2] flex-shrink-0" strokeWidth={2} />
             <span>Digital Personal Data Protection (DPDP) Act 2023 certified</span>
           </div>
         </div>
       </div>
 
-      {/* RIGHT PANEL (60% width on desktop) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-[#090B10]">
-        {/* Mobile Header */}
-        <div className="w-full max-w-[380px] lg:hidden mb-8 flex items-center justify-between">
+      {/* RIGHT PANEL (Clean White Form Card on Light Background) */}
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-[#F5F7FB] relative">
+        <div className="w-full max-w-[420px] lg:hidden mb-8 flex items-center justify-between">
           <Logo href="/" showTagline={true} size="sm" />
         </div>
 
-        <div className="w-full max-w-[380px] space-y-6">
+        <div className="w-full max-w-[420px] bg-white p-8 sm:p-10 rounded-[32px] border border-black/[0.06] shadow-[0_12px_40px_rgba(0,0,0,0.04)] space-y-6">
           {/* Header */}
           <div>
-            <h2 className="font-heading font-bold text-2xl sm:text-[28px] text-text-primary tracking-tight">
+            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#202128] tracking-tight">
               Welcome back
             </h2>
-            <p className="text-sm text-text-secondary mt-1 font-normal">
-              Sign in to your account
+            <p className="text-sm text-[#606470] mt-1.5 font-medium">
+              Sign in to your patient portal
             </p>
           </div>
 
           {/* Error Banner */}
           {errorMessage && (
             <div
-              className={`p-3.5 rounded-md border flex items-start gap-2.5 text-xs animate-in fade-in-50 duration-150 ${
+              className={`p-4 rounded-2xl border flex items-start gap-3 text-xs animate-in fade-in-50 duration-150 ${
                 isLocked
-                  ? "bg-danger-bg border-danger/30 text-danger"
-                  : "bg-warning-bg border-warning/30 text-[#92400E]"
+                  ? "bg-[#FEE2E2] border-[#FECACA] text-[#DC2626]"
+                  : "bg-[#FEF3C7] border-[#FDE68A] text-[#D97706]"
               }`}
             >
-              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={2} />
               <div>
-                <p className="font-medium">{errorMessage}</p>
+                <p className="font-bold">{errorMessage}</p>
                 {isLocked && lockoutRemaining > 0 && (
                   <p className="mt-1 font-mono text-[11px] opacity-90">
                     Try again in: {Math.floor(lockoutRemaining / 60)}m {lockoutRemaining % 60}s
@@ -252,13 +251,13 @@ export default function LoginPage() {
                     type="button"
                     tabIndex={-1}
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-text-tertiary hover:text-text-primary transition-colors focus:outline-none"
+                    className="text-[#606470] hover:text-[#202128] transition-colors focus:outline-none"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4" strokeWidth={1.5} />
+                      <EyeOff className="w-4 h-4" strokeWidth={2} />
                     ) : (
-                      <Eye className="w-4 h-4" strokeWidth={1.5} />
+                      <Eye className="w-4 h-4" strokeWidth={2} />
                     )}
                   </button>
                 }
@@ -268,10 +267,10 @@ export default function LoginPage() {
               <div className="mt-2 text-right">
                 <button
                   type="button"
-                  onClick={() => alert("Password reset link will be sent to your email.")}
-                  className="text-xs font-medium text-brand-accent hover:underline focus:outline-none"
+                  onClick={() => alert("Password reset link will be sent to your registered email.")}
+                  className="text-xs font-bold text-[#43A8B2] hover:text-[#202128] focus:outline-none"
                 >
-                  Forgot your password?
+                  Forgot password?
                 </button>
               </div>
             </div>
@@ -279,23 +278,24 @@ export default function LoginPage() {
             <Button
               type="submit"
               variant="primary"
-              size="md"
-              className="w-full mt-2"
+              size="lg"
+              className="w-full mt-3 h-12 rounded-full bg-[#202128] hover:bg-black text-white font-bold shadow-md"
               isLoading={isSubmitting}
               disabled={isLocked}
             >
-              Sign In
+              <span>Sign In</span>
+              <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2.2} />
             </Button>
           </form>
 
           {/* Footer Navigation */}
-          <div className="pt-4 border-t border-border-subtle text-center text-xs text-text-secondary">
+          <div className="pt-4 border-t border-black/[0.06] text-center text-xs text-[#606470] font-medium">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="text-brand-accent font-medium hover:underline focus:outline-none"
+              className="text-[#202128] font-bold hover:underline focus:outline-none"
             >
-              Create one
+              Create an account
             </Link>
           </div>
         </div>
