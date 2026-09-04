@@ -26,9 +26,11 @@ data class ChatItem(
     val citation: String? = null
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CopilotScreen(
-    onNavigateToDispute: () -> Unit = {}
+    onNavigateToDispute: () -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
     var queryText by remember { mutableStateOf("") }
     var chatHistory by remember {
@@ -44,24 +46,31 @@ fun CopilotScreen(
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Statutory Patient Advocate AI",
-            color = TextPrimary,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "Ground truth compliance and legal overcharge defense",
-            color = TextSecondary,
-            fontSize = 12.sp,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text("STATUTORY ADVOCATE AI", fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = TextPrimary)
+                        Text("Grounded RAG & Legal Overcharge Defense", fontSize = 11.sp, color = TextSecondary)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkSurface)
+            )
+        },
+        containerColor = DarkBackground
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
 
         LazyColumn(
             modifier = Modifier
@@ -153,3 +162,5 @@ fun CopilotScreen(
         }
     }
 }
+}
+
