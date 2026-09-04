@@ -10,6 +10,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import `in`.curaveris.app.ui.screens.SplashScreen
+import `in`.curaveris.app.ui.screens.AuthScreen
 import `in`.curaveris.app.ui.screens.DashboardScreen
 import `in`.curaveris.app.ui.screens.ScanAuditScreen
 import `in`.curaveris.app.ui.screens.CopilotScreen
@@ -50,7 +52,30 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "dashboard") {
+    NavHost(navController = navController, startDestination = "splash") {
+        composable("splash") {
+            SplashScreen(
+                onNavigateToAuth = {
+                    navController.navigate("auth") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                },
+                onNavigateToDashboard = {
+                    navController.navigate("dashboard") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("auth") {
+            AuthScreen(
+                onAuthSuccess = {
+                    navController.navigate("dashboard") {
+                        popUpTo("auth") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("dashboard") {
             DashboardScreen(
                 onNavigateToScan = { navController.navigate("scan") },
@@ -71,3 +96,4 @@ fun AppNavigation(navController: NavHostController) {
         }
     }
 }
+
