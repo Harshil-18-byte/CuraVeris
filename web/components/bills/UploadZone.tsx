@@ -44,7 +44,7 @@ export const UploadZone: React.FC = () => {
   } = useForm<UploadFormValues>({
     resolver: zodResolver(uploadFormSchema),
     defaultValues: {
-      insurance_type: "No, I paid myself",
+      insurance_type: "Self Pay",
     },
   });
 
@@ -116,7 +116,7 @@ export const UploadZone: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Drag & Drop File Zone */}
         <div>
-          <label className="block text-sm font-semibold text-text-primary mb-2">
+          <label className="block text-sm font-bold text-[#202128] mb-2">
             Check Your Hospital Bill
           </label>
 
@@ -129,10 +129,10 @@ export const UploadZone: React.FC = () => {
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all duration-150 ${
+              className={`border-2 border-dashed rounded-[32px] p-8 sm:p-12 text-center cursor-pointer transition-all duration-200 ${
                 isDragging
-                  ? "border-brand-accent bg-brand-accent-light"
-                  : "border-border-default hover:border-brand-accent bg-white"
+                  ? "border-[#43A8B2] bg-[#DBF1F4]/40 shadow-lg"
+                  : "border-black/[0.1] hover:border-[#202128] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:scale-[1.005]"
               }`}
             >
               <input
@@ -143,33 +143,33 @@ export const UploadZone: React.FC = () => {
                 onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
               />
 
-              <div className="w-14 h-14 rounded-full bg-brand-accent-light text-brand-accent flex items-center justify-center mx-auto mb-4">
-                <UploadCloud className="w-7 h-7" strokeWidth={1.5} />
+              <div className="w-14 h-14 rounded-full bg-[#DBF1F4] text-[#202128] flex items-center justify-center mx-auto mb-4 shadow-xs">
+                <UploadCloud className="w-7 h-7" strokeWidth={1.75} />
               </div>
 
-              <h3 className="font-heading font-semibold text-base text-text-primary">
+              <h3 className="font-heading font-bold text-base text-[#202128]">
                 Drop your bill here, or tap to choose a file
               </h3>
-              <p className="text-xs text-text-secondary mt-1 font-normal">
+              <p className="text-xs text-[#606470] mt-1 font-medium">
                 Photo, PDF, or image file · Up to 50MB
               </p>
 
-              <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-bg-secondary rounded-full text-xs text-text-secondary font-medium">
-                <ShieldCheck className="w-3.5 h-3.5 text-success" strokeWidth={1.5} />
+              <div className="mt-5 inline-flex items-center gap-1.5 px-4 py-1 bg-[#EDF0FB] rounded-full text-xs text-[#202128] font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#43A8B2]" strokeWidth={2} />
                 <span>Your bill is encrypted & never shared</span>
               </div>
             </div>
           ) : (
-            <Card padding="md" className="flex items-center justify-between gap-4 border-brand-accent/30 bg-brand-accent-light/30">
+            <Card padding="md" className="flex items-center justify-between gap-4 border-[#79C5CD]/40 bg-[#DBF1F4]/30 shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-lg bg-brand-accent-light text-brand-accent flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-5 h-5" strokeWidth={1.5} />
+                <div className="w-10 h-10 rounded-2xl bg-[#DBF1F4] text-[#202128] flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-5 h-5" strokeWidth={1.75} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-text-primary truncate">
+                  <p className="text-sm font-bold text-[#202128] truncate">
                     {selectedFile.name}
                   </p>
-                  <p className="text-xs text-text-secondary">
+                  <p className="text-xs text-[#606470] font-mono font-medium">
                     {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
                   </p>
                 </div>
@@ -180,15 +180,15 @@ export const UploadZone: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedFile(null)}
-                className="text-text-tertiary hover:text-danger"
+                className="text-[#606470] hover:text-[#DC2626] rounded-full"
               >
-                <X className="w-4 h-4" strokeWidth={1.5} />
+                <X className="w-4 h-4" strokeWidth={2} />
               </Button>
             </Card>
           )}
 
           {uploadError && (
-            <p className="mt-2 text-xs text-danger flex items-center gap-1">
+            <p className="mt-2 text-xs text-[#DC2626] font-semibold flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
               <span>{uploadError}</span>
             </p>
@@ -196,8 +196,8 @@ export const UploadZone: React.FC = () => {
         </div>
 
         {/* Form Details */}
-        <Card padding="lg" className="space-y-4">
-          <h4 className="font-heading font-semibold text-sm text-text-primary border-b border-border-subtle pb-3">
+        <Card padding="lg" className="space-y-4 bg-white border border-black/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+          <h4 className="font-heading font-bold text-sm text-[#202128] border-b border-black/[0.06] pb-3">
             A few more details (not required)
           </h4>
 
@@ -211,7 +211,7 @@ export const UploadZone: React.FC = () => {
           <Input
             label="Total amount on the bill (if you know it)"
             type="number"
-            leftAddon={<span className="text-xs font-semibold">₹</span>}
+            leftAddon={<span className="text-xs font-bold text-[#606470]">₹</span>}
             placeholder="e.g. 1,45,000"
             hint="Total amount before any insurance discount or payment."
             error={errors.total_billed_amount?.message}
@@ -235,11 +235,11 @@ export const UploadZone: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-text-secondary mb-1.5">
+            <label className="block text-xs font-bold text-[#202128] mb-1.5">
               Did you use insurance for this bill?
             </label>
             <select
-              className="w-full h-[44px] px-3.5 bg-white text-text-primary text-base font-normal rounded-md border border-border-default outline-none focus:border-border-focus focus:shadow-[0_0_0_3px_rgba(37,99,235,0.12)] transition-all"
+              className="w-full h-11 px-4 bg-[#F5F7FB] text-[#202128] text-xs font-medium rounded-2xl border border-black/[0.08] outline-none focus:border-[#43A8B2] transition-all"
               {...register("insurance_type")}
             >
               <option value="Self Pay">No, I paid myself</option>
@@ -255,7 +255,7 @@ export const UploadZone: React.FC = () => {
           type="submit"
           variant="primary"
           size="lg"
-          className="w-full"
+          className="w-full rounded-full bg-[#202128] hover:bg-black text-white font-bold shadow-md"
           isLoading={isSubmitting}
         >
           Check This Bill
