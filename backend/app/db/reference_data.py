@@ -124,167 +124,199 @@ IRDAI_NON_PAYABLES = [
 ]
 
 
+def _ensure_db_valid():
+    """Ensure reference database exists and is valid. Reinitialize if corrupted."""
+    if not os.path.exists(REFERENCE_DB):
+        init_reference_db()
+        return
+    
+    try:
+        # Test database validity with a test query
+        conn = sqlite3.connect(REFERENCE_DB, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM cghs_rates LIMIT 1")
+        conn.close()
+    except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
+        logger.warning(f"Reference database corrupted at {REFERENCE_DB}: {e}. Reinitializing...")
+        try:
+            if os.path.exists(REFERENCE_DB):
+                os.remove(REFERENCE_DB)
+        except Exception as remove_err:
+            logger.error(f"Failed to remove corrupted database: {remove_err}")
+        init_reference_db()
+
+
 def init_reference_db():
     """Create tables and seed reference databases in SQLite."""
-    os.makedirs(os.path.dirname(REFERENCE_DB) or ".", exist_ok=True)
-    conn = sqlite3.connect(REFERENCE_DB)
-    cursor = conn.cursor()
+    try:
+        os.makedirs(os.path.dirname(REFERENCE_DB) or ".", exist_ok=True)
+        conn = sqlite3.connect(REFERENCE_DB, timeout=5)
+        cursor = conn.cursor()
 
-    # 1. CGHS Rates Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS cghs_rates (
-        procedure_code TEXT PRIMARY KEY,
-        procedure_name TEXT,
-        rate_non_nabh REAL,
-        rate_nabh REAL,
-        category TEXT
-    )
-    """)
-
-    # 2. NPPA Devices Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS nppa_devices (
-        device_name TEXT PRIMARY KEY,
-        category TEXT,
-        ceiling_price_inr REAL,
-        order_reference TEXT
-    )
-    """)
-
-    # 3. DPCO Drugs Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS dpco_drugs (
-        drug_name TEXT PRIMARY KEY,
-        formulation TEXT,
-        ceiling_price_per_unit REAL,
-        scheduled INTEGER
-    )
-    """)
-
-    # 4. IRDAI Non-Payables Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS irdai_non_payables (
-        item_name TEXT PRIMARY KEY,
-        category TEXT
-    )
-    """)
-
-    # Seed CGHS
-    for row in CGHS_SEEDS:
-        cursor.execute(
-            "INSERT OR REPLACE INTO cghs_rates VALUES (?, ?, ?, ?, ?)",
-            row
+        # 1. CGHS Rates Table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS cghs_rates (
+            procedure_code TEXT PRIMARY KEY,
+            procedure_name TEXT,
+            rate_non_nabh REAL,
+            rate_nabh REAL,
+            category TEXT
         )
+        """)
 
-    # Seed NPPA
-    for row in NPPA_SEEDS:
-        cursor.execute(
-            "INSERT OR REPLACE INTO nppa_devices VALUES (?, ?, ?, ?)",
-            row
+        # 2. NPPA Devices Table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS nppa_devices (
+            device_name TEXT PRIMARY KEY,
+            category TEXT,
+            ceiling_price_inr REAL,
+            order_reference TEXT
         )
+        """)
 
-    # Seed DPCO
-    for row in DPCO_SEEDS:
-        cursor.execute(
-            "INSERT OR REPLACE INTO dpco_drugs VALUES (?, ?, ?, ?)",
-            (row[0], row[1], row[2], 1 if row[3] else 0)
+        # 3. DPCO Drugs Table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS dpco_drugs (
+            drug_name TEXT PRIMARY KEY,
+            formulation TEXT,
+            ceiling_price_per_unit REAL,
+            scheduled INTEGER
         )
+        """)
 
-    # Seed IRDAI
-    for item in IRDAI_NON_PAYABLES:
-        cursor.execute(
-            "INSERT OR REPLACE INTO irdai_non_payables VALUES (?, ?)",
-            (item, "standard_non_payable")
+        # 4. IRDAI Non-Payables Table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS irdai_non_payables (
+            item_name TEXT PRIMARY KEY,
+            category TEXT
         )
+        """)
 
-    conn.commit()
-    conn.close()
-    logger.info(f"Reference database initialized and populated at {REFERENCE_DB}")
+        # Seed CGHS
+        for row in CGHS_SEEDS:
+            cursor.execute(
+                "INSERT OR REPLACE INTO cghs_rates VALUES (?, ?, ?, ?, ?)",
+                row
+            )
+
+        # Seed NPPA
+        for row in NPPA_SEEDS:
+            cursor.execute(
+                "INSERT OR REPLACE INTO nppa_devices VALUES (?, ?, ?, ?)",
+                row
+            )
+
+        # Seed DPCO
+        for row in DPCO_SEEDS:
+            cursor.execute(
+                "INSERT OR REPLACE INTO dpco_drugs VALUES (?, ?, ?, ?)",
+                (row[0], row[1], row[2], 1 if row[3] else 0)
+            )
+
+        # Seed IRDAI
+        for item in IRDAI_NON_PAYABLES:
+            cursor.execute(
+                "INSERT OR REPLACE INTO irdai_non_payables VALUES (?, ?)",
+                (item, "standard_non_payable")
+            )
+
+        conn.commit()
+        conn.close()
+        logger.info(f"Reference database initialized and populated at {REFERENCE_DB}")
+    except Exception as e:
+        logger.error(f"Failed to initialize reference database: {e}")
+        raise
 
 
 def query_cghs_rate(item_name: str) -> Optional[Dict[str, Any]]:
     """Lookup CGHS benchmark rate by fuzzy/partial name match."""
-    if not os.path.exists(REFERENCE_DB):
-        init_reference_db()
-    conn = sqlite3.connect(REFERENCE_DB)
-    cursor = conn.cursor()
-    
-    import re
-    # Clean and tokenize item name
-    clean_item = re.sub(r"[^a-zA-Z0-9\s]", " ", item_name.lower())
-    clean_item = re.sub(r"\s+", " ", clean_item).strip()
-    tokens = [t for t in clean_item.split() if len(t) > 2]
-    if not tokens:
+    try:
+        _ensure_db_valid()
+        conn = sqlite3.connect(REFERENCE_DB, timeout=5)
+        cursor = conn.cursor()
+        
+        import re
+        # Clean and tokenize item name
+        clean_item = re.sub(r"[^a-zA-Z0-9\s]", " ", item_name.lower())
+        clean_item = re.sub(r"\s+", " ", clean_item).strip()
+        tokens = [t for t in clean_item.split() if len(t) > 2]
+        if not tokens:
+            conn.close()
+            return None
+
+        query = "SELECT procedure_code, procedure_name, rate_non_nabh, rate_nabh, category FROM cghs_rates"
+        cursor.execute(query)
+        rows = cursor.fetchall()
         conn.close()
+
+        best_match = None
+        best_score = 0
+
+        for row in rows:
+            clean_proc = re.sub(r"[^a-zA-Z0-9\s]", " ", row[1].lower())
+            clean_proc = re.sub(r"\s+", " ", clean_proc).strip()
+            proc_tokens = set(clean_proc.split())
+
+            # Exact normalized match
+            if clean_proc == clean_item:
+                score = 100
+            elif clean_proc in clean_item or clean_item in clean_proc:
+                score = 90
+            else:
+                # Overlapping word tokens
+                shared = sum(1 for t in tokens if t in proc_tokens)
+                score = (shared / max(len(tokens), 1)) * 80
+
+            if score > best_score and score >= 40:
+                best_score = score
+                best_match = {
+                    "procedure_code": row[0],
+                    "procedure_name": row[1],
+                    "rate_non_nabh": row[2],
+                    "rate_nabh": row[3],
+                    "category": row[4],
+                    "match_confidence": round(score, 2)
+                }
+
+        return best_match
+    except Exception as e:
+        logger.error(f"Error querying CGHS rates: {e}")
         return None
-
-    query = "SELECT procedure_code, procedure_name, rate_non_nabh, rate_nabh, category FROM cghs_rates"
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    conn.close()
-
-    best_match = None
-    best_score = 0
-
-    for row in rows:
-        clean_proc = re.sub(r"[^a-zA-Z0-9\s]", " ", row[1].lower())
-        clean_proc = re.sub(r"\s+", " ", clean_proc).strip()
-        proc_tokens = set(clean_proc.split())
-
-        # Exact normalized match
-        if clean_proc == clean_item:
-            score = 100
-        elif clean_proc in clean_item or clean_item in clean_proc:
-            score = 90
-        else:
-            # Overlapping word tokens
-            shared = sum(1 for t in tokens if t in proc_tokens)
-            score = (shared / max(len(tokens), 1)) * 80
-
-        if score > best_score and score >= 40:
-            best_score = score
-            best_match = {
-                "procedure_code": row[0],
-                "procedure_name": row[1],
-                "rate_non_nabh": row[2],
-                "rate_nabh": row[3],
-                "category": row[4],
-                "match_confidence": round(score, 2)
-            }
-
-    return best_match
 
 
 def query_nppa_device(item_name: str) -> Optional[Dict[str, Any]]:
     """Lookup NPPA medical device ceiling price."""
-    if not os.path.exists(REFERENCE_DB):
-        init_reference_db()
-    conn = sqlite3.connect(REFERENCE_DB)
-    cursor = conn.cursor()
-    cursor.execute("SELECT device_name, category, ceiling_price_inr, order_reference FROM nppa_devices")
-    rows = cursor.fetchall()
-    conn.close()
+    try:
+        _ensure_db_valid()
+        conn = sqlite3.connect(REFERENCE_DB, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT device_name, category, ceiling_price_inr, order_reference FROM nppa_devices")
+        rows = cursor.fetchall()
+        conn.close()
 
-    item_lower = item_name.lower()
-    for row in rows:
-        dev_name = row[0].lower()
-        # Key terms: stent, knee implant, bvs, catheter, pacemaker
-        if ("stent" in item_lower and "stent" in dev_name) or \
-           ("knee" in item_lower and "knee" in dev_name) or \
-           ("pacemaker" in item_lower and "pacemaker" in dev_name) or \
-           ("balloon" in item_lower and "balloon" in dev_name):
-            # Check specific sub-keywords
-            if ("drug eluting" in item_lower or "des" in item_lower) and "drug eluting" in dev_name:
-                return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
-            elif ("bare metal" in item_lower or "bms" in item_lower) and "bare metal" in dev_name:
-                return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
-            elif "knee" in item_lower and "posterior stabilized" in dev_name:
-                return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
-            elif "knee" in item_lower and "cruciate" in dev_name:
-                return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
-            elif any(word in dev_name for word in item_lower.split() if len(word) > 4):
-                return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
-    return None
+        item_lower = item_name.lower()
+        for row in rows:
+            dev_name = row[0].lower()
+            # Key terms: stent, knee implant, bvs, catheter, pacemaker
+            if ("stent" in item_lower and "stent" in dev_name) or \
+               ("knee" in item_lower and "knee" in dev_name) or \
+               ("pacemaker" in item_lower and "pacemaker" in dev_name) or \
+               ("balloon" in item_lower and "balloon" in dev_name):
+                # Check specific sub-keywords
+                if ("drug eluting" in item_lower or "des" in item_lower) and "drug eluting" in dev_name:
+                    return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
+                elif ("bare metal" in item_lower or "bms" in item_lower) and "bare metal" in dev_name:
+                    return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
+                elif "knee" in item_lower and "posterior stabilized" in dev_name:
+                    return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
+                elif "knee" in item_lower and "cruciate" in dev_name:
+                    return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
+                elif any(word in dev_name for word in item_lower.split() if len(word) > 4):
+                    return {"device_name": row[0], "category": row[1], "ceiling_price_inr": row[2], "order_reference": row[3]}
+        return None
+    except Exception as e:
+        logger.error(f"Error querying NPPA devices: {e}")
+        return None
 
 
 def query_dpco_drug(item_name: str) -> Optional[Dict[str, Any]]:
@@ -292,60 +324,69 @@ def query_dpco_drug(item_name: str) -> Optional[Dict[str, Any]]:
     Lookup DPCO / NLEM / Trade Margin Rationalization drug ceiling price.
     Checks comprehensive national pharmaceutical catalog (generic + Indian brands).
     """
-    from app.db.pharma_database import lookup_pharmaceutical
-    pharma_match = lookup_pharmaceutical(item_name)
-    if pharma_match:
-        return {
-            "drug_name": pharma_match["generic_name"],
-            "formulation": pharma_match["formulation"],
-            "ceiling_price_per_unit": pharma_match["ceiling_inr"],
-            "category": pharma_match.get("category", "pharmacy"),
-            "legal_citation": pharma_match.get("citation", "DPCO 2013")
-        }
+    try:
+        from app.db.pharma_database import lookup_pharmaceutical
+        pharma_match = lookup_pharmaceutical(item_name)
+        if pharma_match:
+            return {
+                "drug_name": pharma_match["generic_name"],
+                "formulation": pharma_match["formulation"],
+                "ceiling_price_per_unit": pharma_match["ceiling_inr"],
+                "category": pharma_match.get("category", "pharmacy"),
+                "legal_citation": pharma_match.get("citation", "DPCO 2013")
+            }
+    except Exception as e:
+        logger.debug(f"Pharma database lookup failed: {e}, falling back to SQLite")
 
     # Fallback to local SQLite table
-    if not os.path.exists(REFERENCE_DB):
-        init_reference_db()
-    conn = sqlite3.connect(REFERENCE_DB)
-    cursor = conn.cursor()
-    cursor.execute("SELECT drug_name, formulation, ceiling_price_per_unit, scheduled FROM dpco_drugs")
-    rows = cursor.fetchall()
-    conn.close()
+    try:
+        _ensure_db_valid()
+        conn = sqlite3.connect(REFERENCE_DB, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT drug_name, formulation, ceiling_price_per_unit, scheduled FROM dpco_drugs")
+        rows = cursor.fetchall()
+        conn.close()
 
-    item_lower = item_name.lower()
-    for row in rows:
-        drug_core = row[0].split()[0].lower()  # e.g., 'pantoprazole', 'paracetamol'
-        if drug_core in item_lower:
-            if "inj" in item_lower and "inj" in row[0].lower():
-                return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
-            elif ("tab" in item_lower or "tablet" in item_lower) and "tab" in row[0].lower():
-                return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
-            elif "iv" in item_lower and "iv" in row[0].lower():
-                return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
-            else:
-                return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
-    return None
+        item_lower = item_name.lower()
+        for row in rows:
+            drug_core = row[0].split()[0].lower()  # e.g., 'pantoprazole', 'paracetamol'
+            if drug_core in item_lower:
+                if "inj" in item_lower and "inj" in row[0].lower():
+                    return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
+                elif ("tab" in item_lower or "tablet" in item_lower) and "tab" in row[0].lower():
+                    return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
+                elif "iv" in item_lower and "iv" in row[0].lower():
+                    return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
+                else:
+                    return {"drug_name": row[0], "formulation": row[1], "ceiling_price_per_unit": row[2]}
+        return None
+    except Exception as e:
+        logger.error(f"Error querying DPCO drugs: {e}")
+        return None
 
 
 def is_irdai_non_payable(item_name: str) -> Optional[str]:
     """Check if item matches IRDAI standard non-payable list."""
-    if not os.path.exists(REFERENCE_DB):
-        init_reference_db()
-    conn = sqlite3.connect(REFERENCE_DB)
-    cursor = conn.cursor()
-    cursor.execute("SELECT item_name FROM irdai_non_payables")
-    rows = cursor.fetchall()
-    conn.close()
+    try:
+        _ensure_db_valid()
+        conn = sqlite3.connect(REFERENCE_DB, timeout=5)
+        cursor = conn.cursor()
+        cursor.execute("SELECT item_name FROM irdai_non_payables")
+        rows = cursor.fetchall()
+        conn.close()
 
-    item_lower = item_name.lower()
-    keywords = ["glove", "ppe", "sanitizer", "welcome kit", "admission kit", "thermometer",
-                "biomedical waste", "admin fee", "registration", "dietitian", "oximeter probe",
-                "spirometer", "gown sanitization", "diaper", "underpad"]
+        item_lower = item_name.lower()
+        keywords = ["glove", "ppe", "sanitizer", "welcome kit", "admission kit", "thermometer",
+                    "biomedical waste", "admin fee", "registration", "dietitian", "oximeter probe",
+                    "spirometer", "gown sanitization", "diaper", "underpad"]
 
-    for kw in keywords:
-        if kw in item_lower:
-            for row in rows:
-                if kw in row[0].lower():
-                    return row[0]
-            return f"Non-payable item matching '{kw}'"
-    return None
+        for kw in keywords:
+            if kw in item_lower:
+                for row in rows:
+                    if kw in row[0].lower():
+                        return row[0]
+                return f"Non-payable item matching '{kw}'"
+        return None
+    except Exception as e:
+        logger.error(f"Error querying IRDAI non-payables: {e}")
+        return None
