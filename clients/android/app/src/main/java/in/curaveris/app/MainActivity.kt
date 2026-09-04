@@ -15,6 +15,10 @@ import `in`.curaveris.app.ui.screens.AuthScreen
 import `in`.curaveris.app.ui.screens.DashboardScreen
 import `in`.curaveris.app.ui.screens.ScanAuditScreen
 import `in`.curaveris.app.ui.screens.CopilotScreen
+import `in`.curaveris.app.ui.screens.AllScreensHubScreen
+import `in`.curaveris.app.ui.screens.TariffRegistryScreen
+import `in`.curaveris.app.ui.screens.LegalDisputeScreen
+import `in`.curaveris.app.ui.screens.FinancialRiskScreen
 import `in`.curaveris.app.ui.theme.CuraVerisTheme
 
 /**
@@ -80,20 +84,44 @@ fun AppNavigation(navController: NavHostController) {
             DashboardScreen(
                 onNavigateToScan = { navController.navigate("scan") },
                 onNavigateToCopilot = { navController.navigate("copilot") },
-                onNavigateToDisputes = { navController.navigate("dashboard") },
-                onNavigateToTariffs = { navController.navigate("dashboard") }
+                onNavigateToDisputes = { navController.navigate("disputes") },
+                onNavigateToTariffs = { navController.navigate("tariffs") },
+                onNavigateToHub = { navController.navigate("hub") },
+                onNavigateToFinancialRisk = { navController.navigate("financial_risk") }
             )
         }
         composable("scan") {
             ScanAuditScreen(
-                onNavigateToDispute = { navController.navigate("copilot") }
+                onNavigateToDispute = { navController.navigate("disputes") }
             )
         }
         composable("copilot") {
             CopilotScreen(
-                onNavigateToDispute = { navController.navigate("dashboard") }
+                onNavigateToDispute = { navController.navigate("disputes") }
+            )
+        }
+        composable("hub") {
+            AllScreensHubScreen(
+                onNavigate = { route -> navController.navigate(route) },
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("tariffs") {
+            TariffRegistryScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("disputes") {
+            LegalDisputeScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("financial_risk") {
+            FinancialRiskScreen(
+                onBack = { navController.popBackStack() }
             )
         }
     }
 }
+
 
