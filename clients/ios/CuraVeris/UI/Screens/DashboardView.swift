@@ -5,6 +5,7 @@ public struct DashboardView: View {
     @State private var isBackendHealthy: Bool? = nil
     @State private var showingDocumentPicker = false
     @State private var uploadedDocumentName: String? = nil
+    @State private var activeSheet: DashboardSheet? = nil
 
     public init() {}
 
@@ -14,7 +15,7 @@ public struct DashboardView: View {
                 AppTheme.background.ignoresSafeArea()
 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 18) {
                         if !networkMonitor.isConnected {
                             HStack {
                                 Image(systemName: "wifi.slash")
@@ -28,10 +29,64 @@ public struct DashboardView: View {
                             .cornerRadius(10)
                         }
 
-                        // Hero Foundation Card
+                        // Master Hub Banner
+                        Button(action: { activeSheet = .hub }) {
+                            HStack(spacing: 12) {
+                                Text("36+")
+                                    .font(.system(size: 14, weight: .black, design: .monospaced))
+                                    .foregroundColor(.black)
+                                    .padding(8)
+                                    .background(AppTheme.primaryCyan)
+                                    .cornerRadius(6)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("MASTER SCREEN HUB & DIRECTORY")
+                                        .font(.system(size: 11, weight: .black, design: .monospaced))
+                                        .foregroundColor(AppTheme.primaryCyan)
+                                    Text("Explore all 36+ clinical audit, tariff & legal modules")
+                                        .font(.system(size: 10))
+                                        .foregroundColor(AppTheme.textSecondary)
+                                }
+                                Spacer()
+                                Image(systemName: "arrow.right.circle.fill")
+                                    .foregroundColor(AppTheme.primaryCyan)
+                            }
+                            .padding(12)
+                            .background(AppTheme.card)
+                            .cornerRadius(10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(AppTheme.primaryCyan.opacity(0.5), lineWidth: 1)
+                            )
+                        }
+                        .buttonStyle(.plain)
+
+                        // 4-Pillar Quick Actions
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("FORENSIC DEFENSE PILLARS")
+                                .font(.system(size: 11, weight: .heavy, design: .monospaced))
+                                .foregroundColor(AppTheme.textSecondary)
+
+                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                                QuickActionCard(title: "SCAN & AUDIT", icon: "doc.viewfinder", color: AppTheme.primaryBlue) {
+                                    activeSheet = .scan
+                                }
+                                QuickActionCard(title: "TARIFF CAPS", icon: "tablecells.fill", color: AppTheme.accentGold) {
+                                    activeSheet = .tariffs
+                                }
+                                QuickActionCard(title: "FINANCIAL RISK", icon: "chart.line.uptrend.xyaxis", color: AppTheme.dangerRed) {
+                                    activeSheet = .financialRisk
+                                }
+                                QuickActionCard(title: "LEGAL NOTICE", icon: "shield.lefthalf.filled", color: AppTheme.successGreen) {
+                                    activeSheet = .disputes
+                                }
+                            }
+                        }
+
+                        // Hero Status Card
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("Phase 7: iOS Foundation Active")
+                                Text("CuraVeris Forensic Engine")
                                     .font(.headline)
                                     .foregroundColor(AppTheme.textPrimary)
                                 Spacer()
@@ -47,14 +102,11 @@ public struct DashboardView: View {
                                 }
                             }
 
-                            Text("Section 65B Forensics & Statutory Overcharge Invariant Verification for Apple Ecosystem.")
+                            Text("Section 65B Forensics & Statutory Overcharge Invariant Verification for Apple iOS Ecosystem.")
                                 .font(.subheadline)
                                 .foregroundColor(AppTheme.textSecondary)
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.card)
-                        .cornerRadius(12)
+                        .cardStyle()
 
                         // Upload Bill Document Action
                         VStack(alignment: .leading, spacing: 12) {
@@ -85,10 +137,7 @@ public struct DashboardView: View {
                                     .foregroundColor(AppTheme.successGreen)
                             }
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.card)
-                        .cornerRadius(12)
+                        .cardStyle()
 
                         // Statutory Checkpoints
                         VStack(alignment: .leading, spacing: 10) {
@@ -109,10 +158,7 @@ public struct DashboardView: View {
                                 .font(.footnote)
                                 .foregroundColor(AppTheme.successGreen)
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(AppTheme.card)
-                        .cornerRadius(12)
+                        .cardStyle()
                     }
                     .padding()
                 }
@@ -123,9 +169,59 @@ public struct DashboardView: View {
                     uploadedDocumentName = url.lastPathComponent
                 }
             }
+            .sheet(item: $activeSheet) { sheet in
+                switch sheet {
+                case .hub:
+                    AllScreensHubView()
+                case .scan:
+                    ScanAuditView()
+                case .tariffs:
+                    TariffRegistryView()
+                case .financialRisk:
+                    FinancialRiskView()
+                case .disputes:
+                    LegalDisputeView()
+                case .copilot:
+                    CopilotView()
+                }
+            }
             .task {
                 isBackendHealthy = await APIClient.shared.checkHealth()
             }
         }
+    }
+}
+
+public enum DashboardSheet: String, Identifiable {
+    case hub, scan, tariffs, financialRisk, disputes, copilot
+    public var id: String { rawValue }
+}
+
+private struct QuickActionCard: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 18))
+                    .foregroundColor(color)
+                Text(title)
+                    .font(.system(size: 11, weight: .bold, design: .monospaced))
+                    .foregroundColor(AppTheme.textPrimary)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(AppTheme.card)
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(AppTheme.border, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }
