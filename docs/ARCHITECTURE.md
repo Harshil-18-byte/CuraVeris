@@ -39,6 +39,42 @@ flowchart LR
 - [Cryptographic Merkle Ledger](#5-cryptographic-merkle-audit-ledger-specification)
 - [Async Task State Machine](#6-asynchronous-background-task-state-machine)
 - [Security Controls](#7-security-and-encryption-controls)
+- [Multi-Client Architecture](#0-multi-client-architecture-and-3-tier-decoupling)
+
+---
+
+## 0. Multi-Client Architecture and 3-Tier Decoupling
+
+CuraVeris is a **multi-frontend, single-backend** system. The Web Portal and Native Mobile Apps are completely independent presentation tiers with distinct codebases, UI frameworks, design languages, and routing systems. They share **only** the FastAPI backend via REST `/api/v1`.
+
+> **Rule**: Never bundle, proxy, or embed the mobile experience inside the web app. Never share React/Next.js components with the Kotlin or Swift codebases.
+
+```mermaid
+flowchart TD
+  subgraph Presentation ["Presentation Tier (Independent Clients)"]
+    W["Web Portal — web/\nNext.js 14 · TypeScript · React 18\nDesktop browser dashboard\nVercel-deployed"]
+    A["Android App — clients/android/\nKotlin · Jetpack Compose\nCyber-forensic mobile UI\n6-tab persistent navigation"]
+    I["iOS App — clients/ios/\nSwift 5.9 · SwiftUI\nNative Cupertino medical UI"]
+  end
+
+  subgraph Backend ["Shared Backend Tier"]
+    API["FastAPI backend/\nREST /api/v1\nML Ensemble · Audit Engines · PostgreSQL"]
+  end
+
+  W -- REST /api/v1 --> API
+  A -- REST /api/v1 --> API
+  I -- REST /api/v1 --> API
+```
+
+| Dimension | Web Portal | Android App | iOS App | Backend |
+|:---|:---|:---|:---|:---|
+| **Path** | `web/` | `clients/android/` | `clients/ios/` | `backend/` |
+| **Language** | TypeScript | Kotlin | Swift 5.9 | Python 3.11 |
+| **Framework** | Next.js 14 App Router | Jetpack Compose | SwiftUI | FastAPI |
+| **UI System** | Tailwind CSS — high-contrast desktop | Material You — cyber-forensic | Cupertino — native medical | N/A |
+| **Deployment** | Vercel | APK / Google Play | IPA / App Store | Render / Docker |
+| **State** | Zustand + React Query | ViewModel + StateFlow | ObservableObject | SQLAlchemy + Redis |
+| **Auth** | JWT (web localStorage) | JWT (Android Keystore) | JWT (iOS Keychain) | JWT issuer |
 
 ---
 
