@@ -86,48 +86,47 @@ export default function AccountPage() {
     >
       <div className="space-y-6 max-w-4xl">
         {/* 1. PROFILE OVERVIEW CARD */}
-        <Card padding="lg" className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <div className="bg-[#DFF1F3] rounded-[32px] p-6 sm:p-8 border border-black/[0.06] shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-6">
           {/* 64px Avatar */}
-          <div className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center font-heading font-bold text-2xl flex-shrink-0 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+          <div className="w-16 h-16 rounded-full bg-[#202128] text-white flex items-center justify-center font-heading font-extrabold text-2xl flex-shrink-0 shadow-md">
             {user?.full_name?.charAt(0).toUpperCase() || "U"}
           </div>
 
           <div className="flex-1 text-center sm:text-left space-y-1">
-            <h3 className="font-heading font-bold text-xl text-white">
+            <h3 className="font-heading font-extrabold text-2xl text-[#202128]">
               {user?.full_name || "Patient Account"}
             </h3>
-            <p className="text-xs text-neutral-400">{user?.email}</p>
+            <p className="text-xs text-[#606470] font-medium">{user?.email}</p>
 
             <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-medium text-emerald-400">
-                <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>Your Data is Protected & Private</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/90 border border-black/[0.06] rounded-full text-xs font-bold text-[#202128] shadow-xs">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#43A8B2]" strokeWidth={2} />
+                <span>DPDP 2023 Sovereignty Protected</span>
               </div>
 
               {user?.role === "admin" && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-xs font-semibold text-cyan-400">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#202128] text-white rounded-full text-xs font-bold shadow-xs">
                   Administrator
                 </div>
               )}
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* 2. ACCOUNT INFORMATION */}
-        <Card padding="lg" className="space-y-4">
-          <div className="border-b border-white/[0.08] pb-3 flex items-center justify-between">
+        <div className="bg-white rounded-[32px] p-6 sm:p-8 border border-black/[0.06] shadow-sm space-y-5">
+          <div className="border-b border-black/[0.06] pb-4 flex items-center justify-between">
             <div>
-              <h4 className="font-heading font-semibold text-base text-white">
+              <h4 className="font-heading font-extrabold text-lg text-[#202128]">
                 Personal Information
               </h4>
-              <p className="text-xs text-neutral-400 mt-0.5">
+              <p className="text-xs text-[#606470] mt-0.5 font-medium">
                 Contact details used for complaint letters and status updates
               </p>
             </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="rounded-full"
+            <button
+              type="button"
+              className="h-9 px-4 rounded-full text-xs font-bold bg-[#F5F7FB] hover:bg-[#EDF0FB] text-[#202128] border border-black/[0.06] transition-colors"
               onClick={() => {
                 setEditFullName(user?.full_name || "");
                 setEditPhone(user?.phone_number || "");
@@ -135,106 +134,104 @@ export default function AccountPage() {
               }}
             >
               Edit Details
-            </Button>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
-                <UserIcon className="w-3.5 h-3.5" strokeWidth={1.5} />
+            <div className="p-4 bg-[#F5F7FB] border border-black/[0.04] rounded-2xl space-y-1">
+              <span className="text-[#606470] flex items-center gap-1.5 text-[11px] font-bold">
+                <UserIcon className="w-3.5 h-3.5 text-[#43A8B2]" strokeWidth={2} />
                 Full Name
               </span>
-              <p className="font-semibold text-sm text-white">{user?.full_name || "—"}</p>
+              <p className="font-bold text-sm text-[#202128]">{user?.full_name || "—"}</p>
             </div>
 
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
-                <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
+            <div className="p-4 bg-[#F5F7FB] border border-black/[0.04] rounded-2xl space-y-1">
+              <span className="text-[#606470] flex items-center gap-1.5 text-[11px] font-bold">
+                <Mail className="w-3.5 h-3.5 text-[#43A8B2]" strokeWidth={2} />
                 Email Address
               </span>
-              <p className="font-semibold text-sm text-white font-mono">{user?.email || "—"}</p>
+              <p className="font-bold text-sm text-[#202128] font-mono">{user?.email || "—"}</p>
             </div>
 
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
-                <Phone className="w-3.5 h-3.5" strokeWidth={1.5} />
+            <div className="p-4 bg-[#F5F7FB] border border-black/[0.04] rounded-2xl space-y-1">
+              <span className="text-[#606470] flex items-center gap-1.5 text-[11px] font-bold">
+                <Phone className="w-3.5 h-3.5 text-[#43A8B2]" strokeWidth={2} />
                 Mobile Number
               </span>
-              <p className="font-semibold text-sm text-white font-mono">
+              <p className="font-bold text-sm text-[#202128] font-mono">
                 {user?.phone_number ? `+91 ${user.phone_number}` : "Not linked"}
               </p>
             </div>
 
-            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
-              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
-                <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
+            <div className="p-4 bg-[#F5F7FB] border border-black/[0.04] rounded-2xl space-y-1">
+              <span className="text-[#606470] flex items-center gap-1.5 text-[11px] font-bold">
+                <Calendar className="w-3.5 h-3.5 text-[#43A8B2]" strokeWidth={2} />
                 Account Created On
               </span>
-              <p className="font-semibold text-sm text-white">
+              <p className="font-bold text-sm text-[#202128]">
                 {user?.created_at ? formatDate(user.created_at) : "Recent"}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* 3. SECURITY & PRIVACY */}
-        <Card padding="lg" className="space-y-4">
-          <div className="border-b border-white/[0.08] pb-3">
-            <h4 className="font-heading font-semibold text-base text-white">
-              Your Privacy Rights
+        <div className="bg-white rounded-[32px] p-6 sm:p-8 border border-black/[0.06] shadow-sm space-y-5">
+          <div className="border-b border-black/[0.06] pb-4">
+            <h4 className="font-heading font-extrabold text-lg text-[#202128]">
+              Your Privacy Rights (DPDP 2023)
             </h4>
-            <p className="text-xs text-neutral-400 mt-0.5">
-              You have full control over your health records.
+            <p className="text-xs text-[#606470] mt-0.5 font-medium">
+              You have complete cryptographic sovereignty over your medical records.
             </p>
           </div>
 
           <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
+            <div className="flex items-center justify-between p-4 bg-[#F5F7FB] border border-black/[0.04] rounded-2xl">
               <div>
-                <span className="font-semibold text-white block">Used only for your bills</span>
-                <span className="text-neutral-400">Your information is only used to check for overcharges on your behalf.</span>
+                <span className="font-bold text-[#202128] block text-xs">Used only for your hospital bill audits</span>
+                <span className="text-[#606470]">Your records are processed in encrypted memory and never monetized.</span>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" strokeWidth={1.5} />
+              <CheckCircle2 className="w-5 h-5 text-[#86C159] flex-shrink-0" strokeWidth={2} />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
+            <div className="flex items-center justify-between p-4 bg-[#F5F7FB] border border-black/[0.04] rounded-2xl">
               <div>
-                <span className="font-semibold text-white block">Delete anytime</span>
-                <span className="text-neutral-400">You can permanently erase all your data and bills at any time.</span>
+                <span className="font-bold text-[#202128] block text-xs">Instant 1-Click Right to Erasure</span>
+                <span className="text-[#606470]">Permanently purge all uploaded files, invoices, and certificates instantly.</span>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" strokeWidth={1.5} />
+              <CheckCircle2 className="w-5 h-5 text-[#86C159] flex-shrink-0" strokeWidth={2} />
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* 4. DANGER ZONE */}
-        <Card padding="lg" className="border-red-500/30 space-y-4 bg-red-950/10">
-          <div className="border-b border-red-500/20 pb-3">
-            <h4 className="font-heading font-semibold text-base text-red-400">
-              Delete Account
+        <div className="bg-[#FEF2F2] rounded-[32px] p-6 sm:p-8 border border-[#FECACA] shadow-sm space-y-4">
+          <div className="border-b border-[#FECACA] pb-3">
+            <h4 className="font-heading font-extrabold text-base text-[#DC2626]">
+              Delete Account & Permanent Erasure
             </h4>
-            <p className="text-xs text-neutral-400 mt-0.5">
-              Permanent account actions that cannot be undone
+            <p className="text-xs text-[#DC2626]/80 mt-0.5">
+              Irreversible action under the Digital Personal Data Protection Act 2023
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="text-xs text-neutral-400">
-              <strong className="text-white block">Close and delete account</strong>
-              Permanently delete all your uploaded bills, check results, and personal details.
+            <div className="text-xs text-[#606470]">
+              <strong className="text-[#202128] block">Close and delete account</strong>
+              Permanently delete all your uploaded bills, audit reports, and account tokens.
             </div>
 
-            <Button
-              variant="danger"
-              size="sm"
+            <button
+              type="button"
+              className="h-10 px-5 rounded-full text-xs font-bold bg-[#DC2626] hover:bg-red-700 text-white shadow-xs transition-colors whitespace-nowrap"
               onClick={() => setIsDeleteModalOpen(true)}
-              className="flex-shrink-0 rounded-full"
             >
-              <Trash2 className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
-              Close My Account
-            </Button>
+              Delete Account
+            </button>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Edit Profile Modal */}
