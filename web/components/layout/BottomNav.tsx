@@ -29,7 +29,7 @@ export const BottomNav: React.FC = () => {
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border-subtle h-[64px] flex items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] select-none">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-2xl border-t border-black/[0.06] h-[64px] flex items-center justify-around px-3 pb-[env(safe-area-inset-bottom)] select-none shadow-[0_-10px_30px_rgba(0,0,0,0.04)]">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive =
@@ -43,10 +43,10 @@ export const BottomNav: React.FC = () => {
               href={tab.href}
               className="flex flex-col items-center justify-center -mt-5 group"
             >
-              <div className="w-12 h-12 rounded-full bg-brand-accent text-white flex items-center justify-center shadow-[0_4px_12px_rgba(37,99,235,0.30)] active:scale-95 transition-transform">
-                <Icon className="w-6 h-6" strokeWidth={1.5} />
+              <div className="w-12 h-12 rounded-full bg-[#202128] text-white flex items-center justify-center shadow-lg active:scale-95 hover:scale-105 transition-all">
+                <Icon className="w-6 h-6" strokeWidth={2} />
               </div>
-              <span className="text-[10px] font-medium text-text-secondary mt-1">
+              <span className="text-[10px] font-bold text-[#202128] mt-1">
                 {tab.label}
               </span>
             </Link>
@@ -62,13 +62,13 @@ export const BottomNav: React.FC = () => {
             <div className="relative">
               <Icon
                 className={cn(
-                  "w-5 h-5 transition-colors",
-                  isActive ? "text-brand-accent" : "text-text-tertiary"
+                  "w-5 h-5 transition-all duration-200",
+                  isActive ? "text-[#202128]" : "text-[#606470] hover:text-[#202128]"
                 )}
-                strokeWidth={1.5}
+                strokeWidth={isActive ? 2.2 : 1.75}
               />
               {tab.badge !== undefined && tab.badge > 0 && (
-                <span className="absolute -top-1 -right-2 w-3.5 h-3.5 bg-danger text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-2 w-3.5 h-3.5 bg-[#DC2626] text-white text-[8px] font-bold rounded-full flex items-center justify-center shadow-xs">
                   {tab.badge}
                 </span>
               )}
@@ -76,7 +76,7 @@ export const BottomNav: React.FC = () => {
             <span
               className={cn(
                 "text-[10px] font-medium mt-1 transition-colors",
-                isActive ? "text-brand-accent font-semibold" : "text-text-tertiary"
+                isActive ? "text-[#202128] font-bold" : "text-[#606470]"
               )}
             >
               {tab.label}
