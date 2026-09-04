@@ -242,21 +242,21 @@ export default function LandingPage() {
             <Link href="/" className="px-4 py-2 rounded-full text-[#202128] bg-white shadow-xs">
               Overview
             </Link>
-            <Link href="/dashboard" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
-              Forensic Audit
+            <Link href="/features" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
+              Features
             </Link>
-            <Link href="/bills/upload" className="px-4 py-2 rounded-full text-[#43A8B2] hover:text-[#202128] hover:bg-white/60 transition-colors">
-              Check a Bill
+            <Link href="/pricing" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
+              Pricing
             </Link>
-            <a href="#simulator" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
-              Savings Simulator
-            </a>
-            <a href="#price-checker" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
-              Price Caps
-            </a>
-            <a href="#security" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
+            <Link href="/about" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
+              About
+            </Link>
+            <Link href="/security" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
               Security
-            </a>
+            </Link>
+            <Link href="/contact" className="px-4 py-2 rounded-full hover:text-[#202128] hover:bg-white/60 transition-colors">
+              Contact
+            </Link>
           </nav>
 
           {/* Right Action Buttons */}
@@ -869,9 +869,9 @@ export default function LandingPage() {
             {/* Card 1: Mint Pastel Bento */}
             <div className="bg-[#DFF1F3] rounded-[32px] p-7 flex flex-col justify-between space-y-8 relative overflow-hidden group hover:scale-[1.01] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
               <div className="flex justify-between items-start">
-                <span className="w-10 h-10 rounded-2xl bg-white text-[#202128] flex items-center justify-center font-bold text-sm shadow-xs">
-                  <Users className="w-5 h-5 text-[#43A8B2]" />
-                </span>
+                <div className="w-14 h-14 rounded-2xl bg-white p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_share_3d.png" alt="Share" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
                 <Link href="/bills/upload" className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#202128] flex items-center justify-center transition-colors">
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
@@ -895,9 +895,9 @@ export default function LandingPage() {
             {/* Card 2: Soft Lavender Pastel Bento */}
             <div className="bg-[#E7E3FF] rounded-[32px] p-7 flex flex-col justify-between space-y-8 relative overflow-hidden group hover:scale-[1.01] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
               <div className="flex justify-between items-start">
-                <span className="w-10 h-10 rounded-2xl bg-white text-[#202128] flex items-center justify-center font-bold text-sm shadow-xs">
-                  <FileCheck2 className="w-5 h-5 text-[#5E84E2]" />
-                </span>
+                <div className="w-14 h-14 rounded-2xl bg-white p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_folder_3d.png" alt="Petition" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
                 <Link href="/bills/upload" className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#202128] flex items-center justify-center transition-colors">
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
@@ -921,9 +921,9 @@ export default function LandingPage() {
             {/* Card 3: Ice Blue Pastel Bento */}
             <div className="bg-[#DDECFD] rounded-[32px] p-7 flex flex-col justify-between space-y-8 relative overflow-hidden group hover:scale-[1.01] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
               <div className="flex justify-between items-start">
-                <span className="w-10 h-10 rounded-2xl bg-white text-[#202128] flex items-center justify-center font-bold text-sm shadow-xs">
-                  <TrendingUp className="w-5 h-5 text-[#43A8B2]" />
-                </span>
+                <div className="w-14 h-14 rounded-2xl bg-white p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_graph_3d.png" alt="Benchmark" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
                 <Link href="/bills" className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#202128] flex items-center justify-center transition-colors">
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
@@ -947,9 +947,9 @@ export default function LandingPage() {
             {/* Card 4: Sky Blue Pastel Bento */}
             <div className="bg-[#DDECFD] rounded-[32px] p-7 flex flex-col justify-between space-y-8 relative overflow-hidden group hover:scale-[1.01] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
               <div className="flex justify-between items-start">
-                <span className="w-10 h-10 rounded-2xl bg-white text-[#202128] flex items-center justify-center font-bold text-sm shadow-xs">
-                  <Lock className="w-5 h-5 text-[#43A8B2]" />
-                </span>
+                <div className="w-14 h-14 rounded-2xl bg-white p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_piggy_3d.webp" alt="DPDP Vault" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
                 <Link href="/account" className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#202128] flex items-center justify-center transition-colors">
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
@@ -1421,6 +1421,23 @@ export default function LandingPage() {
                 <p><Link href="/account" className="hover:text-white transition-colors">DPDP Privacy & Data</Link></p>
                 <p><Link href="/notifications" className="hover:text-white transition-colors">Notifications</Link></p>
               </div>
+            </div>
+          </div>
+
+          {/* Awards & App Badges Strip */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-6 border-b border-white/10">
+            <div className="flex items-center gap-4">
+              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Recognized by:</span>
+              <Image src="/assets/scraped/awards_all_cluster.png" alt="Awards Recognition" width={320} height={40} className="h-7 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" />
+            </div>
+
+            <div className="flex items-center gap-3">
+              <a href="#download" className="hover:opacity-90 transition-opacity">
+                <Image src="/assets/scraped/btn_app_store.png" alt="Download on App Store" width={120} height={36} className="h-9 w-auto object-contain" />
+              </a>
+              <a href="#download" className="hover:opacity-90 transition-opacity">
+                <Image src="/assets/scraped/btn_google_play.png" alt="Get it on Google Play" width={120} height={36} className="h-9 w-auto object-contain" />
+              </a>
             </div>
           </div>
 
