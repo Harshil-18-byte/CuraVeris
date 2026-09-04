@@ -129,22 +129,31 @@ export default function FinancialRiskPage() {
   const recommendations = assessment.financial_recommendations || [];
 
   return (
-    <PageShell>
+    <PageShell
+      action={
+        <Link href={`/bills/${billId}/audit`}>
+          <Button variant="secondary" size="sm" className="rounded-full">
+            <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
+            Back to Bill Results
+          </Button>
+        </Link>
+      }
+    >
       {/* 1. DARK NAVY SUMMARY BANNER */}
-      <div className="bg-brand-primary text-white rounded-xl p-6 sm:p-8 mb-6 shadow-lg space-y-6">
+      <div className="bg-gradient-to-b from-[#111520]/90 to-[#0A0D14]/95 text-white rounded-3xl p-6 sm:p-8 mb-6 shadow-2xl space-y-6 border border-white/[0.08] backdrop-blur-xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-white/60 mb-1">
-              <Link href={`/bills/${billId}/audit`} className="hover:text-white transition-colors">
+            <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
+              <Link href={`/bills/${billId}/audit`} className="hover:text-cyan-400 transition-colors">
                 Bill Results
               </Link>
               <span>/</span>
-              <span className="text-white/90">Financial Impact</span>
+              <span className="text-neutral-300">Financial Impact</span>
             </div>
             <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white tracking-tight">
               What This Bill Means for Your Finances
             </h1>
-            <p className="text-xs text-white/70 mt-1">
+            <p className="text-xs text-neutral-400 mt-1">
               We analyzed how paying this bill affects your household budget and savings
             </p>
           </div>
@@ -153,7 +162,7 @@ export default function FinancialRiskPage() {
             <Button
               variant="secondary"
               size="sm"
-              className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+              className="bg-white/5 text-white border-white/10 hover:bg-white/10 rounded-full"
               onClick={() => setIsInputModalOpen(true)}
             >
               <Settings className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
@@ -163,41 +172,41 @@ export default function FinancialRiskPage() {
         </div>
 
         {/* 3 Summary Metric Blocks */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-white/15">
-          <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-            <span className="text-xs text-white/60 uppercase font-semibold tracking-wider block">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-white/[0.08]">
+          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+            <span className="text-xs text-neutral-400 uppercase font-semibold tracking-wider block">
               Money you may not get back
             </span>
             <p className="font-mono font-bold text-2xl text-white mt-1">
               {formatCurrency(assessment.expected_loss)}
             </p>
-            <span className="text-[11px] text-white/60 mt-0.5 block">
+            <span className="text-[11px] text-neutral-400 mt-0.5 block">
               Our estimate of what you might end up paying out of pocket
             </span>
           </div>
 
-          <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-            <span className="text-xs text-white/60 uppercase font-semibold tracking-wider block">
+          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+            <span className="text-xs text-neutral-400 uppercase font-semibold tracking-wider block">
               Can you afford this right now?
             </span>
             <p className="font-mono font-bold text-2xl text-white mt-1">
               {Math.round(lcrPercent)}%
             </p>
-            <span className="text-[11px] text-white/60 mt-0.5 block">
+            <span className="text-[11px] text-neutral-400 mt-0.5 block">
               {lcrVal >= 1
                 ? "Your savings can cover this"
                 : "You may need to dip deep into savings"}
             </span>
           </div>
 
-          <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-            <span className="text-xs text-white/60 uppercase font-semibold tracking-wider block">
+          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+            <span className="text-xs text-neutral-400 uppercase font-semibold tracking-wider block">
               Worst-case scenario
             </span>
-            <p className="font-mono font-bold text-2xl text-white mt-1">
+            <p className="font-mono font-bold text-2xl text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.4)] mt-1">
               {formatCurrency(assessment.cvar_95 || assessment.lgd || assessment.expected_loss)}
             </p>
-            <span className="text-[11px] text-white/60 mt-0.5 block">
+            <span className="text-[11px] text-neutral-400 mt-0.5 block">
               If insurance pays nothing and no discounts apply
             </span>
           </div>
