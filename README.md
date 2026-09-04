@@ -1,19 +1,3 @@
----
-{
-  "id": "file_0e8cbkxq",
-  "filetype": "document",
-  "filename": "README",
-  "created_at": "2026-09-04T03:24:11.344Z",
-  "updated_at": "2026-09-04T03:24:29.696Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris
 
 ## Healthcare Financial Verification & Reconciliation Engine
