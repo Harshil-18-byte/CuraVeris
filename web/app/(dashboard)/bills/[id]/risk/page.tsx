@@ -32,7 +32,7 @@ import { formatCurrency } from "@/lib/utils";
 
 export default function FinancialRiskPage() {
   const params = useParams();
-  const billId = params.id as string;
+  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "bill-cv-101";
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
 
   // Fetch Bill
