@@ -28,7 +28,9 @@ fun DashboardScreen(
     onNavigateToScan: () -> Unit = {},
     onNavigateToDisputes: () -> Unit = {},
     onNavigateToCopilot: () -> Unit = {},
-    onNavigateToTariffs: () -> Unit = {}
+    onNavigateToTariffs: () -> Unit = {},
+    onNavigateToHub: () -> Unit = {},
+    onNavigateToFinancialRisk: () -> Unit = {}
 ) {
     val isOnline by CuraVerisApplication.networkMonitor.isConnected.collectAsState()
     val scope = rememberCoroutineScope()
@@ -64,6 +66,47 @@ fun DashboardScreen(
         contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Master Screen Hub Header
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = DarkSurface),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, PrimaryBlue.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                    .clickable { onNavigateToHub() }
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "ALL SCREENS & MODULES",
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                color = PrimaryBlue
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .background(SuccessGreen.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text("30+ SCREENS", fontSize = 9.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, color = SuccessGreen)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text("Browse Registries, Burn Rate, 65B Ledger, Legal Redress", fontSize = 11.sp, color = TextSecondary)
+                    }
+                    Text("EXPLORE ->", fontSize = 11.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, color = PrimaryCyan)
+                }
+            }
+        }
+
         // Network status warning if offline
         if (!isOnline) {
             item {
@@ -136,39 +179,70 @@ fun DashboardScreen(
             }
         }
 
-        // Quick Action Bar
+        // Quick Action Bar - 4 Major Pillars
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = onNavigateToScan,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
-                    shape = RoundedCornerShape(10.dp)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(Icons.Default.QrCodeScanner, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Scan Bill", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Button(
+                        onClick = onNavigateToScan,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("Scan & Audit", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
+
+                    Button(
+                        onClick = onNavigateToTariffs,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = DarkSurface),
+                        border = ButtonDefaults.outlinedButtonBorder.copy(
+                            brush = Brush.horizontalGradient(listOf(DarkBorder, DarkBorder))
+                        ),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("Statutory Tariffs", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = PrimaryCyan)
+                    }
                 }
 
-                OutlinedButton(
-                    onClick = onNavigateToCopilot,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
-                        brush = Brush.horizontalGradient(listOf(DarkBorder, DarkBorder))
-                    ),
-                    shape = RoundedCornerShape(10.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(Icons.Default.Psychology, contentDescription = null, tint = PurpleAccent, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("AI Copilot", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Button(
+                        onClick = onNavigateToFinancialRisk,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = DarkSurface),
+                        border = ButtonDefaults.outlinedButtonBorder.copy(
+                            brush = Brush.horizontalGradient(listOf(DarkBorder, DarkBorder))
+                        ),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("Burn Rate & FRM", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = WarningAmber)
+                    }
+
+                    Button(
+                        onClick = onNavigateToDisputes,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = DarkSurface),
+                        border = ButtonDefaults.outlinedButtonBorder.copy(
+                            brush = Brush.horizontalGradient(listOf(DarkBorder, DarkBorder))
+                        ),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text("Legal Redress", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = SuccessGreen)
+                    }
                 }
             }
         }
