@@ -9,9 +9,9 @@ export const ToastProvider: React.FC = () => {
       position="bottom-right"
       toastOptions={{
         className:
-          "bg-white text-text-primary border border-border-subtle rounded-lg shadow-xl p-3.5 font-body text-sm",
+          "bg-[#0E121A]/95 text-white border border-white/10 rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.6)] backdrop-blur-2xl p-4 font-body text-xs",
         style: {
-          borderRadius: "var(--radius-lg)",
+          borderRadius: "1rem",
         },
       }}
     />
