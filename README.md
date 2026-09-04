@@ -447,11 +447,11 @@ Evaluates financial resilience under 5 macroeconomic and clinical shock scenario
 5,000-sample Monte Carlo distribution characterizing the 90th, 95th, and tail-expectation catastrophic loss boundaries:
 
 $$
-\text{VaR}_{\alpha}(L) = \inf \left\{ \ell \in \mathbb{R} : P(L > \ell) \le 1 - \alpha \right\} = F_L^{-1}(\alpha)
+\text{VaR}_{\alpha}(L) = F_L^{-1}(\alpha) = \inf \left\{ x \in \mathbb{R} : P(L \le x) \ge \alpha \right\}
 $$
 
 $$
-\text{CVaR}_{\alpha}(L) = \mathbb{E}\left[L \mid L \ge \text{VaR}_{\alpha}(L)\right] = \frac{1}{1-\alpha} \int_{\alpha}^{1} \text{VaR}_{u}(L) \, du
+\text{CVaR}_{\alpha}(L) = \frac{1}{1 - \alpha} \int_{\alpha}^{1} \text{VaR}_{u}(L) \, du = \mathbb{E}\left[ L \mid L \ge \text{VaR}_{\alpha}(L) \right]
 $$
 
 ### 5. Model Risk Management
