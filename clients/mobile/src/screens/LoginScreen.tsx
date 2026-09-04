@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { Colors } from '../theme/colors';
 
@@ -55,12 +56,14 @@ export function LoginScreen({
         <View style={styles.content}>
           {/* Brand Wordmark & Tagline */}
           <View style={styles.brandRow}>
-            <View style={styles.brandLogo}>
-              <Text style={styles.brandLogoText}>CV</Text>
-            </View>
+            <Image
+              source={require('../../assets/logo.png')}
+              style={styles.brandLogoImage}
+              resizeMode="contain"
+            />
             <View>
               <Text style={styles.wordmark}>CURAVERIS</Text>
-              <Text style={styles.tagline}>Your bills, your rights.</Text>
+              <Text style={styles.tagline}>Your bill. Your rights.</Text>
             </View>
           </View>
           <Text style={styles.title}>Welcome Back</Text>
@@ -173,26 +176,11 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 20,
   },
-  brandLogo: {
+  brandLogoImage: {
     width: 44,
     height: 44,
-    borderRadius: 12,
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderColor: Colors.neutral300,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  brandLogoText: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: Colors.primary,
-    letterSpacing: -0.5,
+    borderRadius: 10,
+    marginRight: 10,
   },
   wordmark: {
     fontSize: 18,
