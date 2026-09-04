@@ -286,6 +286,29 @@ export default function LoginPage() {
               <span>Sign In</span>
               <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2.2} />
             </Button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setToken("demo_token_patient_" + Date.now());
+                setUser({
+                  id: "usr-demo-patient-001",
+                  email: "patient.rahul@curaveris.ai",
+                  full_name: "Rahul Sharma",
+                  phone_verified: true,
+                  email_verified: true,
+                  dpdp_consent_given: true,
+                  role: "patient",
+                  is_active: true,
+                  created_at: new Date().toISOString(),
+                });
+                router.push("/dashboard");
+              }}
+              className="w-full h-11 rounded-full bg-[#DBF1F4] hover:bg-[#cbeaeep] text-[#202128] font-bold text-xs flex items-center justify-center gap-2 border border-[#43A8B2]/30 transition-all hover:scale-[1.01]"
+            >
+              <Sparkles className="w-4 h-4 text-[#43A8B2]" />
+              <span>Explore Interactive Demo (1-Click)</span>
+            </button>
           </form>
 
           {/* Footer Navigation */}
