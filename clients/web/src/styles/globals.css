@@ -1,25 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@600;700&display=swap');
 
 :root {
-  /* Exact Calm Authority Color Tokens */
-  --color-primary: #1B4F72;
-  --color-primary-light: #2E86C1;
-  --color-primary-surface: #EBF5FB;
+  /* Dark Calm Authority Color Tokens */
+  --color-primary: #3B82F6;
+  --color-primary-light: #60A5FA;
+  --color-primary-surface: rgba(59, 130, 246, 0.15);
   
-  --color-success: #1E8449;
-  --color-success-surface: #EAFAF1;
+  --color-success: #10B981;
+  --color-success-surface: rgba(16, 185, 129, 0.12);
   
-  --color-warning: #B7770D;
-  --color-warning-surface: #FEF9E7;
+  --color-warning: #F59E0B;
+  --color-warning-surface: rgba(245, 158, 11, 0.12);
   
-  --color-danger: #922B21;
-  --color-danger-surface: #FDEDEC;
+  --color-danger: #EF4444;
+  --color-danger-surface: rgba(239, 68, 68, 0.12);
   
-  --color-neutral-900: #1A1A2E;
-  --color-neutral-600: #4A4A6A;
-  --color-neutral-300: #C8C8D8;
-  --color-neutral-50: #F7F7FC;
-  --color-white: #FFFFFF;
+  --color-neutral-900: #F8FAFC;
+  --color-neutral-600: #94A3B8;
+  --color-neutral-300: #2A3347;
+  --color-neutral-50: #090B10;
+  --color-white: #11141C;
 
   /* Typography */
   --font-heading: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -44,15 +44,15 @@
   --radius-pill: 9999px;
 
   /* Shadows */
-  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06);
-  --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.6);
 
   /* Legacy variable mappings for backward-compatibility */
-  --bg-page: var(--color-neutral-50);
-  --bg-surface: var(--color-white);
-  --text-main: var(--color-neutral-900);
-  --text-muted: var(--color-neutral-600);
-  --border-default: var(--color-neutral-300);
+  --bg-page: #090B10;
+  --bg-surface: #11141C;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --border-default: #1E2433;
   --color-brand: var(--color-primary);
   --color-brand-text: var(--color-primary);
 }
