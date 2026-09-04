@@ -88,24 +88,24 @@ export default function AccountPage() {
         {/* 1. PROFILE OVERVIEW CARD */}
         <Card padding="lg" className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           {/* 64px Avatar */}
-          <div className="w-16 h-16 rounded-full bg-brand-primary text-white flex items-center justify-center font-heading font-bold text-2xl flex-shrink-0 shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center font-heading font-bold text-2xl flex-shrink-0 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
             {user?.full_name?.charAt(0).toUpperCase() || "U"}
           </div>
 
           <div className="flex-1 text-center sm:text-left space-y-1">
-            <h3 className="font-heading font-bold text-xl text-text-primary">
+            <h3 className="font-heading font-bold text-xl text-white">
               {user?.full_name || "Patient Account"}
             </h3>
-            <p className="text-xs text-text-secondary">{user?.email}</p>
+            <p className="text-xs text-neutral-400">{user?.email}</p>
 
             <div className="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-success-bg border border-success/20 rounded-full text-xs font-medium text-success">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-medium text-emerald-400">
                 <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
                 <span>Your Data is Protected & Private</span>
               </div>
 
               {user?.role === "admin" && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-accent-light rounded-full text-xs font-semibold text-brand-accent">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-xs font-semibold text-cyan-400">
                   Administrator
                 </div>
               )}
@@ -115,18 +115,19 @@ export default function AccountPage() {
 
         {/* 2. ACCOUNT INFORMATION */}
         <Card padding="lg" className="space-y-4">
-          <div className="border-b border-border-subtle pb-3 flex items-center justify-between">
+          <div className="border-b border-white/[0.08] pb-3 flex items-center justify-between">
             <div>
-              <h4 className="font-heading font-semibold text-base text-text-primary">
+              <h4 className="font-heading font-semibold text-base text-white">
                 Personal Information
               </h4>
-              <p className="text-xs text-text-secondary mt-0.5">
+              <p className="text-xs text-neutral-400 mt-0.5">
                 Contact details used for complaint letters and status updates
               </p>
             </div>
             <Button
               variant="secondary"
               size="sm"
+              className="rounded-full"
               onClick={() => {
                 setEditFullName(user?.full_name || "");
                 setEditPhone(user?.phone_number || "");
@@ -138,38 +139,38 @@ export default function AccountPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
-              <span className="text-text-tertiary flex items-center gap-1.5">
+            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
                 <UserIcon className="w-3.5 h-3.5" strokeWidth={1.5} />
                 Full Name
               </span>
-              <p className="font-semibold text-sm text-text-primary">{user?.full_name || "—"}</p>
+              <p className="font-semibold text-sm text-white">{user?.full_name || "—"}</p>
             </div>
 
-            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
-              <span className="text-text-tertiary flex items-center gap-1.5">
+            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
                 <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
                 Email Address
               </span>
-              <p className="font-semibold text-sm text-text-primary">{user?.email || "—"}</p>
+              <p className="font-semibold text-sm text-white font-mono">{user?.email || "—"}</p>
             </div>
 
-            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
-              <span className="text-text-tertiary flex items-center gap-1.5">
+            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
                 <Phone className="w-3.5 h-3.5" strokeWidth={1.5} />
                 Mobile Number
               </span>
-              <p className="font-semibold text-sm text-text-primary">
+              <p className="font-semibold text-sm text-white font-mono">
                 {user?.phone_number ? `+91 ${user.phone_number}` : "Not linked"}
               </p>
             </div>
 
-            <div className="p-3.5 bg-bg-secondary rounded-md space-y-1">
-              <span className="text-text-tertiary flex items-center gap-1.5">
+            <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-1">
+              <span className="text-neutral-400 flex items-center gap-1.5 text-[11px]">
                 <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
                 Account Created On
               </span>
-              <p className="font-semibold text-sm text-text-primary">
+              <p className="font-semibold text-sm text-white">
                 {user?.created_at ? formatDate(user.created_at) : "Recent"}
               </p>
             </div>
@@ -178,48 +179,48 @@ export default function AccountPage() {
 
         {/* 3. SECURITY & PRIVACY */}
         <Card padding="lg" className="space-y-4">
-          <div className="border-b border-border-subtle pb-3">
-            <h4 className="font-heading font-semibold text-base text-text-primary">
+          <div className="border-b border-white/[0.08] pb-3">
+            <h4 className="font-heading font-semibold text-base text-white">
               Your Privacy Rights
             </h4>
-            <p className="text-xs text-text-secondary mt-0.5">
+            <p className="text-xs text-neutral-400 mt-0.5">
               You have full control over your health records.
             </p>
           </div>
 
           <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-md">
+            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
               <div>
-                <span className="font-semibold text-text-primary block">Used only for your bills</span>
-                <span className="text-text-secondary">Your information is only used to check for overcharges on your behalf.</span>
+                <span className="font-semibold text-white block">Used only for your bills</span>
+                <span className="text-neutral-400">Your information is only used to check for overcharges on your behalf.</span>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" strokeWidth={1.5} />
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" strokeWidth={1.5} />
             </div>
 
-            <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-md">
+            <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
               <div>
-                <span className="font-semibold text-text-primary block">Delete anytime</span>
-                <span className="text-text-secondary">You can permanently erase all your data and bills at any time.</span>
+                <span className="font-semibold text-white block">Delete anytime</span>
+                <span className="text-neutral-400">You can permanently erase all your data and bills at any time.</span>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" strokeWidth={1.5} />
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" strokeWidth={1.5} />
             </div>
           </div>
         </Card>
 
         {/* 4. DANGER ZONE */}
-        <Card padding="lg" className="border-danger/30 space-y-4">
-          <div className="border-b border-border-subtle pb-3">
-            <h4 className="font-heading font-semibold text-base text-danger">
+        <Card padding="lg" className="border-red-500/30 space-y-4 bg-red-950/10">
+          <div className="border-b border-red-500/20 pb-3">
+            <h4 className="font-heading font-semibold text-base text-red-400">
               Delete Account
             </h4>
-            <p className="text-xs text-text-secondary mt-0.5">
+            <p className="text-xs text-neutral-400 mt-0.5">
               Permanent account actions that cannot be undone
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="text-xs text-text-secondary">
-              <strong className="text-text-primary block">Close and delete account</strong>
+            <div className="text-xs text-neutral-400">
+              <strong className="text-white block">Close and delete account</strong>
               Permanently delete all your uploaded bills, check results, and personal details.
             </div>
 
@@ -227,7 +228,7 @@ export default function AccountPage() {
               variant="danger"
               size="sm"
               onClick={() => setIsDeleteModalOpen(true)}
-              className="flex-shrink-0"
+              className="flex-shrink-0 rounded-full"
             >
               <Trash2 className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
               Close My Account
@@ -260,10 +261,11 @@ export default function AccountPage() {
           />
         </div>
 
-        <div className="flex gap-2 justify-end mt-4">
+        <div className="flex gap-2 justify-end mt-6">
           <Button
             variant="secondary"
             size="md"
+            className="rounded-full"
             onClick={() => setIsEditModalOpen(false)}
             disabled={isSaving}
           >
@@ -272,6 +274,7 @@ export default function AccountPage() {
           <Button
             variant="primary"
             size="md"
+            className="rounded-full px-6"
             onClick={handleSaveProfile}
             isLoading={isSaving}
           >
@@ -287,7 +290,7 @@ export default function AccountPage() {
         title="Are you sure you want to delete your account?"
         description="This action is immediate and cannot be undone. All your bills, complaint letters, and reports will be permanently deleted."
       >
-        <div className="p-3.5 bg-danger-bg rounded-md text-xs text-danger mb-4 flex items-start gap-2">
+        <div className="p-4 bg-red-500/15 border border-red-500/30 rounded-2xl text-xs text-red-400 mb-6 flex items-start gap-2.5">
           <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
           <span>All your uploaded documents and account details will be erased permanently.</span>
         </div>
@@ -296,6 +299,7 @@ export default function AccountPage() {
           <Button
             variant="secondary"
             size="md"
+            className="rounded-full"
             onClick={() => setIsDeleteModalOpen(false)}
             disabled={isDeleting}
           >
@@ -304,6 +308,7 @@ export default function AccountPage() {
           <Button
             variant="danger"
             size="md"
+            className="rounded-full px-6"
             onClick={handleDeleteAccount}
             isLoading={isDeleting}
           >
