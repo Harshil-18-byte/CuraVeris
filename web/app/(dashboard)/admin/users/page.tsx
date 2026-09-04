@@ -31,33 +31,33 @@ export default function AdminUsersPage() {
       title={`User Directory (${total})`}
       description="Registered patients and administrators with active DPDP records."
     >
-      <div className="w-full overflow-x-auto bg-white rounded-lg shadow-sm border border-border-subtle">
+      <div className="w-full overflow-x-auto bg-gradient-to-b from-[#111520]/90 to-[#0A0D14]/95 rounded-3xl shadow-2xl border border-white/[0.08] backdrop-blur-xl">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-neutral-50 border-b border-neutral-300 text-xs font-semibold uppercase tracking-wider text-neutral-600">
-              <th className="py-3.5 px-4">Full Name</th>
-              <th className="py-3.5 px-4">Email</th>
-              <th className="py-3.5 px-4">Role</th>
-              <th className="py-3.5 px-4">Status</th>
-              <th className="py-3.5 px-4">Joined</th>
+            <tr className="bg-white/[0.02] border-b border-white/[0.08] text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+              <th className="py-4 px-6">Full Name</th>
+              <th className="py-4 px-6">Email</th>
+              <th className="py-4 px-6">Role</th>
+              <th className="py-4 px-6">Status</th>
+              <th className="py-4 px-6">Joined</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-300 text-sm font-body">
+          <tbody className="divide-y divide-white/[0.06] text-xs font-body">
             {users.map((u) => (
-              <tr key={u.id} className="hover:bg-neutral-50">
-                <td className="py-3.5 px-4 font-semibold text-neutral-900">{u.full_name}</td>
-                <td className="py-3.5 px-4 text-neutral-600">{u.email}</td>
-                <td className="py-3.5 px-4">
+              <tr key={u.id} className="hover:bg-white/[0.03] transition-colors duration-150">
+                <td className="py-4 px-6 font-semibold text-white">{u.full_name}</td>
+                <td className="py-4 px-6 text-neutral-400 font-mono">{u.email}</td>
+                <td className="py-4 px-6">
                   <Badge variant={u.role === "admin" ? "brand" : "default"}>
                     {u.role.toUpperCase()}
                   </Badge>
                 </td>
-                <td className="py-3.5 px-4">
+                <td className="py-4 px-6">
                   <Badge variant={u.is_active ? "success" : "danger"}>
                     {u.is_active ? "ACTIVE" : "INACTIVE"}
                   </Badge>
                 </td>
-                <td className="py-3.5 px-4 text-xs text-neutral-600">{formatDate(u.created_at)}</td>
+                <td className="py-4 px-6 text-xs text-neutral-400 font-mono">{formatDate(u.created_at)}</td>
               </tr>
             ))}
           </tbody>
