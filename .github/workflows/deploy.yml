@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Trigger Render Deploy
         env:
-          HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          HOOK_URL: ${{ secrets['RENDER_DEPLOY_HOOK_URL'] }}
         run: |
           if [ -n "$HOOK_URL" ]; then
             curl -s -X POST "$HOOK_URL"
