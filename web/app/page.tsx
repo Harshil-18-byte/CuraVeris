@@ -1539,11 +1539,14 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Awards & App Badges Strip */}
+          {/* Statutory Compliance & Standards Strip */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-6 border-b border-white/10">
-            <div className="flex items-center gap-4">
-              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Recognized by:</span>
-              <Image src="/assets/scraped/awards_all_cluster.png" alt="Awards Recognition" width={320} height={40} className="h-7 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" />
+            <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-400 font-semibold">
+              <span className="text-[11px] font-bold text-white uppercase tracking-wider">Statutory Standards:</span>
+              <span className="px-3 py-1 rounded-full bg-white/10 text-white text-[11px] border border-white/10">DPDP Act 2023</span>
+              <span className="px-3 py-1 rounded-full bg-white/10 text-white text-[11px] border border-white/10">NPPA & DPCO Price Caps</span>
+              <span className="px-3 py-1 rounded-full bg-white/10 text-white text-[11px] border border-white/10">Section 65B BSA 2023 Evidence</span>
+              <span className="px-3 py-1 rounded-full bg-white/10 text-white text-[11px] border border-white/10">CGHS Package Rates</span>
             </div>
 
             <div className="flex items-center gap-3">
