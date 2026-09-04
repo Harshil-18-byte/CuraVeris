@@ -2,65 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-@import url('https://cdn.jsdelivr.net/npm/@fontsource/mona-sans@5.0.18/index.css');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Brand */
-  --rzp-primary: #05070B;
-  --rzp-blue: #3B82F6;
-  --rzp-blue-dark: #2563EB;
-  --rzp-blue-light: #1E293B;
-  --rzp-blue-surface: #0A0D14;
+  /* Grassfeld Exact Brand Palette */
+  --gf-dark: #202128;
+  --gf-dark-secondary: #18191C;
+  --gf-bg-canvas: #FFFFFF;
+  --gf-bg-soft: #F5F7FB;
+  --gf-bg-mint: #DFF1F3;
+  --gf-bg-lavender: #E7E3FF;
+  --gf-bg-ice: #DDECFD;
+  --gf-bg-track: #EDF0FB;
+  --gf-teal: #43A8B2;
+  --gf-cyan: #79C5CD;
+  --gf-green: #86C159;
+  --gf-blue: #5E84E2;
+  --gf-border: rgba(0, 0, 0, 0.06);
 
-  /* Backward Compatibility Tokens */
-  --brand-primary: #05070B;
-  --brand-accent: #3B82F6;
-  --brand-accent-light: rgba(59, 130, 246, 0.15);
+  /* Primary & Text */
+  --brand-primary: #202128;
+  --brand-accent: #43A8B2;
+  --brand-accent-light: #DBF1F4;
 
-  /* Deep Pitch Black / Obsidian Backgrounds */
-  --bg-canvas: #05070B;
-  --bg-surface: #0E121A;
-  --bg-subtle: #141824;
-  --bg-sidebar: #040508;
-  --bg-primary: #05070B;
-  --bg-secondary: #0A0D14;
-  --bg-tertiary: #111520;
-  --bg-elevated: #161B28;
+  --bg-canvas: #F5F7FB;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #EDF0FB;
+  --bg-sidebar: #FFFFFF;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F7FB;
+  --bg-tertiary: #EDF0FB;
+  --bg-elevated: #FFFFFF;
 
-  /* Text Tokens */
-  --text-primary: #FFFFFF;
-  --text-secondary: #A1A1AA;
-  --text-tertiary: #71717A;
-  --text-inverse: #000000;
-  --text-accent: #60A5FA;
-  --text-success: #34D399;
-  --text-warning: #FBBF24;
-  --text-danger: #F87171;
+  --text-primary: #202128;
+  --text-secondary: rgba(32, 33, 40, 0.7);
+  --text-tertiary: rgba(32, 33, 40, 0.45);
+  --text-inverse: #FFFFFF;
+  --text-accent: #43A8B2;
 
-  /* Borders (Ultra-thin glass styling) */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-default: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.2);
-  --border-focus: #3B82F6;
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --border-focus: #202128;
 
-  /* Status backgrounds */
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --success-border: rgba(16, 185, 129, 0.28);
-  --success: #10B981;
+  /* Status Colors */
+  --success-bg: rgba(134, 193, 89, 0.15);
+  --success-border: rgba(134, 193, 89, 0.3);
+  --success: #2E7D32;
   --warning-bg: rgba(245, 158, 11, 0.12);
-  --warning-border: rgba(245, 158, 11, 0.28);
-  --warning: #F59E0B;
+  --warning-border: rgba(245, 158, 11, 0.3);
+  --warning: #D97706;
   --danger-bg: rgba(239, 68, 68, 0.12);
-  --danger-border: rgba(239, 68, 68, 0.28);
-  --danger: #EF4444;
-  --info-bg: rgba(59, 130, 246, 0.12);
-  --info-border: rgba(59, 130, 246, 0.28);
-  --info: #3B82F6;
+  --danger-border: rgba(239, 68, 68, 0.3);
+  --danger: #DC2626;
+  --info-bg: rgba(67, 168, 178, 0.12);
+  --info-border: rgba(67, 168, 178, 0.3);
+  --info: #43A8B2;
 
   /* Fonts */
-  --font-heading: 'Mona Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Manrope', -apple-system, sans-serif;
+  --font-body: 'Manrope', 'Plus Jakarta Sans', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 }
 
@@ -75,8 +76,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  color-scheme: dark;
-  background-color: #090B10;
+  background-color: #F5F7FB;
 }
 
 body {
@@ -84,78 +84,121 @@ body {
   font-size: 14px;
   line-height: 1.55;
   color: var(--text-primary);
-  background-color: var(--bg-canvas);
+  background-color: #F5F7FB;
 }
 
 h1, h2, h3 {
   font-family: var(--font-heading);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  color: #202128;
 }
 
 h4, h5, h6 {
-  font-family: var(--font-body);
-  font-weight: 600;
-}
-
-code, kbd, pre, .mono {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.amount {
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-
-.amount-large {
   font-family: var(--font-heading);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  color: #202128;
 }
 
-/* Grassfeld-inspired Premium UI Utilities */
-.glass-panel {
-  background: rgba(17, 20, 28, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Grassfeld Exact Gradient Heading */
+.grassfeld-gradient-text {
+  background: linear-gradient(270deg, #86C159, #79C5CD 29%, #43A8B2 51%, #5E84E2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.glass-panel-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+/* Grassfeld Hero Gradient Container */
+.grassfeld-hero-card {
+  background: linear-gradient(225deg, #DBF1F4 10%, #F5F7FB);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 40px;
 }
 
-.glass-panel-hover:hover {
-  background: rgba(22, 26, 36, 0.85);
-  border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(59, 130, 246, 0.15);
+/* Grassfeld Soft Bento Card */
+.grassfeld-bento-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.04);
+  border-radius: 32px;
 }
 
-.glow-radial {
-  background: radial-gradient(80% 120% at 50% 0%, rgba(59, 130, 246, 0.12) 0%, rgba(9, 11, 16, 0) 100%);
+/* Floating Elevation Card */
+.grassfeld-float-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 12px 36px -6px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-.glow-radial-emerald {
-  background: radial-gradient(80% 120% at 50% 0%, rgba(16, 185, 129, 0.12) 0%, rgba(9, 11, 16, 0) 100%);
+/* Grassfeld Button System */
+.grassfeld-btn-primary {
+  background-color: #202128;
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 12px 28px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(32, 33, 40, 0.15);
 }
 
-.bento-pill-tab {
+.grassfeld-btn-primary:hover {
+  transform: scale(1.02);
+  background-color: #121317;
+  box-shadow: 0 6px 20px rgba(32, 33, 40, 0.25);
+}
+
+.grassfeld-btn-secondary {
+  background-color: #FFFFFF;
+  color: #202128;
+  font-family: var(--font-body);
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 12px 28px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.bento-pill-tab.active {
-  background: #3B82F6;
-  color: #FFFFFF;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
+.grassfeld-btn-secondary:hover {
+  background-color: #F8FAFC;
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-.hover-arrow-btn .btn-arrow {
-  transition: transform 0.2s ease;
+/* Animations & Keyframes */
+@keyframes scrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-.hover-arrow-btn:hover .btn-arrow {
-  transform: translateX(4px);
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: scrollMarquee 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: floatGentle 4s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.04); }
+}
+
+.animate-glow {
+  animation: pulseGlow 5s ease-in-out infinite;
 }
