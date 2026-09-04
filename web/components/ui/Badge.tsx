@@ -11,14 +11,14 @@ export interface BadgeProps {
 }
 
 const variantStyles: Record<string, string> = {
-  success: 'bg-success-bg text-success border-0',
-  warning: 'bg-warning-bg text-warning border-0',
-  danger: 'bg-danger-bg text-danger border-0',
-  info: 'bg-info-bg text-info border-0',
-  accent: 'bg-info-bg text-info border-0',
-  brand: 'bg-rzp-primary text-white border-0',
-  default: 'bg-subtle text-ink-secondary border-0',
-  processing: 'bg-info-bg text-info border-0',
+  success: 'bg-[#86C159]/15 text-[#2E7D32] border border-[#86C159]/30',
+  warning: 'bg-[#F59E0B]/15 text-[#B45309] border border-[#F59E0B]/30',
+  danger: 'bg-[#EF4444]/15 text-[#DC2626] border border-[#EF4444]/30',
+  info: 'bg-[#43A8B2]/15 text-[#0E7490] border border-[#43A8B2]/30',
+  accent: 'bg-[#DBF1F4] text-[#202128] font-bold border border-[#79C5CD]/40',
+  brand: 'bg-[#202128] text-white font-bold',
+  default: 'bg-[#EDF0FB] text-[#202128]/80 font-medium',
+  processing: 'bg-[#DBF1F4] text-[#202128] font-semibold border border-[#79C5CD]/40',
 };
 
 export function Badge({
@@ -34,8 +34,8 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 h-[22px] px-2 rounded-full font-body font-semibold text-2xs tracking-wide whitespace-nowrap select-none',
-        size === 'md' && 'h-[26px] px-2.5 text-xs',
+        'inline-flex items-center gap-1.5 h-6 px-3 rounded-full font-body font-semibold text-xs tracking-wide whitespace-nowrap select-none backdrop-blur-md',
+        size === 'md' && 'h-7 px-3.5 text-xs',
         variantStyles[variant] || variantStyles.default,
         className
       )}
@@ -43,7 +43,7 @@ export function Badge({
       {(isProcessing || hasDot) && (
         <span
           className={cn(
-            'w-[5px] h-[5px] rounded-full bg-current flex-shrink-0',
+            'w-1.5 h-1.5 rounded-full bg-current flex-shrink-0',
             isProcessing && 'animate-pulse'
           )}
         />
