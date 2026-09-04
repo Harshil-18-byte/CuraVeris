@@ -159,21 +159,21 @@ export default function AuditReportPage() {
   return (
     <PageShell>
       {/* 1. HEADER SECTION */}
-      <div className="bg-white rounded-lg border border-border-subtle p-6 mb-4 shadow-xs space-y-4">
+      <div className="bg-gradient-to-b from-[#111520]/90 to-[#0A0D14]/95 rounded-3xl border border-white/[0.08] p-6 mb-4 shadow-2xl space-y-4 backdrop-blur-xl">
         {/* Top Breadcrumb Row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-text-tertiary mb-1">
-              <Link href="/bills" className="hover:text-brand-accent transition-colors">
+            <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
+              <Link href="/bills" className="hover:text-cyan-400 transition-colors">
                 Your Bills
               </Link>
               <span>/</span>
-              <span className="text-text-secondary">Bill Results</span>
+              <span className="text-neutral-300">Bill Results</span>
             </div>
-            <h1 className="font-heading font-bold text-2xl text-text-primary tracking-tight">
+            <h1 className="font-heading font-bold text-2xl text-white tracking-tight">
               {bill?.hospital_name || "Hospital Bill Check Results"}
             </h1>
-            <p className="text-xs text-text-secondary mt-0.5">
+            <p className="text-xs text-neutral-400 mt-0.5">
               {bill?.admission_date ? `Stay: ${formatDate(bill.admission_date)}` : ""}{" "}
               {bill?.discharge_date ? `– ${formatDate(bill.discharge_date)}` : ""} · Scheme:{" "}
               {bill?.insurance_type || "Self Pay"}
@@ -182,29 +182,29 @@ export default function AuditReportPage() {
 
           {/* Metric Chips in Row */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="bg-bg-secondary px-3.5 py-2 rounded-md border border-border-subtle text-right">
-              <span className="text-[10px] font-semibold uppercase text-text-tertiary block">
+            <div className="bg-white/5 px-4 py-2.5 rounded-2xl border border-white/10 text-right">
+              <span className="text-[10px] font-semibold uppercase text-neutral-400 block">
                 Total Bill
               </span>
-              <span className="font-mono font-bold text-sm text-text-primary">
+              <span className="font-mono font-bold text-sm text-white">
                 {formatCurrency(bill?.total_billed_amount)}
               </span>
             </div>
 
-            <div className="bg-bg-secondary px-3.5 py-2 rounded-md border border-border-subtle text-right">
-              <span className="text-[10px] font-semibold uppercase text-text-tertiary block">
+            <div className="bg-white/5 px-4 py-2.5 rounded-2xl border border-white/10 text-right">
+              <span className="text-[10px] font-semibold uppercase text-neutral-400 block">
                 Extra Charged
               </span>
-              <span className="font-mono font-bold text-sm text-danger">
+              <span className="font-mono font-bold text-sm text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.4)]">
                 {formatCurrency(audit.total_overcharge_deterministic)}
               </span>
             </div>
 
-            <div className="bg-bg-secondary px-3.5 py-2 rounded-md border border-border-subtle text-right">
-              <span className="text-[10px] font-semibold uppercase text-text-tertiary block">
+            <div className="bg-white/5 px-4 py-2.5 rounded-2xl border border-white/10 text-right">
+              <span className="text-[10px] font-semibold uppercase text-neutral-400 block">
                 Questionable Items
               </span>
-              <span className="font-heading font-bold text-sm text-text-primary">
+              <span className="font-heading font-bold text-sm text-white">
                 {audit.finding_count || findings.length}
               </span>
             </div>
@@ -213,7 +213,7 @@ export default function AuditReportPage() {
 
         {/* Risk Level Banner Strip */}
         <div
-          className={`px-4 py-2.5 rounded-md text-xs font-medium flex items-center gap-2 ${getRiskBannerStyle(
+          className={`px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 border ${getRiskBannerStyle(
             riskLabel
           )}`}
         >
@@ -225,21 +225,21 @@ export default function AuditReportPage() {
       {/* 2. RADIX TABS */}
       <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         {/* Tab Bar Header */}
-        <Tabs.List className="bg-white rounded-lg border border-border-subtle px-4 flex gap-1 overflow-x-auto select-none shadow-xs">
+        <Tabs.List className="bg-[#0B0E17]/80 rounded-2xl border border-white/[0.08] p-1.5 flex gap-2 overflow-x-auto select-none shadow-xl backdrop-blur-xl">
           <Tabs.Trigger
             value="findings"
-            className="h-11 px-4 text-sm font-medium text-text-secondary data-[state=active]:text-text-primary data-[state=active]:font-semibold data-[state=active]:border-b-2 data-[state=active]:border-brand-primary hover:text-text-primary transition-all flex items-center gap-2 focus:outline-none"
+            className="h-10 px-4 text-xs font-semibold rounded-xl text-neutral-400 data-[state=active]:text-black data-[state=active]:bg-white data-[state=active]:shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:text-white transition-all flex items-center gap-2 focus:outline-none"
           >
             <AlertTriangle className="w-4 h-4" strokeWidth={1.5} />
             <span>Overcharges Found</span>
-            <span className="ml-1 px-1.5 py-0.2 text-[11px] font-semibold rounded-full bg-danger-bg text-danger">
+            <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-red-500/20 text-red-400">
               {findings.length}
             </span>
           </Tabs.Trigger>
 
           <Tabs.Trigger
             value="assessment"
-            className="h-11 px-4 text-sm font-medium text-text-secondary data-[state=active]:text-text-primary data-[state=active]:font-semibold data-[state=active]:border-b-2 data-[state=active]:border-brand-primary hover:text-text-primary transition-all flex items-center gap-2 focus:outline-none"
+            className="h-10 px-4 text-xs font-semibold rounded-xl text-neutral-400 data-[state=active]:text-black data-[state=active]:bg-white data-[state=active]:shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:text-white transition-all flex items-center gap-2 focus:outline-none"
           >
             <ShieldCheck className="w-4 h-4" strokeWidth={1.5} />
             <span>Our Assessment</span>
@@ -247,7 +247,7 @@ export default function AuditReportPage() {
 
           <Tabs.Trigger
             value="financial"
-            className="h-11 px-4 text-sm font-medium text-text-secondary data-[state=active]:text-text-primary data-[state=active]:font-semibold data-[state=active]:border-b-2 data-[state=active]:border-brand-primary hover:text-text-primary transition-all flex items-center gap-2 focus:outline-none"
+            className="h-10 px-4 text-xs font-semibold rounded-xl text-neutral-400 data-[state=active]:text-black data-[state=active]:bg-white data-[state=active]:shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:text-white transition-all flex items-center gap-2 focus:outline-none"
           >
             <TrendingDown className="w-4 h-4" strokeWidth={1.5} />
             <span>Financial Impact</span>
@@ -255,7 +255,7 @@ export default function AuditReportPage() {
 
           <Tabs.Trigger
             value="evidence"
-            className="h-11 px-4 text-sm font-medium text-text-secondary data-[state=active]:text-text-primary data-[state=active]:font-semibold data-[state=active]:border-b-2 data-[state=active]:border-brand-primary hover:text-text-primary transition-all flex items-center gap-2 focus:outline-none"
+            className="h-10 px-4 text-xs font-semibold rounded-xl text-neutral-400 data-[state=active]:text-black data-[state=active]:bg-white data-[state=active]:shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:text-white transition-all flex items-center gap-2 focus:outline-none"
           >
             <Lock className="w-4 h-4" strokeWidth={1.5} />
             <span>Proof Document</span>
@@ -294,22 +294,22 @@ export default function AuditReportPage() {
         {/* TAB 3: FINANCIAL RISK */}
         <Tabs.Content value="financial" className="focus:outline-none animate-in fade-in-50 duration-150">
           <Card padding="lg" className="text-center py-12 max-w-lg mx-auto space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-brand-accent-light text-brand-accent flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 text-cyan-400 flex items-center justify-center mx-auto shadow-inner">
               <TrendingDown className="w-6 h-6" strokeWidth={1.5} />
             </div>
 
             <div>
-              <h3 className="font-heading font-bold text-lg text-text-primary">
+              <h3 className="font-heading font-bold text-lg text-white">
                 Understand what this bill means for your savings
               </h3>
-              <p className="text-xs text-text-secondary mt-1 max-w-sm mx-auto font-normal">
+              <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto font-normal">
                 We calculate your realistic risk of loss, ability to pay without distress, and test 5 what-if situations.
               </p>
             </div>
 
             <div className="pt-2">
               <Link href={`/bills/${billId}/risk`}>
-                <Button variant="primary" size="md">
+                <Button variant="primary" size="md" className="rounded-full px-6">
                   View Full Financial Risk Analysis →
                 </Button>
               </Link>
@@ -323,11 +323,11 @@ export default function AuditReportPage() {
             <CertificateCard evidence={evidence} billId={billId} />
           ) : (
             <Card padding="lg" className="text-center py-12">
-              <FileCheck2 className="w-10 h-10 text-border-default mx-auto" strokeWidth={1.5} />
-              <h3 className="font-heading font-semibold text-base text-text-primary mt-3">
+              <FileCheck2 className="w-10 h-10 text-neutral-500 mx-auto" strokeWidth={1.5} />
+              <h3 className="font-heading font-semibold text-base text-white mt-3">
                 Proof Certificate Generating
               </h3>
-              <p className="text-xs text-text-secondary mt-1">
+              <p className="text-xs text-neutral-400 mt-1">
                 Your tamper-evident Section 65B certificate is being generated.
               </p>
             </Card>
