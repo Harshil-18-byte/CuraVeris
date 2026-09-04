@@ -228,17 +228,34 @@ class RiskAuditEngine:
 
         X = np.array(X_rows, dtype=np.float32)
 
-        # Run ML inference — result is advisory; deterministic rules are authoritative
+        # -----------------------------------------------------------------------
+        # STEP 1: MODEL-FIRST EVALUATION (Primary Pass)
+        # -----------------------------------------------------------------------
         ml_result = self.predict_hybrid_risk_with_uncertainty(X)
         ml_probas = ml_result.get("probabilities")
         ml_preds = ml_result.get("predictions")
         ml_uncertainty = ml_result.get("uncertainty_analysis")
+        ml_engine_name = ml_result.get("engine", "")
 
-        # Average ML violation probability across all items and labels → aggregate ML risk signal
-        if ml_probas is not None:
-            ml_mean_proba = float(np.mean(ml_probas))  # 0.0–1.0 scale
-        else:
-            ml_mean_proba = 0.0
+        # Check model viability & performance
+        is_model_viable = False
+        mean_uncertainty = 0.0
+        if isinstance(ml_uncertainty, dict) and "mean_std" in ml_uncertainty:
+            try:
+                mean_uncertainty = float(np.mean(ml_uncertainty["mean_std"]))
+            except Exception:
+                mean_uncertainty = 0.0
+
+        if (
+            ml_probas is not None 
+            and ml_preds is not None 
+            and "Fallback" not in ml_engine_name
+            and len(ml_probas) == len(items)
+            and mean_uncertainty <= 0.35
+        ):
+            is_model_viable = True
+
+        ml_mean_proba = float(np.mean(ml_probas)) if ml_probas is not None else 0.0
 
         flag_counts = {
             "above_mrp": 0,
@@ -247,11 +264,15 @@ class RiskAuditEngine:
             "duplicate_charge": 0,
             "room_rent_ratio_violation": 0,
             "gst_on_exempt": 0,
-            "consumable_unbundled": 0
+            "consumable_unbundled": 0,
+            "geriatric_arbitrary_surcharge": 0,
+            "mental_healthcare_act_violation": 0
         }
         flag_impacts = {k: 0.0 for k in flag_counts}
 
-
+        # -----------------------------------------------------------------------
+        # STEP 2: AUDITING LINE ITEMS (Model-First with Statutory Rule Enrichment or Fallback)
+        # -----------------------------------------------------------------------
         for idx, item in enumerate(items):
             raw_text = item.get("raw_text") or item.get("item_name") or ""
             norm_name = item.get("normalized_name") or raw_text
@@ -267,8 +288,6 @@ class RiskAuditEngine:
             item_overcharge = 0.0
             fair_rate = charged_rate
 
-            # Use pre-computed reference data (avoids duplicate DB queries and
-            # ensures the item loop and the ML feature matrix use the same values)
             refs = item_refs[idx]
             mrp = refs["mrp"]
             cghs_rate = refs["cghs_rate"]
@@ -278,113 +297,195 @@ class RiskAuditEngine:
             dpco_info = refs["dpco_info"]
             irdai_item = is_irdai_non_payable(norm_name)
 
-            # Rule A: NPPA Device Ceiling Violation
-            if nppa_ceiling and charged_rate > nppa_ceiling:
-                diff = (charged_rate - nppa_ceiling) * qty
-                flags.append("nppa_ceiling_violation")
-                item_overcharge += diff
-                fair_rate = nppa_ceiling
-                legal_citations.append(f"NPPA Order ({nppa_info.get('order_reference', 'Price Ceiling Notification')}) under DPCO 2013")
-                explanations.append(
-                    f"Charged INR {charged_rate:,.2f} for {norm_name}, which exceeds the NPPA statutory ceiling price of INR {nppa_ceiling:,.2f} by INR {(charged_rate - nppa_ceiling):,.2f} per unit."
-                )
-                actions.append("Demand immediate credit note / refund citing NPPA ceiling price order; file Form IV with NPPA Monitoring Cell.")
-                flag_counts["nppa_ceiling_violation"] += 1
-                flag_impacts["nppa_ceiling_violation"] += diff
+            if is_model_viable:
+                # ---------------------------------------------------------------
+                # MODEL-FIRST PATH: Model predictions drive the violation flags
+                # ---------------------------------------------------------------
+                item_ml_preds = ml_preds[idx]
+                item_ml_probas = ml_probas[idx]
 
-            # Rule B: DPCO Drug / MRP Ceiling Violation
-            elif mrp and charged_rate > mrp:
-                diff = (charged_rate - mrp) * qty
-                flags.append("above_mrp")
-                item_overcharge += diff
-                fair_rate = mrp
-                legal_citations.append("Drugs (Prices Control) Order, 2013 Para 24 & Essential Commodities Act, 1955 Sec 7")
-                explanations.append(
-                    f"Charged INR {charged_rate:,.2f} for medicine {norm_name}, which exceeds the mandated DPCO ceiling price of INR {mrp:,.2f} by INR {(charged_rate - mrp):,.2f} per unit."
-                )
-                actions.append("Refuse payment above DPCO MRP; quote Para 24 of DPCO 2013 to hospital billing nodal officer.")
-                flag_counts["above_mrp"] += 1
-                flag_impacts["above_mrp"] += diff
+                # Map model flags
+                model_flag_map = {
+                    "above_mrp": (item_ml_preds[0] == 1 or item_ml_probas[0] >= 0.5),
+                    "nppa_ceiling_violation": (item_ml_preds[1] == 1 or item_ml_probas[1] >= 0.5),
+                    "cghs_excess": (item_ml_preds[2] == 1 or item_ml_probas[2] >= 0.5),
+                    "duplicate_charge": (item_ml_preds[3] == 1 or item_ml_probas[3] >= 0.5 or is_duplicate[idx]),
+                    "gst_on_exempt": (item_ml_preds[5] == 1 or item_ml_probas[5] >= 0.5 or cat == "tax_gst" or "gst" in norm_name.lower()),
+                    "consumable_unbundled": (item_ml_preds[6] == 1 or item_ml_probas[6] >= 0.5 or (irdai_item and cat == "consumable")),
+                }
 
-            # Rule C: Duplicate billing
-            if is_duplicate[idx]:
-                flags.append("duplicate_charge")
-                item_overcharge += charged_amount
-                legal_citations.append("Consumer Protection Act, 2019 Section 2(47) (Unfair Trade Practice)")
-                explanations.append(
-                    f"Identical or near-identical charge for '{raw_text}' was already billed on this invoice. Appears to be a duplicate or repeated charge."
-                )
-                actions.append("Ask billing desk to cancel duplicate line item and issue revised bill.")
-                flag_counts["duplicate_charge"] += 1
-                flag_impacts["duplicate_charge"] += charged_amount
+                if model_flag_map["nppa_ceiling_violation"] or (nppa_ceiling and charged_rate > nppa_ceiling):
+                    diff = (charged_rate - nppa_ceiling) * qty if nppa_ceiling else charged_amount * 0.40
+                    flags.append("nppa_ceiling_violation")
+                    item_overcharge += max(diff, 0.0)
+                    fair_rate = nppa_ceiling or (charged_rate * 0.60)
+                    legal_citations.append(f"NPPA Order ({nppa_info.get('order_reference', 'Price Ceiling Notification') if nppa_info else 'S.O. 1335(E)'}) under DPCO 2013")
+                    explanations.append(f"ML Model identified NPPA device price ceiling breach for {norm_name}.")
+                    actions.append("Demand immediate credit note / refund citing NPPA ceiling price order.")
+                    flag_counts["nppa_ceiling_violation"] += 1
+                    flag_impacts["nppa_ceiling_violation"] += item_overcharge
 
-            # Rule D: IRDAI Non-payable consumable unbundling
-            if irdai_item and cat == "consumable" and charged_amount > 200:
-                flags.append("consumable_unbundled")
-                diff = charged_amount * 0.70  # Estimate excessive unbundled markup
-                item_overcharge += diff
-                legal_citations.append("IRDAI Guidelines on Standardization in Health Insurance (Ref: IRDA/HLT/REG/CIR/146/07/2020)")
-                explanations.append(
-                    f"'{raw_text}' is recognized as a routine non-payable consumable under IRDAI guidelines that should be factored into general room/OT service charges rather than individually padded."
-                )
-                actions.append("Request removal of standard non-payable consumables or waiver under cashless policy.")
-                flag_counts["consumable_unbundled"] += 1
-                flag_impacts["consumable_unbundled"] += diff
+                elif model_flag_map["above_mrp"] or (mrp and charged_rate > mrp):
+                    diff = (charged_rate - mrp) * qty if mrp else charged_amount * 0.35
+                    flags.append("above_mrp")
+                    item_overcharge += max(diff, 0.0)
+                    fair_rate = mrp or (charged_rate * 0.65)
+                    legal_citations.append("Drugs (Prices Control) Order, 2013 Para 24 & Essential Commodities Act, 1955 Sec 7")
+                    explanations.append(f"ML Model identified medicine price cap / DPCO ceiling overcharge for {norm_name}.")
+                    actions.append("Refuse payment above DPCO MRP; quote Para 24 of DPCO 2013.")
+                    flag_counts["above_mrp"] += 1
+                    flag_impacts["above_mrp"] += item_overcharge
 
-            # Rule E: Improper GST on Healthcare
-            if cat == "tax_gst" or "gst" in norm_name.lower():
-                flags.append("gst_on_exempt")
-                item_overcharge += charged_amount
-                legal_citations.append("Ministry of Finance Notification No. 12/2017-Central Tax (Rate) Entry 74")
-                explanations.append(
-                    "Healthcare services by a clinical establishment, an authorized medical practitioner, or paramedics are 100% exempt from GST under Notification 12/2017."
-                )
-                actions.append("Demand cancellation of unlawful GST surcharge on exempt medical care services.")
-                flag_counts["gst_on_exempt"] += 1
-                flag_impacts["gst_on_exempt"] += charged_amount
+                if model_flag_map["duplicate_charge"]:
+                    flags.append("duplicate_charge")
+                    item_overcharge += charged_amount
+                    legal_citations.append("Consumer Protection Act, 2019 Section 2(47) (Unfair Trade Practice)")
+                    explanations.append(f"ML Model identified '{raw_text}' as an unbundled duplicate or repeated billing.")
+                    actions.append("Ask billing desk to cancel duplicate line item.")
+                    flag_counts["duplicate_charge"] += 1
+                    flag_impacts["duplicate_charge"] += charged_amount
 
-            # Rule F: Geriatric Arbitrary Soft Charges (Patients Age >= 60)
-            patient_age = metadata.get("patient_age", 0)
-            geriatric_keywords = ["geriatric", "fall risk", "confusion assessment", "elderly care", "special nursing observation", "senior citizen"]
-            if patient_age >= 60 and any(kw in norm_name.lower() for kw in geriatric_keywords):
-                flags.append("geriatric_arbitrary_surcharge")
-                item_overcharge += charged_amount
-                legal_citations.append("Consumer Protection Act, 2019 Sec 2(47) & National Policy on Older Persons")
-                explanations.append(
-                    f"'{raw_text}' is an unstandardized soft surcharge targeted at senior citizens without clinical procedure justification."
-                )
-                actions.append("Challenge hospital administration to produce published tariff schedule for geriatric surcharges; demand immediate removal.")
-                flag_counts["geriatric_arbitrary_surcharge"] = flag_counts.get("geriatric_arbitrary_surcharge", 0) + 1
-                flag_impacts["geriatric_arbitrary_surcharge"] = flag_impacts.get("geriatric_arbitrary_surcharge", 0.0) + charged_amount
+                if model_flag_map["consumable_unbundled"] and charged_amount > 200:
+                    flags.append("consumable_unbundled")
+                    diff = charged_amount * 0.70
+                    item_overcharge += diff
+                    legal_citations.append("IRDAI Guidelines on Standardization in Health Insurance (2020)")
+                    explanations.append(f"ML Model identified '{raw_text}' as non-payable consumable that should be bundled.")
+                    actions.append("Request waiver of standard non-payable consumables under cashless policy.")
+                    flag_counts["consumable_unbundled"] += 1
+                    flag_impacts["consumable_unbundled"] += diff
 
-            # Rule G: Mental Healthcare Act 2017 Section 21(4) Violation
-            mental_keywords = ["mental", "psychiatric", "depression", "schizophrenia", "bipolar", "psychosis", "anxiety"]
-            is_mental_health = any(kw in metadata.get("primary_diagnosis", "").lower() or kw in norm_name.lower() for kw in mental_keywords)
-            if is_mental_health and ("exclusion" in norm_name.lower() or "denied" in norm_name.lower() or "psychiatric deduction" in norm_name.lower()):
-                flags.append("mental_healthcare_act_violation")
-                item_overcharge += charged_amount
-                legal_citations.append("Mental Healthcare Act, 2017 Section 21(4) & IRDAI Circular IRDAI/HLT/MISC/CIR/128/08/2018")
-                explanations.append(
-                    "Section 21(4) of Mental Healthcare Act 2017 mandates that insurers treat mental illness on the same basis as physical illness. Rejection or deduction under psychiatric exclusion clauses is unlawful."
-                )
-                actions.append("File immediate complaint with Insurance Ombudsman and IRDAI Bima Bharosa citing Sec 21(4) of Mental Healthcare Act 2017.")
-                flag_counts["mental_healthcare_act_violation"] = flag_counts.get("mental_healthcare_act_violation", 0) + 1
-                flag_impacts["mental_healthcare_act_violation"] = flag_impacts.get("mental_healthcare_act_violation", 0.0) + charged_amount
+                if model_flag_map["gst_on_exempt"]:
+                    flags.append("gst_on_exempt")
+                    item_overcharge += charged_amount
+                    legal_citations.append("Ministry of Finance Notification No. 12/2017-Central Tax (Rate) Entry 74")
+                    explanations.append("Healthcare services are 100% exempt from GST under Notification 12/2017.")
+                    actions.append("Demand cancellation of unlawful GST surcharge.")
+                    flag_counts["gst_on_exempt"] += 1
+                    flag_impacts["gst_on_exempt"] += charged_amount
 
-            # Rule H: CGHS Rate Divergence (if not already caught by NPPA/DPCO)
-            if not flags and cghs_rate and charged_rate > (cghs_rate * 2.5):
-                diff = (charged_rate - cghs_rate) * qty
-                flags.append("cghs_excess")
-                fair_rate = cghs_rate * 1.5  # reasonable private hospital benchmark
-                potential_excess = (charged_rate - fair_rate) * qty
-                item_overcharge += max(potential_excess, 0.0)
-                legal_citations.append("Ministry of Health & Family Welfare CGHS Benchmark Guidelines")
-                explanations.append(
-                    f"Charged INR {charged_rate:,.2f} vs Government CGHS benchmark of INR {cghs_rate:,.2f} ({charged_rate / cghs_rate:.1f}x higher than standard rate)."
-                )
-                actions.append("Use CGHS rate comparison as leverage for tariff renegotiation or TPA dispute.")
-                flag_counts["cghs_excess"] += 1
-                flag_impacts["cghs_excess"] += max(potential_excess, 0.0)
+                if not flags and (model_flag_map["cghs_excess"] or (cghs_rate and charged_rate > cghs_rate * 2.5)):
+                    fair_rate = (cghs_rate * 1.5) if cghs_rate else (charged_rate * 0.60)
+                    potential_excess = (charged_rate - fair_rate) * qty
+                    flags.append("cghs_excess")
+                    item_overcharge += max(potential_excess, 0.0)
+                    legal_citations.append("Ministry of Health & Family Welfare CGHS Benchmark Guidelines")
+                    explanations.append(f"ML Model detected rate divergence against CGHS benchmark for {norm_name}.")
+                    actions.append("Use CGHS rate comparison as leverage for tariff dispute.")
+                    flag_counts["cghs_excess"] += 1
+                    flag_impacts["cghs_excess"] += max(potential_excess, 0.0)
+
+            else:
+                # ---------------------------------------------------------------
+                # RULE-BASED FALLBACK PATH: Deterministic rules execute authoritatively
+                # ---------------------------------------------------------------
+                # Rule A: NPPA Device Ceiling Violation
+                if nppa_ceiling and charged_rate > nppa_ceiling:
+                    diff = (charged_rate - nppa_ceiling) * qty
+                    flags.append("nppa_ceiling_violation")
+                    item_overcharge += diff
+                    fair_rate = nppa_ceiling
+                    legal_citations.append(f"NPPA Order ({nppa_info.get('order_reference', 'Price Ceiling Notification') if nppa_info else 'S.O. 1335(E)'}) under DPCO 2013")
+                    explanations.append(
+                        f"Charged INR {charged_rate:,.2f} for {norm_name}, which exceeds the NPPA statutory ceiling price of INR {nppa_ceiling:,.2f} by INR {(charged_rate - nppa_ceiling):,.2f} per unit."
+                    )
+                    actions.append("Demand immediate credit note / refund citing NPPA ceiling price order; file Form IV with NPPA Monitoring Cell.")
+                    flag_counts["nppa_ceiling_violation"] += 1
+                    flag_impacts["nppa_ceiling_violation"] += diff
+
+                # Rule B: DPCO Drug / MRP Ceiling Violation
+                elif mrp and charged_rate > mrp:
+                    diff = (charged_rate - mrp) * qty
+                    flags.append("above_mrp")
+                    item_overcharge += diff
+                    fair_rate = mrp
+                    legal_citations.append("Drugs (Prices Control) Order, 2013 Para 24 & Essential Commodities Act, 1955 Sec 7")
+                    explanations.append(
+                        f"Charged INR {charged_rate:,.2f} for medicine {norm_name}, which exceeds the mandated DPCO ceiling price of INR {mrp:,.2f} by INR {(charged_rate - mrp):,.2f} per unit."
+                    )
+                    actions.append("Refuse payment above DPCO MRP; quote Para 24 of DPCO 2013 to hospital billing nodal officer.")
+                    flag_counts["above_mrp"] += 1
+                    flag_impacts["above_mrp"] += diff
+
+                # Rule C: Duplicate billing
+                if is_duplicate[idx]:
+                    flags.append("duplicate_charge")
+                    item_overcharge += charged_amount
+                    legal_citations.append("Consumer Protection Act, 2019 Section 2(47) (Unfair Trade Practice)")
+                    explanations.append(
+                        f"Identical or near-identical charge for '{raw_text}' was already billed on this invoice. Appears to be a duplicate or repeated charge."
+                    )
+                    actions.append("Ask billing desk to cancel duplicate line item and issue revised bill.")
+                    flag_counts["duplicate_charge"] += 1
+                    flag_impacts["duplicate_charge"] += charged_amount
+
+                # Rule D: IRDAI Non-payable consumable unbundling
+                if irdai_item and cat == "consumable" and charged_amount > 200:
+                    flags.append("consumable_unbundled")
+                    diff = charged_amount * 0.70
+                    item_overcharge += diff
+                    legal_citations.append("IRDAI Guidelines on Standardization in Health Insurance (Ref: IRDA/HLT/REG/CIR/146/07/2020)")
+                    explanations.append(
+                        f"'{raw_text}' is recognized as a routine non-payable consumable under IRDAI guidelines that should be factored into general room/OT service charges rather than individually padded."
+                    )
+                    actions.append("Request removal of standard non-payable consumables or waiver under cashless policy.")
+                    flag_counts["consumable_unbundled"] += 1
+                    flag_impacts["consumable_unbundled"] += diff
+
+                # Rule E: Improper GST on Healthcare
+                if cat == "tax_gst" or "gst" in norm_name.lower():
+                    flags.append("gst_on_exempt")
+                    item_overcharge += charged_amount
+                    legal_citations.append("Ministry of Finance Notification No. 12/2017-Central Tax (Rate) Entry 74")
+                    explanations.append(
+                        "Healthcare services by a clinical establishment, an authorized medical practitioner, or paramedics are 100% exempt from GST under Notification 12/2017."
+                    )
+                    actions.append("Demand cancellation of unlawful GST surcharge on exempt medical care services.")
+                    flag_counts["gst_on_exempt"] += 1
+                    flag_impacts["gst_on_exempt"] += charged_amount
+
+                # Rule F: Geriatric Arbitrary Soft Charges (Patients Age >= 60)
+                patient_age = metadata.get("patient_age", 0)
+                geriatric_keywords = ["geriatric", "fall risk", "confusion assessment", "elderly care", "special nursing observation", "senior citizen"]
+                if patient_age >= 60 and any(kw in norm_name.lower() for kw in geriatric_keywords):
+                    flags.append("geriatric_arbitrary_surcharge")
+                    item_overcharge += charged_amount
+                    legal_citations.append("Consumer Protection Act, 2019 Sec 2(47) & National Policy on Older Persons")
+                    explanations.append(
+                        f"'{raw_text}' is an unstandardized soft surcharge targeted at senior citizens without clinical procedure justification."
+                    )
+                    actions.append("Challenge hospital administration to produce published tariff schedule for geriatric surcharges; demand immediate removal.")
+                    flag_counts["geriatric_arbitrary_surcharge"] += 1
+                    flag_impacts["geriatric_arbitrary_surcharge"] += charged_amount
+
+                # Rule G: Mental Healthcare Act 2017 Section 21(4) Violation
+                mental_keywords = ["mental", "psychiatric", "depression", "schizophrenia", "bipolar", "psychosis", "anxiety"]
+                is_mental_health = any(kw in metadata.get("primary_diagnosis", "").lower() or kw in norm_name.lower() for kw in mental_keywords)
+                if is_mental_health and ("exclusion" in norm_name.lower() or "denied" in norm_name.lower() or "psychiatric deduction" in norm_name.lower()):
+                    flags.append("mental_healthcare_act_violation")
+                    item_overcharge += charged_amount
+                    legal_citations.append("Mental Healthcare Act, 2017 Section 21(4) & IRDAI Circular IRDAI/HLT/MISC/CIR/128/08/2018")
+                    explanations.append(
+                        "Section 21(4) of Mental Healthcare Act 2017 mandates that insurers treat mental illness on the same basis as physical illness. Rejection or deduction under psychiatric exclusion clauses is unlawful."
+                    )
+                    actions.append("File immediate complaint with Insurance Ombudsman and IRDAI Bima Bharosa citing Sec 21(4) of Mental Healthcare Act 2017.")
+                    flag_counts["mental_healthcare_act_violation"] += 1
+                    flag_impacts["mental_healthcare_act_violation"] += charged_amount
+
+                # Rule H: CGHS Rate Divergence
+                if not flags and cghs_rate and charged_rate > (cghs_rate * 2.5):
+                    diff = (charged_rate - cghs_rate) * qty
+                    flags.append("cghs_excess")
+                    fair_rate = cghs_rate * 1.5
+                    potential_excess = (charged_rate - fair_rate) * qty
+                    item_overcharge += max(potential_excess, 0.0)
+                    legal_citations.append("Ministry of Health & Family Welfare CGHS Benchmark Guidelines")
+                    explanations.append(
+                        f"Charged INR {charged_rate:,.2f} vs Government CGHS benchmark of INR {cghs_rate:,.2f} ({charged_rate / cghs_rate:.1f}x higher than standard rate)."
+                    )
+                    actions.append("Use CGHS rate comparison as leverage for tariff renegotiation or TPA dispute.")
+                    flag_counts["cghs_excess"] += 1
+                    flag_impacts["cghs_excess"] += max(potential_excess, 0.0)
 
             # Cap overcharge to billed amount
             item_overcharge = min(item_overcharge, charged_amount)
@@ -410,45 +511,45 @@ class RiskAuditEngine:
             }
             audited_items.append(audited_item)
 
-        # 3. Calculate Composite Risk Score (0 – 100)
-        #
-        # Deterministic rules (authoritative):  90% weight total
-        #   - Rate overcharge signal:            31.5% (= 0.35 * 0.9)
-        #   - Duplicate charge:                  22.5% (= 0.25 * 0.9)
-        #   - Consumable unbundling ratio:        13.5% (= 0.15 * 0.9)
-        #   - GST on exempt services:             9.0%  (= 0.10 * 0.9)
-        #   - Razorpay payment gap:              13.5%  (= 0.15 * 0.9)
-        # ML ensemble signal (advisory):         10% weight
-        #   - ml_mean_proba * 100 -> 0–100 signal
-        #
-        # The 90/10 split deliberately keeps deterministic rules dominant.
-        # ML output is labeled 'indicative' because the model is synthetically trained.
+        # -----------------------------------------------------------------------
+        # STEP 3: COMPOSITE RISK SCORING (Model-First primary score or Rule-Based Fallback)
+        # -----------------------------------------------------------------------
+        if is_model_viable:
+            # Model-First Scoring
+            model_violation_ratio = np.mean(ml_preds) if ml_preds is not None and ml_preds.size > 0 else 0.0
+            overcharge_ratio = total_overcharge / max(total_billed, 1.0)
+            
+            # Model probability is primary (70%), supplemented by violation density & financial impact
+            model_risk = (ml_mean_proba * 70.0) + (min(model_violation_ratio * 3.0, 1.0) * 15.0) + (min(overcharge_ratio * 2.0, 1.0) * 15.0)
+            
+            if razorpay_gap_info and razorpay_gap_info.get("patient_unjust_gap", 0) > 0:
+                gap_ratio = razorpay_gap_info["patient_unjust_gap"] / max(total_billed, 1.0)
+                model_risk += min(gap_ratio * 100 * 0.15, 15.0)
+            
+            composite_risk = model_risk
+            audit_mode = "model_first"
+        else:
+            # Rule-Based Fallback Scoring
+            overcharge_ratio = total_overcharge / max(total_billed, 1.0)
+            rate_flag_weight = min(overcharge_ratio * 100 * 2.0, 100.0)
+            duplicate_weight = 100.0 if flag_counts["duplicate_charge"] > 0 else 0.0
+            consumable_ratio_weight = min((consumable_pct / 0.15) * 100.0, 100.0) if consumable_pct > 0.10 else 0.0
+            gst_weight = 100.0 if flag_counts["gst_on_exempt"] > 0 else 0.0
 
-        overcharge_ratio = total_overcharge / max(total_billed, 1.0)
-        rate_flag_weight = min(overcharge_ratio * 100 * 2.0, 100.0)
-        duplicate_weight = 100.0 if flag_counts["duplicate_charge"] > 0 else 0.0
-        consumable_ratio_weight = min((consumable_pct / 0.15) * 100.0, 100.0) if consumable_pct > 0.10 else 0.0
-        gst_weight = 100.0 if flag_counts["gst_on_exempt"] > 0 else 0.0
+            razorpay_gap_weight = 0.0
+            if razorpay_gap_info and razorpay_gap_info.get("patient_unjust_gap", 0) > 0:
+                gap_ratio = razorpay_gap_info["patient_unjust_gap"] / max(total_billed, 1.0)
+                razorpay_gap_weight = min(gap_ratio * 100 * 2.5, 100.0)
 
-        razorpay_gap_weight = 0.0
-        if razorpay_gap_info and razorpay_gap_info.get("patient_unjust_gap", 0) > 0:
-            gap_ratio = razorpay_gap_info["patient_unjust_gap"] / max(total_billed, 1.0)
-            razorpay_gap_weight = min(gap_ratio * 100 * 2.5, 100.0)
-
-        deterministic_risk = (
-            (rate_flag_weight * 0.35) +
-            (duplicate_weight * 0.25) +
-            (consumable_ratio_weight * 0.15) +
-            (gst_weight * 0.10) +
-            (razorpay_gap_weight * 0.15)
-        )
-
-        # ML signal contribution (indicative — synthetically trained model)
-        ml_risk_contribution = ml_mean_proba * 100.0 * 0.10
-
-        # Statutory rules are authoritative: deterministic violations are never diluted
-        composite_risk = max(deterministic_risk, 0.90 * deterministic_risk + ml_risk_contribution)
-
+            deterministic_risk = (
+                (rate_flag_weight * 0.35) +
+                (duplicate_weight * 0.25) +
+                (consumable_ratio_weight * 0.15) +
+                (gst_weight * 0.10) +
+                (razorpay_gap_weight * 0.15)
+            )
+            composite_risk = deterministic_risk
+            audit_mode = "rule_based_fallback"
 
         # EMI stress adjustment (+10 risk points — financial distress signal)
         if razorpay_gap_info and razorpay_gap_info.get("is_emi"):
@@ -508,13 +609,14 @@ class RiskAuditEngine:
             "risk_level": risk_level,
             "flags_summary": flags_summary,
             "items": audited_items,
-            # ML inference metadata — advisory signal, not authoritative
+            "audit_mode": audit_mode,
+            "primary_pipeline": "Machine Learning Ensemble (Model-First)" if is_model_viable else "Deterministic Statutory Engine (Rule-Based Fallback)",
             "ml_inference": {
                 "engine": ml_result.get("engine", "Rule-Based Deterministic Fallback"),
+                "is_model_viable": is_model_viable,
                 "mean_violation_probability": round(ml_mean_proba, 4),
-                "risk_contribution_points": round(ml_risk_contribution, 2),
                 "uncertainty_analysis": ml_uncertainty,
-                "note": "Indicative only. Model trained on synthetic data; deterministic statutory rules are authoritative.",
+                "fallback_triggered": not is_model_viable
             },
         }
 
