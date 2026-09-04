@@ -83,10 +83,10 @@ class WebAppActivity : ComponentActivity() {
         webView.loadUrl(resolveStartUrl(intent?.data))
     }
 
-    override fun onNewIntent(intent: android.content.Intent?) {
+    override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        webView.loadUrl(resolveStartUrl(intent?.data))
+        webView.loadUrl(resolveStartUrl(intent.data))
     }
 
     override fun onDestroy() {
@@ -94,7 +94,6 @@ class WebAppActivity : ComponentActivity() {
         fileChooserCallback = null
         webView.stopLoading()
         webView.webChromeClient = null
-        webView.webViewClient = null
         webView.destroy()
         super.onDestroy()
     }
