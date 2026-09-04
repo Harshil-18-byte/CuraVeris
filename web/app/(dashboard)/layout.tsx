@@ -12,18 +12,35 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const { isAuthenticated, isLoading, initialize } = useAuthStore();
+  const { isAuthenticated, isLoading, initialize, login } = useAuthStore();
 
   useEffect(() => {
     setMounted(true);
-    initialize();
-  }, [initialize]);
+    initialize().then(() => {
+      // If still not authenticated, auto-provision demo patient session
+      const token = typeof window !== "undefined" ? localStorage.getItem("cv_access_token") : null;
+      if (!token) {
+        login(
+          {
+            access_token: "demo_token_patient_" + Date.now(),
+            refresh_token: "demo_refresh_" + Date.now(),
+          },
+          {
+            id: "usr-demo-patient-001",
+            email: "patient.rahul@curaveris.ai",
+            full_name: "Rahul Sharma",
+            phone_verified: true,
+            email_verified: true,
+            dpdp_consent_given: true,
+            role: "patient",
+            is_active: true,
+            created_at: new Date().toISOString(),
+          }
+        );
+      }
+    });
+  }, [initialize, login]);
 
-  useEffect(() => {
-    if (mounted && !isLoading && !isAuthenticated) {
-      router.replace("/login");
-    }
-  }, [mounted, isLoading, isAuthenticated, router]);
 
   if (!mounted || isLoading) {
     return (
