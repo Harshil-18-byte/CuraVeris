@@ -24,7 +24,7 @@ jobs:
         run: |
           pip install --no-cache-dir -r backend/requirements.txt
           pip install --no-cache-dir ruff pytest pytest-asyncio httpx
-          pip install --no-cache-dir -e backend
+          pip install --no-cache-dir -e ./backend
       - name: Run Tests
         env:
           ENV: testing
@@ -36,7 +36,7 @@ jobs:
         run: cd backend && pytest --tb=short -q --no-header
       - name: Lint and Format Check
         run: |
-          ruff check backend/app backend/tests
+          ruff check backend/app backend/tests --select E,F,W --ignore E501
       - name: Python Bytecode Compilation
         run: python -m py_compile backend/app/main.py backend/app/core/errors.py backend/app/core/logging.py
 
