@@ -29,5 +29,5 @@ jobs:
         run: |
           pip install --no-cache-dir -r backend/requirements.txt
           pip install --no-cache-dir pytest pytest-asyncio
-          pip install --no-cache-dir -e backend
+          pip install --no-cache-dir -e ./backend
           cd backend && pytest tests/test_curation_leak_prevention.py -v
