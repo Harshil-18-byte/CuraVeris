@@ -89,35 +89,41 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 3. AWARDS & RECOGNITION CLUSTER */}
+      {/* 3. STATUTORY STANDARDS & ADMISSIBILITY */}
       <section className="relative z-10 py-12 bg-[#F5F7FB] border-y border-black/[0.05]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           <p className="text-xs font-extrabold text-[#606470] uppercase tracking-widest">
-            Recognized Excellence in Patient Advocacy & Legal Technology
+            Statutory Frameworks & Legal Admissibility Benchmarks
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
             <div className="bg-white rounded-2xl p-4 border border-black/[0.06] shadow-xs flex items-center gap-3">
-              <img src="/assets/scraped/award_site_of_the_day.webp" alt="Award 1" className="h-10 w-auto object-contain" />
+              <div className="w-10 h-10 rounded-xl bg-[#DBF1F4] flex items-center justify-center font-bold text-[#43A8B2] text-xs">
+                NPPA
+              </div>
               <div className="text-left">
-                <span className="text-[10px] font-bold text-[#606470] block">HealthTech Excellence</span>
-                <span className="text-xs font-extrabold text-[#202128]">Site of the Day 2026</span>
+                <span className="text-[10px] font-bold text-[#606470] block">Price Ceilings</span>
+                <span className="text-xs font-extrabold text-[#202128]">DPCO 2013 Statutory Limits</span>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-black/[0.06] shadow-xs flex items-center gap-3">
-              <img src="/assets/scraped/award_cup_trophy.avif" alt="Award 2" className="h-10 w-auto object-contain" />
+              <div className="w-10 h-10 rounded-xl bg-[#EDF0FB] flex items-center justify-center font-bold text-[#202128] text-xs">
+                65B
+              </div>
               <div className="text-left">
-                <span className="text-[10px] font-bold text-[#606470] block">Consumer Rights</span>
-                <span className="text-xs font-extrabold text-[#202128]">Best Legal Tech Innovation</span>
+                <span className="text-[10px] font-bold text-[#606470] block">Legal Proof</span>
+                <span className="text-xs font-extrabold text-[#202128]">Section 65B Electronic Seal</span>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl p-4 border border-black/[0.06] shadow-xs flex items-center gap-3">
-              <img src="/assets/scraped/award_web_design.avif" alt="Award 3" className="h-10 w-auto object-contain" />
+              <div className="w-10 h-10 rounded-xl bg-[#DFF1F3] flex items-center justify-center font-bold text-[#43A8B2] text-xs">
+                DPDP
+              </div>
               <div className="text-left">
-                <span className="text-[10px] font-bold text-[#606470] block">Design & Trust</span>
-                <span className="text-xs font-extrabold text-[#202128]">Human-Centric UX 2026</span>
+                <span className="text-[10px] font-bold text-[#606470] block">Data Sovereignty</span>
+                <span className="text-xs font-extrabold text-[#202128]">DPDP Act 2023 Compliant</span>
               </div>
             </div>
           </div>
