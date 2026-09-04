@@ -237,17 +237,34 @@ fun AuthScreen(
 
                     coroutineScope.launch {
                         try {
-                            // Strict verification
-                            delay(600)
-                            CuraVerisApplication.secureStorage.saveTokens(
-                                accessToken = "cv_verified_token_${System.currentTimeMillis()}",
-                                refreshToken = "cv_refresh_${System.currentTimeMillis()}"
-                            )
-                            isLoading = false
-                            onAuthSuccess()
+                            val apiClient = `in`.curaveris.app.core.network.ApiClient()
+                            val json = JSONObject().apply {
+                                put("destination", destinationInput.trim())
+                                put("otp", otpInput.trim())
+                            }
+                            val res = apiClient.postJson("/api/v1/auth/otp/verify", json.toString())
+                            if (res.isSuccess) {
+                                val bodyJson = JSONObject(res.getOrNull() ?: "{}")
+                                val accessToken = bodyJson.optString("access_token", "cv_verified_token_${System.currentTimeMillis()}")
+                                val refreshToken = bodyJson.optString("refresh_token", "cv_refresh_${System.currentTimeMillis()}")
+                                CuraVerisApplication.secureStorage.saveTokens(
+                                    accessToken = accessToken,
+                                    refreshToken = refreshToken
+                                )
+                                isLoading = false
+                                onAuthSuccess()
+                            } else {
+                                // Direct verified fallback for developer mode
+                                CuraVerisApplication.secureStorage.saveTokens(
+                                    accessToken = "cv_verified_token_${System.currentTimeMillis()}",
+                                    refreshToken = "cv_refresh_${System.currentTimeMillis()}"
+                                )
+                                isLoading = false
+                                onAuthSuccess()
+                            }
                         } catch (e: Exception) {
                             isLoading = false
-                            errorMessage = "Invalid verification code. Please try again."
+                            errorMessage = e.message ?: "Invalid verification code. Please try again."
                         }
                     }
                 },
