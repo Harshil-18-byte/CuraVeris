@@ -48,7 +48,12 @@ export function Header() {
       >
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
+            <img
+              src="/logo.png"
+              alt="CuraVeris"
+              style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'contain' }}
+            />
             <span
               style={{
                 fontFamily: 'var(--font-heading)',
