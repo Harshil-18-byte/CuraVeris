@@ -68,18 +68,18 @@ export default function BillDetailPage() {
           </Link>
         }
       >
-        <Card padding="lg" className="text-center py-12">
+        <Card padding="lg" className="text-center py-12 bg-white border border-black/[0.06] shadow-sm">
           {is404 ? (
             <div className="space-y-3 max-w-sm mx-auto">
-              <h2 className="font-heading font-bold text-lg text-white">
+              <h2 className="font-heading font-bold text-lg text-[#202128]">
                 Bill not found
               </h2>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-[#606470]">
                 The requested bill does not exist or you do not have permission to view it.
               </p>
               <div className="pt-3">
                 <Link href="/bills">
-                  <Button size="sm" variant="primary" className="rounded-full">
+                  <Button size="sm" variant="primary" className="rounded-full bg-[#202128] hover:bg-black text-white">
                     <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
                     Back to Your Bills
                   </Button>
@@ -139,38 +139,38 @@ export default function BillDetailPage() {
       }
     >
       {/* Bill Overview Header Card */}
-      <Card padding="md" className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+      <Card padding="md" className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
         <div>
-          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider block">
             Hospital or Clinic
           </span>
-          <p className="font-heading font-bold text-lg text-white mt-1">
+          <p className="font-heading font-bold text-lg text-[#202128] mt-1">
             {bill.hospital_name || "—"}
           </p>
-          <span className="text-xs text-neutral-400 mt-0.5 block truncate font-mono">
+          <span className="text-xs text-[#606470] mt-0.5 block truncate font-mono">
             {bill.file_name_original}
           </span>
         </div>
 
         <div>
-          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider block">
             Hospital Stay
           </span>
-          <p className="font-medium text-sm text-neutral-200 mt-1">
+          <p className="font-semibold text-sm text-[#202128] mt-1">
             {bill.admission_date
               ? `${formatDate(bill.admission_date)}${bill.discharge_date ? ` – ${formatDate(bill.discharge_date)}` : ""}`
               : "—"}
           </p>
-          <span className="text-xs text-neutral-400 mt-0.5 block">
+          <span className="text-xs text-[#606470] mt-0.5 block font-medium">
             Payment: {bill.insurance_type || "Self Pay"}
           </span>
         </div>
 
         <div className="sm:text-right">
-          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider block">
             Total on Your Bill
           </span>
-          <p className="font-mono font-bold text-2xl text-white mt-1">
+          <p className="font-mono font-bold text-2xl text-[#202128] mt-1">
             {formatCurrency(bill.total_billed_amount)}
           </p>
           <div className="mt-1 sm:justify-end flex">
