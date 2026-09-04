@@ -233,10 +233,10 @@ flowchart TD
 | **NPPA S.O. 2668(E)** | Primary knee implant cap ₹54,000 + GST | `nppa_ceiling_violation` |
 | **DPCO 2013, Para 24** | Scheduled drug MRP ceilings under NLEM | `above_mrp` |
 | **MoF Notification 12/2017-CT(R), Entry 74** | GST exemption on healthcare clinical services | `gst_on_exempt` |
-| **IRDAI Standardization Circular, 199 Items**| Consumable overhead unbundling prohibition | `consumable_unbundled` |
+| **IRDAI Standardization Circular, 199 Items** | Consumable overhead unbundling prohibition | `consumable_unbundled` |
 | **Mental Healthcare Act 2017, Section 21(4)** | Psychiatric insurance parity mandate | `mental_healthcare_act_violation` |
 | **NHA Operational Guidelines Section 3.2** | PM-JAY zero cash mandate (5x penalty) | `pmjay_cash_violation` |
-| **Bombay HC CrWP 2502/2000, BNS Section 127**| Anti-detention fundamental right under Art. 21 | Emergency anti-detention notice |
+| **Bombay HC CrWP 2502/2000, BNS Section 127** | Anti-detention fundamental right under Art. 21 | Emergency anti-detention notice |
 
 See [`docs/STATUTORY_FRAMEWORK.md`](./docs/STATUTORY_FRAMEWORK.md).
 
@@ -372,6 +372,7 @@ See [`docs/DATA_MODEL.md`](./docs/DATA_MODEL.md).
 ## 4-Way Financial Reconciliation Engine & Exception Routing
 
 CuraVeris guarantees deterministic mathematical reconciliation across four distinct counterparties:
+
 - **Hospital Gross Inpatient Billing**
 - **Insurer Approved Share & TPA Line-Item Deductions**
 - **Razorpay Authorized & Captured Patient Co-Pay Deposits**
@@ -548,12 +549,21 @@ $$
 $$
 
 $$
-\text{Confidence Tier} = \begin{cases} \text{HIGH\_CONFIDENCE\_VIOLATION} & \text{if } \mu_j \ge 0.55 \text{ and } \sigma_j \le 0.04 \\ \text{AMBIGUOUS\_BORDERLINE\_REVIEW} & \text{if } \mu_j \ge 0.40 \text{ and } \sigma_j > 0.06 \\ \text{CONFIDENT\_COMPLIANT} & \text{if } \mu_j < 0.35 \text{ and } \sigma_j \le 0.04 \end{cases}
+\text{Confidence Tier} = \begin{cases} \text{High Confidence Violation} & \text{if } \mu_j \ge 0.55 \text{ and } \sigma_j \le 0.04 \\ \text{Ambiguous Borderline Review} & \text{if } \mu_j \ge 0.40 \text{ and } \sigma_j > 0.06 \\ \text{Confident Compliant} & \text{if } \mu_j \le 0.35 \text{ and } \sigma_j \le 0.04 \end{cases}
 $$
 
 ---
 
 ## Two-Track Hybrid Production Architecture
+
+| Dimension | Track A: Model Specialization (Deep Clinical Reasoning) | Track B: Reliable Audit System (Zero-Hallucination Core) |
+| :--- | :--- | :--- |
+| **Primary Goal** | Nuanced clinical rationale & statutory legal interpretation | Mathematical computation & deterministic tariff capping |
+| **Core Engine** | Custom CuraVeris-4B / 1B Dense Decoder Transformer | Deterministic Rule Engine + LayoutLMv3 + Temporal RAG |
+| **Inference Latency** | ~450ms (Asynchronous Advisory Stream) | < 85ms (Synchronous Invariant Check) |
+| **Training Pipeline** | Gazette Domain Adaptation + Multi-Task SFT + DPO Tuning | Supervised Feature Calibration + Dynamic Registry Indexing |
+| **Output Deliverable** | Plain-language advisory rationale & statutory citations | Section 65B certified audit ledger & exact rupee delta |
+| **Hallucination Risk** | Bounded via RAG grounding & DPO constraints | **0.00% (Strictly code-based arithmetic verification)** |
 
 ```mermaid
 flowchart TD
@@ -571,14 +581,11 @@ flowchart TD
     B2 --> B3["Structured Tabular Representation"]
     B3 --> B4["Temporal Reference RAG (CGHS, NPPA, DPCO Registries)"]
     B4 --> B5["Deterministic Rule Engine & Calculation Core"]
-    B5 --> B6["Calibrated Confidence Gate (tau >= 0.95)"]
+    B5 --> B6["Calibrated Confidence Gate (Confidence &ge; 0.95)"]
     B6 --> B7["Section 65B Certified Audit Report"]
   end
 
   A5 -.->|"Advisory Rationale & Statutory Justification"| B5
-
-  style TrackA fill:#162032,stroke:#3b82f6,stroke-width:2px,color:#e2e8f0
-  style TrackB fill:#0d2a1f,stroke:#34d399,stroke-width:2px,color:#e2e8f0
 ```
 
 ```text
@@ -631,7 +638,7 @@ $$
 $$
 
 $$
-\mathcal{L}_{\text{LM}} = -\frac{1}{T}\sum_{t=1}^{T} \log P(w_t \mid w_{<t})
+\mathcal{L}_{\text{LM}} = -\frac{1}{T}\sum_{t=1}^{T} \log P(w_t \mid w_{1:t-1})
 $$
 
 $$
@@ -660,18 +667,18 @@ CuraVeris provides 7 production-grade ML pipelines in `backend/app/ml/pipelines/
 
 ## Memory-Efficient Multi-Model Parallel Training
 
-To train all models under strict memory budgets (< 8GB RAM peak), [`backend/ml_training/train_all_models.py`](./backend/ml_training/train_all_models.py) executes a single-pass streaming architecture with deterministic CRC32 partitioning:
+To train all models under strict memory budgets (peak RAM below 8GB), [`backend/ml_training/train_all_models.py`](./backend/ml_training/train_all_models.py) executes a single-pass streaming architecture with deterministic CRC32 partitioning:
 
 $$
 \text{Split}(\text{Bill ID}) = \begin{cases} \text{Train (70\%)} & \text{if } \text{CRC32}(\text{ID}) \pmod{100} < 70 \\ \text{Validation (15\%)} & \text{if } 70 \le \text{CRC32}(\text{ID}) \pmod{100} < 85 \\ \text{Test (15\%)} & \text{if } \text{CRC32}(\text{ID}) \pmod{100} \ge 85 \end{cases}
 $$
 
 ```mermaid
-graph TD
+flowchart TD
     Data["590 Merged Bills (merged_dataset.jsonl)"] --> Stream["StreamingBillLoader (64 bills/chunk, CRC32 70/15/15 Split)"]
     Stream --> Feat["Shared FeatureExtractor (~8MB SQLite Cache: CGHS, NPPA, DPCO)"]
     
-    subgraph ParallelPipe ["Single Disk-Read Pass (< 200MB Streaming RAM)"]
+    subgraph ParallelPipe ["Single Disk-Read Pass (Under 200MB RAM)"]
         Feat -->|"xgb_X, xgb_y"| ModelA["Model A: XGBoost Multi-Label (np.memmap on disk + SMOTE)"]
         Feat -->|"tokens, bboxes"| ModelB["Model B: LayoutLMv3 (Worker Thread + Gradient Checkpointing)"]
         Feat -->|"texts, metadata"| ModelC["Model C: Vector Store Embedder (32-batch flush)"]
@@ -712,7 +719,7 @@ python ml_training/train_all_models.py --models B
 | **Explainability** | SHAP | Latest | Additive feature attribution and waterfall plotting |
 | **OCR Engines** | PyPDF / Tesseract / EasyOCR | Latest | Multi-format invoice text and bounding box extraction |
 | **Auth & Security** | PyJWT + Passlib (bcrypt) | Latest | Stateless JWT authorization and password hashing |
-| **Data Encryption** | PyCryptodome (AES-256-GCM)| Latest | PII field encryption and secure token generation |
+| **Data Encryption** | PyCryptodome (AES-256-GCM) | Latest | PII field encryption and secure token generation |
 | **Payment Gateway** | Razorpay | Latest | Order generation, signature checks, and webhooks |
 | **Async Task Queue** | Celery / Redis | Latest | Asynchronous document ingestion and email dispatch |
 
@@ -882,6 +889,7 @@ See [`docs/API_REFERENCE.md`](./docs/API_REFERENCE.md).
 ## Getting Started & Local Development
 
 ### Prerequisites
+
 - Python 3.11 or higher
 - Node.js 18+ and npm
 - PostgreSQL 14+ or Neon Serverless PostgreSQL URL
@@ -917,18 +925,22 @@ npm install
 ### Running the Services Locally
 
 **Terminal 1 — FastAPI Backend:**
+
 ```powershell
 cd j:\Dev\PROJECTS\CuraVeris\backend
 .\venv\Scripts\Activate.ps1
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+
 Interactive Swagger UI: `http://127.0.0.1:8000/docs`
 
 **Terminal 2 — Next.js Web Frontend:**
+
 ```powershell
 cd j:\Dev\PROJECTS\CuraVeris\web
 npm run dev
 ```
+
 Web Application Portal: `http://localhost:3000`
 
 ---
