@@ -95,16 +95,16 @@ export default function Sidebar() {
   const sections = user?.role === 'admin' ? [...navSections, adminSection] : navSections;
 
   const renderSidebarContent = (isMobile: boolean = false) => (
-    <div className="flex flex-col h-full bg-rzp-primary text-white select-none">
+    <div className="flex flex-col h-full bg-white text-[#202128] select-none border-r border-black/[0.05] backdrop-blur-2xl">
       {/* Brand Header */}
-      <div className="h-[60px] flex items-center justify-between px-4 border-b border-white/10 flex-shrink-0">
+      <div className="h-[68px] flex items-center justify-between px-6 border-b border-black/[0.05] flex-shrink-0">
         <Link
           href="/"
           onClick={() => isMobile && closeMobileNav()}
-          className="flex items-center gap-2.5"
+          className="flex items-center gap-3"
         >
-          <LogoIcon size={30} />
-          <span className="font-heading font-bold text-sm text-white tracking-tight">
+          <LogoIcon size={32} />
+          <span className="font-heading font-extrabold text-base text-[#202128] tracking-tight">
             CuraVeris
           </span>
         </Link>
@@ -112,7 +112,7 @@ export default function Sidebar() {
           <button
             type="button"
             onClick={closeMobileNav}
-            className="p-1.5 text-white/60 hover:text-white rounded hover:bg-white/10 transition-colors focus:outline-none"
+            className="p-2 text-neutral-500 hover:text-black rounded-full hover:bg-black/[0.04] transition-colors focus:outline-none"
             aria-label="Close menu"
           >
             <X size={20} />
@@ -120,23 +120,23 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* Primary Action Button */}
-      <div className="p-3 border-b border-white/10">
+      {/* Primary Action Pill Button */}
+      <div className="p-4 border-b border-black/[0.05]">
         <Link
           href="/bills/upload"
           onClick={() => isMobile && closeMobileNav()}
-          className="w-full h-[38px] px-3 bg-rzp-blue hover:bg-rzp-blue-dark text-white rounded font-body font-medium text-xs flex items-center justify-center gap-2 transition-colors duration-120 shadow-xs active:scale-[0.99]"
+          className="w-full h-11 px-4 bg-[#202128] hover:bg-[#121317] text-white rounded-full font-body font-bold text-xs flex items-center justify-center gap-2 transition-all duration-150 shadow-[0_4px_14px_rgba(32,33,40,0.15)] hover:scale-[1.02] active:scale-[0.98]"
         >
-          <PlusCircle size={15} strokeWidth={2} />
-          <span>Check a Bill</span>
+          <PlusCircle size={16} strokeWidth={2.2} />
+          <span>Check a Hospital Bill</span>
         </Link>
       </div>
 
       {/* Nav List */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-3">
+      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-4">
         {sections.map((group) => (
           <div key={group.section}>
-            <p className="px-3 pt-2 pb-1 font-body font-semibold text-2xs text-white/40 uppercase tracking-wider">
+            <p className="px-3 pb-1.5 font-body font-bold text-[10px] text-[#202128]/40 uppercase tracking-wider">
               {group.section}
             </p>
             <div className="space-y-1">
@@ -149,23 +149,23 @@ export default function Sidebar() {
                     href={item.href}
                     onClick={() => isMobile && closeMobileNav()}
                     className={cn(
-                      'flex items-center justify-between h-[38px] px-3 rounded text-sm font-medium transition-colors duration-120 group',
+                      'flex items-center justify-between h-10 px-3.5 rounded-full text-xs font-semibold transition-all duration-150 group',
                       active
-                        ? 'bg-rzp-blue/25 text-white font-semibold border-l-2 border-rzp-blue'
-                        : 'text-white/70 hover:bg-white/10 hover:text-white'
+                        ? 'bg-[#DBF1F4] text-[#202128] font-bold shadow-xs'
+                        : 'text-[#202128]/70 hover:bg-[#EDF0FB] hover:text-[#202128]'
                     )}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <Icon
                         size={16}
-                        strokeWidth={active ? 2 : 1.75}
-                        className={active ? 'text-white' : 'text-white/60 group-hover:text-white'}
+                        strokeWidth={active ? 2.2 : 1.75}
+                        className={active ? 'text-[#43A8B2]' : 'text-[#202128]/50 group-hover:text-[#202128]'}
                       />
                       <span className="truncate">{item.label}</span>
                     </div>
 
                     {'badge' in item && typeof item.badge === 'number' && item.badge > 0 && (
-                      <span className="w-4 h-4 rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center">
+                      <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shadow-sm">
                         {item.badge > 9 ? '9+' : item.badge}
                       </span>
                     )}
@@ -178,21 +178,21 @@ export default function Sidebar() {
       </nav>
 
       {/* User Row Footer */}
-      <div className="flex-shrink-0 border-t border-white/10 p-2.5 bg-black/20">
-        <div className="flex items-center justify-between gap-2 px-2 py-1.5 rounded hover:bg-white/10 transition-colors">
+      <div className="flex-shrink-0 border-t border-black/[0.05] p-3 bg-[#F5F7FB]">
+        <div className="flex items-center justify-between gap-2 p-2 rounded-2xl bg-white border border-black/[0.04] shadow-xs">
           <Link
             href="/account"
             onClick={() => isMobile && closeMobileNav()}
             className="flex items-center gap-2.5 min-w-0 flex-1"
           >
-            <div className="w-7 h-7 rounded-full bg-white/15 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#202128] text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
               {user?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-white truncate">
+              <p className="text-xs font-bold text-[#202128] truncate">
                 {user?.full_name || 'Patient'}
               </p>
-              <p className="text-2xs text-white/50 truncate">
+              <p className="text-[10px] text-[#202128]/50 truncate">
                 {user?.email || 'patient@curaveris.ai'}
               </p>
             </div>
@@ -200,11 +200,11 @@ export default function Sidebar() {
           <button
             type="button"
             onClick={logout}
-            className="p-1 text-white/50 hover:text-white rounded hover:bg-white/10 transition-colors"
+            className="p-1.5 text-neutral-400 hover:text-red-500 rounded-full hover:bg-black/[0.04] transition-colors"
             title="Sign Out"
             aria-label="Sign Out"
           >
-            <LogOut size={14} />
+            <LogOut size={15} />
           </button>
         </div>
       </div>
@@ -213,22 +213,19 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* 1. Desktop Fixed Sidebar (Hidden on Mobile) */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-[240px] flex-col z-40 border-r border-white/10 shadow-lg">
+      {/* Desktop Fixed Sidebar */}
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-[240px] flex-col z-40 shadow-sm">
         {renderSidebarContent(false)}
       </aside>
 
-      {/* 2. Mobile Drawer & Backdrop (Hidden on Desktop) */}
+      {/* Mobile Drawer */}
       {isMobileNavOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 transition-opacity"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
             onClick={closeMobileNav}
             aria-hidden="true"
           />
-
-          {/* Drawer Panel */}
           <div className="relative w-[280px] max-w-[85vw] h-full shadow-2xl z-10 flex flex-col">
             {renderSidebarContent(true)}
           </div>
@@ -239,5 +236,3 @@ export default function Sidebar() {
 }
 
 export { Sidebar };
-
-
