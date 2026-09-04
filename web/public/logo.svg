@@ -1,18 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <!-- Rounded Base Container -->
-  <rect width="512" height="512" rx="110" fill="#F8FAFC"/>
-  <rect x="8" y="8" width="496" height="496" rx="102" stroke="#E2E8F0" stroke-width="8" opacity="0.6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Soft Ambient Drop Shadow -->
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.14" />
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#0F172A" flood-opacity="0.08" />
+    </filter>
 
-  <!-- Main C Mark (Deep Navy) -->
-  <path d="M260 148C218.4 148 184 182.4 184 224C184 265.6 218.4 300 260 300C276.8 300 292.4 294.4 305 284.8L324 309.2C306.4 322.8 284.4 331 260 331C201.2 331 153 282.8 153 224C153 165.2 201.2 117 260 117C285.6 117 308.8 126 326.8 141L306 166.4C293.2 155.2 277.6 148 260 148Z" fill="#0F1C2E"/>
+    <!-- Bevel & Inner Depth -->
+    <filter id="innerDepth" x="-10%" y="-10%" width="120%" height="120%">
+      <feOffset dx="0" dy="3"/>
+      <feGaussianBlur stdDeviation="3" result="offset-blur"/>
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
+      <feFlood flood-color="#000000" flood-opacity="0.25" result="color"/>
+      <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
 
-  <!-- V with Arrow Mark (Vibrant Blue) -->
-  <g>
-    <!-- Shadow/Overlap Depth -->
-    <path d="M276 226L310 186L324 202L290 242Z" fill="#0B132B" opacity="0.2"/>
-    <!-- V Shape with Rising Arrow -->
-    <path d="M274 232L306 278L368 182V216L398 172L348 166L364 188L306 254L288 226L274 232Z" fill="#2563EB"/>
-    <!-- Arrow Head Precision Shape -->
-    <path d="M398 172L346 168L366 190L308 274L280 234L266 242L306 298L378 198L398 220L398 172Z" fill="#3B82F6"/>
+    <!-- Squircle Gradients -->
+    <linearGradient id="tileGradient" x1="60" y1="40" x2="452" y2="472" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#F4F3EF" />
+      <stop offset="100%" stop-color="#E8E6E0" />
+    </linearGradient>
+
+    <linearGradient id="tileBorder" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#E2DFD7" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#CBC7BC" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- Navy "C" Cutout Gradient -->
+    <linearGradient id="navyCGradient" x1="180" y1="160" x2="300" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14243B" />
+      <stop offset="100%" stop-color="#0A1322" />
+    </linearGradient>
+
+    <!-- Vibrant Blue "V" Arrow Gradient -->
+    <linearGradient id="blueVGradient" x1="280" y1="200" x2="400" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F8CFF" />
+      <stop offset="50%" stop-color="#3B72F6" />
+      <stop offset="100%" stop-color="#2554EB" />
+    </linearGradient>
+
+    <!-- Arrow Head Highlight -->
+    <linearGradient id="arrowHighlight" x1="330" y1="140" x2="420" y2="230" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base Tile -->
+  <rect x="36" y="36" width="440" height="440" rx="108" fill="url(#tileGradient)" filter="url(#softShadow)" />
+  <rect x="37" y="37" width="438" height="438" rx="107" stroke="url(#tileBorder)" stroke-width="3" />
+
+  <!-- Inner Soft Highlight on Top Rim -->
+  <path d="M144 40 Q256 38 368 40 Q440 42 470 112 Q474 200 474 256" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+
+  <!-- Navy "C" Mark -->
+  <path d="M268 160 C202 160 152 208 152 274 C152 340 202 388 268 388 C298 388 326 374 346 352 L314 316 C302 328 286 336 268 336 C232 336 206 308 206 274 C206 240 232 212 268 212 C286 212 302 220 314 232 L346 196 C326 174 298 160 268 160 Z"
+        fill="url(#navyCGradient)" filter="url(#innerDepth)" />
+
+  <!-- V Bevel Shadow Overlap behind Arrow -->
+  <path d="M304 236 L332 192 L360 220 L324 268 Z" fill="#0A1322" opacity="0.35" />
+
+  <!-- Blue "V" Mark & Rising Arrow -->
+  <g filter="url(#innerDepth)">
+    <!-- Right Rising Stem into Arrow -->
+    <path d="M256 274 L326 376 C332 384 344 384 350 376 L422 176 C426 166 418 156 408 158 L348 168 L374 194 L334 278 L296 238 L256 274 Z"
+          fill="url(#blueVGradient)" />
+    <!-- Arrow Head Cap -->
+    <path d="M422 176 L348 168 L374 194 L422 176 Z"
+          fill="url(#arrowHighlight)" />
   </g>
 </svg>
