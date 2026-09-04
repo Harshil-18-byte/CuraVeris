@@ -31,19 +31,22 @@ jobs:
       || github.event.action == 'opened'
       || github.event.action == 'reopened')
     runs-on: ubuntu-latest
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
     steps:
       - name: Check Neon Secrets
-        if: ${{ secrets.NEON_API_KEY == '' || vars.NEON_PROJECT_ID == '' }}
+        if: env.NEON_API_KEY == '' || env.NEON_PROJECT_ID == ''
         run: echo "NEON_API_KEY secret or NEON_PROJECT_ID variable not configured. Skipping preview branch creation."
 
       - name: Get branch expiration date as an env variable (2 weeks from now)
         id: get_expiration_date
-        if: ${{ secrets.NEON_API_KEY != '' && vars.NEON_PROJECT_ID != '' }}
+        if: env.NEON_API_KEY != '' && env.NEON_PROJECT_ID != ''
         run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
 
       - name: Create Neon Branch
         id: create_neon_branch
-        if: ${{ secrets.NEON_API_KEY != '' && vars.NEON_PROJECT_ID != '' }}
+        if: env.NEON_API_KEY != '' && env.NEON_PROJECT_ID != ''
         uses: neondatabase/create-branch-action@v6
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
@@ -56,13 +59,16 @@ jobs:
     needs: setup
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
     steps:
       - name: Check Neon Secrets
-        if: ${{ secrets.NEON_API_KEY == '' || vars.NEON_PROJECT_ID == '' }}
+        if: env.NEON_API_KEY == '' || env.NEON_PROJECT_ID == ''
         run: echo "NEON_API_KEY secret or NEON_PROJECT_ID variable not configured. Skipping preview branch deletion."
 
       - name: Delete Neon Branch
-        if: ${{ secrets.NEON_API_KEY != '' && vars.NEON_PROJECT_ID != '' }}
+        if: env.NEON_API_KEY != '' && env.NEON_PROJECT_ID != ''
         uses: neondatabase/delete-branch-action@v3
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
