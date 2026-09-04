@@ -61,7 +61,7 @@ export default function BillDetailPage() {
         description="Could not load details for this bill."
         action={
           <Link href="/bills">
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="sm" className="rounded-full">
               <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
               Back to Your Bills
             </Button>
@@ -71,15 +71,15 @@ export default function BillDetailPage() {
         <Card padding="lg" className="text-center py-12">
           {is404 ? (
             <div className="space-y-3 max-w-sm mx-auto">
-              <h2 className="font-heading font-bold text-lg text-text-primary">
+              <h2 className="font-heading font-bold text-lg text-white">
                 Bill not found
               </h2>
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-neutral-400">
                 The requested bill does not exist or you do not have permission to view it.
               </p>
               <div className="pt-3">
                 <Link href="/bills">
-                  <Button size="sm" variant="primary">
+                  <Button size="sm" variant="primary" className="rounded-full">
                     <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
                     Back to Your Bills
                   </Button>
@@ -122,14 +122,14 @@ export default function BillDetailPage() {
       action={
         <div className="flex items-center gap-2.5">
           <Link href="/bills">
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="sm" className="rounded-full">
               <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
               All Bills
             </Button>
           </Link>
           {bill.file_url && (
             <a href={bill.file_url} target="_blank" rel="noopener noreferrer">
-              <Button variant="secondary" size="sm">
+              <Button variant="secondary" size="sm" className="rounded-full">
                 <ExternalLink className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
                 Original Document
               </Button>
@@ -141,36 +141,36 @@ export default function BillDetailPage() {
       {/* Bill Overview Header Card */}
       <Card padding="md" className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
         <div>
-          <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
+          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">
             Hospital or Clinic
           </span>
-          <p className="font-heading font-bold text-lg text-text-primary mt-1">
+          <p className="font-heading font-bold text-lg text-white mt-1">
             {bill.hospital_name || "—"}
           </p>
-          <span className="text-xs text-text-secondary mt-0.5 block truncate">
+          <span className="text-xs text-neutral-400 mt-0.5 block truncate font-mono">
             {bill.file_name_original}
           </span>
         </div>
 
         <div>
-          <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
+          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">
             Hospital Stay
           </span>
-          <p className="font-medium text-sm text-text-primary mt-1">
+          <p className="font-medium text-sm text-neutral-200 mt-1">
             {bill.admission_date
               ? `${formatDate(bill.admission_date)}${bill.discharge_date ? ` – ${formatDate(bill.discharge_date)}` : ""}`
               : "—"}
           </p>
-          <span className="text-xs text-text-secondary mt-0.5 block">
+          <span className="text-xs text-neutral-400 mt-0.5 block">
             Payment: {bill.insurance_type || "Self Pay"}
           </span>
         </div>
 
         <div className="sm:text-right">
-          <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider block">
+          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">
             Total on Your Bill
           </span>
-          <p className="font-mono font-bold text-2xl text-text-primary mt-1">
+          <p className="font-mono font-bold text-2xl text-white mt-1">
             {formatCurrency(bill.total_billed_amount)}
           </p>
           <div className="mt-1 sm:justify-end flex">
