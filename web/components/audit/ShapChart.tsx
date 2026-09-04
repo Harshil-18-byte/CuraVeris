@@ -49,10 +49,10 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
   return (
     <div className="p-6 space-y-4 text-left">
       <div>
-        <h3 className="font-heading font-semibold text-base text-text-primary">
+        <h3 className="font-heading font-semibold text-base text-white">
           What affected this result
         </h3>
-        <p className="text-xs text-text-secondary mt-0.5">
+        <p className="text-xs text-neutral-400 mt-0.5">
           These factors had the biggest impact on our estimate:
         </p>
       </div>
@@ -65,12 +65,12 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
           return (
             <div
               key={idx}
-              className="flex items-start gap-3 p-3 bg-white rounded-md border border-border-subtle shadow-2xs"
+              className="flex items-start gap-3.5 p-3.5 bg-[#0B0E17]/80 rounded-2xl border border-white/[0.08] shadow-inner"
             >
               {/* Direction Indicator */}
               <div
-                className={`w-6 h-6 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                  isRiskRaising ? "bg-danger-bg text-danger" : "bg-success-bg text-success"
+                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                  isRiskRaising ? "bg-red-500/15 text-red-400 border border-red-500/30" : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                 }`}
               >
                 {isRiskRaising ? (
@@ -83,18 +83,18 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-xs font-semibold text-text-primary">
+                  <h4 className="text-xs font-semibold text-white">
                     {factor.feature_label}
                   </h4>
                   <span
-                    className={`text-[11px] font-medium ${
-                      isRiskRaising ? "text-danger" : "text-success"
+                    className={`text-[11px] font-semibold ${
+                      isRiskRaising ? "text-red-400" : "text-emerald-400"
                     }`}
                   >
                     {isRiskRaising ? "Made concern higher" : "Made concern lower"}
                   </span>
                 </div>
-                <p className="text-[11px] text-text-secondary mt-0.5 leading-normal">
+                <p className="text-[11px] text-neutral-400 mt-1 leading-normal">
                   {factor.explanation || (isRiskRaising
                     ? "Charges on this item differ from standard government pricing patterns."
                     : "This item matches expected pricing benchmarks for this hospital.")}
@@ -106,8 +106,8 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-4 p-3 bg-bg-secondary rounded-md text-xs text-text-tertiary italic leading-relaxed flex items-start gap-2">
-        <Info className="w-4 h-4 text-text-tertiary flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+      <div className="mt-4 p-3.5 bg-white/5 border border-white/10 rounded-2xl text-xs text-neutral-400 italic leading-relaxed flex items-start gap-2">
+        <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
         <span>
           We compared your bill to thousands of similar hospital bills across India to find these patterns.
         </span>
