@@ -1,10 +1,10 @@
 ---
 {
-  "id": "file_4o4mizot",
+  "id": "file_0e8cbkxq",
   "filetype": "document",
   "filename": "README",
-  "created_at": "2026-09-04T01:33:06.050Z",
-  "updated_at": "2026-09-04T01:33:15.732Z",
+  "created_at": "2026-09-04T03:24:11.344Z",
+  "updated_at": "2026-09-04T03:24:29.696Z",
   "meta": {
     "location": "/",
     "tags": [],
@@ -425,21 +425,33 @@ CuraVeris incorporates a mathematical Financial Risk Management (FRM) engine ada
 
 Computes household exposure-at-default ($\text{EAD}$), default probability ($\text{PD}$), and loss-given-default ($\text{LGD}$) factoring recovery rates from insurers, hospital waivers, and grievance desks:
 
-$$\text{EL} = \text{EAD} \times \text{PD} \times \text{LGD}$$
+$$
+\text{EL} = \text{EAD} \times \text{PD} \times \text{LGD}
+$$
 
-$$\text{EAD} = \text{Gross Billed Total} - \text{Admissible Insurance Claim}$$
+$$
+\text{EAD} = \text{Gross Billed Total} - \text{Admissible Insurance Claim}
+$$
 
-$$\text{LGD} = 1 - \text{Recovery Rate}_{\text{adjudicated}}$$
+$$
+\text{LGD} = 1 - \text{Recovery Rate}_{\text{adjudicated}}
+$$
 
 ### 2. Liquidity Coverage Ratio (LCR) & Debt Service-to-Income (DSTI)
 
 Quantifies household liquid reserves relative to immediate 30-day out-of-pocket obligations and monthly debt service:
 
-$$\text{LCR} = \frac{\text{Unencumbered Liquid Household Reserves}}{\text{Total 30-Day Medical Outflow}} \times 100\%$$
+$$
+\text{LCR} = \frac{\text{Unencumbered Liquid Household Reserves}}{\text{Total 30-Day Medical Outflow}} \times 100\%
+$$
 
-$$\text{DSTI} = \frac{\sum \text{Monthly Debt Obligations} + \text{Medical EMI}}{\text{Monthly Gross Household Income}}$$
+$$
+\text{DSTI} = \frac{\sum \text{Monthly Debt Obligations} + \text{Medical EMI}}{\text{Monthly Gross Household Income}}
+$$
 
-$$\text{Hardship Index} = \min\left(100,\; \frac{\text{Out-of-Pocket Liability}}{\text{Annual Household Income} \times 0.40} \times 100\right)$$
+$$
+\text{Hardship Index} = \min\left(100,\; \frac{\text{Out-of-Pocket Liability}}{\text{Annual Household Income} \times 0.40} \times 100\right)
+$$
 
 ### 3. Parametric & Historical Stress Testing
 
@@ -449,9 +461,13 @@ Evaluates financial resilience under 5 macroeconomic and clinical shock scenario
 
 5,000-sample Monte Carlo distribution characterizing the 90th, 95th, and tail-expectation catastrophic loss boundaries:
 
-$$\text{VaR}_{\alpha}(L) = \inf \{ \ell \in \mathbb{R} : P(L > \ell) \le 1 - \alpha \} = F_L^{-1}(\alpha)$$
+$$
+\text{VaR}_{\alpha}(L) = \inf \left\{ \ell \in \mathbb{R} : P(L > \ell) \le 1 - \alpha \right\} = F_L^{-1}(\alpha)
+$$
 
-$$\text{CVaR}_{\alpha}(L) = \mathbb{E}\left[L \mid L \ge \text{VaR}_{\alpha}(L)\right] = \frac{1}{1-\alpha} \int_{\alpha}^{1} \text{VaR}_{u}(L) \, du$$
+$$
+\text{CVaR}_{\alpha}(L) = \mathbb{E}\left[L \mid L \ge \text{VaR}_{\alpha}(L)\right] = \frac{1}{1-\alpha} \int_{\alpha}^{1} \text{VaR}_{u}(L) \, du
+$$
 
 ### 5. Model Risk Management
 
@@ -467,25 +483,33 @@ Each completed audit is sealed in a chained cryptographic Merkle block structure
 
 Each atomic line item is deterministically hashed across its audited fields:
 
-$$\text{Leaf}_i = \operatorname{SHA-256}\left(\text{RawText}_i \parallel \text{ChargedRate}_i \parallel \text{Quantity}_i \parallel \text{OverchargeAmount}_i\right)$$
+$$
+\text{Leaf}_i = \text{SHA-256}\left(\text{RawText}_i \parallel \text{ChargedRate}_i \parallel \text{Quantity}_i \parallel \text{OverchargeAmount}_i\right)
+$$
 
 ### 2. Merkle Tree Internal Node Aggregation
 
 Pairwise hashing constructs the balanced binary Merkle tree up to the root:
 
-$$\text{Parent}_j = \operatorname{SHA-256}\left(\text{Node}_{\text{left}} \parallel \text{Node}_{\text{right}}\right)$$
+$$
+\text{Parent}_j = \text{SHA-256}\left(\text{Node}_{\text{left}} \parallel \text{Node}_{\text{right}}\right)
+$$
 
 ### 3. Chained Block Hash Formulation
 
 The header encapsulates financial totals, timestamp, Merkle root, and the preceding block's hash:
 
-$$\text{Block}_n = \operatorname{SHA-256}\left(n \parallel \text{Timestamp} \parallel \text{BillID} \parallel \text{TotalBilled} \parallel \text{Overcharge} \parallel \text{RiskScore} \parallel \text{MerkleRoot} \parallel \text{PrevHash}_{n-1}\right)$$
+$$
+\text{Block}_n = \text{SHA-256}\left(n \parallel \text{Timestamp} \parallel \text{BillID} \parallel \text{TotalBilled} \parallel \text{Overcharge} \parallel \text{RiskScore} \parallel \text{MerkleRoot} \parallel \text{PrevHash}_{n-1}\right)
+$$
 
 ### 4. Digital Origin Signature
 
 Origin authenticity is sealed using an HMAC key vault signature:
 
-$$\text{Signature}_n = \operatorname{HMAC-SHA256}\left(K_{\text{secret}},\; \text{Block}_n\right)$$
+$$
+\text{Signature}_n = \text{HMAC-SHA256}\left(K_{\text{secret}},\, \text{Block}_n\right)
+$$
 
 See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
 
@@ -499,44 +523,84 @@ For exhaustive architecture blueprints, loss functions, layer definitions, and t
 
 Combines predictions from gradient-boosted decision trees and a deep multi-layer perceptron:
 
-$$P_{\text{blended}, j} = \alpha_j \cdot P_{\text{NN}, j} + (1 - \alpha_j) \cdot P_{\text{XGB}, j} \quad \forall\, j \in \{1, \dots, 8\}$$
+$$
+P_{\text{blended}, j} = \alpha_j \cdot P_{\text{NN}, j} + (1 - \alpha_j) \cdot P_{\text{XGB}, j} \quad \forall\, j \in \{1, \dots, 8\}
+$$
 
-$$\text{where } \alpha_j = 0.45 \quad \implies \quad P_{\text{blended}, j} = 0.45 \cdot P_{\text{NN}, j} + 0.55 \cdot P_{\text{XGB}, j}$$
+$$
+\text{where } \alpha_j = 0.45 \quad \Rightarrow \quad P_{\text{blended}, j} = 0.45 \cdot P_{\text{NN}, j} + 0.55 \cdot P_{\text{XGB}, j}
+$$
 
 ### 2. Monte Carlo Epistemic Uncertainty Estimation
 
 Computed via $K = 10$ stochastic forward passes with active dropout:
 
-$$\mu_j = \frac{1}{K}\sum_{k=1}^{K} P_j^{(k)}, \qquad \sigma_j = \sqrt{\frac{1}{K}\sum_{k=1}^{K}\left(P_j^{(k)} - \mu_j\right)^2}$$
+$$
+\mu_j = \frac{1}{K}\sum_{k=1}^{K} P_j^{(k)}, \qquad \sigma_j = \sqrt{\frac{1}{K}\sum_{k=1}^{K}\left(P_j^{(k)} - \mu_j\right)^2}
+$$
 
 ### 3. Confidence Gating & Multi-Label Decision Boundary
 
 Classifications are assigned via calibrated thresholds $\tau_j$ and uncertainty bounds:
 
-$$\hat{y}_j = \begin{cases} 1 & \text{if } P_{\text{blended}, j} \ge \tau_j \\ 0 & \text{otherwise} \end{cases}$$
+$$
+\hat{y}_j = \begin{cases} 1 & \text{if } P_{\text{blended}, j} \ge \tau_j \\ 0 & \text{otherwise} \end{cases}
+$$
 
-$$\text{Confidence Tier} = \begin{cases} \text{HIGH\_CONFIDENCE\_VIOLATION} & \text{if } \mu_j \ge 0.55 \text{ and } \sigma_j \le 0.04 \\ \text{AMBIGUOUS\_BORDERLINE\_REVIEW} & \text{if } \mu_j \ge 0.40 \text{ and } \sigma_j > 0.06 \\ \text{CONFIDENT\_COMPLIANT} & \text{if } \mu_j < 0.35 \text{ and } \sigma_j \le 0.04 \end{cases}$$
+$$
+\text{Confidence Tier} = \begin{cases} \text{HIGH\_CONFIDENCE\_VIOLATION} & \text{if } \mu_j \ge 0.55 \text{ and } \sigma_j \le 0.04 \\ \text{AMBIGUOUS\_BORDERLINE\_REVIEW} & \text{if } \mu_j \ge 0.40 \text{ and } \sigma_j > 0.06 \\ \text{CONFIDENT\_COMPLIANT} & \text{if } \mu_j < 0.35 \text{ and } \sigma_j \le 0.04 \end{cases}
+$$
 
 ---
 
 ## Two-Track Hybrid Production Architecture
 
+```mermaid
+flowchart TD
+  subgraph TrackA["Track A: Model Specialization (Deep Clinical Reasoning)"]
+    direction TB
+    A1["Base Model (Qwen / CuraVeris-4B)"] --> A2["Statutory Domain Adaptation (Gazette & DPCO Corpus)"]
+    A2 --> A3["Multi-Task SFT (Billing, NER & Overcharge Extraction)"]
+    A3 --> A4["DPO Preference Optimization (Clinical & Legal Alignment)"]
+    A4 --> A5["CuraVeris-4B Specialized Reasoner"]
+  end
+
+  subgraph TrackB["Track B: Reliable Audit System (Zero-Hallucination Core)"]
+    direction TB
+    B1["Raw Medical Bill / Discharge Summary"] --> B2["Document Understanding (LayoutLMv3 + Multimodal OCR)"]
+    B2 --> B3["Structured Tabular Representation"]
+    B3 --> B4["Temporal Reference RAG (CGHS, NPPA, DPCO Registries)"]
+    B4 --> B5["Deterministic Rule Engine & Calculation Core"]
+    B5 --> B6["Calibrated Confidence Gate (tau >= 0.95)"]
+    B6 --> B7["Section 65B Certified Audit Report"]
+  end
+
+  A5 -.->|"Advisory Rationale & Statutory Justification"| B5
+
+  style TrackA fill:#162032,stroke:#3b82f6,stroke-width:2px,color:#e2e8f0
+  style TrackB fill:#0d2a1f,stroke:#34d399,stroke-width:2px,color:#e2e8f0
+```
+
 ```text
 TRACK A: Model Specialization
-Qwen / CuraVeris-4B -> Domain Adaptation -> Multi-Task SFT -> DPO Preference Tuning
+Qwen / CuraVeris-4B ──► Domain Adaptation ──► Multi-Task SFT ──► DPO Preference Tuning ──► Specialized Reasoner
 
 TRACK B: Reliable Audit System
-Bill -> Document Understanding (LayoutLM / OCR) -> Structured Representation ->
-Temporal Reference RAG -> Deterministic Rule Engine -> 4B Model Reasoning ->
-Evidence Verification -> Calibrated Confidence Gate -> Certified Audit Report
+Bill ──► Document Understanding (LayoutLM / OCR) ──► Structured Representation ──►
+Temporal Reference RAG ──► Deterministic Rule Engine ◄── [Track A Reasoning] ──►
+Evidence Verification ──► Calibrated Confidence Gate ──► Certified Audit Report
 ```
 
 - **Track A (Model Specialization)**: Domain-adapted transformer providing nuanced clinical rationale, item categorization, and statutory justification.
 - **Track B (Reliable Auditing Core)**: Zero-hallucination code-based calculation engine, BM25 + dense retrieval, and calibrated confidence routing ($\ge 0.95$ clear finding, $0.70-0.95$ enhanced review, $< 0.70$ human review):
 
-$$\text{Overcharge}_{\text{item}} = \max\left(0,\; Q \times R_{\text{charged}} - Q \times R_{\text{statutory}}\right)$$
+$$
+\text{Overcharge}_{\text{item}} = \max\left(0,\; Q \times R_{\text{charged}} - Q \times R_{\text{statutory}}\right)
+$$
 
-$$\text{Total Bill Overcharge} = \sum_{i=1}^{M} \text{Overcharge}_{\text{item}, i}$$
+$$
+\text{Total Bill Overcharge} = \sum_{i=1}^{M} \text{Overcharge}_{\text{item}, i}
+$$
 
 ---
 
@@ -562,13 +626,21 @@ Custom dense decoder Transformers trained specifically for the Indian healthcare
 
 Trained using a weighted composite loss over token generation, violation classification, and restitution regression:
 
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{LM}} + 0.5 \cdot \mathcal{L}_{\text{Focal}} + 0.1 \cdot \mathcal{L}_{\text{Huber}}$$
+$$
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{LM}} + 0.5 \cdot \mathcal{L}_{\text{Focal}} + 0.1 \cdot \mathcal{L}_{\text{Huber}}
+$$
 
-$$\mathcal{L}_{\text{LM}} = -\frac{1}{T}\sum_{t=1}^{T} \log P(w_t \mid w_{<t})$$
+$$
+\mathcal{L}_{\text{LM}} = -\frac{1}{T}\sum_{t=1}^{T} \log P(w_t \mid w_{<t})
+$$
 
-$$\mathcal{L}_{\text{Focal}} = -\frac{1}{C}\sum_{c=1}^{C} \left[ \alpha_t (1 - p_t)^\gamma \log(p_t) \right], \quad \gamma = 2.0, \; \alpha = 0.25$$
+$$
+\mathcal{L}_{\text{Focal}} = -\frac{1}{C}\sum_{c=1}^{C} \left[ \alpha_t (1 - p_t)^\gamma \log(p_t) \right], \quad \gamma = 2.0, \; \alpha = 0.25
+$$
 
-$$\mathcal{L}_{\text{Huber}}(y, \hat{y}) = \begin{cases} \frac{1}{2}(y - \hat{y})^2 & \text{for } |y - \hat{y}| \le \delta \\ \delta |y - \hat{y}| - \frac{1}{2}\delta^2 & \text{otherwise} \end{cases} \quad (\delta = 1.0)$$
+$$
+\mathcal{L}_{\text{Huber}}(y, \hat{y}) = \begin{cases} \frac{1}{2}(y - \hat{y})^2 & \text{for } |y - \hat{y}| \le \delta \\ \delta |y - \hat{y}| - \frac{1}{2}\delta^2 & \text{otherwise} \end{cases} \quad (\delta = 1.0)
+$$
 
 ---
 
@@ -590,7 +662,9 @@ CuraVeris provides 7 production-grade ML pipelines in `backend/app/ml/pipelines/
 
 To train all models under strict memory budgets (< 8GB RAM peak), [`backend/ml_training/train_all_models.py`](./backend/ml_training/train_all_models.py) executes a single-pass streaming architecture with deterministic CRC32 partitioning:
 
-$$\operatorname{Split}(\text{Bill ID}) = \begin{cases} \text{Train (70\%)} & \text{if } \operatorname{CRC32}(\text{ID}) \pmod{100} < 70 \\ \text{Validation (15\%)} & \text{if } 70 \le \operatorname{CRC32}(\text{ID}) \pmod{100} < 85 \\ \text{Test (15\%)} & \text{if } \operatorname{CRC32}(\text{ID}) \pmod{100} \ge 85 \end{cases}$$
+$$
+\text{Split}(\text{Bill ID}) = \begin{cases} \text{Train (70\%)} & \text{if } \text{CRC32}(\text{ID}) \pmod{100} < 70 \\ \text{Validation (15\%)} & \text{if } 70 \le \text{CRC32}(\text{ID}) \pmod{100} < 85 \\ \text{Test (15\%)} & \text{if } \text{CRC32}(\text{ID}) \pmod{100} \ge 85 \end{cases}
+$$
 
 ```mermaid
 graph TD
