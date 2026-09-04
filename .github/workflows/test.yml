@@ -23,17 +23,30 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --no-cache-dir -r backend/requirements.txt
-          pip install --no-cache-dir ruff pytest pytest-asyncio httpx
+          pip install --no-cache-dir ruff pytest pytest-asyncio httpx pytest-cov
           pip install --no-cache-dir -e ./backend
       - name: Run Tests
         env:
+          APP_ENV: testing
           ENV: testing
           DEBUG: "False"
           DATABASE_URL: sqlite+aiosqlite:///./test_curaveris.db
           SYNC_DATABASE_URL: sqlite:///./test_curaveris.db
           REFERENCE_DB_PATH: ./reference_data/medical_rates.db
+          JWT_SECRET_KEY: test_jwt_secret_key_minimum_32_characters_long
+          APP_SECRET_KEY: test_app_secret_key_minimum_32_characters_long
+          EVIDENCE_HMAC_SECRET: test_evidence_hmac_secret_32_chars_long
+          AWS_ACCESS_KEY_ID: test_key
+          AWS_SECRET_ACCESS_KEY: test_secret
+          AWS_S3_BUCKET_NAME: test-bucket
+          AWS_S3_ENDPOINT_URL: http://localhost:9000
+          AWS_S3_REGION: auto
+          RESEND_API_KEY: test_resend_key
+          EMAIL_FROM_ADDRESS: test@test.com
+          ML_MODEL_PATH: ./ml_models
+          STORAGE_BACKEND: local
           PYTHONPATH: backend:.
-        run: cd backend && pytest --tb=short -q --no-header
+        run: pytest backend/tests --tb=short -q --no-header
       - name: Lint and Format Check
         run: |
           ruff check backend/app backend/tests --select E,F,W --ignore E501
