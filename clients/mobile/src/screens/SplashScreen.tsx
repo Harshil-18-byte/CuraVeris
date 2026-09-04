@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, Image } from 'react-native';
 import { Colors } from '../theme/colors';
 
 export function SplashScreen() {
@@ -8,11 +8,13 @@ export function SplashScreen() {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
       
       <View style={styles.centerContent}>
-        <View style={styles.logoBadge}>
-          <Text style={styles.logoBadgeText}>CV</Text>
-        </View>
+        <Image
+          source={require('../../assets/logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
         <Text style={styles.wordmark}>CURAVERIS</Text>
-        <Text style={styles.tagline}>Your bills, your rights.</Text>
+        <Text style={styles.tagline}>Your bill. Your rights.</Text>
       </View>
 
       <View style={styles.bottomFootnote}>
@@ -36,25 +38,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logoBadge: {
-    width: 64,
-    height: 64,
+  logoImage: {
+    width: 72,
+    height: 72,
     borderRadius: 16,
-    backgroundColor: Colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  logoBadgeText: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: Colors.primary,
-    letterSpacing: -1,
   },
   wordmark: {
     fontSize: 28,
