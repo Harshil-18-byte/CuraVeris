@@ -1504,7 +1504,7 @@ export default function LandingPage() {
             </div>
 
             {/* Quick Links */}
-            <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6 text-xs text-neutral-400">
+            <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs text-neutral-400">
               <div className="space-y-2.5">
                 <p className="font-bold text-white uppercase tracking-wider text-[11px]">Audit Engine</p>
                 <p><Link href="/bills/upload" className="hover:text-white transition-colors">Check a Bill</Link></p>
@@ -1518,15 +1518,23 @@ export default function LandingPage() {
                 <p><a href="#price-checker" className="hover:text-white transition-colors">NPPA Device Caps</a></p>
                 <p><a href="#price-checker" className="hover:text-white transition-colors">DPCO Medicine Limits</a></p>
                 <p><a href="#price-checker" className="hover:text-white transition-colors">CGHS Package Rates</a></p>
-                <p><a href="#security" className="hover:text-white transition-colors">Security & DPDP</a></p>
+                <p><Link href="/compliance" className="hover:text-white transition-colors">Compliance Gazette</Link></p>
               </div>
 
               <div className="space-y-2.5">
-                <p className="font-bold text-white uppercase tracking-wider text-[11px]">Account & Privacy</p>
-                <p><Link href="/login" className="hover:text-white transition-colors">Sign In</Link></p>
-                <p><Link href="/register" className="hover:text-white transition-colors">Register Free</Link></p>
-                <p><Link href="/account" className="hover:text-white transition-colors">DPDP Privacy & Data</Link></p>
-                <p><Link href="/notifications" className="hover:text-white transition-colors">Notifications</Link></p>
+                <p className="font-bold text-white uppercase tracking-wider text-[11px]">Advocacy & Team</p>
+                <p><Link href="/about" className="hover:text-white transition-colors">About Us</Link></p>
+                <p><Link href="/features" className="hover:text-white transition-colors">Features Hub</Link></p>
+                <p><Link href="/pricing" className="hover:text-white transition-colors">Pricing Plans</Link></p>
+                <p><Link href="/contact" className="hover:text-white transition-colors">Grievance Desk</Link></p>
+              </div>
+
+              <div className="space-y-2.5">
+                <p className="font-bold text-white uppercase tracking-wider text-[11px]">Legal & DPDP 2023</p>
+                <p><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></p>
+                <p><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></p>
+                <p><Link href="/data-policy" className="hover:text-white transition-colors">Data Vault Policy</Link></p>
+                <p><Link href="/security" className="hover:text-white transition-colors">Security Controls</Link></p>
               </div>
             </div>
           </div>
