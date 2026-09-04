@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShieldCheck,
   FileCheck2,
@@ -34,6 +35,7 @@ import {
   Laptop,
   HelpCircle,
   Play,
+  Volume2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -135,6 +137,7 @@ export default function LandingPage() {
   const [copiedLetter, setCopiedLetter] = useState<boolean>(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
   const [expandedAiIndex, setExpandedAiIndex] = useState<number>(0);
+  const [playingVideo, setPlayingVideo] = useState<number | null>(null);
 
   // Stats Observer
   const statsRef = useRef<HTMLDivElement>(null);
@@ -240,7 +243,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* 2. HERO SECTION WITH GRASSFELD MULTICOLOR GRADIENT */}
+      {/* 2. HERO SECTION WITH 3D CLAY/GLASS MOCKUP */}
       <section className="relative z-10 pt-8 sm:pt-14 pb-12 sm:pb-20">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8">
           {/* Top Kicker Pill */}
@@ -296,6 +299,42 @@ export default function LandingPage() {
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-[#43A8B2]" />
               <span>Zero Data Selling · DPDP Compliant</span>
+            </div>
+          </div>
+
+          {/* 3D Visual Hero Presentation (Matching Grassfeld 3D Device Art) */}
+          <div className="pt-8 max-w-[1000px] mx-auto relative group">
+            <div className="relative rounded-[36px] overflow-hidden border border-black/[0.06] shadow-[0_24px_70px_rgba(0,0,0,0.08)] bg-white">
+              <Image
+                src="/assets/hero_curaveris_mockup.jpg"
+                alt="CuraVeris Hospital Bill Audit 3D Interface"
+                width={1200}
+                height={675}
+                priority
+                className="w-full h-auto object-cover transform group-hover:scale-[1.01] transition-transform duration-500"
+              />
+            </div>
+
+            {/* Floating Verified Pill Badge Top-Right */}
+            <div className="hidden sm:flex absolute -top-5 -right-5 bg-white/95 backdrop-blur-xl border border-black/[0.06] rounded-2xl p-4 shadow-[0_12px_36px_rgba(0,0,0,0.08)] items-center gap-3 animate-float">
+              <div className="w-10 h-10 rounded-xl bg-[#DBF1F4] flex items-center justify-center text-[#202128]">
+                <ShieldCheck className="w-5 h-5 text-[#43A8B2]" strokeWidth={2.2} />
+              </div>
+              <div className="text-left">
+                <span className="text-[10px] font-bold text-[#606470] uppercase block">Audit Certified</span>
+                <p className="font-extrabold text-xs text-[#202128]">NPPA Price Cap Applied</p>
+              </div>
+            </div>
+
+            {/* Floating Recovered Pill Badge Bottom-Left */}
+            <div className="hidden sm:flex absolute -bottom-5 -left-5 bg-white/95 backdrop-blur-xl border border-black/[0.06] rounded-2xl p-4 shadow-[0_12px_36px_rgba(0,0,0,0.08)] items-center gap-3 animate-float" style={{ animationDelay: "1.5s" }}>
+              <div className="w-10 h-10 rounded-xl bg-[#FEE2E2] flex items-center justify-center text-[#DC2626]">
+                <AlertTriangle className="w-5 h-5" strokeWidth={2.2} />
+              </div>
+              <div className="text-left">
+                <span className="text-[10px] font-bold text-[#606470] uppercase block">Flagged Extra Fee</span>
+                <p className="font-extrabold text-xs text-[#DC2626]">+₹47,800 Overcharged</p>
+              </div>
             </div>
           </div>
         </div>
@@ -808,7 +847,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 7. CURAVERIS INTELLIGENCE SECTION (Grassfeld Intelligence Style) */}
+      {/* 7. CURAVERIS INTELLIGENCE SECTION (With 3D Visual Art) */}
       <section className="relative z-10 py-16 sm:py-24 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center space-y-3">
@@ -821,23 +860,19 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left AI Frame Preview */}
-            <div className="lg:col-span-6 bg-[#F5F7FB] rounded-[36px] p-6 sm:p-10 border border-black/[0.06] shadow-inner space-y-4">
-              <div className="bg-white rounded-3xl p-6 border border-black/[0.06] shadow-sm space-y-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#43A8B2]">
-                  <Sparkles className="w-4 h-4" />
-                  <span>AI Forensic Verdict</span>
-                </div>
-                <p className="text-sm sm:text-base font-bold text-[#202128] leading-snug">
-                  &ldquo;This inpatient bill includes an unbundled ICU nursing charge of ₹18,000 which is legally included under CGHS package limits.&rdquo;
-                </p>
-                <div className="flex items-center justify-between text-xs pt-2 border-t border-black/[0.04] text-[#606470]">
-                  <span>Confidence: 99.4%</span>
-                  <span className="text-[#DC2626] font-bold font-mono">Dispute Value: ₹18,000</span>
-                </div>
+            {/* Left AI Frame Preview with 3D Image */}
+            <div className="lg:col-span-6 bg-[#F5F7FB] rounded-[36px] p-6 sm:p-8 border border-black/[0.06] shadow-sm space-y-4">
+              <div className="rounded-3xl overflow-hidden border border-black/[0.06] shadow-md bg-white">
+                <Image
+                  src="/assets/curaveris_ai_intelligence.jpg"
+                  alt="CuraVeris AI Intelligence Digital Healthcare Advocate"
+                  width={800}
+                  height={450}
+                  className="w-full h-auto object-cover"
+                />
               </div>
 
-              <div className="bg-white rounded-3xl p-6 border border-black/[0.06] shadow-sm space-y-3">
+              <div className="bg-white rounded-3xl p-5 border border-black/[0.06] shadow-xs space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#86C159]">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Statutory Citation Generated</span>
@@ -894,8 +929,63 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 8. DARK OBSIDIAN AI CHAT BANNER ("Don't search. Just ask") */}
-      <section className="relative z-10 py-12 sm:py-20 bg-[#F5F7FB]">
+      {/* 8. DESKTOP & PLATFORM SHOWCASE ("Take the lead") */}
+      <section className="relative z-10 py-16 sm:py-24 bg-[#F5F7FB]">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <div className="text-center space-y-3">
+            <div className="inline-flex px-4 py-1 rounded-full bg-[#DBF1F4] text-[#202128] text-xs font-bold border border-[#79C5CD]/30">
+              Universal Platform
+            </div>
+            <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-[#202128] tracking-tight">
+              Take the lead with CuraVeris Navigator.
+            </h2>
+            <p className="text-sm sm:text-lg text-[#606470] max-w-xl mx-auto">
+              Powerful browser tools and mobile apps designed to keep hospital billing transparent across all your devices.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-8 rounded-[36px] overflow-hidden border border-black/[0.06] shadow-[0_20px_50px_rgba(0,0,0,0.06)] bg-white">
+              <Image
+                src="/assets/curaveris_desktop_navigator.jpg"
+                alt="CuraVeris Desktop Forensic Navigator Dashboard"
+                width={1200}
+                height={675}
+                className="w-full h-auto object-cover hover:scale-[1.01] transition-transform duration-500"
+              />
+            </div>
+
+            <div className="lg:col-span-4 space-y-6">
+              <div className="p-6 bg-white rounded-3xl border border-black/[0.06] shadow-xs space-y-2">
+                <span className="w-10 h-10 rounded-2xl bg-[#DBF1F4] text-[#202128] flex items-center justify-center font-bold">
+                  <Laptop className="w-5 h-5 text-[#43A8B2]" />
+                </span>
+                <h3 className="font-heading font-bold text-xl text-[#202128]">
+                  Web Navigator
+                </h3>
+                <p className="text-xs text-[#606470] leading-relaxed">
+                  Deep line-by-line inspection, statutory comparisons, and batch export of dispute petitions.
+                </p>
+              </div>
+
+              <div className="p-6 bg-white rounded-3xl border border-black/[0.06] shadow-xs space-y-2">
+                <span className="w-10 h-10 rounded-2xl bg-[#EDF0FB] text-[#202128] flex items-center justify-center font-bold">
+                  <Smartphone className="w-5 h-5 text-[#5E84E2]" />
+                </span>
+                <h3 className="font-heading font-bold text-xl text-[#202128]">
+                  Mobile Scanning App
+                </h3>
+                <p className="text-xs text-[#606470] leading-relaxed">
+                  Snap a photo of the bill at the hospital counter for instant price cap verification.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. DARK OBSIDIAN AI CHAT BANNER ("Don't search. Just ask") */}
+      <section className="relative z-10 py-12 sm:py-20 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-[36px] bg-[#18191C] text-white p-8 sm:p-14 relative overflow-hidden shadow-2xl">
             {/* Top-right glowing radial teal gradient */}
@@ -946,8 +1036,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 9. SECURITY & COMPLIANCE ("Is CuraVeris safe to use?") */}
-      <section id="security" className="relative z-10 py-16 sm:py-24 bg-white border-t border-black/[0.05]">
+      {/* 10. SECURITY & COMPLIANCE ("Is CuraVeris safe to use?") */}
+      <section id="security" className="relative z-10 py-16 sm:py-24 bg-[#F5F7FB]">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center space-y-3">
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-[#202128] tracking-tight">
@@ -959,8 +1049,8 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="rounded-[32px] bg-[#F5F7FB] border border-black/[0.06] p-8 sm:p-10 space-y-4 shadow-xs">
-              <div className="w-12 h-12 rounded-2xl bg-white text-[#202128] shadow-xs flex items-center justify-center">
+            <div className="rounded-[32px] bg-white border border-black/[0.06] p-8 sm:p-10 space-y-4 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-[#DBF1F4] text-[#202128] shadow-xs flex items-center justify-center">
                 <ShieldCheck className="w-6 h-6 text-[#43A8B2]" />
               </div>
               <h3 className="font-heading font-bold text-2xl text-[#202128]">
@@ -971,8 +1061,8 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="rounded-[32px] bg-[#F5F7FB] border border-black/[0.06] p-8 sm:p-10 space-y-4 shadow-xs">
-              <div className="w-12 h-12 rounded-2xl bg-white text-[#202128] shadow-xs flex items-center justify-center">
+            <div className="rounded-[32px] bg-white border border-black/[0.06] p-8 sm:p-10 space-y-4 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-[#DBF1F4] text-[#202128] shadow-xs flex items-center justify-center">
                 <Lock className="w-6 h-6 text-[#43A8B2]" />
               </div>
               <h3 className="font-heading font-bold text-2xl text-[#202128]">
@@ -986,8 +1076,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 10. REAL STORIES / TESTIMONIALS (Grassfeld Ice Blue Container) */}
-      <section className="relative z-10 py-16 sm:py-24 bg-[#F5F7FB]">
+      {/* 11. REAL STORIES / VIDEO TESTIMONIALS (Grassfeld Ice Blue Container) */}
+      <section className="relative z-10 py-16 sm:py-24 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-[#DDECFD] rounded-[36px] p-8 sm:p-14 space-y-10 shadow-[0_12px_40px_rgba(0,0,0,0.03)]">
             <div className="text-center space-y-2">
@@ -1000,51 +1090,76 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-3xl p-6 space-y-4 shadow-xs">
-                <div className="flex items-center gap-1 text-[#D97706]">
-                  {"★★★★★"}
-                </div>
-                <p className="text-xs sm:text-sm text-[#202128] font-medium leading-relaxed">
-                  &ldquo;Found ₹48,000 in duplicate ICU charges within 5 minutes of uploading our hospital discharge bill. The dispute letter got us an immediate refund.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-black/[0.04]">
-                  <p className="font-bold text-xs text-[#202128]">Rajesh M., 42 yo</p>
-                  <p className="text-[10px] text-[#606470]">Bengaluru • Cardiac Inpatient</p>
-                </div>
-              </div>
+              {[
+                {
+                  id: 1,
+                  name: "Rajesh M., 42 yo",
+                  loc: "Bengaluru • Cardiac Inpatient",
+                  quote: "Found ₹48,000 in duplicate ICU charges within 5 minutes of uploading our hospital discharge bill. The dispute letter got us an immediate refund.",
+                  recovered: "₹48,000 Saved",
+                },
+                {
+                  id: 2,
+                  name: "Pooja K., 36 yo",
+                  loc: "Delhi NCR • Cardiology Audit",
+                  quote: "The hospital billed ₹65,000 for a stent capped at ₹30,080 by NPPA. CuraVeris cited the exact government gazette notification and saved us ₹34,920.",
+                  recovered: "₹34,920 Saved",
+                },
+                {
+                  id: 3,
+                  name: "Vikram S., 51 yo",
+                  loc: "Mumbai • Orthopedic Surgery",
+                  quote: "Our insurance TPA rejected ₹28,000 under 'non-payable' consumables. The CuraVeris appeal notice reversed the rejection in 10 days.",
+                  recovered: "₹28,000 Saved",
+                },
+              ].map((card) => {
+                const isPlaying = playingVideo === card.id;
+                return (
+                  <div key={card.id} className="bg-white rounded-3xl p-6 space-y-4 shadow-xs relative overflow-hidden group">
+                    {/* Simulated Video Frame with Play Overlay */}
+                    <div className="relative rounded-2xl overflow-hidden bg-[#F5F7FB] border border-black/[0.04] aspect-[16/9] flex items-center justify-center group-hover:shadow-inner transition-shadow">
+                      <div className="absolute top-2.5 right-2.5 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[10px] font-bold text-[#202128] shadow-xs">
+                        {card.recovered}
+                      </div>
 
-              <div className="bg-white rounded-3xl p-6 space-y-4 shadow-xs">
-                <div className="flex items-center gap-1 text-[#D97706]">
-                  {"★★★★★"}
-                </div>
-                <p className="text-xs sm:text-sm text-[#202128] font-medium leading-relaxed">
-                  &ldquo;The hospital billed ₹65,000 for a stent capped at ₹30,080 by NPPA. CuraVeris cited the exact government gazette notification and saved us ₹34,920.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-black/[0.04]">
-                  <p className="font-bold text-xs text-[#202128]">Pooja K., 36 yo</p>
-                  <p className="text-[10px] text-[#606470]">Delhi NCR • Cardiology Audit</p>
-                </div>
-              </div>
+                      <button
+                        type="button"
+                        onClick={() => setPlayingVideo(isPlaying ? null : card.id)}
+                        className="w-12 h-12 rounded-full bg-[#202128] hover:bg-black text-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-105 active:scale-95"
+                      >
+                        {isPlaying ? <Volume2 className="w-5 h-5 text-[#86C159]" /> : <Play className="w-5 h-5 ml-0.5" fill="currentColor" />}
+                      </button>
 
-              <div className="bg-white rounded-3xl p-6 space-y-4 shadow-xs">
-                <div className="flex items-center gap-1 text-[#D97706]">
-                  {"★★★★★"}
-                </div>
-                <p className="text-xs sm:text-sm text-[#202128] font-medium leading-relaxed">
-                  &ldquo;Our insurance TPA rejected ₹28,000 under &apos;non-payable&apos; consumables. The CuraVeris appeal notice reversed the rejection in 10 days.&rdquo;
-                </p>
-                <div className="pt-2 border-t border-black/[0.04]">
-                  <p className="font-bold text-xs text-[#202128]">Vikram S., 51 yo</p>
-                  <p className="text-[10px] text-[#606470]">Mumbai • Orthopedic Surgery</p>
-                </div>
-              </div>
+                      {isPlaying && (
+                        <div className="absolute bottom-2 left-3 right-3 flex items-center gap-1">
+                          <div className="flex-1 h-1 bg-black/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#43A8B2] animate-pulse w-2/3" />
+                          </div>
+                          <span className="text-[9px] font-mono font-bold text-[#202128]">0:42</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1 text-[#D97706] text-xs">
+                      {"★★★★★"}
+                    </div>
+                    <p className="text-xs sm:text-sm text-[#202128] font-medium leading-relaxed">
+                      &ldquo;{card.quote}&rdquo;
+                    </p>
+                    <div className="pt-2 border-t border-black/[0.04]">
+                      <p className="font-bold text-xs text-[#202128]">{card.name}</p>
+                      <p className="text-[10px] text-[#606470]">{card.loc}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      {/* 11. FAQ ACCORDION SECTION (Grassfeld Style) */}
-      <section className="relative z-10 py-16 sm:py-24 bg-white border-t border-black/[0.05]">
+      {/* 12. FAQ ACCORDION SECTION (Grassfeld Style) */}
+      <section className="relative z-10 py-16 sm:py-24 bg-[#F5F7FB]">
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center space-y-3">
             <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-[#202128] tracking-tight">
@@ -1061,7 +1176,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-[#F5F7FB] border border-black/[0.06] overflow-hidden shadow-xs transition-all"
+                  className="rounded-2xl bg-white border border-black/[0.06] overflow-hidden shadow-xs transition-all"
                 >
                   <button
                     type="button"
@@ -1087,8 +1202,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 12. FINAL HIGH-IMPACT CTA BANNER (Grassfeld Pastel Gradient Banner) */}
-      <section className="relative z-10 py-12 sm:py-20 bg-[#F5F7FB]">
+      {/* 13. FINAL HIGH-IMPACT CTA BANNER (Grassfeld Pastel Gradient Banner) */}
+      <section className="relative z-10 py-12 sm:py-20 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grassfeld-hero-card p-8 sm:p-14 text-center space-y-6 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
             <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-[#202128] tracking-tight max-w-2xl mx-auto">
@@ -1121,7 +1236,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 13. OBSIDIAN FOOTER (Grassfeld Exact Dark Footer) */}
+      {/* 14. OBSIDIAN FOOTER (Grassfeld Exact Dark Footer) */}
       <footer className="relative z-10 bg-[#1B1C20] text-white py-12 sm:py-16 border-t border-black/[0.06]">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-white/10">
