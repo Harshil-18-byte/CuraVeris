@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node -e \"const fs=require('fs'); if(fs.existsSync('.next') && !fs.existsSync('web/.next')) { try { fs.mkdirSync('web', {recursive:true}); fs.cpSync('.next', 'web/.next', {recursive:true}); } catch(e){} }\"",
     "start": "next start",
     "lint": "next lint"
   },
