@@ -1,19 +1,3 @@
----
-{
-  "id": "file_6elr7gx5",
-  "filetype": "document",
-  "filename": "README",
-  "created_at": "2026-09-04T03:24:11.353Z",
-  "updated_at": "2026-09-04T03:24:23.728Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris Multi-Platform Web Client
 
 The authoritative frontend for CuraVeris built with **Next.js 14 App Router**, **React 18**, **Framer Motion**, and **TanStack React Query**.
