@@ -305,6 +305,42 @@ See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) and [`docs/DATA_MODEL.md`](
 
 ## Multi-Platform Frontend & Client Architecture
 
+> **Architecture Rule**: Web and Native Mobile are completely independent presentation tiers. They share **only** the FastAPI backend. Do not treat mobile as a web wrapper or PWA.
+
+### 3-Tier Decoupling
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                     PRESENTATION TIER                           │
+│                                                                 │
+│  ┌─────────────────────┐   ┌─────────────────────────────────┐  │
+│  │  Web Client (web/)  │   │  Native Mobile Clients          │  │
+│  │  Next.js 14         │   │  clients/android/  (Kotlin +    │  │
+│  │  App Router         │   │  Jetpack Compose)               │  │
+│  │  Desktop Browser UI │   │  clients/ios/      (Swift 5.9 + │  │
+│  │  Vercel-deployed    │   │  SwiftUI)                       │  │
+│  │  Distinct design    │   │  Cyber-forensic mobile UI       │  │
+│  │  system & routing   │   │  6-tab persistent navigation    │  │
+│  └─────────┬───────────┘   └────────────────┬────────────────┘  │
+└────────────│───────────────────────────────│───────────────────┘
+             │  REST  /api/v1                │  REST  /api/v1
+             ▼                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    SHARED BACKEND TIER                          │
+│  backend/  —  FastAPI + SQLAlchemy + ML Ensemble + Audit Engine  │
+│  Single source of truth for all statutory financial data         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Client | Path | Language / Framework | Deployment | UI Style |
+| :--- | :--- | :--- | :--- | :--- |
+| **Web Portal** | `web/` | TypeScript · Next.js 14 · React 18 | Vercel | High-contrast desktop dashboard |
+| **Android App** | `clients/android/` | Kotlin · Jetpack Compose | APK / Play Store | Cyber-forensic mobile UI |
+| **iOS App** | `clients/ios/` | Swift 5.9 · SwiftUI | IPA / App Store | Native Cupertino medical UI |
+| **Backend API** | `backend/` | Python 3.11 · FastAPI | Render / Docker | — (serves all clients) |
+
+### Web Client (`web/`) — Desktop Next.js 14 Portal
+
 The CuraVeris web and client ecosystem is powered by **Next.js 14 App Router**, **React 18**, and **Tailwind CSS**, delivering specialized views for Desktop Web, Android Material, and iOS Cupertino:
 
 1. **Monochrome High-Contrast UI**: Uses typography, status tags, and monospaced badges (`[NPPA CAP]`, `[DPCO]`, `[CGHS]`, `[SECTION 65B]`, `[VERIFIED]`) over solid, high-contrast surfaces (`#090D16`, `#0F172A`, `#1E293B`).
@@ -776,7 +812,14 @@ CuraVeris/
 │   ├── requirements.txt                 # Backend Python package dependencies
 │   ├── requirements-dev.txt             # Development and testing dependencies
 │   └── run.py                           # Local server launcher
-├── clients/                             # Mobile & web client foundations
+├── clients/                             # Independent native mobile client applications
+│   ├── android/                         # Android native app (Kotlin + Jetpack Compose)
+│   │   ├── app/src/main/                # Kotlin source: Activities, Fragments, ViewModels
+│   │   ├── app/build/outputs/apk/       # Compiled APK artifacts
+│   │   └── build.gradle                 # Gradle build configuration (JDK 17)
+│   └── ios/                             # iOS native app (Swift 5.9 + SwiftUI)
+│       ├── CuraVeris/                   # Swift source: Views, ViewModels, Models
+│       └── CuraVeris.xcodeproj/         # Xcode project configuration
 ├── config/                              # Global service and environment configs
 ├── contracts/                           # OpenAPI and RPC interface contracts
 ├── data/                                # Vector storage and runtime data
