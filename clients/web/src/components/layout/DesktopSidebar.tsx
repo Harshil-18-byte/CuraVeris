@@ -47,13 +47,18 @@ export function DesktopSidebar() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {/* Brand & Collapse Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0.25rem' }}>
-          {!collapsed && (
-            <Link href="/" style={{ textDecoration: 'none' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
+            <img
+              src="/logo.png"
+              alt="CuraVeris"
+              style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'contain', flexShrink: 0 }}
+            />
+            {!collapsed && (
               <span style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.02em', color: '#FFFFFF', fontFamily: 'var(--font-mono)' }}>
                 CURAVERIS
               </span>
-            </Link>
-          )}
+            )}
+          </Link>
 
           <button
             type="button"
