@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".CuraVerisApplication"
@@ -17,10 +19,15 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
 
+        <!--
+            PRIMARY LAUNCHER: Native Jetpack Compose UI.
+            This is the cyber-forensic mobile interface — independent of the web app.
+        -->
         <activity
-            android:name=".WebAppActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">
 
             <intent-filter>
@@ -28,7 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep linking support (curaveris://) -->
+            <!-- Deep linking: curaveris://audit/{id} -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -38,7 +45,7 @@
                     android:host="audit" />
             </intent-filter>
 
-            <!-- Universal linking support (https://app.curaveris.internal) -->
+            <!-- Universal linking: https://app.curaveris.internal/bill/* -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -51,10 +58,15 @@
 
         </activity>
 
+        <!--
+            SECONDARY: WebAppActivity for web portal companion view.
+            Not a launcher — invoked explicitly when needed.
+        -->
         <activity
-            android:name=".MainActivity"
+            android:name=".WebAppActivity"
             android:exported="false"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 
