@@ -19,7 +19,7 @@ import { ProcessingStatus } from "@/types";
 
 export default function BillDetailPage() {
   const params = useParams();
-  const billId = params.id as string;
+  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "bill-cv-101";
 
   const { data: bill, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["bill", billId],
