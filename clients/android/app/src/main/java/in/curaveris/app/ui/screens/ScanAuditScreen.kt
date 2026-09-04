@@ -32,9 +32,11 @@ data class AuditedLineItem(
     val citation: String
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanAuditScreen(
-    onNavigateToDispute: () -> Unit = {}
+    onNavigateToDispute: () -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
     var isAnalyzing by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Itemized Audit, 1: SHAP Waterfall, 2: 65B Ledger
@@ -96,14 +98,33 @@ fun ScanAuditScreen(
 
     val totalOvercharge = remember(sampleItems) { sampleItems.sumOf { it.overcharge } }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-            .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text("SCAN & FORENSIC AUDIT", fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = TextPrimary)
+                        Text("LayoutLMv3 OCR & Statutory Enforcement", fontSize = 11.sp, color = TextSecondary)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkSurface)
+            )
+        },
+        containerColor = DarkBackground
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(top = 12.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
         // Upload / Camera Ingestion Header
         item {
             Card(
@@ -290,6 +311,7 @@ fun ScanAuditScreen(
             }
         }
     }
+}
 }
 
 @Composable
