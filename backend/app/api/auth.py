@@ -469,6 +469,8 @@ async def verify_otp_and_login(request: Request, body: OTPVerifyRequest, db: Asy
 @router.get("/phone-verification/capability")
 async def phone_verification_capability():
     """Reports available verification channels."""
+    if not getattr(settings, "SMS_PROVIDER_API_KEY", None) and not getattr(settings, "TWILIO_ACCOUNT_SID", None):
+        return {"status": "UNAVAILABLE", "channels": ["email"], "provider": "unconfigured"}
     return {"status": "AVAILABLE", "channels": ["email", "sms"], "provider": "Resend API"}
 
 
