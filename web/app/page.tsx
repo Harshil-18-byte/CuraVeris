@@ -196,31 +196,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F7FB] text-[#202128] flex flex-col selection:bg-[#DBF1F4] selection:text-[#202128] relative overflow-x-hidden font-sans">
-      {/* 0. TOP ANNOUNCEMENT PROMO BANNER (#banner2_component) */}
-      {showBanner && (
-        <div className="bg-[#202128] text-white text-xs py-2.5 px-4 flex items-center justify-between z-50 shadow-sm relative">
-          <div className="max-w-[1280px] mx-auto w-full flex items-center justify-center gap-2 text-center">
-            <span className="font-extrabold text-[#79C5CD] uppercase tracking-wider text-[10px] bg-white/10 px-2.5 py-0.5 rounded-full">
-              New NPPA Gazette
-            </span>
-            <span className="font-medium text-neutral-200">
-              Over ₹4.2 Crore in hospital overcharges detected and disputed under statutory price caps.
-            </span>
-            <Link href="/bills/upload" className="font-bold text-[#79C5CD] hover:underline ml-1 inline-flex items-center gap-1">
-              <span>Check your bill free</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowBanner(false)}
-            className="text-neutral-400 hover:text-white transition-colors focus:outline-none ml-2"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
       {/* 1. FLOATING NAVIGATION BAR (Grassfeld Exact Spec) */}
       <header className="sticky top-4 z-50 max-w-[1280px] mx-auto w-[94%] sm:w-full px-2 sm:px-4">
         <div className="h-[66px] rounded-full bg-white/90 backdrop-blur-2xl border border-black/[0.06] px-5 sm:px-8 flex items-center justify-between shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
@@ -385,8 +360,140 @@ export default function LandingPage() {
           </div>
         </div>
 
+        {/* 2.5 WHAT SERVICES WE PROVIDE (Comprehensive Forensic Services Grid) */}
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-24">
+          <div className="text-center max-w-2xl mx-auto space-y-3 mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#DBF1F4] border border-[#79C5CD]/30 text-[#202128] text-xs font-bold shadow-xs">
+              <Sparkles className="w-4 h-4 text-[#43A8B2]" />
+              <span>WHAT SERVICES WE PROVIDE</span>
+            </div>
+            <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-[#202128] tracking-tight">
+              Full-Spectrum Hospital Bill Protection
+            </h2>
+            <p className="text-sm sm:text-base text-[#606470] font-medium">
+              We provide six specialized forensic services designed to audit, dispute, and recover unfair hospital charges.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {/* Service 1 */}
+            <div className="bg-white rounded-[32px] p-8 border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all space-y-5 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#DFF1F3] p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_analytics_3d.avif" alt="OCR Audit" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
+                <h3 className="font-heading font-extrabold text-xl text-[#202128]">
+                  1. Inpatient Bill Forensic Audit
+                </h3>
+                <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                  Deep OCR ingestion of multi-page hospital invoices. We extract, categorize, and cross-examine every medicine, implant, consumable, and doctor charge.
+                </p>
+              </div>
+              <div className="pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs font-bold text-[#43A8B2]">
+                <span>Instant Overcharge Detection</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+
+            {/* Service 2 */}
+            <div className="bg-white rounded-[32px] p-8 border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all space-y-5 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#E7E3FF] p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_bomb_3d.png" alt="Price Caps" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
+                <h3 className="font-heading font-extrabold text-xl text-[#202128]">
+                  2. NPPA & DPCO Price Ceiling Check
+                </h3>
+                <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                  Automatic comparison against 800+ official statutory price caps for cardiac stents, knee implants, and National List of Essential Medicines (NLEM).
+                </p>
+              </div>
+              <div className="pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs font-bold text-[#5E84E2]">
+                <span>Govt Gazette Compliance</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+
+            {/* Service 3 */}
+            <div className="bg-white rounded-[32px] p-8 border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all space-y-5 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#DDECFD] p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_folder_3d.png" alt="Section 65B" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
+                <h3 className="font-heading font-extrabold text-xl text-[#202128]">
+                  3. Section 65B Dispute Petitions
+                </h3>
+                <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                  Auto-generates tamper-evident electronic dispute notices certified with cryptographic SHA-256 digests, admissible before Consumer Courts.
+                </p>
+              </div>
+              <div className="pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs font-bold text-[#43A8B2]">
+                <span>Legally Admissible Proof</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+
+            {/* Service 4 */}
+            <div className="bg-white rounded-[32px] p-8 border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all space-y-5 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#DFF1F3] p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_piggy_3d.webp" alt="TPA Reconciler" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
+                <h3 className="font-heading font-extrabold text-xl text-[#202128]">
+                  4. IRDAI Insurance Claim Reconciler
+                </h3>
+                <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                  Dispute unfair TPA claim deductions. We match disallowed items against the IRDAI Master Non-Payables Schedule to prepare formal appeals.
+                </p>
+              </div>
+              <div className="pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs font-bold text-[#86C159]">
+                <span>Reconcile Deductions</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+
+            {/* Service 5 */}
+            <div className="bg-white rounded-[32px] p-8 border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all space-y-5 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#E7E3FF] p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_magic_3d.png" alt="Advocate AI" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
+                <h3 className="font-heading font-extrabold text-xl text-[#202128]">
+                  5. CuraVeris Advocate AI Assistant
+                </h3>
+                <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                  24/7 intelligent patient advocate. Ask questions about your bill, understand medical billing codes, and get instant guidance on grievance filings.
+                </p>
+              </div>
+              <div className="pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs font-bold text-[#5E84E2]">
+                <span>24/7 Forensic Assistant</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+
+            {/* Service 6 */}
+            <div className="bg-white rounded-[32px] p-8 border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all space-y-5 flex flex-col justify-between group">
+              <div className="space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#DDECFD] p-2.5 flex items-center justify-center shadow-xs">
+                  <Image src="/assets/scraped/icon_share_3d.png" alt="DPDP Vault" width={48} height={48} className="w-full h-full object-contain" />
+                </div>
+                <h3 className="font-heading font-extrabold text-xl text-[#202128]">
+                  6. DPDP 2023 Patient Privacy Vault
+                </h3>
+                <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                  Complete patient data sovereignty under the DPDP Act 2023. Zero monetization, bank-grade encryption at rest, and instant 1-click data purging.
+                </p>
+              </div>
+              <div className="pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs font-bold text-[#43A8B2]">
+                <span>100% Zero-Knowledge Privacy</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 3. INTERACTIVE 7-MODULE SHOWCASE (Managing your hospital bill defense starts with CuraVeris) */}
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-24">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-[#202128] tracking-tight">
               Managing your hospital bill defense starts with CuraVeris
