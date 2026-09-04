@@ -141,9 +141,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-white selection:bg-brand-accent/20 selection:text-brand-accent">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#090B10] selection:bg-brand-accent/30 selection:text-white">
       {/* LEFT PANEL (40% width on desktop) */}
-      <div className="lg:w-[40%] bg-brand-primary text-white p-8 lg:p-12 flex flex-col justify-between hidden lg:flex">
+      <div className="lg:w-[40%] bg-[#06080C] text-white p-8 lg:p-12 flex flex-col justify-between hidden lg:flex border-r border-[#1E2433]">
         {/* Brand */}
         <Logo href="/" showTagline={true} theme="light" size="md" />
 
@@ -175,7 +175,7 @@ export default function RegisterPage() {
       </div>
 
       {/* RIGHT PANEL (60% width on desktop) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-white">
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-[#090B10]">
         {/* Mobile Header */}
         <div className="w-full max-w-[400px] lg:hidden mb-8 flex items-center justify-between">
           <Logo href="/" showTagline={true} size="sm" />
