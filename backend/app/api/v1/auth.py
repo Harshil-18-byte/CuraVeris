@@ -11,6 +11,7 @@ from app.core.security import (
     verify_password,
     create_access_token,
     create_refresh_token,
+    hash_token,
     generate_otp,
     verify_otp,
     verify_access_token,
@@ -134,7 +135,8 @@ async def verify_otp_endpoint(req: VerifyOtpRequest, db: AsyncSession = Depends(
 
     # Issue access and refresh tokens
     access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
-    raw_refresh, hashed_refresh = create_refresh_token()
+    raw_refresh = create_refresh_token()
+    hashed_refresh = hash_token(raw_refresh)
 
     session = UserSession(
         user_id=user.id,
@@ -195,7 +197,8 @@ async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)):
     user.last_login_at = now_utc
 
     access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
-    raw_refresh, hashed_refresh = create_refresh_token()
+    raw_refresh = create_refresh_token()
+    hashed_refresh = hash_token(raw_refresh)
 
     session = UserSession(
         user_id=user.id,
@@ -247,7 +250,8 @@ async def refresh_tokens(req: RefreshTokenRequest, db: AsyncSession = Depends(ge
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User account inactive")
 
     # Create new session
-    new_raw_refresh, new_hashed_refresh = create_refresh_token()
+    new_raw_refresh = create_refresh_token()
+    new_hashed_refresh = hash_token(new_raw_refresh)
     new_session = UserSession(
         user_id=user.id,
         refresh_token_hash=new_hashed_refresh,
