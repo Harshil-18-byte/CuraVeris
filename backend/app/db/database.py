@@ -46,16 +46,26 @@ def _get_active_urls():
 
 def _build_engines(url: str, sync_url: str):
     is_sqlite = "sqlite" in url
-    a_connect_args = {"check_same_thread": False} if is_sqlite else {"timeout": 2}
-    s_connect_args = {"check_same_thread": False} if is_sqlite else {"connect_timeout": 2}
-    a_eng = create_async_engine(
-        url,
-        echo=False,
-        connect_args=a_connect_args
-    )
+    a_connect_args: dict = {"check_same_thread": False} if is_sqlite else {}
+    s_connect_args: dict = {"check_same_thread": False} if is_sqlite else {"connect_timeout": 10}
+
+    if is_sqlite:
+        a_eng = create_async_engine(url, echo=False, connect_args=a_connect_args)
+    else:
+        a_eng = create_async_engine(
+            url,
+            echo=False,
+            pool_pre_ping=True,       # Verify connection before use — prevents 'connection is closed' on stale Neon connections
+            pool_recycle=300,         # Recycle connections after 5 min — matches Neon's idle timeout
+            pool_size=5,
+            max_overflow=10,
+            connect_args=a_connect_args,
+        )
     s_eng = create_engine(
         sync_url,
         echo=False,
+        pool_pre_ping=True,
+        pool_recycle=300,
         connect_args=s_connect_args
     )
     a_session = async_sessionmaker(bind=a_eng, class_=AsyncSession, expire_on_commit=False)
