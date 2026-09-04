@@ -14,7 +14,7 @@ export default function BillUploadPage() {
       description="Upload your hospital bill, discharge summary, or pharmacy receipts to check for overcharges."
       action={
         <Link href="/bills">
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="sm" className="rounded-full">
             <ArrowLeft className="w-4 h-4 mr-1.5" strokeWidth={1.5} />
             Back to Bills
           </Button>
