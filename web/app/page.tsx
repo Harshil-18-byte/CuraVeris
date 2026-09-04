@@ -36,6 +36,11 @@ import {
   HelpCircle,
   Play,
   Volume2,
+  X,
+  Users,
+  Building2,
+  TrendingUp,
+  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -110,6 +115,10 @@ const FAQS = [
     q: "Does CuraVeris charge patients for checking hospital bills?",
     a: "Checking your bill, running the savings simulation, exploring government price limits, and generating standard dispute letters is 100% free for individual patients and families.",
   },
+  {
+    q: "What can I do with CuraVeris Navigator on desktop?",
+    a: "CuraVeris Navigator provides deep line-by-line inspection, historical bill comparisons, CSV/PDF report exports, and one-click submission to the National Consumer Helpline and NPPA IPDMS grievance portal.",
+  },
 ];
 
 const REGULATORY_BODIES = [
@@ -122,8 +131,13 @@ const REGULATORY_BODIES = [
 ];
 
 export default function LandingPage() {
-  // Bento Showcase Active Tab
-  const [activeTab, setActiveTab] = useState<"audit" | "calculator" | "priceCaps" | "dispute" | "privacy">("audit");
+  // Top Banner state
+  const [showBanner, setShowBanner] = useState(true);
+
+  // Tab Showcase Active Module
+  const [activeModule, setActiveModule] = useState<
+    "audit" | "simulator" | "priceCaps" | "petitions" | "insurance" | "vault" | "consumer"
+  >("audit");
 
   // Calculator State
   const [billAmount, setBillAmount] = useState<number>(385000);
@@ -132,7 +146,7 @@ export default function LandingPage() {
   const [hasDuplicateIcu, setHasDuplicateIcu] = useState<boolean>(true);
   const [hasPharmacyMarkup, setHasPharmacyMarkup] = useState<boolean>(true);
 
-  // Search State
+  // Search & Accordion State
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedLetter, setCopiedLetter] = useState<boolean>(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
@@ -182,6 +196,31 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F7FB] text-[#202128] flex flex-col selection:bg-[#DBF1F4] selection:text-[#202128] relative overflow-x-hidden font-sans">
+      {/* 0. TOP ANNOUNCEMENT PROMO BANNER (#banner2_component) */}
+      {showBanner && (
+        <div className="bg-[#202128] text-white text-xs py-2.5 px-4 flex items-center justify-between z-50 shadow-sm relative">
+          <div className="max-w-[1280px] mx-auto w-full flex items-center justify-center gap-2 text-center">
+            <span className="font-extrabold text-[#79C5CD] uppercase tracking-wider text-[10px] bg-white/10 px-2.5 py-0.5 rounded-full">
+              New NPPA Gazette
+            </span>
+            <span className="font-medium text-neutral-200">
+              Over ₹4.2 Crore in hospital overcharges detected and disputed under statutory price caps.
+            </span>
+            <Link href="/bills/upload" className="font-bold text-[#79C5CD] hover:underline ml-1 inline-flex items-center gap-1">
+              <span>Check your bill free</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowBanner(false)}
+            className="text-neutral-400 hover:text-white transition-colors focus:outline-none ml-2"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* 1. FLOATING NAVIGATION BAR (Grassfeld Exact Spec) */}
       <header className="sticky top-4 z-50 max-w-[1280px] mx-auto w-[94%] sm:w-full px-2 sm:px-4">
         <div className="h-[66px] rounded-full bg-white/90 backdrop-blur-2xl border border-black/[0.06] px-5 sm:px-8 flex items-center justify-between shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
@@ -261,10 +300,10 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-base sm:text-xl text-[#606470] leading-relaxed max-w-2xl mx-auto font-medium">
-            Upload your hospital bill. CuraVeris instantly audits line items against 800+ official NPPA price ceilings, CGHS package rules, and legal consumer protections.
+            Gain full statutory transparency over your inpatient bills with automated itemized auditing, NPPA price cap compliance, and AI-powered dispute generation.
           </p>
 
-          {/* Hero CTAs: Dark Obsidian Pill & White Outline Pill */}
+          {/* Hero CTAs */}
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto">
             <Link href="/bills/upload" className="w-full sm:w-auto">
               <button
@@ -286,23 +325,30 @@ export default function LandingPage() {
             </a>
           </div>
 
-          {/* Quick Trust Highlights */}
-          <div className="pt-3 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-[#606470] font-bold">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-[#43A8B2]" />
-              <span>100% Free for Patients</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <BadgeCheck className="w-4 h-4 text-[#43A8B2]" />
-              <span>Section 65B Legal Evidence</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#43A8B2]" />
-              <span>Zero Data Selling · DPDP Compliant</span>
-            </div>
+          {/* Interactive AI Chat Prompt Motion Bar */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
+            <span className="text-[11px] font-bold text-[#606470] mr-1">Ask CuraVeris:</span>
+            {[
+              "Is my DES stent price capped?",
+              "Why was ICU nursing charged twice?",
+              "How to challenge TPA deductions?",
+            ].map((query, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("ai-chat-section");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="px-3.5 py-1.5 rounded-full bg-white border border-black/[0.06] text-xs font-semibold text-[#202128] hover:bg-[#DBF1F4] hover:border-[#79C5CD]/40 shadow-xs transition-colors flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3 h-3 text-[#43A8B2]" />
+                <span>&ldquo;{query}&rdquo;</span>
+              </button>
+            ))}
           </div>
 
-          {/* 3D Visual Hero Presentation (Matching Grassfeld 3D Device Art) */}
+          {/* 3D Visual Hero Presentation */}
           <div className="pt-8 max-w-[1000px] mx-auto relative group">
             <div className="relative rounded-[36px] overflow-hidden border border-black/[0.06] shadow-[0_24px_70px_rgba(0,0,0,0.08)] bg-white">
               <Image
@@ -339,27 +385,38 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* 3. CENTERPIECE INTERACTIVE TAB SHOWCASE (Grassfeld Multi-Tab Bento Container) */}
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16">
+        {/* 3. INTERACTIVE 7-MODULE SHOWCASE (Managing your hospital bill defense starts with CuraVeris) */}
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20">
+          <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
+            <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-[#202128] tracking-tight">
+              Managing your hospital bill defense starts with CuraVeris
+            </h2>
+            <p className="text-sm sm:text-base text-[#606470]">
+              Connect inpatient invoices, audit pharmaceutical markups, dispute unbundled ICU charges, and protect your financial rights with ease.
+            </p>
+          </div>
+
           <div className="grassfeld-hero-card p-6 sm:p-10 lg:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.06)] relative overflow-hidden">
-            {/* Tab Pill Switcher Track */}
+            {/* 7 Tab Pills */}
             <div className="flex items-center justify-start sm:justify-center overflow-x-auto gap-2 pb-6 border-b border-black/[0.06] no-scrollbar">
               <div className="p-1.5 rounded-full bg-[#EDF0FB] border border-black/[0.03] inline-flex items-center gap-1.5">
                 {[
-                  { id: "audit", label: "Forensic Bill Audit", icon: ScanLine },
-                  { id: "calculator", label: "Savings Calculator", icon: Calculator },
-                  { id: "priceCaps", label: "Price Caps Engine", icon: Scale },
-                  { id: "dispute", label: "Legal Dispute Notice", icon: FileCheck2 },
-                  { id: "privacy", label: "DPDP 2023 Vault", icon: Lock },
+                  { id: "audit", label: "Forensic Audit", icon: ScanLine },
+                  { id: "simulator", label: "Savings Calculator", icon: Calculator },
+                  { id: "priceCaps", label: "Price Caps", icon: Scale },
+                  { id: "petitions", label: "Section 65B Notice", icon: FileCheck2 },
+                  { id: "insurance", label: "TPA Reconciler", icon: FileSpreadsheet },
+                  { id: "vault", label: "DPDP Vault", icon: Lock },
+                  { id: "consumer", label: "Grievance Portal", icon: Building2 },
                 ].map((tab) => {
                   const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
+                  const isActive = activeModule === tab.id;
                   return (
                     <button
                       key={tab.id}
                       type="button"
-                      onClick={() => setActiveTab(tab.id as any)}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 ${
+                      onClick={() => setActiveModule(tab.id as any)}
+                      className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 ${
                         isActive
                           ? "bg-[#DBF1F4] text-[#202128] shadow-sm"
                           : "text-[#606470] hover:text-[#202128] hover:bg-white/60"
@@ -374,7 +431,7 @@ export default function LandingPage() {
             </div>
 
             {/* Tab 1: Forensic Audit View */}
-            {activeTab === "audit" && (
+            {activeModule === "audit" && (
               <div className="pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-in fade-in duration-300">
                 <div className="lg:col-span-6 space-y-4">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FEE2E2] text-[#DC2626] text-xs font-bold border border-[#FECACA]">
@@ -461,7 +518,7 @@ export default function LandingPage() {
             )}
 
             {/* Tab 2: Savings Calculator */}
-            {activeTab === "calculator" && (
+            {activeModule === "simulator" && (
               <div id="simulator" className="pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-in fade-in duration-300">
                 <div className="lg:col-span-7 space-y-5">
                   <div>
@@ -558,7 +615,7 @@ export default function LandingPage() {
             )}
 
             {/* Tab 3: Price Caps Engine */}
-            {activeTab === "priceCaps" && (
+            {activeModule === "priceCaps" && (
               <div id="price-checker" className="pt-8 space-y-5 animate-in fade-in duration-300">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                   <p className="text-xs sm:text-sm text-[#606470]">
@@ -594,7 +651,7 @@ export default function LandingPage() {
             )}
 
             {/* Tab 4: Legal Dispute Notice */}
-            {activeTab === "dispute" && (
+            {activeModule === "petitions" && (
               <div className="pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-in fade-in duration-300">
                 <div className="lg:col-span-6 space-y-4">
                   <span className="px-3.5 py-1 rounded-full bg-[#DBF1F4] text-[#202128] text-xs font-bold border border-[#79C5CD]/30">
@@ -626,8 +683,46 @@ export default function LandingPage() {
               </div>
             )}
 
-            {/* Tab 5: DPDP 2023 Privacy Vault */}
-            {activeTab === "privacy" && (
+            {/* Tab 5: TPA & Insurance Reconciler */}
+            {activeModule === "insurance" && (
+              <div className="pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-in fade-in duration-300">
+                <div className="lg:col-span-6 space-y-4">
+                  <span className="px-3.5 py-1 rounded-full bg-[#E7E3FF] text-[#202128] text-xs font-bold border border-[#5E84E2]/30">
+                    IRDAI Non-Payable Master Schedule
+                  </span>
+                  <h3 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#202128] tracking-tight">
+                    Insurance claim appeal engine.
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                    When TPAs deduct claims under vague &apos;non-medical&apos; or &apos;proportionate&apos; deductions, our reconciler compares each deduction against IRDAI circulars and generates an authoritative appeal letter.
+                  </p>
+                  <div className="pt-2">
+                    <Link href="/bills">
+                      <button
+                        type="button"
+                        className="bg-[#202128] hover:bg-black text-white font-bold text-xs px-6 py-3 rounded-full shadow-md transition-all hover:scale-[1.02]"
+                      >
+                        Reconcile Deductions Free
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-6 bg-white rounded-3xl border border-black/[0.06] p-6 space-y-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
+                  <div className="p-3 bg-[#F5F7FB] rounded-2xl flex justify-between items-center text-xs">
+                    <span className="font-bold text-[#202128]">TPA Deduction Disputed</span>
+                    <span className="font-mono font-bold text-[#DC2626]">₹28,500</span>
+                  </div>
+                  <div className="p-3 bg-[#F5F7FB] rounded-2xl flex justify-between items-center text-xs">
+                    <span className="font-bold text-[#202128]">IRDAI Ground Cited</span>
+                    <span className="font-bold text-[#43A8B2]">Standard Annexure I</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 6: DPDP Vault */}
+            {activeModule === "vault" && (
               <div className="pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-in fade-in duration-300">
                 <div className="lg:col-span-6 space-y-4">
                   <span className="px-3.5 py-1 rounded-full bg-[#DBF1F4] text-[#202128] text-xs font-bold border border-[#79C5CD]/30">
@@ -667,6 +762,37 @@ export default function LandingPage() {
                 </div>
               </div>
             )}
+
+            {/* Tab 7: Consumer Grievance Portal */}
+            {activeModule === "consumer" && (
+              <div className="pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-in fade-in duration-300">
+                <div className="lg:col-span-6 space-y-4">
+                  <span className="px-3.5 py-1 rounded-full bg-[#DDECFD] text-[#202128] text-xs font-bold border border-[#43A8B2]/30">
+                    Consumer Protection Act 2019
+                  </span>
+                  <h3 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#202128] tracking-tight">
+                    Formal escalation to statutory desks.
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#606470] leading-relaxed">
+                    If the hospital billing desk fails to issue a refund within 7 working days, CuraVeris auto-populates complaint forms for the National Consumer Helpline and NPPA IPDMS.
+                  </p>
+                </div>
+
+                <div className="lg:col-span-6 bg-white rounded-3xl border border-black/[0.06] p-6 space-y-3 shadow-xs">
+                  <p className="text-xs font-bold text-[#202128]">Connected Regulatory Grievance Desks:</p>
+                  <div className="space-y-2 text-xs text-[#606470]">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#86C159]" />
+                      <span>National Pharmaceutical Pricing Authority (IPDMS)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#86C159]" />
+                      <span>National Consumer Helpline (NCH Portal)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -674,7 +800,7 @@ export default function LandingPage() {
       {/* 4. STATUTORY MARQUEE CAROUSEL (Infinite Scroll Grassfeld Animation) */}
       <section className="relative z-10 py-7 border-y border-black/[0.05] bg-white overflow-hidden">
         <p className="text-center text-[11px] font-extrabold text-[#606470] uppercase tracking-widest mb-4">
-          Auditing bills against official Indian statutory frameworks & price ceilings
+          Audited statutory limits: 800+ Official Price Caps & Package Rules
         </p>
         <div className="flex overflow-hidden select-none">
           <div className="animate-marquee flex items-center gap-8 text-xs font-extrabold text-[#202128]">
@@ -724,7 +850,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6. BENTO GRID — "Organize your hospital bill defense" (4 Pastel Bento Cards) */}
+      {/* 6. COLLABORATIVE FAMILY BENTO GRID — "Organize your hospital bill defense" */}
       <section className="relative z-10 py-16 sm:py-24">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -732,10 +858,10 @@ export default function LandingPage() {
               Complete Patient Financial Protection
             </div>
             <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-[#202128] tracking-tight">
-              Organize your hospital bill defense with clarity.
+              Organize your family&apos;s healthcare defense together.
             </h2>
             <p className="text-sm sm:text-base text-[#606470] font-medium">
-              Built with state-of-the-art AI forensics and official Indian statutory guidelines.
+              Effortlessly verify family medical bills, coordinate dispute notices with relatives, and ensure fair treatment together as a team.
             </p>
           </div>
 
@@ -744,7 +870,7 @@ export default function LandingPage() {
             <div className="bg-[#DFF1F3] rounded-[32px] p-7 flex flex-col justify-between space-y-8 relative overflow-hidden group hover:scale-[1.01] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
               <div className="flex justify-between items-start">
                 <span className="w-10 h-10 rounded-2xl bg-white text-[#202128] flex items-center justify-center font-bold text-sm shadow-xs">
-                  <ScanLine className="w-5 h-5 text-[#43A8B2]" />
+                  <Users className="w-5 h-5 text-[#43A8B2]" />
                 </span>
                 <Link href="/bills/upload" className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#202128] flex items-center justify-center transition-colors">
                   <ArrowUpRight className="w-4 h-4" />
@@ -753,16 +879,16 @@ export default function LandingPage() {
 
               <div className="space-y-2">
                 <h3 className="font-heading font-extrabold text-xl text-[#202128]">
-                  Audit itemized bills
+                  Share bill audits
                 </h3>
                 <p className="text-xs text-[#606470] leading-relaxed">
-                  Automatic line item extraction for medicines, implants, bed rent, and OT fees against NPPA ceiling notifications.
+                  Collaborate on hospital bill verification with family members, caregivers, and medical advisors in real time.
                 </p>
               </div>
 
               <div className="bg-white/80 rounded-2xl p-3 space-y-1 shadow-xs">
-                <span className="text-[10px] uppercase font-bold text-[#606470] block">Recent Verified</span>
-                <p className="font-bold text-xs text-[#202128]">DES Stent • ₹34,920 Saved</p>
+                <span className="text-[10px] uppercase font-bold text-[#606470] block">Family Sharing</span>
+                <p className="font-bold text-xs text-[#202128]">Active • 3 Family Members</p>
               </div>
             </div>
 
@@ -779,10 +905,10 @@ export default function LandingPage() {
 
               <div className="space-y-2">
                 <h3 className="font-heading font-extrabold text-xl text-[#202128]">
-                  Section 65B Notice
+                  Joint dispute petition
                 </h3>
                 <p className="text-xs text-[#606470] leading-relaxed">
-                  Cryptographically sealed electronic proof admissible in District & State Consumer Commissions.
+                  Co-sign Section 65B electronic dispute notices with patient authorization for immediate submission.
                 </p>
               </div>
 
@@ -796,7 +922,7 @@ export default function LandingPage() {
             <div className="bg-[#DDECFD] rounded-[32px] p-7 flex flex-col justify-between space-y-8 relative overflow-hidden group hover:scale-[1.01] transition-transform shadow-[0_8px_30px_rgba(0,0,0,0.03)]">
               <div className="flex justify-between items-start">
                 <span className="w-10 h-10 rounded-2xl bg-white text-[#202128] flex items-center justify-center font-bold text-sm shadow-xs">
-                  <FileSpreadsheet className="w-5 h-5 text-[#43A8B2]" />
+                  <TrendingUp className="w-5 h-5 text-[#43A8B2]" />
                 </span>
                 <Link href="/bills" className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-[#202128] flex items-center justify-center transition-colors">
                   <ArrowUpRight className="w-4 h-4" />
@@ -805,16 +931,16 @@ export default function LandingPage() {
 
               <div className="space-y-2">
                 <h3 className="font-heading font-extrabold text-xl text-[#202128]">
-                  TPA Claim Appeal
+                  Benchmark rates
                 </h3>
                 <p className="text-xs text-[#606470] leading-relaxed">
-                  Challenge arbitrary non-medical deductions using IRDAI circulars and standard non-payable item master lists.
+                  Compare hospital charges against regional benchmarks and CGHS standardized package pricing.
                 </p>
               </div>
 
               <div className="bg-white/80 rounded-2xl p-3 space-y-1 shadow-xs">
-                <span className="text-[10px] uppercase font-bold text-[#606470] block">Reconciled</span>
-                <p className="font-bold text-xs text-[#202128]">₹18,500 Recovered</p>
+                <span className="text-[10px] uppercase font-bold text-[#606470] block">Benchmark</span>
+                <p className="font-bold text-xs text-[#202128]">₹18,500 Typical Savings</p>
               </div>
             </div>
 
@@ -851,11 +977,15 @@ export default function LandingPage() {
       <section className="relative z-10 py-16 sm:py-24 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center space-y-3">
+            <div className="inline-flex px-4 py-1 rounded-full bg-[#DBF1F4] text-[#202128] text-xs font-bold border border-[#79C5CD]/30">
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-[#43A8B2]" />
+              CURAVERIS INTELLIGENCE
+            </div>
             <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-[#202128] tracking-tight">
-              CuraVeris Intelligence
+              Meet CuraVeris Intelligence
             </h2>
             <p className="text-sm sm:text-lg text-[#606470] max-w-xl mx-auto">
-              Automate statutory bill analysis and predict overcharge disputes before paying the hospital cashier.
+              Stop searching, stop guessing, and stop manual line-by-line verification. CuraVeris Intelligence analyzes your medical bills to detect illegal markups, automate legal petitions, and provide actionable evidence whenever you need it.
             </p>
           </div>
 
@@ -883,24 +1013,28 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Interactive Feature List */}
+            {/* Right Interactive 5-Feature Breakdown */}
             <div className="lg:col-span-6 space-y-4">
               {[
                 {
-                  title: "Predict illegal overcharges before paying",
-                  desc: "Upload estimate bills during hospitalization to negotiate corrections before final discharge.",
+                  title: "1. Overcharge probability prediction",
+                  desc: "AI predicts high-risk line items and overcharge probabilities before you pay the hospital billing counter.",
                 },
                 {
-                  title: "Statutory device & drug price checks",
-                  desc: "Instantly compare cardiac stents, knee implants, and IV infusions against NPPA government caps.",
+                  title: "2. ICU package unbundling detection",
+                  desc: "Automatically flags duplicate nursing, sanitization, and equipment monitor fees billed outside standard package rates.",
                 },
                 {
-                  title: "Unbundled ICU package detection",
-                  desc: "Flag duplicate nursing, monitoring, and sanitization charges billed outside room packages.",
+                  title: "3. Statutory device & drug price checks",
+                  desc: "Instantly verifies cardiac stents, knee implants, and IV infusions against active NPPA and DPCO ceiling gazettes.",
                 },
                 {
-                  title: "Section 65B Electronic Proof Generation",
-                  desc: "Generate timestamped, SHA-256 sealed petitions ready for legal grievance desks.",
+                  title: "4. Financial distress risk analysis",
+                  desc: "Calculates realistic out-of-pocket impact and recommends pre-discharge dispute strategies.",
+                },
+                {
+                  title: "5. Intelligent File Import",
+                  desc: "State-of-the-art optical parser for PDFs, smartphone photos, and scanned paper hospital invoices.",
                 },
               ].map((item, idx) => {
                 const isOpen = expandedAiIndex === idx;
@@ -985,7 +1119,7 @@ export default function LandingPage() {
       </section>
 
       {/* 9. DARK OBSIDIAN AI CHAT BANNER ("Don't search. Just ask") */}
-      <section className="relative z-10 py-12 sm:py-20 bg-white border-t border-black/[0.05]">
+      <section id="ai-chat-section" className="relative z-10 py-12 sm:py-20 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-[36px] bg-[#18191C] text-white p-8 sm:p-14 relative overflow-hidden shadow-2xl">
             {/* Top-right glowing radial teal gradient */}
@@ -1028,6 +1162,10 @@ export default function LandingPage() {
                 </div>
                 <div className="p-4 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-md text-xs sm:text-sm font-semibold text-white flex items-center justify-between shadow-sm hover:bg-white/15 transition-colors cursor-pointer">
                   <span>&ldquo;How do I file a grievance with the NPPA IPDMS portal?&rdquo;</span>
+                  <ChevronRight className="w-4 h-4 text-[#79C5CD]" />
+                </div>
+                <div className="p-4 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-md text-xs sm:text-sm font-semibold text-white flex items-center justify-between shadow-sm hover:bg-white/15 transition-colors cursor-pointer">
+                  <span>&ldquo;What are my legal rights if the hospital refuses to correct the bill?&rdquo;</span>
                   <ChevronRight className="w-4 h-4 text-[#79C5CD]" />
                 </div>
               </div>
