@@ -112,10 +112,10 @@ export const NotificationList: React.FC<NotificationListProps> = ({
           <button
             onClick={() => setFilter("all")}
             className={cn(
-              "px-3 py-1.5 text-xs font-semibold rounded-full transition-colors",
+              "px-4 py-1.5 text-xs font-semibold rounded-full transition-all duration-150",
               filter === "all"
-                ? "bg-brand-accent text-white"
-                : "bg-white border border-neutral-300 text-neutral-600 hover:bg-neutral-50"
+                ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                : "bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10"
             )}
           >
             All ({notifications.length})
@@ -123,28 +123,28 @@ export const NotificationList: React.FC<NotificationListProps> = ({
           <button
             onClick={() => setFilter("unread")}
             className={cn(
-              "px-3 py-1.5 text-xs font-semibold rounded-full transition-colors",
+              "px-4 py-1.5 text-xs font-semibold rounded-full transition-all duration-150",
               filter === "unread"
-                ? "bg-brand-accent text-white"
-                : "bg-white border border-neutral-300 text-neutral-600 hover:bg-neutral-50"
+                ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                : "bg-white/5 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10"
             )}
           >
             Unread ({notifications.filter((n) => !n.is_read).length})
           </button>
         </div>
 
-        <Button variant="secondary" size="sm" onClick={handleMarkAllRead}>
+        <Button variant="secondary" size="sm" onClick={handleMarkAllRead} className="rounded-full">
           Mark All as Read
         </Button>
       </div>
 
       {/* List Container */}
-      <div className="bg-white rounded-lg shadow-sm border border-border-subtle divide-y divide-border-subtle">
+      <div className="bg-gradient-to-b from-[#111520]/90 to-[#0A0D14]/95 rounded-3xl shadow-2xl border border-white/[0.08] divide-y divide-white/[0.06] overflow-hidden backdrop-blur-xl">
         {filtered.length === 0 ? (
-          <div className="p-12 text-center text-neutral-600">
-            <Bell className="w-8 h-8 mx-auto text-neutral-300 mb-2" />
-            <p className="font-semibold text-neutral-900">Nothing here yet.</p>
-            <p className="text-xs text-neutral-600 mt-1">We&apos;ll let you know as soon as your bill check is done.</p>
+          <div className="p-12 text-center text-neutral-400">
+            <Bell className="w-8 h-8 mx-auto text-neutral-500 mb-2" />
+            <p className="font-semibold text-white">Nothing here yet.</p>
+            <p className="text-xs text-neutral-400 mt-1">We&apos;ll let you know as soon as your bill check is done.</p>
           </div>
         ) : (
           filtered.map((notif) => (
@@ -152,28 +152,28 @@ export const NotificationList: React.FC<NotificationListProps> = ({
               key={notif.id}
               onClick={() => handleMarkAsRead(notif)}
               className={cn(
-                "p-4 flex items-start gap-3.5 hover:bg-neutral-50 cursor-pointer transition-colors",
-                !notif.is_read && "bg-brand-accent-light/30"
+                "p-4.5 sm:p-5 flex items-start gap-4 hover:bg-white/[0.03] cursor-pointer transition-colors duration-150 group",
+                !notif.is_read && "bg-white/[0.02]"
               )}
             >
-              <div className="w-10 h-10 rounded-lg bg-white border border-neutral-300 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:border-white/20 transition-colors">
                 {getEventIcon(notif.event_type)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <h4 className="font-heading font-semibold text-sm text-neutral-900 truncate">
+                  <h4 className="font-heading font-semibold text-sm text-white truncate">
                     {getPlainTitle(notif.title, notif.event_type)}
                   </h4>
-                  <span className="text-[11px] text-neutral-600 whitespace-nowrap">
+                  <span className="text-[11px] text-neutral-500 whitespace-nowrap font-mono">
                     {formatTimeAgo(notif.created_at)}
                   </span>
                 </div>
-                <p className="text-xs text-neutral-600 mt-0.5 font-body line-clamp-2">
+                <p className="text-xs text-neutral-400 mt-1 font-body line-clamp-2 leading-relaxed">
                   {notif.body}
                 </p>
               </div>
               {!notif.is_read && (
-                <div className="w-2 h-2 rounded-full bg-brand-accent flex-shrink-0 mt-2" />
+                <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] flex-shrink-0 mt-2" />
               )}
             </div>
           ))
