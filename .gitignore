@@ -24,6 +24,8 @@ backend/ml_models/*.pkl
 
 # Node
 node_modules/
+.next/
+out/
 web/node_modules/
 web/.next/
 web/out/
