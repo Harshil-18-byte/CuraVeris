@@ -52,7 +52,7 @@ export const TopBar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-30 h-[60px] bg-white border-b border-border-subtle flex items-center justify-between px-4 sm:px-6 select-none">
+    <header className="sticky top-0 z-30 h-[60px] bg-[#0D1017] border-b border-border-subtle flex items-center justify-between px-4 sm:px-6 select-none">
       {/* Left: Mobile Menu Trigger + Current Page Title */}
       <div className="flex items-center gap-3">
         <button
@@ -93,7 +93,7 @@ export const TopBar: React.FC = () => {
         >
           <Bell className="w-4 h-4" strokeWidth={1.5} />
           {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-danger text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#0D1017]">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
