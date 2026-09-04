@@ -102,13 +102,13 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Stat 1 */}
-            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
                   Bills Checked
                 </span>
-                <div className="w-8 h-8 rounded-full bg-[#EDF0FB] flex items-center justify-center text-[#202128]">
-                  <FileStack className="w-4 h-4" strokeWidth={2} />
+                <div className="w-10 h-10 rounded-2xl bg-[#EDF0FB] flex items-center justify-center p-1.5">
+                  <img src="/assets/scraped/icon_folder_3d.png" alt="Bills" className="w-full h-full object-contain" />
                 </div>
               </div>
               <p className="font-heading font-extrabold text-3xl text-[#202128] mt-3">
@@ -118,13 +118,13 @@ export default function DashboardPage() {
             </Card>
 
             {/* Stat 2 */}
-            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
                   Audits Complete
                 </span>
-                <div className="w-8 h-8 rounded-full bg-[#DBF1F4] flex items-center justify-center text-[#202128]">
-                  <ShieldCheck className="w-4 h-4" strokeWidth={2} />
+                <div className="w-10 h-10 rounded-2xl bg-[#DBF1F4] flex items-center justify-center p-1.5">
+                  <img src="/assets/scraped/icon_analytics_3d.avif" alt="Audits" className="w-full h-full object-contain" />
                 </div>
               </div>
               <p className="font-heading font-extrabold text-3xl text-[#202128] mt-3">
@@ -134,13 +134,13 @@ export default function DashboardPage() {
             </Card>
 
             {/* Stat 3 */}
-            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
                   Detected Overcharges
                 </span>
-                <div className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center text-[#DC2626]">
-                  <IndianRupee className="w-4 h-4" strokeWidth={2} />
+                <div className="w-10 h-10 rounded-2xl bg-[#FEE2E2] flex items-center justify-center p-1.5">
+                  <img src="/assets/scraped/icon_bomb_3d.png" alt="Overcharges" className="w-full h-full object-contain" />
                 </div>
               </div>
               <p className="font-mono font-extrabold text-3xl text-[#DC2626] mt-3">
@@ -150,13 +150,13 @@ export default function DashboardPage() {
             </Card>
 
             {/* Stat 4 */}
-            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
                   Legal Dispute Notices
                 </span>
-                <div className="w-8 h-8 rounded-full bg-[#DBF1F4] flex items-center justify-center text-[#202128]">
-                  <FileText className="w-4 h-4" strokeWidth={2} />
+                <div className="w-10 h-10 rounded-2xl bg-[#DBF1F4] flex items-center justify-center p-1.5">
+                  <img src="/assets/scraped/icon_share_3d.png" alt="Notices" className="w-full h-full object-contain" />
                 </div>
               </div>
               <p className="font-heading font-extrabold text-3xl text-[#202128] mt-3">
