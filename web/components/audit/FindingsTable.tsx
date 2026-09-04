@@ -46,20 +46,20 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       case "CRITICAL":
       case "HIGH":
         return (
-          <div className="w-9 h-9 rounded-full bg-danger-bg text-danger flex items-center justify-center flex-shrink-0">
-            <AlertCircle className="w-4 h-4" strokeWidth={1.5} />
+          <div className="w-9 h-9 rounded-full bg-[#FEE2E2] text-[#DC2626] flex items-center justify-center flex-shrink-0">
+            <AlertCircle className="w-4 h-4" strokeWidth={2} />
           </div>
         );
       case "MEDIUM":
         return (
-          <div className="w-9 h-9 rounded-full bg-warning-bg text-warning flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-4 h-4" strokeWidth={1.5} />
+          <div className="w-9 h-9 rounded-full bg-[#FEF3C7] text-[#D97706] flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="w-4 h-4" strokeWidth={2} />
           </div>
         );
       default:
         return (
-          <div className="w-9 h-9 rounded-full bg-success-bg text-success flex items-center justify-center flex-shrink-0">
-            <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
+          <div className="w-9 h-9 rounded-full bg-[#DBF1F4] text-[#202128] flex items-center justify-center flex-shrink-0">
+            <CheckCircle2 className="w-4 h-4" strokeWidth={2} />
           </div>
         );
     }
@@ -136,12 +136,12 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
 
   if (findings.length === 0) {
     return (
-      <div className="p-12 text-center bg-white rounded-lg border border-border-subtle shadow-xs space-y-3">
-        <CheckCircle2 className="w-10 h-10 text-success mx-auto" strokeWidth={1.5} />
-        <h3 className="font-heading font-semibold text-base text-text-primary">
+      <div className="p-12 text-center bg-white rounded-3xl border border-black/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-3">
+        <CheckCircle2 className="w-10 h-10 text-[#43A8B2] mx-auto" strokeWidth={2} />
+        <h3 className="font-heading font-bold text-base text-[#202128]">
           Great news — we didn&apos;t find any overcharges in this bill.
         </h3>
-        <p className="text-sm text-text-secondary max-w-sm mx-auto">
+        <p className="text-xs text-[#606470] max-w-sm mx-auto font-medium">
           All the charges appear to be within the allowed limits.
         </p>
       </div>
@@ -156,20 +156,20 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
           <Badge variant="danger" size="md">
             {findings.length} possible overcharges found
           </Badge>
-          <div className="px-3 py-1 bg-bg-secondary border border-border-subtle rounded-full text-xs font-semibold text-text-primary">
-            Total extra: {formatCurrency(totalOvercharge)}
+          <div className="px-3.5 py-1 bg-white border border-black/[0.06] rounded-full text-xs font-bold text-[#202128] shadow-xs">
+            Total extra: <span className="text-[#DC2626] font-mono">{formatCurrency(totalOvercharge)}</span>
           </div>
         </div>
 
-        <Button variant="secondary" size="sm" onClick={handleExportCSV}>
-          <Download className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.5} />
+        <Button variant="secondary" size="sm" onClick={handleExportCSV} className="rounded-full">
+          <Download className="w-3.5 h-3.5 mr-1.5" strokeWidth={1.75} />
           Export CSV
         </Button>
       </div>
 
       {/* Info Notice */}
-      <div className="p-3.5 bg-info-bg border border-info/20 rounded-lg text-xs text-text-secondary flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-info flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+      <div className="p-4 bg-[#DBF1F4]/40 border border-[#79C5CD]/30 rounded-2xl text-xs text-[#202128] font-medium flex items-start gap-2.5">
+        <Info className="w-4 h-4 text-[#43A8B2] flex-shrink-0 mt-0.5" strokeWidth={2} />
         <span>
           The confirmed overcharges below are based on official government rules. You can include them in your formal complaint letter.
         </span>
@@ -187,7 +187,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
               variant="accent-left"
               accentColor={getSeverityAccent(f.severity)}
               padding="sm"
-              className="cursor-pointer transition-all duration-150 hover:shadow-md"
+              className="cursor-pointer transition-all duration-200 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md hover:scale-[1.005]"
               onClick={() => toggleExpand(f.id)}
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -197,7 +197,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
 
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="font-semibold text-sm text-text-primary truncate">
+                      <h4 className="font-bold text-sm text-[#202128] truncate">
                         {f.item_description || "Billed Service / Item"}
                       </h4>
                       <Badge variant="default" size="sm">
@@ -214,23 +214,23 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                       )}
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary pt-0.5">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#606470] pt-0.5">
                       <span>
                         Hospital charged:{" "}
-                        <strong className="font-mono text-text-primary">
+                        <strong className="font-mono text-[#202128]">
                           {formatCurrency(f.billed_amount)}
                         </strong>
                       </span>
                       <span>
-                        Government-approved price:{" "}
-                        <strong className="font-mono text-text-primary">
+                        Government price:{" "}
+                        <strong className="font-mono text-[#202128]">
                           {formatCurrency(f.benchmark_amount)}
                         </strong>
                       </span>
                     </div>
 
                     {f.statutory_reference && (
-                      <p className="text-[11px] text-text-tertiary italic">
+                      <p className="text-[11px] text-[#606470] italic font-mono">
                         Source: {f.statutory_reference.includes("CGHS") ? "Central Government Health Scheme rate list" : f.statutory_reference.includes("NPPA") ? "Government price cap for medical devices" : f.statutory_reference.includes("DPCO") ? "Government price cap for medicines" : "Government price list"}
                       </p>
                     )}
@@ -240,15 +240,15 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                 {/* Right Section */}
                 <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pl-12 sm:pl-0">
                   <div className="text-right">
-                    <span className="text-[11px] text-text-tertiary uppercase block">
+                    <span className="text-[11px] text-[#606470] uppercase block font-bold">
                       Extra you were charged
                     </span>
-                    <span className="font-mono font-bold text-lg text-danger">
+                    <span className="font-mono font-extrabold text-lg text-[#DC2626]">
                       +{formatCurrency(f.overcharge_amount)}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 text-text-tertiary text-xs">
+                  <div className="flex items-center gap-1.5 text-[#606470] text-xs font-semibold">
                     <span>{isExpanded ? "Less" : "Details"}</span>
                     {isExpanded ? (
                       <ChevronUp className="w-4 h-4" strokeWidth={1.5} />
@@ -261,23 +261,23 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
 
               {/* Expanded Drawer Details */}
               {isExpanded && (
-                <div className="mt-4 pt-4 border-t border-border-subtle space-y-3 text-xs animate-in fade-in-50 duration-150">
+                <div className="mt-4 pt-4 border-t border-black/[0.06] space-y-3 text-xs animate-in fade-in-50 duration-150">
                   <div>
-                    <span className="font-semibold text-text-primary block mb-0.5">
+                    <span className="font-bold text-[#202128] block mb-0.5">
                       Why this is wrong:
                     </span>
-                    <p className="text-text-secondary leading-relaxed">
+                    <p className="text-[#606470] leading-relaxed">
                       {f.user_explanation ||
                         f.legal_basis ||
                         "This charge exceeds the government-allowed price or was billed twice."}
                     </p>
                   </div>
 
-                  <div className="p-3 bg-bg-secondary rounded-md text-text-secondary">
-                    <span className="font-semibold text-text-primary block mb-0.5">
+                  <div className="p-3.5 bg-[#F5F7FB] border border-black/[0.04] rounded-2xl text-[#202128]">
+                    <span className="font-bold text-[#202128] block mb-0.5">
                       In simple terms:
                     </span>
-                    <p>
+                    <p className="text-[#606470]">
                       The hospital charged you more than what government rules allow for this item. You have the right to request a refund or bill correction.
                     </p>
                   </div>
@@ -286,10 +286,10 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
                     <button
                       type="button"
                       onClick={(e) => toggleDisputeSelection(f.id, e)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                      className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all duration-150 ${
                         isSelected
-                          ? "bg-success-bg text-success border border-success/30"
-                          : "bg-brand-accent-light text-brand-accent hover:bg-brand-accent/15"
+                          ? "bg-[#DBF1F4] text-[#202128] border border-[#79C5CD]/50 shadow-xs"
+                          : "bg-[#EDF0FB] text-[#202128] hover:bg-[#DBF1F4]"
                       }`}
                     >
                       <Plus className="w-3.5 h-3.5" strokeWidth={2} />
@@ -304,16 +304,16 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       </div>
 
       {/* Findings Total Summary Box */}
-      <div className="p-5 bg-white rounded-lg border border-border-subtle shadow-xs flex items-center justify-between">
+      <div className="grassfeld-hero-card p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex items-center justify-between">
         <div>
-          <span className="text-xs text-text-tertiary uppercase font-semibold tracking-wider block">
+          <span className="text-xs text-[#606470] uppercase font-bold tracking-wider block">
             Total extra charges we confirmed
           </span>
-          <p className="text-xs text-text-secondary mt-0.5">
+          <p className="text-xs text-[#202128] font-semibold mt-0.5">
             Eligible for refund or hospital complaint
           </p>
         </div>
-        <p className="font-mono font-bold text-2xl text-danger">
+        <p className="font-mono font-extrabold text-2xl text-[#DC2626]">
           {formatCurrency(totalOvercharge)}
         </p>
       </div>
@@ -325,7 +325,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Button variant="primary" size="lg" className="w-full">
+          <Button variant="primary" size="lg" className="w-full rounded-full bg-[#202128] hover:bg-black text-white font-bold py-4 shadow-md">
             <FileText className="w-4 h-4 mr-2" strokeWidth={1.5} />
             Create My Complaint Letter
           </Button>
