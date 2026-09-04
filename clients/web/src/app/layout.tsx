@@ -4,9 +4,13 @@ import { QueryProvider } from '../providers/QueryProvider';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
-  title: 'CuraVeris — Your bills, your rights.',
+  title: 'CuraVeris — Your bill. Your rights.',
   description:
-    'Your bills, your rights. Automated medical billing audit and patient financial advocacy engine for the Indian healthcare system.',
+    'Your bill. Your rights. Automated medical billing audit and patient financial advocacy engine for the Indian healthcare system.',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
