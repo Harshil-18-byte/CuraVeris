@@ -93,13 +93,13 @@ export default function RegisterPage() {
   const getStrengthLabel = (score: number) => {
     switch (score) {
       case 1:
-        return { text: "Too simple", color: "text-danger" };
+        return { text: "Too simple", color: "text-[#DC2626]" };
       case 2:
-        return { text: "Getting better", color: "text-warning" };
+        return { text: "Getting better", color: "text-[#D97706]" };
       case 3:
-        return { text: "Almost there", color: "text-info" };
+        return { text: "Almost there", color: "text-[#43A8B2]" };
       case 4:
-        return { text: "Strong password", color: "text-success" };
+        return { text: "Strong password", color: "text-[#86C159]" };
       default:
         return { text: "", color: "" };
     }
@@ -141,67 +141,67 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#090B10] selection:bg-brand-accent/30 selection:text-white">
-      {/* LEFT PANEL (40% width on desktop) */}
-      <div className="lg:w-[40%] bg-[#06080C] text-white p-8 lg:p-12 flex flex-col justify-between hidden lg:flex border-r border-[#1E2433]">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F5F7FB] selection:bg-[#DBF1F4] selection:text-[#202128]">
+      {/* LEFT PANEL (Grassfeld Soft Gradient Panel) */}
+      <div className="lg:w-[40%] bg-gradient-to-br from-[#DBF1F4]/70 via-[#EDF0FB] to-[#F5F7FB] text-[#202128] p-8 lg:p-12 flex flex-col justify-between hidden lg:flex border-r border-black/[0.06] relative overflow-hidden">
         {/* Brand */}
         <Logo href="/" showTagline={true} theme="light" size="md" />
 
         {/* Middle Feature Quote */}
         <div className="my-auto space-y-6 py-12 max-w-sm">
-          <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-brand-accent-light">
-            <Sparkles className="w-6 h-6" strokeWidth={1.5} />
+          <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-[#202128] shadow-xs border border-black/[0.04]">
+            <Sparkles className="w-6 h-6 text-[#43A8B2]" strokeWidth={2} />
           </div>
-          <p className="text-xl font-heading font-medium text-white/90 leading-relaxed">
+          <p className="text-xl font-heading font-bold text-[#202128] leading-relaxed">
             &ldquo;Join thousands of Indian families taking control of their hospital bills with full transparency.&rdquo;
           </p>
         </div>
 
         {/* Bottom Trust Points */}
-        <div className="space-y-3 pt-6 border-t border-white/10 text-xs text-white/70">
+        <div className="space-y-3 pt-6 border-t border-black/[0.06] text-xs text-[#606470] font-semibold">
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <CheckCircle2 className="w-4 h-4 text-[#43A8B2] flex-shrink-0" strokeWidth={2} />
             <span>Instant checking against government rates</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <CheckCircle2 className="w-4 h-4 text-[#43A8B2] flex-shrink-0" strokeWidth={2} />
             <span>Zero spam · We never sell your personal data</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" strokeWidth={1.5} />
+            <CheckCircle2 className="w-4 h-4 text-[#43A8B2] flex-shrink-0" strokeWidth={2} />
             <span>DPDP 2023 compliant encrypted storage</span>
           </div>
         </div>
       </div>
 
-      {/* RIGHT PANEL (60% width on desktop) */}
-      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-[#090B10]">
+      {/* RIGHT PANEL (Clean White Form Card) */}
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-[#F5F7FB]">
         {/* Mobile Header */}
-        <div className="w-full max-w-[400px] lg:hidden mb-8 flex items-center justify-between">
+        <div className="w-full max-w-[420px] lg:hidden mb-8 flex items-center justify-between">
           <Logo href="/" showTagline={true} size="sm" />
         </div>
 
-        <div className="w-full max-w-[400px] space-y-6">
+        <div className="w-full max-w-[420px] bg-white p-8 sm:p-10 rounded-[32px] border border-black/[0.06] shadow-[0_12px_40px_rgba(0,0,0,0.04)] space-y-6">
           {/* Progress Dots Indicator */}
           <div>
             <div className="flex items-center justify-between mb-2">
               {[1, 2, 3, 4].map((s, idx) => (
                 <React.Fragment key={s}>
                   <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       s === step
-                        ? "bg-brand-accent text-white shadow-xs"
+                        ? "bg-[#202128] text-white shadow-xs"
                         : s < step
-                        ? "bg-success text-white"
-                        : "bg-bg-secondary text-text-tertiary border border-border-default"
+                        ? "bg-[#86C159] text-white"
+                        : "bg-[#EDF0FB] text-[#606470]"
                     }`}
                   >
-                    {s < step ? <Check className="w-3.5 h-3.5" strokeWidth={2} /> : s}
+                    {s < step ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : s}
                   </div>
                   {idx < 3 && (
                     <div
-                      className={`flex-1 h-0.5 mx-2 transition-colors ${
-                        s < step ? "bg-success" : "bg-border-default"
+                      className={`flex-1 h-1 mx-2 rounded-full transition-colors ${
+                        s < step ? "bg-[#86C159]" : "bg-[#EDF0FB]"
                       }`}
                     />
                   )}
@@ -209,7 +209,7 @@ export default function RegisterPage() {
               ))}
             </div>
 
-            <span className="text-[11px] font-medium text-text-secondary block text-center">
+            <span className="text-[11px] font-bold text-[#606470] block text-center">
               Step {step} of 4:{" "}
               {step === 1
                 ? "Let's get started"
@@ -222,8 +222,8 @@ export default function RegisterPage() {
           </div>
 
           {serverError && (
-            <div className="p-3 bg-danger-bg border border-danger/30 rounded-md text-xs text-danger flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
+            <div className="p-3 bg-[#FEE2E2] border border-[#FECACA] rounded-2xl text-xs text-[#DC2626] flex items-center gap-2 font-semibold">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" strokeWidth={2} />
               <span>{serverError}</span>
             </div>
           )}
@@ -233,10 +233,10 @@ export default function RegisterPage() {
             {step === 1 && (
               <div className="space-y-4 animate-in fade-in-50 duration-200">
                 <div>
-                  <h2 className="font-heading font-bold text-2xl text-text-primary">
+                  <h2 className="font-heading font-extrabold text-2xl text-[#202128]">
                     Let&apos;s get started
                   </h2>
-                  <p className="text-sm text-text-secondary mt-1">
+                  <p className="text-sm text-[#606470] mt-1 font-medium">
                     We&apos;ll use these details to set up your account.
                   </p>
                 </div>
@@ -260,11 +260,11 @@ export default function RegisterPage() {
                   type="button"
                   variant="primary"
                   size="md"
-                  className="w-full mt-2"
+                  className="w-full mt-2 rounded-full bg-[#202128] hover:bg-black text-white font-bold py-3.5 shadow-md"
                   onClick={nextStep}
                 >
                   Continue
-                  <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.5} />
+                  <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2} />
                 </Button>
               </div>
             )}
@@ -273,10 +273,10 @@ export default function RegisterPage() {
             {step === 2 && (
               <div className="space-y-4 animate-in fade-in-50 duration-200">
                 <div>
-                  <h2 className="font-heading font-bold text-2xl text-text-primary">
+                  <h2 className="font-heading font-extrabold text-2xl text-[#202128]">
                     What&apos;s your phone number?
                   </h2>
-                  <p className="text-sm text-text-secondary mt-1">
+                  <p className="text-sm text-[#606470] mt-1 font-medium">
                     We&apos;ll send you a one-time code to confirm this is your number.
                   </p>
                 </div>
@@ -284,14 +284,14 @@ export default function RegisterPage() {
                 <Input
                   label="Mobile Number"
                   placeholder="9876543210"
-                  leftAddon={<span className="text-xs font-semibold text-text-secondary">+91</span>}
+                  leftAddon={<span className="text-xs font-bold text-[#606470]">+91</span>}
                   hint="We found this number or enter your active number."
                   error={errors.phone_number?.message}
                   {...register("phone_number")}
                 />
 
-                <div className="p-3 bg-brand-accent-light rounded-md flex items-start gap-2.5 text-xs text-text-secondary">
-                  <PhoneCall className="w-4 h-4 text-brand-accent flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+                <div className="p-3.5 bg-[#DBF1F4]/40 border border-[#79C5CD]/30 rounded-2xl flex items-start gap-2.5 text-xs text-[#202128] font-medium">
+                  <PhoneCall className="w-4 h-4 text-[#43A8B2] flex-shrink-0 mt-0.5" strokeWidth={2} />
                   <span>Your number is private and never shared with hospitals or anyone else.</span>
                 </div>
 
@@ -300,7 +300,7 @@ export default function RegisterPage() {
                     type="button"
                     variant="secondary"
                     size="md"
-                    className="w-1/3"
+                    className="w-1/3 rounded-full font-bold"
                     onClick={() => setStep(1)}
                   >
                     Back
@@ -309,11 +309,11 @@ export default function RegisterPage() {
                     type="button"
                     variant="primary"
                     size="md"
-                    className="w-2/3"
+                    className="w-2/3 rounded-full bg-[#202128] hover:bg-black text-white font-bold"
                     onClick={nextStep}
                   >
                     Continue
-                    <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.5} />
+                    <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2} />
                   </Button>
                 </div>
               </div>
@@ -323,10 +323,10 @@ export default function RegisterPage() {
             {step === 3 && (
               <div className="space-y-4 animate-in fade-in-50 duration-200">
                 <div>
-                  <h2 className="font-heading font-bold text-2xl text-text-primary">
+                  <h2 className="font-heading font-extrabold text-2xl text-[#202128]">
                     Create a password
                   </h2>
-                  <p className="text-sm text-text-secondary mt-1">
+                  <p className="text-sm text-[#606470] mt-1 font-medium">
                     Choose a password to keep your account safe.
                   </p>
                 </div>
@@ -341,9 +341,9 @@ export default function RegisterPage() {
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-text-tertiary hover:text-text-primary focus:outline-none"
+                      className="text-[#606470] hover:text-[#202128] focus:outline-none"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" strokeWidth={1.5} /> : <Eye className="w-4 h-4" strokeWidth={1.5} />}
+                      {showPassword ? <EyeOff className="w-4 h-4" strokeWidth={2} /> : <Eye className="w-4 h-4" strokeWidth={2} />}
                     </button>
                   }
                   {...register("password")}
@@ -353,25 +353,25 @@ export default function RegisterPage() {
                 {passwordVal.length > 0 && (
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-text-secondary">Strength</span>
-                      <span className={`font-semibold ${strengthInfo.color}`}>
+                      <span className="text-[#606470] font-medium">Strength</span>
+                      <span className={`font-bold ${strengthInfo.color}`}>
                         {strengthInfo.text}
                       </span>
                     </div>
-                    <div className="grid grid-cols-4 gap-1.5 h-1">
+                    <div className="grid grid-cols-4 gap-1.5 h-1.5">
                       {[1, 2, 3, 4].map((seg) => (
                         <div
                           key={seg}
                           className={`rounded-full transition-colors ${
                             strengthScore >= seg
                               ? strengthScore === 1
-                                ? "bg-danger"
+                                ? "bg-[#DC2626]"
                                 : strengthScore === 2
-                                ? "bg-warning"
+                                ? "bg-[#D97706]"
                                 : strengthScore === 3
-                                ? "bg-info"
-                                : "bg-success"
-                              : "bg-border-default"
+                                ? "bg-[#43A8B2]"
+                                : "bg-[#86C159]"
+                              : "bg-[#EDF0FB]"
                           }`}
                         />
                       ))}
@@ -389,41 +389,41 @@ export default function RegisterPage() {
                       type="button"
                       tabIndex={-1}
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="text-text-tertiary hover:text-text-primary focus:outline-none"
+                      className="text-[#606470] hover:text-[#202128] focus:outline-none"
                     >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" strokeWidth={1.5} /> : <Eye className="w-4 h-4" strokeWidth={1.5} />}
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" strokeWidth={2} /> : <Eye className="w-4 h-4" strokeWidth={2} />}
                     </button>
                   }
                   {...register("confirm_password")}
                 />
 
                 {/* Requirement Checklist */}
-                <div className="p-3 bg-bg-secondary rounded-md space-y-1 text-xs text-text-secondary">
+                <div className="p-3.5 bg-[#F5F7FB] rounded-2xl space-y-1.5 text-xs text-[#606470] font-medium">
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2
-                      className={`w-3.5 h-3.5 ${passwordVal.length >= 8 ? "text-success" : "text-text-tertiary"}`}
-                      strokeWidth={1.5}
+                      className={`w-3.5 h-3.5 ${passwordVal.length >= 8 ? "text-[#86C159]" : "text-[#606470]"}`}
+                      strokeWidth={2}
                     />
                     <span>At least 8 characters</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2
-                      className={`w-3.5 h-3.5 ${/[A-Z]/.test(passwordVal) ? "text-success" : "text-text-tertiary"}`}
-                      strokeWidth={1.5}
+                      className={`w-3.5 h-3.5 ${/[A-Z]/.test(passwordVal) ? "text-[#86C159]" : "text-[#606470]"}`}
+                      strokeWidth={2}
                     />
                     <span>One capital letter</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2
-                      className={`w-3.5 h-3.5 ${/\d/.test(passwordVal) ? "text-success" : "text-text-tertiary"}`}
-                      strokeWidth={1.5}
+                      className={`w-3.5 h-3.5 ${/\d/.test(passwordVal) ? "text-[#86C159]" : "text-[#606470]"}`}
+                      strokeWidth={2}
                     />
                     <span>One number</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2
-                      className={`w-3.5 h-3.5 ${/[^A-Za-z0-9]/.test(passwordVal) ? "text-success" : "text-text-tertiary"}`}
-                      strokeWidth={1.5}
+                      className={`w-3.5 h-3.5 ${/[^A-Za-z0-9]/.test(passwordVal) ? "text-[#86C159]" : "text-[#606470]"}`}
+                      strokeWidth={2}
                     />
                     <span>One special character (@, #, $, etc.)</span>
                   </div>
@@ -434,7 +434,7 @@ export default function RegisterPage() {
                     type="button"
                     variant="secondary"
                     size="md"
-                    className="w-1/3"
+                    className="w-1/3 rounded-full font-bold"
                     onClick={() => setStep(2)}
                   >
                     Back
@@ -443,11 +443,11 @@ export default function RegisterPage() {
                     type="button"
                     variant="primary"
                     size="md"
-                    className="w-2/3"
+                    className="w-2/3 rounded-full bg-[#202128] hover:bg-black text-white font-bold"
                     onClick={nextStep}
                   >
                     Continue
-                    <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.5} />
+                    <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2} />
                   </Button>
                 </div>
               </div>
@@ -457,10 +457,10 @@ export default function RegisterPage() {
             {step === 4 && (
               <div className="space-y-4 animate-in fade-in-50 duration-200">
                 <div>
-                  <h2 className="font-heading font-bold text-2xl text-text-primary">
+                  <h2 className="font-heading font-extrabold text-2xl text-[#202128]">
                     One last thing — your privacy
                   </h2>
-                  <p className="text-sm text-text-secondary mt-1">
+                  <p className="text-sm text-[#606470] mt-1 font-medium leading-relaxed">
                     CuraVeris uses your hospital bill information only to check for overcharges on your behalf. We keep your data secure and never sell it to anyone. You can ask us to delete your data at any time.
                   </p>
                 </div>
@@ -470,20 +470,20 @@ export default function RegisterPage() {
                     id="consent-checkbox"
                     checked={consentVal === true}
                     onCheckedChange={(checked) => setValue("consent", checked === true ? true : (false as any))}
-                    className="w-[18px] h-[18px] rounded-[4px] border border-border-default bg-white flex items-center justify-center data-[state=checked]:bg-brand-accent data-[state=checked]:border-brand-accent transition-colors flex-shrink-0 mt-0.5"
+                    className="w-5 h-5 rounded-md border border-black/[0.15] bg-[#F5F7FB] flex items-center justify-center data-[state=checked]:bg-[#202128] data-[state=checked]:border-[#202128] transition-colors flex-shrink-0 mt-0.5"
                   >
                     <CheckboxPrimitive.Indicator>
-                      <Check className="w-3 h-3 text-white" strokeWidth={2.5} />
+                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                     </CheckboxPrimitive.Indicator>
                   </CheckboxPrimitive.Root>
-                  <label htmlFor="consent-checkbox" className="text-xs text-text-primary font-medium cursor-pointer leading-tight">
+                  <label htmlFor="consent-checkbox" className="text-xs text-[#202128] font-semibold cursor-pointer leading-tight">
                     I understand how CuraVeris uses my information and I agree.
                   </label>
                 </div>
 
                 {errors.consent && (
-                  <p className="text-xs text-danger flex items-center gap-1 font-normal">
-                    <AlertCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <p className="text-xs text-[#DC2626] flex items-center gap-1 font-bold">
+                    <AlertCircle className="w-3.5 h-3.5" strokeWidth={2} />
                     <span>Please agree to continue.</span>
                   </p>
                 )}
@@ -493,7 +493,7 @@ export default function RegisterPage() {
                     type="button"
                     variant="secondary"
                     size="md"
-                    className="w-1/3"
+                    className="w-1/3 rounded-full font-bold"
                     onClick={() => setStep(3)}
                     disabled={isSubmitting}
                   >
@@ -503,7 +503,7 @@ export default function RegisterPage() {
                     type="submit"
                     variant="primary"
                     size="md"
-                    className="w-2/3"
+                    className="w-2/3 rounded-full bg-[#202128] hover:bg-black text-white font-bold"
                     disabled={!consentVal || isSubmitting}
                     isLoading={isSubmitting}
                   >
@@ -515,11 +515,11 @@ export default function RegisterPage() {
           </form>
 
           {/* Footer Link */}
-          <div className="pt-4 border-t border-border-subtle text-center text-xs text-text-secondary">
+          <div className="pt-4 border-t border-black/[0.06] text-center text-xs text-[#606470] font-medium">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-brand-accent font-medium hover:underline focus:outline-none"
+              className="text-[#202128] font-bold hover:underline focus:outline-none"
             >
               Sign in
             </Link>
