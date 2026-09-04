@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npm run dev --prefix web",
-    "build": "npm run build --prefix web && node -e \"const fs=require('fs'); if(fs.existsSync('web/.next')) { try { fs.cpSync('web/.next', '.next', {recursive:true}); } catch(e){} } if(fs.existsSync('.next') && !fs.existsSync('web/.next')) { try { fs.mkdirSync('web', {recursive:true}); fs.cpSync('.next', 'web/.next', {recursive:true}); } catch(e){} }\"",
+    "build": "npm run build --prefix web",
     "start": "npm run start --prefix web",
     "lint": "npm run lint --prefix web"
   },
