@@ -4,12 +4,13 @@ on:
   push:
     branches: [main]
 
+env:
+  RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
 jobs:
   deploy-backend:
     name: Backend Deployment Trigger
     runs-on: ubuntu-latest
-    env:
-      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
       - name: Trigger Render Deploy
         if: env.RENDER_DEPLOY_HOOK_URL != ''
