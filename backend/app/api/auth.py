@@ -346,7 +346,10 @@ from pydantic import BaseModel, Field
 import secrets
 import hashlib
 import time
+import logging
 from app.services.auth_service import send_email_otp
+
+logger = logging.getLogger("curaveris.auth")
 
 _OTP_STORE = {}
 
