@@ -11,16 +11,18 @@ import {
   ShieldCheck,
   PlusCircle,
   Receipt,
-  Search
+  Menu,
 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useAuthStore } from "@/store/authStore";
+import { useUIStore } from "@/store/uiStore";
 import { api } from "@/lib/api";
 
 export const TopBar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { openMobileNav } = useUIStore();
 
   const { data: unreadData } = useQuery({
     queryKey: ["notifications", "unread-count"],
@@ -50,10 +52,18 @@ export const TopBar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-30 h-[60px] bg-white border-b border-border-subtle flex items-center justify-between px-6 select-none">
-      {/* Left: Current Page Title & Breadcrumb */}
+    <header className="sticky top-0 z-30 h-[60px] bg-white border-b border-border-subtle flex items-center justify-between px-4 sm:px-6 select-none">
+      {/* Left: Mobile Menu Trigger + Current Page Title */}
       <div className="flex items-center gap-3">
-        <h1 className="font-heading font-semibold text-lg text-text-primary tracking-tight">
+        <button
+          type="button"
+          onClick={openMobileNav}
+          className="lg:hidden p-1.5 -ml-1.5 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-md transition-colors focus:outline-none"
+          aria-label="Open navigation menu"
+        >
+          <Menu className="w-5 h-5" strokeWidth={2} />
+        </button>
+        <h1 className="font-heading font-semibold text-base sm:text-lg text-text-primary tracking-tight">
           {getPageTitle()}
         </h1>
       </div>
