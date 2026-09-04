@@ -104,7 +104,11 @@ export default function LoginPage() {
       const res = await api.auth.login(data.username, data.password);
       setToken(res.access_token);
       setUser(res.user);
-      router.replace("/dashboard");
+      if (typeof window !== "undefined") {
+        window.location.href = "/dashboard";
+      } else {
+        router.replace("/dashboard");
+      }
     } catch (err: any) {
       const status = err?.status || err?.response?.status;
       const detail = err?.message || err?.response?.data?.detail;
