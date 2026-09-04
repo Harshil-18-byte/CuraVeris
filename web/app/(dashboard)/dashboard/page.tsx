@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Bell,
   Clock,
+  Sparkles,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
@@ -33,14 +34,12 @@ export default function DashboardPage() {
     return "evening";
   }, []);
 
-  // Fetch Bills summary
   const billsQuery = useQuery({
     queryKey: ["bills", "summary"],
     queryFn: () => api.bills.list({ page: 1, per_page: 5 }),
     staleTime: 30 * 1000,
   });
 
-  // Fetch Notifications preview
   const notificationsQuery = useQuery({
     queryKey: ["notifications", "preview"],
     queryFn: () => api.notifications.list({ page: 1, per_page: 5 }),
@@ -65,24 +64,33 @@ export default function DashboardPage() {
 
   return (
     <PageShell>
-      {/* Top Greeting Section */}
-      <div className="bg-white rounded-lg border border-border-subtle p-6 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xs">
+      {/* Top Greeting Section (Grassfeld Pastel Hero Banner) */}
+      <div className="grassfeld-hero-card p-6 sm:p-8 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
         <div>
-          <h1 className="font-heading font-bold text-2xl text-text-primary tracking-tight">
-            Good {greetingTimeOfDay}, {user?.full_name ? user.full_name.split(" ")[0] : "there"}
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-3 py-1 bg-white/80 rounded-full text-[11px] font-bold text-[#202128] border border-black/[0.06] flex items-center gap-1.5 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#43A8B2]" />
+              Patient Forensic Portal
+            </span>
+          </div>
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#202128] tracking-tight">
+            Good {greetingTimeOfDay}, {user?.full_name ? user.full_name.split(" ")[0] : "Patient"}
           </h1>
-          <p className="text-sm text-text-secondary mt-0.5">{currentDateFormatted}</p>
+          <p className="text-xs sm:text-sm text-[#606470] mt-1 font-medium">{currentDateFormatted}</p>
         </div>
 
         <Link href="/bills/upload">
-          <Button variant="primary" size="md">
-            <UploadCloud className="w-4 h-4 mr-2" strokeWidth={1.5} />
-            Check a Bill
-          </Button>
+          <button
+            type="button"
+            className="h-11 px-6 bg-[#202128] hover:bg-black text-white font-bold text-xs rounded-full shadow-md flex items-center gap-2 transition-all hover:scale-[1.02]"
+          >
+            <UploadCloud className="w-4 h-4" strokeWidth={2.2} />
+            <span>Check a Hospital Bill</span>
+          </button>
         </Link>
       </div>
 
-      {/* Stat Cards Row (4 Columns) */}
+      {/* Stat Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {billsQuery.isLoading ? (
           <>
@@ -94,59 +102,67 @@ export default function DashboardPage() {
         ) : (
           <>
             {/* Stat 1 */}
-            <Card variant="stat" padding="sm">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
                   Bills Checked
                 </span>
-                <FileStack className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
+                <div className="w-8 h-8 rounded-full bg-[#EDF0FB] flex items-center justify-center text-[#202128]">
+                  <FileStack className="w-4 h-4" strokeWidth={2} />
+                </div>
               </div>
-              <p className="font-heading font-bold text-3xl text-text-primary mt-3">
+              <p className="font-heading font-extrabold text-3xl text-[#202128] mt-3">
                 <CountUp end={totalBills} />
               </p>
-              <span className="text-xs text-text-secondary mt-1 block">Total submitted</span>
+              <span className="text-[11px] text-[#606470] mt-1 block font-medium">Total submitted</span>
             </Card>
 
             {/* Stat 2 */}
-            <Card variant="stat" padding="sm">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-                  Checks Finished
+                <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
+                  Audits Complete
                 </span>
-                <ShieldCheck className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
+                <div className="w-8 h-8 rounded-full bg-[#DBF1F4] flex items-center justify-center text-[#202128]">
+                  <ShieldCheck className="w-4 h-4" strokeWidth={2} />
+                </div>
               </div>
-              <p className="font-heading font-bold text-3xl text-text-primary mt-3">
+              <p className="font-heading font-extrabold text-3xl text-[#202128] mt-3">
                 <CountUp end={auditsComplete} />
               </p>
-              <span className="text-xs text-text-secondary mt-1 block">Bills completed</span>
+              <span className="text-[11px] text-[#606470] mt-1 block font-medium">800+ price caps verified</span>
             </Card>
 
             {/* Stat 3 */}
-            <Card variant="stat" padding="sm">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-                  Possible Extra Charges
+                <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
+                  Detected Overcharges
                 </span>
-                <IndianRupee className="w-4 h-4 text-danger" strokeWidth={1.5} />
+                <div className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center text-[#DC2626]">
+                  <IndianRupee className="w-4 h-4" strokeWidth={2} />
+                </div>
               </div>
-              <p className="font-mono font-bold text-3xl text-danger mt-3">
+              <p className="font-mono font-extrabold text-3xl text-[#DC2626] mt-3">
                 {formatCurrency(totalOvercharge)}
               </p>
-              <span className="text-xs text-text-secondary mt-1 block">Identified above government rates</span>
+              <span className="text-[11px] text-[#606470] mt-1 block font-medium">Above statutory limits</span>
             </Card>
 
             {/* Stat 4 */}
-            <Card variant="stat" padding="sm">
+            <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-tertiary uppercase tracking-wider">
-                  Complaint Letters
+                <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
+                  Legal Dispute Notices
                 </span>
-                <FileText className="w-4 h-4 text-text-tertiary" strokeWidth={1.5} />
+                <div className="w-8 h-8 rounded-full bg-[#DBF1F4] flex items-center justify-center text-[#202128]">
+                  <FileText className="w-4 h-4" strokeWidth={2} />
+                </div>
               </div>
-              <p className="font-heading font-bold text-3xl text-text-primary mt-3">
+              <p className="font-heading font-extrabold text-3xl text-[#202128] mt-3">
                 <CountUp end={auditsComplete} />
               </p>
-              <span className="text-xs text-text-secondary mt-1 block">Ready to send</span>
+              <span className="text-[11px] text-[#606470] mt-1 block font-medium">Section 65B certified</span>
             </Card>
           </>
         )}
@@ -157,14 +173,14 @@ export default function DashboardPage() {
         {/* Left Column (Recent Bills) */}
         <div className="lg:col-span-8 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-heading font-semibold text-base text-text-primary">
-              Your Recent Bills
+            <h2 className="font-heading font-bold text-base sm:text-lg text-[#202128]">
+              Recent Hospital Bills
             </h2>
             {totalBills > 0 && (
               <Link href="/bills">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-xs text-[#606470] hover:text-[#202128]">
                   See all
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" strokeWidth={1.5} />
+                  <ArrowRight className="w-3.5 h-3.5 ml-1" strokeWidth={2} />
                 </Button>
               </Link>
             )}
@@ -181,37 +197,37 @@ export default function DashboardPage() {
 
         {/* Right Column (Recent Activity) */}
         <div className="lg:col-span-4 space-y-4">
-          <h2 className="font-heading font-semibold text-base text-text-primary">
-            Recent Activity
+          <h2 className="font-heading font-bold text-base sm:text-lg text-[#202128]">
+            Live Forensic Activity
           </h2>
 
-          <Card padding="md" className="space-y-3">
+          <Card padding="md" className="space-y-3 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
             {notificationsQuery.isLoading ? (
               <div className="space-y-3">
                 <SkeletonCard className="p-3" />
                 <SkeletonCard className="p-3" />
               </div>
             ) : notifications.length === 0 ? (
-              <div className="py-8 text-center text-text-tertiary space-y-2">
-                <Bell className="w-7 h-7 mx-auto opacity-40" strokeWidth={1.5} />
-                <p className="text-xs font-medium text-text-secondary">No recent updates</p>
-                <p className="text-[11px]">We&apos;ll notify you when bill checks complete.</p>
+              <div className="py-8 text-center text-[#606470] space-y-2">
+                <Bell className="w-8 h-8 mx-auto opacity-40 text-[#606470]" strokeWidth={1.5} />
+                <p className="text-xs font-bold text-[#202128]">No recent updates</p>
+                <p className="text-[11px] text-[#606470]">You will receive instant notifications when bills finish scanning.</p>
               </div>
             ) : (
-              <div className="divide-y divide-border-subtle">
+              <div className="divide-y divide-black/[0.05]">
                 {notifications.slice(0, 5).map((notif) => (
                   <div key={notif.id} className="py-3 first:pt-0 last:pb-0 flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-bg-secondary text-text-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Clock className="w-4 h-4" strokeWidth={1.5} />
+                    <div className="w-8 h-8 rounded-full bg-[#EDF0FB] text-[#202128] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Clock className="w-4 h-4" strokeWidth={1.75} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-text-primary truncate">
+                      <p className="text-xs font-bold text-[#202128] truncate">
                         {notif.title}
                       </p>
-                      <p className="text-[11px] text-text-secondary line-clamp-2 mt-0.5">
+                      <p className="text-[11px] text-[#606470] line-clamp-2 mt-0.5">
                         {notif.body}
                       </p>
-                      <span className="text-[10px] text-text-tertiary block mt-1">
+                      <span className="text-[10px] text-[#606470] block mt-1">
                         {formatTimeAgo(notif.created_at)}
                       </span>
                     </div>
@@ -220,13 +236,13 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <div className="pt-3 border-t border-border-subtle text-center">
+            <div className="pt-3 border-t border-black/[0.06] text-center">
               <Link
                 href="/notifications"
-                className="text-xs font-medium text-brand-accent hover:underline inline-flex items-center gap-1"
+                className="text-xs font-bold text-[#43A8B2] hover:text-[#202128] inline-flex items-center gap-1.5"
               >
                 <span>View all notifications</span>
-                <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
               </Link>
             </div>
           </Card>
