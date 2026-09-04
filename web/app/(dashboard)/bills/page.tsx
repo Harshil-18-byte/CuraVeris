@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { UploadCloud, Search, Filter } from "lucide-react";
+import { UploadCloud, Search } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 import { BillTable } from "@/components/bills/BillTable";
@@ -34,10 +34,13 @@ export default function BillsListPage() {
       description="View all the bills you've uploaded and check your results."
       action={
         <Link href="/bills/upload">
-          <Button variant="primary" size="md">
-            <UploadCloud className="w-4 h-4 mr-2" strokeWidth={1.5} />
-            Check a Bill
-          </Button>
+          <button
+            type="button"
+            className="h-10 px-5 bg-[#202128] hover:bg-black text-white font-bold text-xs rounded-full shadow-md flex items-center gap-2 transition-all hover:scale-[1.02]"
+          >
+            <UploadCloud className="w-4 h-4" strokeWidth={2} />
+            <span>Check a Bill</span>
+          </button>
         </Link>
       }
     >
@@ -46,15 +49,15 @@ export default function BillsListPage() {
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
             <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary"
-              strokeWidth={1.5}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#606470]"
+              strokeWidth={1.75}
             />
             <input
               type="text"
               placeholder="Search by hospital name or filename…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-[40px] pl-10 pr-4 bg-white text-sm text-text-primary rounded-md border border-border-default outline-none focus:border-border-focus focus:shadow-[0_0_0_3px_rgba(37,99,235,0.12)] transition-all"
+              className="w-full h-11 pl-11 pr-4 bg-white text-xs text-[#202128] placeholder:text-[#606470] rounded-full border border-black/[0.08] outline-none focus:border-[#43A8B2] shadow-xs transition-all"
             />
           </div>
         </div>
@@ -76,7 +79,7 @@ export default function BillsListPage() {
 
         {/* Pagination Controls */}
         {billsData && billsData.total > 15 && (
-          <div className="flex items-center justify-between pt-4 border-t border-border-subtle text-xs text-text-secondary">
+          <div className="flex items-center justify-between pt-4 border-t border-black/[0.06] text-xs text-[#606470]">
             <span>
               Showing {filteredBills.length} of {billsData.total} bills
             </span>
@@ -84,6 +87,7 @@ export default function BillsListPage() {
               <Button
                 variant="secondary"
                 size="sm"
+                className="rounded-full"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
               >
@@ -92,6 +96,7 @@ export default function BillsListPage() {
               <Button
                 variant="secondary"
                 size="sm"
+                className="rounded-full"
                 disabled={page * 15 >= billsData.total}
                 onClick={() => setPage((p) => p + 1)}
               >
