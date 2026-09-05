@@ -32,13 +32,14 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default function AuditReportPage() {
   const params = useParams();
-  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "bill-cv-101";
+  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
   const [activeTab, setActiveTab] = useState<string>("findings");
 
   // Fetch Bill
   const billQuery = useQuery({
     queryKey: ["bill", billId],
     queryFn: () => api.bills.getById(billId),
+    enabled: !!billId,
     staleTime: 30 * 1000,
   });
 
@@ -46,6 +47,7 @@ export default function AuditReportPage() {
   const auditQuery = useQuery({
     queryKey: ["audit", billId],
     queryFn: () => api.audit.getReport(billId),
+    enabled: !!billId,
     staleTime: 30 * 1000,
   });
 
@@ -53,6 +55,7 @@ export default function AuditReportPage() {
   const evidenceQuery = useQuery({
     queryKey: ["evidence", billId],
     queryFn: () => api.evidence.getByBillId(billId),
+    enabled: !!billId,
     staleTime: 30 * 1000,
   });
 
@@ -60,6 +63,7 @@ export default function AuditReportPage() {
   const frmQuery = useQuery({
     queryKey: ["frm", billId],
     queryFn: () => api.frm.getAssessment(billId),
+    enabled: !!billId,
     staleTime: 30 * 1000,
     retry: false,
   });
@@ -159,7 +163,7 @@ export default function AuditReportPage() {
   return (
     <PageShell>
       {/* 1. HEADER SECTION */}
-      <div className="grassfeld-hero-card p-6 mb-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] space-y-4">
+      <div className="curaveris-hero-card p-6 mb-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] space-y-4">
         {/* Top Breadcrumb Row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
