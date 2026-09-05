@@ -49,13 +49,6 @@ export const FRMInputModal: React.FC<FRMInputModalProps> = ({
     formState: { errors, isSubmitting },
   } = useForm<FRMInputFormData>({
     resolver: zodResolver(frmInputSchema),
-    defaultValues: {
-      monthly_income: 75000,
-      monthly_expenses: 40000,
-      verified_savings: 250000,
-      insurance_coverage_claimed: 500000,
-      already_paid: 0,
-    },
   });
 
   const onSubmit = async (data: FRMInputFormData) => {
