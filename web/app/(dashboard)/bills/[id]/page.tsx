@@ -27,7 +27,7 @@ export default function BillDetailPage() {
     enabled: !!billId,
     refetchInterval: (query) => {
       const status = query.state.data?.processing_status;
-      return status === "COMPLETED" || status === "FAILED" ? false : 15000;
+      return status === "COMPLETED" || status === "FAILED" ? false : 2000;
     },
   });
 
@@ -36,9 +36,14 @@ export default function BillDetailPage() {
     bill?.processing_status
   );
 
-  const effectiveStatus: ProcessingStatus = isConnected
-    ? wsStatus
-    : (bill?.processing_status || "QUEUED");
+  const effectiveStatus: ProcessingStatus =
+    bill?.processing_status === "COMPLETED" || wsStatus === "COMPLETED"
+      ? "COMPLETED"
+      : bill?.processing_status === "FAILED" || wsStatus === "FAILED"
+      ? "FAILED"
+      : wsStatus && wsStatus !== "QUEUED"
+      ? wsStatus
+      : (bill?.processing_status || "QUEUED");
 
   if (isLoading) {
     return (

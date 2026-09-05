@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 
 export function useBillStatusSocket(billId: string, initialStatus?: ProcessingStatus) {
   const [status, setStatus] = useState<ProcessingStatus>(initialStatus || "QUEUED");
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const statusRef = useRef<ProcessingStatus>(status);
@@ -14,6 +14,15 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
   useEffect(() => {
     statusRef.current = status;
   }, [status]);
+
+  useEffect(() => {
+    if (initialStatus) {
+      setStatus(initialStatus);
+      if (initialStatus === "COMPLETED" || initialStatus === "FAILED") {
+        if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
+      }
+    }
+  }, [initialStatus]);
 
   useEffect(() => {
     if (!billId) return;
@@ -41,7 +50,6 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
 
     const startPolling = () => {
       setIsPolling(true);
-      setIsConnected(true);
       if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
       pollingIntervalRef.current = setInterval(async () => {
         try {
@@ -49,7 +57,6 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
           if (res.processing_status) {
             const newStatus = res.processing_status as ProcessingStatus;
             setStatus(newStatus);
-            setIsConnected(true);
             if (newStatus === "COMPLETED" || newStatus === "FAILED") {
               if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
             }
@@ -57,7 +64,7 @@ export function useBillStatusSocket(billId: string, initialStatus?: ProcessingSt
         } catch {
           // Graceful polling fallback
         }
-      }, 5000);
+      }, 2000);
     };
 
     const connectWebSocket = () => {

@@ -174,6 +174,19 @@ async def upload_bill(
             logger.info(f"Cryptographic evidence completed for bill {bill_id_str}")
         except Exception as e:
             logger.error(f"Background bill pipeline error for {bill_id_str}: {e}", exc_info=True)
+            try:
+                from app.workers.ocr_task import SessionLocal
+                from app.models.bill import Bill
+                from uuid import UUID
+                async with SessionLocal() as err_db:
+                    b_stmt = select(Bill).where(Bill.id == UUID(bill_id_str))
+                    b_rec = (await err_db.execute(b_stmt)).scalar_one_or_none()
+                    if b_rec and b_rec.processing_status not in ("COMPLETED", "FAILED"):
+                        b_rec.processing_status = "FAILED"
+                        b_rec.failure_reason = str(e)
+                        await err_db.commit()
+            except Exception as dbe:
+                logger.error(f"Failed to record failure status for {bill_id_str}: {dbe}")
 
     try:
         asyncio.create_task(_run_full_bill_pipeline_background(str(bill_id)))
