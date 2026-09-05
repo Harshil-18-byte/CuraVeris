@@ -131,7 +131,7 @@ For every line item in an audited invoice, a 32-dimensional dense feature vector
 | :--- | :--- | :--- | :--- |
 | `0` | `billed_rate` | Float | Unit price charged by hospital (₹) |
 | `1` | `statutory_cap` | Float | Government ceiling rate (NPPA / DPCO / CGHS) (₹) |
-| `2` | `overcharge_ratio` | Float | $\max(0, (\text{billed\_rate} - \text{statutory\_cap}) / \text{statutory\_cap})$ |
+| `2` | `overcharge_ratio` | Float | $\max\left(0, \frac{\text{Billed Rate} - \text{Statutory Cap}}{\text{Statutory Cap}}\right)$ |
 | `3` | `is_implant` | Binary (0/1) | Cardiac stent, orthopaedic knee, or ophthalmic lens |
 | `4` | `is_nlem_drug` | Binary (0/1) | Listed under National List of Essential Medicines |
 | `5` | `is_cghs_procedure` | Binary (0/1) | Procedure present in CGHS rate master |
@@ -141,7 +141,7 @@ For every line item in an audited invoice, a 32-dimensional dense feature vector
 | `9` | `quantity` | Float | Quantity billed |
 | `10` | `item_total` | Float | Extended total for this line item |
 | `11` | `bill_total` | Float | Gross invoice aggregate amount |
-| `12` | `item_ratio_of_bill` | Float | $\text{item\_total} / \text{bill\_total}$ |
+| `12` | `item_ratio_of_bill` | Float | $\frac{\text{Item Total}}{\text{Bill Total}}$ |
 | `13` | `hospital_tier` | Ordinal (1-4) | Tier 1 (Metro Super-specialty) to Tier 4 (Rural clinic) |
 | `14` | `cghs_city_class` | Ordinal (1-3) | Class X (Delhi, Mumbai), Class Y, Class Z |
 | `15` | `is_nabh_accredited`| Binary (0/1) | 15% CGHS rate uplift qualification flag |
@@ -151,12 +151,12 @@ For every line item in an audited invoice, a 32-dimensional dense feature vector
 | `19` | `los_days` | Float | Total length of stay in days |
 | `20` | `icu_stay_days` | Float | Total days spent in Intensive Care Unit |
 | `21` | `icu_to_los_ratio` | Float | Ratio of ICU days to total admission duration |
-| `22` | `daily_burn_rate` | Float | $\text{bill\_total} / \max(1, \text{los\_days})$ |
+| `22` | `daily_burn_rate` | Float | $\frac{\text{Bill Total}}{\max(1, \text{LOS Days})}$ |
 | `23` | `repeat_charge_count`| Integer | Number of identical line items billed on same date |
 | `24` | `unbundled_component`| Binary (0/1) | Component billed separately from package procedure |
 | `25` | `similarity_score` | Float | Semantic resolution confidence score ($S_{\text{composite}}$) |
 | `26` | `mrp_printed` | Float | Packaging MRP extracted via OCR |
-| `27` | `mrp_overcharge_delta`| Float | $\max(0, \text{billed\_rate} - \text{mrp\_printed})$ |
+| `27` | `mrp_overcharge_delta`| Float | $\max(0, \text{Billed Rate} - \text{MRP Printed})$ |
 | `28` | `payment_shortfall` | Float | Unresolved balance after insurance settlement |
 | `29` | `dsti_hardship_score`| Float | Debt-to-income shock index |
 | `30` | `diagnostic_code_risk`| Float | Risk weight of principal ICD-10 diagnosis |
@@ -256,8 +256,11 @@ $$\text{DSTI} = \frac{\text{Out-of-Pocket Hospital Obligation} + \text{Existing 
 - **Synthetic Data Generator (`backend/ml_training/`)**: Generates 100,000+ realistic multi-tier hospital invoices with controlled statutory violations, OCR noise, perspective distortions, and item unbundling variations.
 
 ### 9.2 Loss Formulation
+
 For the Deep MLP, class imbalance is counteracted using **Weighted Binary Cross Entropy with Logits**:
+
 $$\mathcal{L}_{\text{BCE}} = -\sum_{j=1}^{8} \left[ w_j \cdot y_j \log \sigma(z_j) + (1 - y_j) \log (1 - \sigma(z_j)) \right]$$
+
 where positive class weights $w_j = \frac{N_{\text{neg}}^{(j)}}{N_{\text{pos}}^{(j)}}$.
 
 ---
