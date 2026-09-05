@@ -25,6 +25,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useUIStore } from '@/store/uiStore';
 import { api } from '@/lib/api';
 import { LogoIcon } from '@/components/ui/Logo';
+import { SkeletonText } from '@/components/ui/Skeleton';
 
 interface NavItem {
   href: string;
@@ -180,23 +181,33 @@ export default function Sidebar() {
       {/* User Row Footer */}
       <div className="flex-shrink-0 border-t border-black/[0.05] p-3 bg-[#F5F7FB]">
         <div className="flex items-center justify-between gap-2 p-2 rounded-2xl bg-white border border-black/[0.04] shadow-xs">
-          <Link
-            href="/account"
-            onClick={() => isMobile && closeMobileNav()}
-            className="flex items-center gap-2.5 min-w-0 flex-1"
-          >
-            <div className="w-8 h-8 rounded-full bg-[#202128] text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
-              {user?.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
+          {user ? (
+            <Link
+              href="/account"
+              onClick={() => isMobile && closeMobileNav()}
+              className="flex items-center gap-2.5 min-w-0 flex-1"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#202128] text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                {user.full_name?.charAt(0)?.toUpperCase() ?? 'U'}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-[#202128] truncate">
+                  {user.full_name}
+                </p>
+                <p className="text-[10px] text-[#202128]/50 truncate">
+                  {user.email}
+                </p>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-full bg-black/10 animate-pulse flex-shrink-0" />
+              <div className="min-w-0 flex-1 space-y-1">
+                <SkeletonText width="w-20" className="h-3" />
+                <SkeletonText width="w-28" className="h-2.5" />
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-[#202128] truncate">
-                {user?.full_name || 'Patient'}
-              </p>
-              <p className="text-[10px] text-[#202128]/50 truncate">
-                {user?.email || 'patient@curaveris.ai'}
-              </p>
-            </div>
-          </Link>
+          )}
           <button
             type="button"
             onClick={logout}
