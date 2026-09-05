@@ -72,6 +72,7 @@ class BillStatusResponse(BaseModel):
     processing_completed_at: Optional[datetime] = None
     failure_reason: Optional[str] = None
     retry_count: int = 0
+    stuck_warning: Optional[str] = None
 
 
 class BillUploadResponse(BaseModel):
