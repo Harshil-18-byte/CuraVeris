@@ -71,6 +71,19 @@ class Settings(BaseSettings):
     ML_MODEL_PATH: str = "./ml_models"
     SENTRY_DSN: str = ""
 
+    # Payment Gateway
+    RAZORPAY_KEY_ID: str = "rzp_test_demo12345678"
+    RAZORPAY_KEY_SECRET: str = "demo_secret"
+    RAZORPAY_WEBHOOK_SECRET: str = ""
+
+    # Notifications / SMS
+    OTP_PROVIDER: str = "msg91"
+    MSG91_AUTH_KEY: str = ""
+    MSG91_ALERT_TEMPLATE_ID: str = ""
+    TWILIO_ACCOUNT_SID: str = ""
+    TWILIO_AUTH_TOKEN: str = ""
+    TWILIO_FROM_NUMBER: str = ""
+
     @field_validator("APP_ALLOWED_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
