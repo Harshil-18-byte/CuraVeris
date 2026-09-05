@@ -4,10 +4,10 @@ import logging
 from decimal import Decimal
 from typing import List, Dict, Any
 from uuid import UUID
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import select
 from app.workers.celery_app import celery_app
 from app.core.config import settings
+from app.core.database import AsyncSessionLocal as SessionLocal
 from app.core.redis import publish
 from app.models.bill import Bill, BillLineItem
 from app.models.audit import Audit, AuditFinding
@@ -19,13 +19,6 @@ from app.audit_engine.statutory.gst import audit_gst_item
 from app.audit_engine.statutory.pmjay import audit_pmjay_package_item
 
 logger = logging.getLogger(__name__)
-
-async_engine = create_async_engine(
-    settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://").replace("postgres://", "postgresql+asyncpg://"),
-    pool_size=5,
-    max_overflow=5,
-)
-SessionLocal = async_sessionmaker(bind=async_engine, expire_on_commit=False)
 
 
 async def _run_audit_async(bill_id_str: str) -> str:
