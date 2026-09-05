@@ -2,23 +2,16 @@ import asyncio
 import logging
 from typing import Dict, Any
 from uuid import UUID
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import select
 from app.workers.celery_app import celery_app
 from app.core.config import settings
+from app.core.database import AsyncSessionLocal as SessionLocal
 from app.models.bill import Bill, BillLineItem
 from app.models.audit import Audit, AuditFinding
 from app.models.notification import Notification
 from app.audit_engine.frm.orchestrator import run_frm_assessment
 
 logger = logging.getLogger(__name__)
-
-async_engine = create_async_engine(
-    settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://").replace("postgres://", "postgresql+asyncpg://"),
-    pool_size=5,
-    max_overflow=5,
-)
-SessionLocal = async_sessionmaker(bind=async_engine, expire_on_commit=False)
 
 
 async def _run_frm_async(bill_id_str: str, user_financial_inputs: Dict[str, Any]) -> str:
