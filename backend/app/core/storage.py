@@ -32,15 +32,26 @@ def validate_file_magic_bytes(header_bytes: bytes) -> bool:
     return False
 
 
-class S3StorageAdapter:
-    """Cloudflare R2 / AWS S3 async compatible storage adapter."""
+import os
+import pathlib
+
+class UnifiedStorageAdapter:
+    """Unified storage adapter supporting AWS S3/Cloudflare R2 with automatic local filesystem fallback."""
 
     def __init__(self):
         self.bucket_name = settings.AWS_S3_BUCKET_NAME
+        self.local_root = pathlib.Path(os.getenv("LOCAL_STORAGE_DIR", "./data/storage"))
+        self.local_root.mkdir(parents=True, exist_ok=True)
         self._client = None
 
     @property
+    def is_s3_configured(self) -> bool:
+        return bool(settings.AWS_ACCESS_KEY_ID and settings.AWS_SECRET_ACCESS_KEY and settings.STORAGE_BACKEND != "local")
+
+    @property
     def client(self):
+        if not self.is_s3_configured:
+            return None
         if self._client is None:
             try:
                 import boto3
@@ -48,12 +59,12 @@ class S3StorageAdapter:
                 self._client = boto3.client(
                     "s3",
                     endpoint_url=settings.AWS_S3_ENDPOINT_URL or None,
-                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID or None,
-                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY or None,
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                     region_name=settings.AWS_S3_REGION,
                     config=Config(signature_version="s3v4", s3={"addressing_style": "virtual" if not settings.AWS_S3_ENDPOINT_URL else "path"}),
                 )
-            except ImportError:
+            except Exception:
                 self._client = None
         return self._client
 
@@ -64,32 +75,58 @@ class S3StorageAdapter:
         content_type: str = "application/octet-stream",
         metadata: Optional[Dict[str, str]] = None,
     ) -> str:
-        """Uploads a file object to S3 / Cloudflare R2 asynchronously."""
+        """Uploads a file object to S3 / Cloudflare R2 or local disk."""
         loop = asyncio.get_running_loop()
-        extra_args: Dict[str, Any] = {"ContentType": content_type}
-        if metadata:
-            extra_args["Metadata"] = metadata
 
         def _upload():
             file_obj.seek(0)
-            self.client.upload_fileobj(file_obj, self.bucket_name, key, ExtraArgs=extra_args)
+            if self.is_s3_configured and self.client:
+                extra_args: Dict[str, Any] = {"ContentType": content_type}
+                if metadata:
+                    extra_args["Metadata"] = metadata
+                self.client.upload_fileobj(file_obj, self.bucket_name, key, ExtraArgs=extra_args)
+            else:
+                dest = self.local_root / key
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                with open(dest, "wb") as f:
+                    f.write(file_obj.read())
             return key
 
         return await loop.run_in_executor(None, _upload)
 
+    async def get_file_bytes(self, key: str) -> bytes:
+        """Reads file bytes directly from storage."""
+        loop = asyncio.get_running_loop()
+
+        def _read():
+            if self.is_s3_configured and self.client:
+                resp = self.client.get_object(Bucket=self.bucket_name, Key=key)
+                return resp["Body"].read()
+            else:
+                dest = self.local_root / key
+                if dest.exists():
+                    with open(dest, "rb") as f:
+                        return f.read()
+                return b""
+
+        return await loop.run_in_executor(None, _read)
+
     async def generate_presigned_url(self, key: str, expires_seconds: int = 900) -> str:
-        """Generates a secure presigned GET URL (default 15 mins)."""
+        """Generates a presigned URL or local file path."""
         loop = asyncio.get_running_loop()
 
         def _gen():
-            try:
-                return self.client.generate_presigned_url(
-                    "get_object",
-                    Params={"Bucket": self.bucket_name, "Key": key},
-                    ExpiresIn=expires_seconds,
-                )
-            except Exception:
-                return f"{settings.AWS_S3_ENDPOINT_URL}/{self.bucket_name}/{key}"
+            if self.is_s3_configured and self.client:
+                try:
+                    return self.client.generate_presigned_url(
+                        "get_object",
+                        Params={"Bucket": self.bucket_name, "Key": key},
+                        ExpiresIn=expires_seconds,
+                    )
+                except Exception:
+                    pass
+            dest = self.local_root / key
+            return f"file:///{dest.resolve().as_posix()}"
 
         return await loop.run_in_executor(None, _gen)
 
@@ -98,10 +135,18 @@ class S3StorageAdapter:
         loop = asyncio.get_running_loop()
 
         def _delete():
-            try:
-                self.client.delete_object(Bucket=self.bucket_name, Key=key)
-            except ClientError:
-                pass
+            if self.is_s3_configured and self.client:
+                try:
+                    self.client.delete_object(Bucket=self.bucket_name, Key=key)
+                except Exception:
+                    pass
+            else:
+                dest = self.local_root / key
+                if dest.exists():
+                    try:
+                        dest.unlink()
+                    except Exception:
+                        pass
 
         await loop.run_in_executor(None, _delete)
 
@@ -110,20 +155,24 @@ class S3StorageAdapter:
         loop = asyncio.get_running_loop()
 
         def _check():
-            try:
-                self.client.head_object(Bucket=self.bucket_name, Key=key)
-                return True
-            except ClientError:
-                return False
+            if self.is_s3_configured and self.client:
+                try:
+                    self.client.head_object(Bucket=self.bucket_name, Key=key)
+                    return True
+                except Exception:
+                    return False
+            else:
+                dest = self.local_root / key
+                return dest.exists()
 
         return await loop.run_in_executor(None, _check)
 
 
-StorageAdapter = S3StorageAdapter
-storage_adapter = S3StorageAdapter()
+StorageAdapter = UnifiedStorageAdapter
+storage_adapter = UnifiedStorageAdapter()
 
 
-def get_storage() -> S3StorageAdapter:
+def get_storage() -> UnifiedStorageAdapter:
     """Dependency provider returning singleton storage adapter instance."""
     return storage_adapter
 
