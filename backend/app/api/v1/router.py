@@ -17,6 +17,7 @@ from app.api.chat import router as chat_router
 from app.api.finance import router as finance_router
 from app.api.insurance import router as insurance_router
 from app.api.reports import router as reports_router
+from app.api.v1.hospitals import router as hospitals_router
 from app.api.razorpay import router as razorpay_router
 
 api_router = APIRouter()
@@ -36,6 +37,7 @@ api_router.include_router(notif_router)
 api_router.include_router(payments_router)
 api_router.include_router(legal_docs_router)
 api_router.include_router(users_router)
+api_router.include_router(hospitals_router)
 api_router.include_router(admin_router)
 api_router.include_router(dev_router)
 api_router.include_router(abha_router)
