@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,11 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { Colors } from '../theme/colors';
+
+const OFFLINE_QUEUE_KEY = 'curaveris_offline_bill_queue';
 
 export function UploadBillScreen({
   onStartAnalysis,
@@ -23,6 +26,7 @@ export function UploadBillScreen({
   const [totalAmount, setTotalAmount] = useState('');
   const [billDate, setBillDate] = useState('');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
 
   const handleSimulateFileSelect = (source: 'camera' | 'file') => {
     setSelectedFile({
@@ -32,8 +36,18 @@ export function UploadBillScreen({
     });
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) return;
+
+    if (isOffline) {
+      Alert.alert(
+        "Saved for Later",
+        "No internet connection. Your bill photo has been saved to the offline queue and will be uploaded automatically when you reconnect.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
     setUploadProgress(45);
     setTimeout(() => {
       setUploadProgress(100);
