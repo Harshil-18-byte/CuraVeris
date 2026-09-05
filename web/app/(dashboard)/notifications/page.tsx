@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { SkeletonCard } from "@/components/ui/Skeleton";
+import { InlineError } from "@/components/ui/InlineError";
 import { api } from "@/lib/api";
 import { formatTimeAgo } from "@/lib/utils";
 import { Notification } from "@/types";
@@ -26,7 +27,7 @@ export default function NotificationsPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<"ALL" | "UNREAD">("ALL");
 
-  const { data: notificationsData, isLoading } = useQuery({
+  const { data: notificationsData, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["notifications", "list"],
     queryFn: () => api.notifications.list({ page: 1, per_page: 50 }),
     staleTime: 15 * 1000,
@@ -36,6 +37,7 @@ export default function NotificationsPage() {
     mutationFn: () => api.notifications.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
     },
   });
 
@@ -43,6 +45,7 @@ export default function NotificationsPage() {
     mutationFn: (id: string) => api.notifications.markAsRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
     },
   });
 
@@ -53,6 +56,15 @@ export default function NotificationsPage() {
     if (filter === "UNREAD") return !n.is_read;
     return true;
   });
+
+  const getEntityLink = (n: Notification) => {
+    if (n.link) return n.link;
+    const type = n.entity_type?.toLowerCase();
+    if (type === "bill" && n.entity_id) return `/bills/${n.entity_id}`;
+    if (type === "audit" && n.entity_id) return `/bills/${n.entity_id}/audit`;
+    if (type === "payment" && n.entity_id) return `/payments`;
+    return null;
+  };
 
   const getEventIcon = (type?: string) => {
     switch (type) {
@@ -141,6 +153,12 @@ export default function NotificationsPage() {
             <SkeletonCard />
             <SkeletonCard />
           </>
+        ) : isError ? (
+          <InlineError
+            title="Failed to load notifications"
+            message={(error as any)?.message ?? "An error occurred fetching notifications."}
+            onRetry={() => refetch()}
+          />
         ) : filteredItems.length === 0 ? (
           <Card padding="lg" className="text-center py-12 space-y-3">
             <Bell className="w-10 h-10 text-neutral-500 mx-auto" strokeWidth={1.5} />
@@ -156,6 +174,7 @@ export default function NotificationsPage() {
         ) : (
           filteredItems.map((n) => {
             const isUnread = !n.is_read;
+            const targetLink = getEntityLink(n);
 
             return (
               <Card
@@ -195,9 +214,9 @@ export default function NotificationsPage() {
                         {formatTimeAgo(n.created_at)}
                       </span>
 
-                      {n.link && (
+                      {targetLink && (
                         <Link
-                          href={n.link}
+                          href={targetLink}
                           className="text-cyan-400 font-semibold hover:underline inline-flex items-center gap-1"
                         >
                           <span>View Details</span>
