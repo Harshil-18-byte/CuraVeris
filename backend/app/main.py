@@ -31,6 +31,12 @@ if settings.SENTRY_DSN and (settings.SENTRY_DSN.startswith("http://") or setting
 async def lifespan(app: FastAPI):
     # Startup verification
     logger.info("Initializing CuraVeris Production API v1.0.0...")
+    try:
+        from app.core.database import init_db
+        await init_db()
+        logger.info("Database tables initialized/verified.")
+    except Exception as e:
+        logger.warning(f"Database init warning: {e}")
     db_ok = await check_db_health()
     redis_ok = await check_redis_health()
     logger.info(f"Database Connected: {db_ok} | Redis Connected: {redis_ok}")
@@ -160,6 +166,7 @@ async def root_endpoint(request: Request):
 
 
 @app.get("/health", tags=["System"])
+@app.get("/api/v1/health", tags=["System"])
 async def health_check():
     """System health check endpoint."""
     db_ok = await check_db_health()
