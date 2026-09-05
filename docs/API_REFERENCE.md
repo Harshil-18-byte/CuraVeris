@@ -736,3 +736,114 @@ Streams the generated, signed legal PDF file.
 - **Auth**: Required (`Bearer <token>`)
 - **Response**: `200 OK` (`application/pdf`) or `307 Temporary Redirect` (Presigned S3/R2 URL)
 
+
+---
+
+## 11. Demo & Public Audit Flow
+
+### 11.1 Fetch Pre-Audited Demo Bill
+
+Public endpoint delivering pre-seeded demo audit data with line items, statutory violations, and Section 65B cryptographic signature. Requires no authentication.
+
+- **Method**: `GET`
+- **Path**: `/api/v1/bills/demo/sample`
+- **Response**: `200 OK`
+
+```json
+{
+  "bill": {
+    "id": "11111111-1111-1111-1111-111111111111",
+    "hospital_name": "Apollo Hospitals, Mumbai",
+    "patient_name": "Rajesh Kumar",
+    "admission_date": "2024-01-10",
+    "discharge_date": "2024-01-13",
+    "total_billed_amount": "179839.60",
+    "processing_status": "COMPLETED"
+  },
+  "audit": {
+    "id": "22222222-2222-2222-2222-222222222222",
+    "total_overcharge_deterministic": "18576.60",
+    "risk_score": "0.74",
+    "risk_label": "HIGH",
+    "finding_count": 5
+  },
+  "findings": [],
+  "is_demo": true
+}
+```
+
+---
+
+## 12. Payments & Undisputed Settlement
+
+### 12.1 Create Razorpay Order for Undisputed Liability
+
+Calculates undisputed amount (`max(0, total_billed - overcharge)`) and creates an official Razorpay order.
+
+- **Method**: `POST`
+- **Path**: `/api/v1/payments/create-order`
+- **Headers**: `Authorization: Bearer <token>`
+- **Request Body**:
+```json
+{
+  "bill_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+### 12.2 Verify Razorpay Payment
+
+Verifies HMAC-SHA256 signature from Razorpay and updates payment status.
+
+- **Method**: `POST`
+- **Path**: `/api/v1/payments/verify`
+- **Headers**: `Authorization: Bearer <token>`
+- **Request Body**:
+```json
+{
+  "razorpay_order_id": "order_NX3Q123456",
+  "razorpay_payment_id": "pay_NX3Q789012",
+  "razorpay_signature": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+}
+```
+
+---
+
+## 13. Hospital Trust & Ratings
+
+### 13.1 Query Hospital Trust Scores
+
+Returns aggregate billing transparency scores and overcharge rates across hospital networks.
+
+- **Method**: `GET`
+- **Path**: `/api/v1/hospitals/trust-scores?search=Apollo`
+- **Response**: `200 OK`
+
+### 13.2 Submit Hospital Rating
+
+- **Method**: `POST`
+- **Path**: `/api/v1/hospitals/rate`
+- **Headers**: `Authorization: Bearer <token>`
+- **Request Body**:
+```json
+{
+  "bill_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "hospital_name": "Apollo Hospitals, Mumbai",
+  "transparency_score": 4
+}
+```
+
+---
+
+## 14. Bill Comparison & User Analytics
+
+### 14.1 Compare Two Hospital Invoices
+
+- **Method**: `GET`
+- **Path**: `/api/v1/bills/compare?bill_id_1={id1}&bill_id_2={id2}`
+- **Headers**: `Authorization: Bearer <token>`
+
+### 14.2 User Dashboard Statistics & Monthly Recovery Trends
+
+- **Method**: `GET`
+- **Path**: `/api/v1/users/me/stats`
+- **Headers**: `Authorization: Bearer <token>`
