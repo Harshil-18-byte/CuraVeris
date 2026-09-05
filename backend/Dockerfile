@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr-eng \
     poppler-utils \
     libmagic1 \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libpango-1.0-0 \
     libpangoft2-1.0-0 \

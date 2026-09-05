@@ -1,0 +1,16 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+.git/
+.gitignore
+.env
+.env.*
+ml_training/models/curaveris_*
+ml_training/runs/
