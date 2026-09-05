@@ -47,15 +47,36 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS configuration
+# CORS MUST BE FIRST — before every other middleware
+origins_list = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3000",
+    "https://*.vercel.app",
+    "https://curaveris.vercel.app",
+]
+if isinstance(settings.APP_ALLOWED_ORIGINS, list):
+    origins_list.extend(settings.APP_ALLOWED_ORIGINS)
+elif isinstance(settings.APP_ALLOWED_ORIGINS, str) and settings.APP_ALLOWED_ORIGINS:
+    origins_list.append(settings.APP_ALLOWED_ORIGINS)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.APP_ALLOWED_ORIGINS,
+    allow_origins=origins_list,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Request-ID",
+        "X-Requested-With",
+    ],
+    expose_headers=["X-Request-ID"],
+    max_age=600,
 )
-
 
 # Prometheus metrics instrumentator
 try:
