@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "../styles/globals.css";
 import { Providers } from "@/app/providers";
 import { ToastProvider } from "@/components/ui/Toast";
+import { Analytics } from "@vercel/analytics/next";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -50,6 +51,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <ToastProvider />
+          <Analytics />
         </Providers>
       </body>
     </html>
