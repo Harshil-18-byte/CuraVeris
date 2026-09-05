@@ -1,4 +1,7 @@
-import { use, useState } from 'react'
+"use client";
+
+import { useState } from 'react'
+import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { legalDocsApi, billsApi, auditsApi } from '@/lib/api'
 import {
@@ -8,10 +11,6 @@ import {
 } from 'lucide-react'
 import { formatDate, formatCurrency } from '@/lib/utils'
 import WhatsAppShare from '@/components/legal/WhatsAppShare'
-
-interface PageProps {
-  params: Promise<{ id: string }>
-}
 
 const DOC_DESCRIPTIONS: Record<string, string> = {
   HOSPITAL_COMPLAINT: 'A formal letter to hospital management citing the exact overcharges and demanding a refund within 15 days.',
@@ -134,8 +133,9 @@ function ExtraInputsForm({ docType, onSubmit, isLoading, billData }: ExtraInputs
   )
 }
 
-export default function LegalDocumentsPage({ params }: PageProps) {
-  const { id: billId } = use(params)
+export default function LegalDocumentsPage() {
+  const params = useParams()
+  const billId = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : ''
   const queryClient = useQueryClient()
   const [expandedType, setExpandedType] = useState<string | null>(null)
   const [generatingType, setGeneratingType] = useState<string | null>(null)
