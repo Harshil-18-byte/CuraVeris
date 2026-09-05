@@ -14,7 +14,13 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Response, Query, Depends, status
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.ml.train_risk_model import MODEL_SAVE_PATH, train_and_evaluate
+
+try:
+    from app.ml.train_risk_model import MODEL_SAVE_PATH, train_and_evaluate
+except Exception:
+    MODEL_SAVE_PATH = "./ml_models"
+    train_and_evaluate = None
+
 from app.core.config import settings
 from app.core.security import verify_token
 
