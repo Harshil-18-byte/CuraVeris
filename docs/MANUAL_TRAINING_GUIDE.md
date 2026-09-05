@@ -1,19 +1,3 @@
----
-{
-  "id": "file_mcitudan",
-  "filetype": "document",
-  "filename": "MANUAL_TRAINING_GUIDE",
-  "created_at": "2026-09-05T12:07:20.199Z",
-  "updated_at": "2026-09-05T12:07:25.185Z",
-  "meta": {
-    "location": "/",
-    "tags": [],
-    "categories": [],
-    "description": "",
-    "source": "markdown"
-  }
-}
----
 # CuraVeris - Complete Production Model Training Guide
 
 ---
