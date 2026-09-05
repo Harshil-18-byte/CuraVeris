@@ -1,0 +1,6 @@
+{
+  "name": "CuraVeris",
+  "displayName": "CuraVeris",
+  "icon": "./src/assets/images/logo_full_monochrome_dark.png",
+  "scheme": "curaveris"
+}
