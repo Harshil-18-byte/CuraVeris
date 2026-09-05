@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="base.css">
+</head>
+<body>
+
+<div class="notice-header">
+  COMPLAINT BEFORE THE INSURANCE OMBUDSMAN
+</div>
+
+<div class="letterhead">
+  <p>Under the Insurance Ombudsman Rules, 2017</p>
+  <p>Office of the Insurance Ombudsman — {{ ombudsman_jurisdiction }}</p>
+</div>
+
+<div class="date-ref-block">
+  <p><strong>Date:</strong> {{ document_date }}</p>
+  <p><strong>CuraVeris Reference:</strong> CV/OMB/{{ reference_number }}</p>
+</div>
+
+<div class="body-text">
+
+<p><strong>COMPLAINANT:</strong></p>
+<p>
+Name: {{ patient_name }}<br>
+Address: {{ patient_address }}<br>
+Phone: {{ patient_phone }}<br>
+Email: {{ patient_email }}
+</p>
+
+<p><strong>RESPONDENT (INSURER):</strong></p>
+<p>
+Name: {{ insurer_name }}<br>
+Policy Number: {{ policy_number }}<br>
+Claim Number: {{ claim_number if claim_number else 'Pending assignment' }}<br>
+TPA (if applicable): {{ tpa_name if tpa_name else 'Not applicable' }}
+</p>
+
+<p><strong>NATURE OF COMPLAINT:</strong></p>
+<p>
+{% if claim_rejected %}
+Wrongful repudiation / rejection of health insurance claim.
+{% else %}
+Unjustified partial settlement / disallowance of health insurance claim.
+{% endif %}
+</p>
+
+<p><strong>AMOUNT IN DISPUTE: ₹{{ total_overcharge_formatted }}</strong></p>
+
+<p><strong>STATEMENT OF FACTS:</strong></p>
+
+<p>
+1. The Complainant is insured under Policy No. {{ policy_number }}
+issued by {{ insurer_name }}.
+</p>
+
+<p>
+2. The Complainant / insured patient {{ patient_name }} was
+hospitalised at {{ hospital_name }}
+{% if admission_date %}from {{ admission_date }} to {{ discharge_date }}{% endif %}
+for {{ diagnosis if diagnosis else 'medical treatment' }}.
+</p>
+
+<p>
+3. The total hospital bill amounted to ₹{{ total_billed_formatted }}.
+A claim was submitted to the Respondent / its TPA for this amount.
+</p>
+
+<p>
+4. The Respondent has {% if claim_rejected %}rejected the claim{% else %}
+settled only a partial amount, disallowing ₹{{ total_overcharge_formatted }}{% endif %}
+without adequate justification.
+</p>
+
+<p>
+5. The Complainant had the hospital bill independently audited by
+CuraVeris, which identified the following irregularities:
+</p>
+
+<table class="findings-table">
+  <thead>
+    <tr>
+      <th>S.No.</th>
+      <th>Item</th>
+      <th>Billed (₹)</th>
+      <th>Issue</th>
+      <th>Applicable Rule</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for finding in findings %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ finding.item_description }}</td>
+      <td class="amount">{{ finding.billed_amount_formatted }}</td>
+      <td>{{ finding.user_explanation }}</td>
+      <td>{{ finding.statutory_reference_plain }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p><strong>GROUNDS OF COMPLAINT:</strong></p>
+
+<p>
+(a) The Respondent's decision to
+{% if claim_rejected %}reject{% else %}partially settle{% endif %}
+the claim is contrary to the policy terms and IRDAI regulations.
+</p>
+
+<p>
+(b) The Respondent has failed to provide specific, written reasons
+citing exact policy clauses for each disallowance as required
+under IRDAI (Health Insurance) Regulations, 2016.
+</p>
+
+<p>
+(c) The delay / rejection violates IRDAI's mandated claim settlement
+timeline of 30 days from receipt of all documents.
+</p>
+
+<p><strong>RELIEF SOUGHT:</strong></p>
+
+<p>
+1. Direction to the Respondent to settle the claim for the full
+admissible amount of ₹{{ admissible_amount_formatted }}.
+</p>
+
+<p>
+2. Payment of interest at 2% per month above bank rate on the
+delayed settlement amount as per IRDAI regulations.
+</p>
+
+<p>
+3. Any other relief deemed appropriate by the Hon'ble Ombudsman.
+</p>
+
+<p><strong>DECLARATION:</strong></p>
+
+<p>
+I, {{ patient_name }}, do hereby declare that the information
+furnished above is true and correct to the best of my knowledge
+and belief. I have not filed any complaint before any court,
+consumer forum, or other authority in respect of this matter.
+I have previously approached the Respondent insurer / TPA with
+this grievance and have not received a satisfactory resolution
+within 30 days.
+</p>
+
+</div>
+
+<div class="evidence-box">
+  <strong>Audit Evidence Certificate:</strong><br>
+  Evidence ID: {{ evidence_id }}<br>
+  Merkle Root: {{ merkle_root }}<br>
+  Issued: {{ evidence_issued_at }}<br>
+  This audit is cryptographically sealed and tamper-proof.
+</div>
+
+<div class="signature-block">
+  <p>Date: {{ document_date }}</p>
+  <p>Place: {{ patient_city }}</p>
+  <br><br>
+  <p>___________________________</p>
+  <p><strong>{{ patient_name }}</strong></p>
+  <p>(Complainant)</p>
+</div>
+
+<p style="font-size:9pt; margin-top:16pt;">
+  <strong>Documents Enclosed:</strong><br>
+  1. Copy of Insurance Policy<br>
+  2. Hospital Bill (original)<br>
+  3. CuraVeris Audit Report<br>
+  4. CuraVeris Evidence Certificate<br>
+  5. Previous correspondence with insurer / TPA<br>
+  6. Claim rejection / partial settlement letter from insurer
+</p>
+
+<div class="disclaimer">
+  Generated by CuraVeris. File this petition at the Office of the Insurance Ombudsman
+  for your region. A list of Ombudsman offices is available at www.cioins.co.in.
+  This document does not constitute legal advice.
+</div>
+
+</body>
+</html>
