@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Please enter your email or mobile number"),
@@ -110,14 +111,12 @@ export default function LoginPage() {
       );
       router.push("/dashboard");
     } catch (err: any) {
-      const message = err?.message || "Unable to sign in. Please check your credentials.";
-      // 429 = rate limited / too many attempts
       if (err?.status === 429) {
         setIsLocked(true);
         setLockoutRemaining(60);
         setErrorMessage("Too many attempts. Please wait before trying again.");
       } else {
-        setErrorMessage(message);
+        setErrorMessage(getErrorMessage(err));
       }
     }
   };
