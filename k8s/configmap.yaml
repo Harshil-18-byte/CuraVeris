@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: curaveris-config
+  namespace: curaveris
+  labels:
+    app.kubernetes.io/name: curaveris
+data:
+  APP_ENV: "production"
+  APP_DEBUG: "false"
+  PORT: "8000"
+  DATABASE_URL: "postgresql+asyncpg://curaveris:$(POSTGRES_PASSWORD)@postgres-service.curaveris.svc.cluster.local:5432/curaveris"
+  REDIS_URL: "redis://redis-service.curaveris.svc.cluster.local:6379/0"
+  NEXT_PUBLIC_API_URL: "http://curaveris-backend.curaveris.svc.cluster.local:8000"
+  APP_ALLOWED_ORIGINS: "http://localhost:3000,https://curaveris.in,https://app.curaveris.in"
