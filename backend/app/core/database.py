@@ -26,6 +26,8 @@ if "channel_binding=" in db_url:
 engine_kwargs = {
     "echo": settings.APP_DEBUG,
     "future": True,
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
 }
 if "sqlite" not in db_url:
     engine_kwargs["pool_size"] = settings.DATABASE_POOL_SIZE
