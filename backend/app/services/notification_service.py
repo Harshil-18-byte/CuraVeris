@@ -1,10 +1,15 @@
+import logging
 from datetime import date
 from typing import Optional, Dict, Any
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+
+from app.core.config import settings
 from app.models.notification import Notification
 from app.core.redis import delete_key
+
+logger = logging.getLogger("curaveris.notifications")
 
 NOTIFICATION_CATALOGUE = {
     "BILL_UPLOADED": {
@@ -83,3 +88,55 @@ async def create_notification(
     # Invalidate Redis unread count cache
     await delete_key(f"notif_count:{user_id}")
     return notif
+
+
+async def send_sms_notification(
+    phone_number: str,
+    message: str,
+) -> bool:
+    """Dispatches SMS alert via MSG91 flow API or Twilio REST client."""
+    provider = getattr(settings, "OTP_PROVIDER", "msg91")
+
+    if not phone_number or not message:
+        return False
+
+    clean_phone = phone_number.replace("+91", "").replace("-", "").strip()
+
+    try:
+        if provider == "msg91" and getattr(settings, "MSG91_AUTH_KEY", None):
+            import httpx
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(
+                    "https://api.msg91.com/api/v5/flow/",
+                    headers={
+                        "authkey": settings.MSG91_AUTH_KEY,
+                        "Content-Type": "application/JSON",
+                    },
+                    json={
+                        "template_id": settings.MSG91_ALERT_TEMPLATE_ID or "curaveris_alert",
+                        "short_url": "0",
+                        "recipients": [
+                            {
+                                "mobiles": f"91{clean_phone}",
+                                "message": message,
+                            }
+                        ],
+                    },
+                )
+                return response.status_code in [200, 202]
+
+        elif provider == "twilio" and getattr(settings, "TWILIO_ACCOUNT_SID", None):
+            from twilio.rest import Client
+            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+            client.messages.create(
+                body=message,
+                from_=settings.TWILIO_FROM_NUMBER,
+                to=f"+91{clean_phone}",
+            )
+            return True
+
+    except Exception as e:
+        logger.warning(f"SMS dispatch skipped or provider unavailable: {e}")
+        return False
+
+    return False
