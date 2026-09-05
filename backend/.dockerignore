@@ -12,5 +12,12 @@ htmlcov/
 .gitignore
 .env
 .env.*
-ml_training/models/curaveris_*
-ml_training/runs/
+ml_training/
+ml_models/curaveris_*
+ml_models/*.pt
+ml_models/*.bin
+**/__pycache__
+**/*.pyc
+**/*.pt
+**/*.bin
+**/*.onnx
