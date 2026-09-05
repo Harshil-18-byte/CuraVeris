@@ -64,13 +64,13 @@ FINDING_TYPE_PLAIN = {
 }
 
 STATUTORY_REF_PLAIN = {
-    'CGHS_OVERCHARGE': 'CGHS Rate Schedule, Ministry of Health & Family Welfare',
-    'NPPA_VIOLATION': 'NPPA Price Cap Order, National Pharmaceutical Pricing Authority',
-    'DPCO_VIOLATION': 'Drug Prices Control Order, 2013 (Essential Commodities Act)',
-    'IRDAI_NON_PAYABLE': 'IRDAI Non-Payable Items List',
-    'GST_MISAPPLICATION': 'Notification No. 12/2017-CT(R) — GST Healthcare Exemption',
-    'SHADOW_BILL': 'Consumer Protection Act, 2019 — Unfair Trade Practice',
-    'PMJAY_NON_COMPLIANT': 'PM-JAY Package Rate Schedule',
+    'CGHS_OVERCHARGE': 'MoHFW OM No. Z.15025/117/2017/DIR/CGHS (CGHS National Rate Schedule)',
+    'NPPA_VIOLATION': 'NPPA Gazette Ceiling Orders S.O. 1335(E) & S.O. 2668(E) (Price Caps)',
+    'DPCO_VIOLATION': 'Drug Prices Control Order, 2013 (S.O. 1480(E) / Essential Commodities Act)',
+    'IRDAI_NON_PAYABLE': 'IRDAI Master Circular IRDAI/HLT/REG/CIR/193/07/2020 (Non-Payable Items)',
+    'GST_MISAPPLICATION': 'Notification No. 12/2017-Central Tax (Rate) Entry 74 (GST Healthcare Exemption)',
+    'SHADOW_BILL': 'Consumer Protection Act, 2019 — Section 2(47) (Unfair Trade Practice)',
+    'PMJAY_NON_COMPLIANT': 'National Health Authority PM-JAY Package Master Rate Schedule v2.2',
 }
 
 
@@ -112,17 +112,16 @@ def build_template_context(
 
     formatted_findings = []
     for f in findings:
-        if f.finding_source != 'DETERMINISTIC':
+        if f.finding_source and f.finding_source.upper() not in ('DETERMINISTIC', 'STATUTORY', 'RULE_BASED', 'HYBRID', 'AUDIT'):
             continue
+        stat_ref = f.statutory_reference if f.statutory_reference else STATUTORY_REF_PLAIN.get(f.finding_type, '')
         formatted_findings.append({
             'item_description': f.item_description or 'Unspecified item',
             'category_plain': FINDING_TYPE_PLAIN.get(f.finding_type, f.finding_type),
             'billed_amount_formatted': format_inr(f.billed_amount),
             'benchmark_amount_formatted': format_inr(f.benchmark_amount),
             'overcharge_amount_formatted': format_inr(f.overcharge_amount),
-            'statutory_reference_plain': STATUTORY_REF_PLAIN.get(
-                f.finding_type, f.statutory_reference or ''
-            ),
+            'statutory_reference_plain': stat_ref,
             'user_explanation': f.user_explanation or f.legal_basis or '',
             'dispute_basis': f.user_explanation or 'Contrary to applicable IRDAI guidelines',
             'insurer_decision': 'Disallowed',
