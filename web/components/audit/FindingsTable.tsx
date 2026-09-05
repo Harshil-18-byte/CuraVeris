@@ -304,7 +304,7 @@ export const FindingsTable: React.FC<FindingsTableProps> = ({ findings, billId }
       </div>
 
       {/* Findings Total Summary Box */}
-      <div className="grassfeld-hero-card p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex items-center justify-between">
+      <div className="curaveris-hero-card p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex items-center justify-between">
         <div>
           <span className="text-xs text-[#606470] uppercase font-bold tracking-wider block">
             Total extra charges we confirmed
