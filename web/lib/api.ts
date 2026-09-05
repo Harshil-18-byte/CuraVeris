@@ -14,6 +14,9 @@ import {
   ModelRiskResult,
   FRMInputs,
   FRMAsyncResponse,
+  UserStats,
+  HospitalTrustScore,
+  BillComparisonResult,
 } from "@/types";
 
 // ─── Error Type ────────────────────────────────────────────────────────────────
@@ -319,6 +322,13 @@ export const billsApi = {
 
   deleteById: (billId: string): Promise<void> =>
     apiClient.delete(`/bills/${billId}`).then((r) => r.data),
+
+  compare: (billId1: string, billId2: string): Promise<BillComparisonResult> =>
+    apiClient
+      .get("/bills/compare", {
+        params: { bill_id_1: billId1, bill_id_2: billId2 },
+      })
+      .then((r) => r.data),
 };
 
 // ─── Audits API ────────────────────────────────────────────────────────────────
@@ -381,7 +391,7 @@ export const evidenceApi = {
 // ─── Users API ─────────────────────────────────────────────────────────────────
 
 export const usersApi = {
-  getMe: (): Promise<User> =>
+  getMe: (): Promise<User & { onboarding?: Record<string, boolean> }> =>
     apiClient.get("/users/me").then((r) => r.data),
 
   updateMe: (data: UpdateUserRequest): Promise<User> =>
@@ -389,6 +399,9 @@ export const usersApi = {
 
   deleteMe: (): Promise<void> =>
     apiClient.delete("/users/me").then((r) => r.data),
+
+  getStats: (): Promise<UserStats> =>
+    apiClient.get("/users/me/stats").then((r) => r.data),
 };
 
 // ─── Financial Risk Management (FRM) API ──────────────────────────────────────
@@ -472,6 +485,56 @@ export const legalDocsApi = {
     apiClient.get(`/legal-documents/${docId}/download`).then((r) => r.data),
 };
 
+// ─── Payments API ─────────────────────────────────────────────────────────────
+
+export interface CreatePaymentOrderPayload {
+  bill_id?: string;
+  amount?: number;
+  currency?: string;
+}
+
+export interface CreateOrderResponse {
+  razorpay_order_id: string;
+  amount_paise: number;
+  amount_display: string;
+  currency: string;
+  key_id: string;
+  bill_id?: string | null;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  notes: {
+    hospital: string;
+    disputed_amount: string;
+    undisputed_amount: string;
+  };
+}
+
+export const paymentsApi = {
+  createOrder: (payload: CreatePaymentOrderPayload): Promise<CreateOrderResponse> =>
+    apiClient.post("/payments/create-order", payload).then((r) => r.data),
+
+  verify: (payload: { order_id: string; payment_id: string; signature: string }): Promise<any> =>
+    apiClient.post("/payments/verify", payload).then((r) => r.data),
+};
+
+// ─── Hospitals API ────────────────────────────────────────────────────────────
+
+export const hospitalsApi = {
+  getTrustScores: (search?: string): Promise<{ hospitals: HospitalTrustScore[] }> =>
+    apiClient
+      .get("/hospitals/trust-scores", { params: { search: search || undefined } })
+      .then((r) => r.data),
+
+  rateHospital: (payload: {
+    bill_id: string;
+    score: number;
+  }): Promise<{ status: string }> =>
+    apiClient.post("/hospitals/rate", payload).then((r) => r.data),
+};
+
 // ─── Unified API object (backward compatibility) ───────────────────────────────
 
 export const api = {
@@ -484,6 +547,8 @@ export const api = {
   users: usersApi,
   frm: frmApi,
   legalDocs: legalDocsApi,
+  payments: paymentsApi,
+  hospitals: hospitalsApi,
 };
 
 export default apiClient;
