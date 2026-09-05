@@ -21,9 +21,9 @@ from app.api.razorpay import router as razorpay_router
 
 api_router = APIRouter()
 
-# Mount legacy/advanced bill routes first so specific endpoints (/semantic-search, /upload-async, /pmjay-audit, /implant-card, etc.) match before /{bill_id}
-api_router.include_router(legacy_bills_router)
+# Mount primary v1 routers first so standard v1 endpoints take precedence
 api_router.include_router(bills_v1_router)
+api_router.include_router(legacy_bills_router)
 
 # Mount auth routes (combining both v1 and legacy helper endpoints like /anonymize-me)
 api_router.include_router(auth_v1_router)
