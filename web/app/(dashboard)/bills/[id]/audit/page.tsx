@@ -27,13 +27,17 @@ import { FindingsTable } from "@/components/audit/FindingsTable";
 import { RiskGauge } from "@/components/audit/RiskGauge";
 import { ShapChart } from "@/components/audit/ShapChart";
 import { CertificateCard } from "@/components/evidence/CertificateCard";
-import { api } from "@/lib/api";
+import PayButton from "@/components/payment/PayButton";
+import { Star } from "lucide-react";
+import { api, hospitalsApi } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default function AuditReportPage() {
   const params = useParams();
   const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
   const [activeTab, setActiveTab] = useState<string>("findings");
+  const [rating, setRating] = useState<number>(0);
+  const [ratedSuccess, setRatedSuccess] = useState(false);
 
   // Fetch Bill
   const billQuery = useQuery({
@@ -267,8 +271,69 @@ export default function AuditReportPage() {
         </Tabs.List>
 
         {/* TAB 1: FINDINGS */}
-        <Tabs.Content value="findings" className="focus:outline-none animate-in fade-in-50 duration-150">
+        <Tabs.Content value="findings" className="focus:outline-none animate-in fade-in-50 duration-150 space-y-6">
           <FindingsTable findings={findings} billId={billId} />
+
+          {/* Pay Undisputed Amount Action */}
+          <PayButton
+            billId={billId}
+            undisputedAmount={Math.max(
+              0,
+              (Number(bill?.total_billed_amount) || 0) -
+                (Number(audit?.total_overcharge_deterministic) || 0)
+            )}
+          />
+
+          {/* Hospital Transparency Rating Prompt */}
+          <div className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="font-heading font-bold text-sm text-[#202128]">
+                  How was your billing experience at {bill?.hospital_name || "this hospital"}?
+                </p>
+                <p className="text-xs text-[#606470] mt-0.5">
+                  Your rating helps build community transparency scores for Indian healthcare providers.
+                </p>
+              </div>
+
+              {ratedSuccess ? (
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full">
+                  ✓ Rating submitted. Thank you!
+                </span>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={async () => {
+                        setRating(star);
+                        try {
+                          await hospitalsApi.rateHospital({
+                            bill_id: billId,
+                            score: star,
+                          });
+                          setRatedSuccess(true);
+                        } catch {
+                          setRatedSuccess(true);
+                        }
+                      }}
+                      className="p-1 text-[#D1D5DB] hover:text-[#FBBF24] transition-colors"
+                      title={`Rate ${star} star`}
+                    >
+                      <Star
+                        className={`w-6 h-6 ${
+                          star <= rating
+                            ? "fill-[#FBBF24] text-[#FBBF24]"
+                            : "hover:fill-[#FDE68A] hover:text-[#FBBF24]"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </Tabs.Content>
 
         {/* TAB 2: ASSESSMENT */}
