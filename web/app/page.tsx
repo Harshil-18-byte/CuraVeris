@@ -236,6 +236,15 @@ export default function LandingPage() {
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <Link href="/demo">
+              <button
+                type="button"
+                className="font-bold text-xs px-3.5 py-2 text-[#43A8B2] hover:bg-[#DBF1F4]/40 border border-[#79C5CD]/40 rounded-full transition-all flex items-center gap-1.5"
+              >
+                <Play className="w-3 h-3 fill-current" />
+                <span>See It In Action</span>
+              </button>
+            </Link>
             <Link href="/login">
               <button
                 type="button"
@@ -279,7 +288,16 @@ export default function LandingPage() {
           </p>
 
           {/* Hero CTAs */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-xl mx-auto">
+            <Link href="/demo" className="w-full sm:w-auto">
+              <button
+                type="button"
+                className="w-full sm:w-auto h-[54px] px-7 text-sm sm:text-base font-bold shadow-[0_8px_24px_rgba(67,168,178,0.25)] bg-[#43A8B2] hover:bg-[#38919a] text-white rounded-full flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span>See It In Action</span>
+              </button>
+            </Link>
             <Link href="/bills/upload" className="w-full sm:w-auto">
               <button
                 type="button"
@@ -292,10 +310,10 @@ export default function LandingPage() {
             <a href="#simulator" className="w-full sm:w-auto">
               <button
                 type="button"
-                className="w-full sm:w-auto h-[54px] px-7 text-sm sm:text-base font-bold border border-black/[0.08] bg-white hover:bg-[#F5F7FB] text-[#202128] rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.04)] flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                className="w-full sm:w-auto h-[54px] px-6 text-sm sm:text-base font-bold border border-black/[0.08] bg-white hover:bg-[#F5F7FB] text-[#202128] rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.04)] flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
               >
                 <Calculator className="w-4 h-4 text-[#43A8B2]" />
-                <span>Savings Simulator</span>
+                <span>Simulator</span>
               </button>
             </a>
           </div>
