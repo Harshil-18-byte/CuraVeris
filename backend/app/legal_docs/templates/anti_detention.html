@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="base.css">
+</head>
+<body>
+
+<div class="notice-header">
+  LEGAL NOTICE — WRONGFUL DETENTION OF PATIENT
+</div>
+
+<div class="date-ref-block">
+  <p><strong>Date:</strong> {{ document_date }}</p>
+  <p><strong>Time:</strong> {{ document_time }}</p>
+  <p><strong>Notice No.:</strong> CV/AD/{{ reference_number }}</p>
+</div>
+
+<div class="address-block">
+  <p><strong>To,</strong></p>
+  <p>The Medical Superintendent / Administrator / Duty Officer</p>
+  <p><strong>{{ hospital_name }}</strong></p>
+  <p>{{ hospital_address }}</p>
+</div>
+
+<div class="address-block">
+  <p><strong>From,</strong></p>
+  <p><strong>{{ complainant_name }}</strong></p>
+  <p>Relationship to Patient: {{ relationship }}</p>
+  <p>Phone: {{ patient_phone }}</p>
+</div>
+
+<p class="subject">
+  SUBJECT: Legal Notice Against Wrongful Detention of
+  {{ patient_name }} — Immediate Discharge Demanded
+</p>
+
+<div class="body-text">
+
+<p>Sir / Madam,</p>
+
+<p>
+I, <strong>{{ complainant_name }}</strong>, {{ relationship }} of
+<strong>{{ patient_name }}</strong>, am writing this notice at
+{{ document_time }} on {{ document_date }} to formally demand the
+immediate discharge of my {{ relationship }}, who has been declared
+medically fit for discharge by the treating physician but is being
+detained by your hospital pending full payment of a disputed bill.
+</p>
+
+<p>
+This notice is served under the following legal provisions and I
+demand that your administration act upon it immediately:
+</p>
+
+<div class="legal-basis">
+  <strong>Consumer Protection Act, 2019 — Section 2(47) read with Section 86:</strong>
+  Withholding a patient who has been declared medically fit for discharge as a
+  means of coercing payment of a disputed bill constitutes an unfair trade
+  practice and deficiency of service under the Consumer Protection Act, 2019.
+  This Act provides for complaints to the District Consumer Disputes Redressal
+  Commission and allows for compensation including punitive damages.
+</div>
+
+<div class="legal-basis">
+  <strong>Indian Penal Code — Section 340 (Wrongful Confinement):</strong>
+  Preventing a person who is legally entitled to leave from doing so may
+  constitute wrongful confinement under Section 340 of the Indian Penal Code,
+  which is punishable under Section 342.
+</div>
+
+<div class="legal-basis">
+  <strong>Clinical Establishments (Registration and Regulation) Act, 2010:</strong>
+  Under the Clinical Establishments Act, hospitals are required to provide
+  emergency treatment and cannot deny services or discharge on grounds of
+  non-payment in cases where the treatment has already been provided.
+</div>
+
+<div class="legal-basis">
+  <strong>Supreme Court of India — Guidelines on Patient Rights:</strong>
+  The Supreme Court of India and various High Courts have repeatedly held
+  that hospitals cannot hold patients hostage over billing disputes and
+  that such conduct violates fundamental rights under Article 21 of the
+  Constitution of India (Right to Life and Personal Liberty).
+</div>
+
+<p>
+Furthermore, I draw your attention to the fact that the bill you are
+seeking to collect in full is under active dispute. An independent
+audit conducted by CuraVeris has identified
+<strong>{{ finding_count }} billing irregularities</strong>
+totalling <strong>₹{{ total_overcharge_formatted }}</strong>
+in excess of government-permissible amounts. The audit findings are as follows:
+</p>
+
+<table class="findings-table">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Billed (₹)</th>
+      <th>Permissible (₹)</th>
+      <th>Excess (₹)</th>
+      <th>Rule Violated</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for finding in findings %}
+    <tr>
+      <td>{{ finding.item_description }}</td>
+      <td class="amount">{{ finding.billed_amount_formatted }}</td>
+      <td class="amount">{{ finding.benchmark_amount_formatted }}</td>
+      <td class="amount">{{ finding.overcharge_amount_formatted }}</td>
+      <td>{{ finding.statutory_reference_plain }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="total-row">
+      <td><strong>Total in Dispute</strong></td>
+      <td></td>
+      <td></td>
+      <td class="amount"><strong>₹{{ total_overcharge_formatted }}</strong></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+The undisputed amount — being the total bill less the amount in dispute —
+is <strong>₹{{ undisputed_amount_formatted }}</strong>.
+I am willing to pay this undisputed amount immediately upon discharge,
+with the disputed amount of ₹{{ total_overcharge_formatted }} to be
+resolved through appropriate grievance and legal channels.
+</p>
+
+<p>
+I hereby formally demand:
+</p>
+
+<p>
+<strong>1.</strong> Immediate discharge of {{ patient_name }} who has been
+declared medically fit.
+</p>
+
+<p>
+<strong>2.</strong> Acceptance of ₹{{ undisputed_amount_formatted }} as
+immediate payment, with the balance held in dispute.
+</p>
+
+<p>
+<strong>3.</strong> Issuance of a discharge summary and all medical records
+as required by law.
+</p>
+
+<p>
+If discharge is not effected within <strong>one hour</strong> of receipt of
+this notice, I will have no option but to:
+</p>
+
+<p>
+(a) File a First Information Report with the local police station under
+Section 340 IPC for wrongful confinement.
+</p>
+
+<p>
+(b) File an emergency complaint with the District Consumer Disputes
+Redressal Commission seeking immediate relief.
+</p>
+
+<p>
+(c) Contact the State Medical Council and State Health Authority.
+</p>
+
+<p>
+(d) Approach the duty magistrate for immediate judicial intervention.
+</p>
+
+<p>
+This notice is being served in writing and the time of service is being
+recorded. Please acknowledge receipt by signing the copy of this notice.
+</p>
+
+</div>
+
+<div class="evidence-box">
+  <strong>Audit Certificate:</strong><br>
+  Evidence ID: {{ evidence_id }}<br>
+  Merkle Root: {{ merkle_root }}<br>
+  Generated: {{ document_date }} {{ document_time }}
+</div>
+
+<div class="signature-block">
+  <p>Served by,</p>
+  <br><br>
+  <p>___________________________</p>
+  <p><strong>{{ complainant_name }}</strong></p>
+  <p>{{ relationship }} of {{ patient_name }}</p>
+  <p>Phone: {{ patient_phone }}</p>
+  <br>
+  <p>Acknowledged by (Hospital Representative):</p>
+  <br><br>
+  <p>Name: ___________________________</p>
+  <p>Designation: ___________________________</p>
+  <p>Signature: ___________________________</p>
+  <p>Time of Acknowledgement: ___________________________</p>
+</div>
+
+<div class="disclaimer">
+  This notice is issued based on a CuraVeris audit of the hospital bill and
+  applicable statutory pricing frameworks. It does not constitute legal advice.
+  For legal proceedings, consult a qualified advocate.
+</div>
+
+</body>
+</html>
