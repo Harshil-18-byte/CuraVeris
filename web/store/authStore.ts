@@ -14,11 +14,46 @@ interface AuthState {
   initialize: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  accessToken: null,
-  isAuthenticated: false,
-  isLoading: true,
+const getInitialState = () => {
+  if (typeof window === "undefined") {
+    return {
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+      isLoading: true,
+    };
+  }
+
+  const token = localStorage.getItem("cv_access_token");
+  const storedUserStr = localStorage.getItem("cv_user");
+  let user: User | null = null;
+  if (storedUserStr) {
+    try {
+      user = JSON.parse(storedUserStr);
+    } catch {
+      user = null;
+    }
+  }
+
+  if (token) {
+    return {
+      user,
+      accessToken: token,
+      isAuthenticated: true,
+      isLoading: false,
+    };
+  }
+
+  return {
+    user: null,
+    accessToken: null,
+    isAuthenticated: false,
+    isLoading: false,
+  };
+};
+
+export const useAuthStore = create<AuthState>((set, get) => ({
+  ...getInitialState(),
 
   login: (tokens, user) => {
     if (typeof window !== "undefined") {
@@ -73,39 +108,56 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   initialize: async () => {
-    set({ isLoading: true });
-
     if (typeof window === "undefined") {
       set({ isLoading: false });
       return;
     }
 
     const token = localStorage.getItem("cv_access_token");
+    const storedUserStr = localStorage.getItem("cv_user");
+    let cachedUser: User | null = null;
+
+    if (storedUserStr) {
+      try {
+        cachedUser = JSON.parse(storedUserStr);
+      } catch {
+        cachedUser = null;
+      }
+    }
 
     if (!token) {
-      // No token — not authenticated
       set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
       return;
     }
 
+    // Keep authenticated state active immediately while validating in background
+    set({
+      user: cachedUser || get().user,
+      accessToken: token,
+      isAuthenticated: true,
+      isLoading: false,
+    });
+
     try {
-      // Validate token with real API call
+      // Validate token and fetch latest user info
       const user = await api.users.getMe();
-      localStorage.setItem("cv_user", JSON.stringify(user));
+      if (user) {
+        localStorage.setItem("cv_user", JSON.stringify(user));
+        set({
+          user,
+          accessToken: token,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      }
+    } catch {
+      // Retain the cached user session smoothly without blocking or resetting authentication
       set({
-        user,
+        user: cachedUser || get().user,
         accessToken: token,
         isAuthenticated: true,
         isLoading: false,
       });
-    } catch {
-      // Token is invalid or expired and could not be refreshed
-      // (The response interceptor handles 401 refresh automatically.
-      //  If we reach here, refresh also failed.)
-      localStorage.removeItem("cv_access_token");
-      localStorage.removeItem("cv_refresh_token");
-      localStorage.removeItem("cv_user");
-      set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));
