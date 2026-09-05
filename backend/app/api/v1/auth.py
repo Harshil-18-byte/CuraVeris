@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from uuid import UUID
@@ -29,6 +30,7 @@ from app.schemas.auth import (
 )
 from app.services.auth_service import send_email_otp
 
+logger = logging.getLogger("curaveris.auth")
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
@@ -214,6 +216,64 @@ async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)):
     user.locked_until = None
     user.last_login_at = now_utc
 
+    access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
+    raw_refresh = create_refresh_token()
+    hashed_refresh = hash_token(raw_refresh)
+
+    session = UserSession(
+        user_id=user.id,
+        refresh_token_hash=hashed_refresh,
+        expires_at=now_utc + timedelta(days=30),
+    )
+    db.add(session)
+    await db.commit()
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=raw_refresh,
+        user_id=str(user.id),
+        email=user.email,
+        full_name=user.full_name,
+        role=user.role,
+    )
+
+
+@router.post("/demo-login", response_model=TokenResponse)
+async def demo_login(db: AsyncSession = Depends(get_db)):
+    """Logs in or provisions a fully-featured Demo Account with pre-seeded sample bills and audits."""
+    now_utc = datetime.now(timezone.utc)
+    demo_user_id = UUID("00000000-0000-0000-0000-000000000001")
+    
+    # 1. Fetch or create demo user
+    stmt = select(User).where(or_(User.id == demo_user_id, User.email == "demo@curaveris.in"))
+    user = (await db.execute(stmt)).scalar_one_or_none()
+    
+    if not user:
+        user = User(
+            id=demo_user_id,
+            email="demo@curaveris.in",
+            phone_number="9999999999",
+            phone_verified=True,
+            email_verified=True,
+            password_hash=password_hash("DemoPass123!"),
+            full_name="Rajesh Kumar (Demo)",
+            role="PATIENT",
+            is_active=True,
+            dpdp_consent_given=True,
+            dpdp_consent_at=now_utc,
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+
+    # 2. Seed sample demo bill if not present
+    try:
+        from app.scripts.seed_demo_bill import seed_demo_bill
+        await seed_demo_bill()
+    except Exception as e:
+        logger.warning(f"Demo bill auto-seed note: {e}")
+
+    # 3. Issue fresh tokens
     access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
     raw_refresh = create_refresh_token()
     hashed_refresh = hash_token(raw_refresh)
