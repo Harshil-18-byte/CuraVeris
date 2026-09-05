@@ -8,7 +8,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 - `MINOR`: New features added in a backward-compatible manner.
 - `PATCH`: Bug fixes, documentation improvements, dependency updates.
 
-## \[2.1.0\] — 2026-09-05
+## [2.1.0]
 
 ### Added
 
@@ -19,7 +19,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[2.0.0\] — 2026-08-31
+## [2.0.0]
 
 ### Added
 
@@ -31,7 +31,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.6.0\] — 2026-08-30
+## [1.6.0]
 
 ### Added
 
@@ -43,7 +43,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.5.0\] — 2026-08-26
+## [1.5.0]
 
 ### Added
 
@@ -57,7 +57,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.4.0\] — 2026-08-26
+## [1.4.0]
 
 ### Added
 
@@ -70,7 +70,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.3.0\] — 2026-08-26
+## [1.3.0]
 
 ### Added
 
@@ -94,7 +94,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.2.0\] — 2026-08-26
+## [1.2.0]
 
 ### Added
 
@@ -124,7 +124,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.1.0\] — 2026-08-26
+## [1.1.0]
 
 ### Added
 
@@ -148,7 +148,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 
 ---
 
-## \[1.0.0\] — 2026-08-26
+## [1.0.0]
 
 Initial release.
 
@@ -175,8 +175,14 @@ Initial release.
 
 ## Version History Summary
 
-| Version | Date | Summary |
-| :--- | :--- | :--- |
-| 1.2.0 | 2026-08-26 | Deep neural network ensemble, Merkle ledger, PostgreSQL migration |
-| 1.1.0 | 2026-08-26 | Async ingestion, SHAP explainability, legal document generation, PM-JAY audit |
-| 1.0.0 | 2026-08-26 | Initial release: FastAPI backend, XGBoost classifier, statutory rule engine |
+| Version | Summary |
+| :--- | :--- |
+| 2.1.0 | Statutory legal document generation suite, Render cloud live deployment, real-time Celery worker |
+| 2.0.0 | Multi-platform Next.js 14 web app, comprehensive MODELS.md architecture docs, Vercel config |
+| 1.6.0 | Render deployment, Neon DB branching, Upstash Redis broker, 6-model production training |
+| 1.5.0 | CuraVeris-4B & CuraVeris-1B transformers, INT8 ONNX mobile export, two-track hybrid pipeline |
+| 1.4.0 | Temporal gazette store, clinical scenario generators, multi-task dataset partitioning |
+| 1.3.0 | Quantitative FRM layer, 4-way reconciliation engine, dynamic tariff comparison |
+| 1.2.0 | Deep neural network ensemble, Merkle ledger, PostgreSQL migration |
+| 1.1.0 | Async ingestion, SHAP explainability, legal document generation, PM-JAY audit |
+| 1.0.0 | Initial release: FastAPI backend, XGBoost classifier, statutory rule engine |
