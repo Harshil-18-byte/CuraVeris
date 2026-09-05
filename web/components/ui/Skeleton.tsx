@@ -61,11 +61,12 @@ export function SkeletonStat({ className }: { className?: string }) {
   );
 }
 
-export function SkeletonRow({ cols = 5, className }: { cols?: number; className?: string }) {
+export function SkeletonRow({ cols, columns, className }: { cols?: number; columns?: number; className?: string }) {
+  const count = columns ?? cols ?? 5;
   const widths = ['w-32', 'w-24', 'w-20', 'w-16', 'w-14'];
   return (
     <div className={cn('flex items-center gap-4 px-6 h-table-row border-b border-line-subtle', className)}>
-      {Array.from({ length: cols }).map((_, i) => (
+      {Array.from({ length: count }).map((_, i) => (
         <SkeletonText key={i} width={widths[i % widths.length]} />
       ))}
     </div>
@@ -76,11 +77,12 @@ export function SkeletonButton({ className }: { className?: string }) {
   return <Skeleton className={cn('h-btn w-24 rounded', className)} />;
 }
 
-export function SkeletonTableRow({ cols = 5, className }: { cols?: number; className?: string }) {
+export function SkeletonTableRow({ cols, columns, className }: { cols?: number; columns?: number; className?: string }) {
+  const count = columns ?? cols ?? 5;
   const widths = ['w-32', 'w-24', 'w-20', 'w-16', 'w-14'];
   return (
     <div className={cn('flex items-center gap-4 px-6 h-table-row border-b border-line-subtle', className)}>
-      {Array.from({ length: cols }).map((_, i) => (
+      {Array.from({ length: count }).map((_, i) => (
         <SkeletonText key={i} width={widths[i % widths.length]} />
       ))}
     </div>
