@@ -1,13 +1,13 @@
-'use client'
 import { use, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { legalDocsApi } from '@/lib/api'
+import { legalDocsApi, billsApi, auditsApi } from '@/lib/api'
 import {
   FileText, Download, Plus, CheckCircle,
   AlertCircle, Clock, ChevronDown, ChevronUp,
-  ExternalLink
+  ExternalLink, Scale
 } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatCurrency } from '@/lib/utils'
+import WhatsAppShare from '@/components/legal/WhatsAppShare'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -145,6 +145,16 @@ export default function LegalDocumentsPage({ params }: PageProps) {
     queryFn: () => legalDocsApi.list(billId),
   })
 
+  const { data: bill } = useQuery({
+    queryKey: ['bill', billId],
+    queryFn: () => billsApi.getById(billId),
+  })
+
+  const { data: audit } = useQuery({
+    queryKey: ['audit', billId],
+    queryFn: () => auditsApi.getByBillId(billId),
+  })
+
   const generateMutation = useMutation({
     mutationFn: ({ docType, inputs }: { docType: string; inputs: Record<string, string> }) =>
       legalDocsApi.generate(billId, { document_type: docType, ...inputs }),
@@ -176,6 +186,7 @@ export default function LegalDocumentsPage({ params }: PageProps) {
   }
 
   const documents = data?.documents || []
+  const overchargeDisplay = formatCurrency(audit?.total_overcharge_deterministic || 0)
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
@@ -229,14 +240,22 @@ export default function LegalDocumentsPage({ params }: PageProps) {
 
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {isReady && doc.document_id ? (
-                      <button
-                        onClick={() => downloadMutation.mutate(doc.document_id)}
-                        disabled={downloadMutation.isPending}
-                        className="flex items-center gap-1.5 h-9 px-4 bg-success text-white font-body font-semibold text-sm rounded transition-all hover:bg-green-700 disabled:opacity-50"
-                      >
-                        <Download size={14} strokeWidth={2} />
-                        Download
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => downloadMutation.mutate(doc.document_id)}
+                          disabled={downloadMutation.isPending}
+                          className="flex items-center gap-1.5 h-9 px-4 bg-success text-white font-body font-semibold text-sm rounded transition-all hover:bg-green-700 disabled:opacity-50"
+                        >
+                          <Download size={14} strokeWidth={2} />
+                          Download
+                        </button>
+                        <WhatsAppShare
+                          documentType={doc.document_type}
+                          downloadUrl={`https://curaveris.in/bills/${billId}/documents`}
+                          hospitalName={bill?.hospital_name || 'the hospital'}
+                          overchargeAmount={overchargeDisplay}
+                        />
+                      </div>
                     ) : (
                       <button
                         onClick={() => {
@@ -281,7 +300,7 @@ export default function LegalDocumentsPage({ params }: PageProps) {
                   <ExtraInputsForm
                     docType={doc.document_type}
                     isLoading={isGenerating}
-                    billData={null}
+                    billData={bill}
                     onSubmit={(inputs) => {
                       setGeneratingType(doc.document_type)
                       generateMutation.mutate({
@@ -297,7 +316,46 @@ export default function LegalDocumentsPage({ params }: PageProps) {
         })}
       </div>
 
-      <div className="mt-8 p-4 bg-subtle rounded-lg border border-line-subtle">
+      {/* Lawyer Referral Card (Tier 4) */}
+      <div className="mt-8 bg-surface border border-line-subtle rounded-lg p-5 shadow-card">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-lg bg-rzp-blue/10 flex items-center justify-center flex-shrink-0 text-rzp-blue">
+            <Scale size={18} strokeWidth={2} />
+          </div>
+          <div className="flex-1">
+            <p className="font-heading text-lg font-semibold text-ink-primary">
+              Need professional legal help?
+            </p>
+            <p className="font-body text-sm text-ink-secondary mt-1">
+              For complex cases or if the hospital does not respond, patient rights
+              advocates and consumer lawyers can take your case on contingency —
+              meaning you pay only if you win.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a
+                href="https://nalsa.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 h-9 px-4 bg-subtle border border-line-default text-ink-primary font-body font-medium text-sm rounded hover:bg-canvas transition-all"
+              >
+                <span>Free Legal Aid (NALSA)</span>
+                <ExternalLink size={13} />
+              </a>
+              <a
+                href="https://www.consumerhelpline.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 h-9 px-4 bg-subtle border border-line-default text-ink-primary font-body font-medium text-sm rounded hover:bg-canvas transition-all"
+              >
+                <span>Consumer Helpline 1800-11-4000</span>
+                <ExternalLink size={13} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 p-4 bg-subtle rounded-lg border border-line-subtle">
         <p className="font-body text-xs text-ink-tertiary leading-relaxed">
           These letters are based on your CuraVeris audit and are ready to send.
           They are not a substitute for legal advice. Consumer court complaints
