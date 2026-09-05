@@ -119,4 +119,11 @@ class S3StorageAdapter:
         return await loop.run_in_executor(None, _check)
 
 
+StorageAdapter = S3StorageAdapter
 storage_adapter = S3StorageAdapter()
+
+
+def get_storage() -> S3StorageAdapter:
+    """Dependency provider returning singleton storage adapter instance."""
+    return storage_adapter
+
