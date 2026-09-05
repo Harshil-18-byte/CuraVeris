@@ -30,7 +30,7 @@ from app.core.storage import storage_adapter, validate_file_magic_bytes
 from app.core.redis import get_redis, set_with_ttl, get_value
 from app.models.user import User
 from app.models.bill import Bill, BillLineItem
-from app.models.audit import Audit
+from app.models.audit import Audit, AuditFinding
 from app.schemas.bill import (
     BillResponse,
     BillSummaryResponse,
@@ -43,6 +43,77 @@ from app.services.notification_service import create_notification
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bills", tags=["Bills"])
+
+
+@router.get("/demo/sample")
+async def get_demo_bill(db: AsyncSession = Depends(get_db)):
+    """Public endpoint — no auth required. Returns pre-seeded demo bill."""
+    from app.scripts.seed_demo_bill import DEMO_BILL_ID, DEMO_AUDIT_ID, seed_demo_bill
+
+    bill = (await db.execute(
+        select(Bill).where(Bill.id == DEMO_BILL_ID)
+    )).scalar_one_or_none()
+
+    if not bill:
+        # Auto-seed on first call if not yet present
+        await seed_demo_bill()
+        bill = (await db.execute(
+            select(Bill).where(Bill.id == DEMO_BILL_ID)
+        )).scalar_one_or_none()
+
+    if not bill:
+        raise HTTPException(status_code=404, detail="Demo data not yet seeded")
+
+    audit = (await db.execute(
+        select(Audit).where(Audit.bill_id == DEMO_BILL_ID)
+    )).scalar_one_or_none()
+
+    findings = (await db.execute(
+        select(AuditFinding).where(AuditFinding.audit_id == DEMO_AUDIT_ID)
+    )).scalars().all()
+
+    return {
+        "bill": {
+            "id": str(bill.id),
+            "hospital_name": bill.hospital_name,
+            "patient_name": bill.patient_name,
+            "admission_date": str(bill.admission_date),
+            "discharge_date": str(bill.discharge_date),
+            "total_billed_amount": str(bill.total_billed_amount),
+            "processing_status": bill.processing_status,
+            "insurance_type": bill.insurance_type,
+        },
+        "audit": {
+            "id": str(audit.id),
+            "total_overcharge_deterministic": str(audit.total_overcharge_deterministic),
+            "risk_score": str(audit.risk_score),
+            "risk_label": audit.risk_label,
+            "uncertainty_lower": str(audit.uncertainty_lower),
+            "uncertainty_upper": str(audit.uncertainty_upper),
+            "finding_count": audit.finding_count,
+            "finding_summary": audit.finding_summary,
+            "shap_values": audit.shap_values,
+            "recommendations": audit.recommendations,
+        },
+        "findings": [
+            {
+                "id": str(f.id),
+                "finding_type": f.finding_type,
+                "finding_source": f.finding_source,
+                "severity": f.severity,
+                "item_description": f.item_description,
+                "billed_amount": str(f.billed_amount),
+                "benchmark_amount": str(f.benchmark_amount),
+                "overcharge_amount": str(f.overcharge_amount),
+                "statutory_reference": f.statutory_reference,
+                "user_explanation": f.user_explanation,
+                "legal_basis": f.legal_basis,
+                "is_disputable": f.is_disputable,
+            }
+            for f in findings
+        ],
+        "is_demo": True,
+    }
 
 
 async def run_pipeline_sync(bill_id_str: str):
@@ -247,6 +318,66 @@ async def list_bills(
         "total": total,
         "page": page,
         "per_page": per_page,
+    }
+
+
+@router.get("/compare")
+async def compare_bills(
+    bill_id_1: UUID = Query(...),
+    bill_id_2: UUID = Query(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Compares two patient bills and their forensic audit results side-by-side."""
+    bills = []
+    audits = []
+
+    for bill_id in [bill_id_1, bill_id_2]:
+        bill = (await db.execute(
+            select(Bill).where(
+                Bill.id == bill_id,
+                Bill.user_id == current_user.id,
+            )
+        )).scalar_one_or_none()
+        if not bill:
+            raise HTTPException(status_code=404, detail=f"Bill {bill_id} not found")
+
+        audit = (await db.execute(
+            select(Audit).where(Audit.bill_id == bill_id)
+        )).scalar_one_or_none()
+
+        bills.append(bill)
+        audits.append(audit)
+
+    b1_overcharge = float(audits[0].total_overcharge_deterministic or 0) if audits[0] else 0.0
+    b2_overcharge = float(audits[1].total_overcharge_deterministic or 0) if audits[1] else 0.0
+    b1_total = float(bills[0].total_billed_amount or 0)
+    b2_total = float(bills[1].total_billed_amount or 0)
+
+    return {
+        "bill_1": {
+            "id": str(bills[0].id),
+            "hospital_name": bills[0].hospital_name or "Hospital 1",
+            "date": str(bills[0].admission_date or (bills[0].created_at.date() if bills[0].created_at else "—")),
+            "total_billed": str(bills[0].total_billed_amount or 0),
+            "overcharge": str(audits[0].total_overcharge_deterministic) if audits[0] and audits[0].total_overcharge_deterministic else "0",
+            "risk_label": audits[0].risk_label if audits[0] else None,
+            "finding_count": audits[0].finding_count if audits[0] else 0,
+        },
+        "bill_2": {
+            "id": str(bills[1].id),
+            "hospital_name": bills[1].hospital_name or "Hospital 2",
+            "date": str(bills[1].admission_date or (bills[1].created_at.date() if bills[1].created_at else "—")),
+            "total_billed": str(bills[1].total_billed_amount or 0),
+            "overcharge": str(audits[1].total_overcharge_deterministic) if audits[1] and audits[1].total_overcharge_deterministic else "0",
+            "risk_label": audits[1].risk_label if audits[1] else None,
+            "finding_count": audits[1].finding_count if audits[1] else 0,
+        },
+        "comparison": {
+            "billed_difference": f"{b1_total - b2_total:.2f}",
+            "overcharge_difference": f"{b1_overcharge - b2_overcharge:.2f}",
+            "same_hospital": bills[0].hospital_name == bills[1].hospital_name,
+        },
     }
 
 
