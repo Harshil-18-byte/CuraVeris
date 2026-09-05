@@ -8,7 +8,7 @@ from typing import Optional
 from datetime import datetime
 
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.api.v1.auth import get_current_user
 from app.core.storage import get_storage, StorageAdapter
 from app.models.user import User
 from app.models.bill import Bill
