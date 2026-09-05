@@ -483,11 +483,11 @@ Evaluates financial resilience under 5 macroeconomic and clinical shock scenario
 10,000-sample Monte Carlo stochastic simulation characterizing the 90th, 95th, and tail-expectation catastrophic loss boundaries across joint Probability of Default (Beta-distributed $\text{PD} \sim \text{Beta}(\alpha, \beta)$), Loss Given Default ($\text{LGD} \sim 1 - \text{Beta}(2, 3)$), and insurance deduction variance:
 
 $$
-\text{VaR}_{\alpha}(L) = F_L^{-1}(\alpha) = \inf \left\{ x \in \mathbb{R} : P(L \le x) \ge \alpha \right\}
+\text{VaR}_{\alpha}(L) = F_L^{-1}(\alpha) = \inf \lbrace x \in \mathbb{R} : P(L \le x) \ge \alpha \rbrace
 $$
 
 $$
-\text{CVaR}_{\alpha}(L) = \frac{1}{1 - \alpha} \int_{\alpha}^{1} \text{VaR}_{u}(L) \, du = \mathbb{E}\left[ L \mid L \ge \text{VaR}_{\alpha}(L) \right]
+\text{CVaR}_{\alpha}(L) = \frac{1}{1 - \alpha} \int_{\alpha}^{1} \text{VaR}_{u}(L) \, du = \mathbb{E}\left[ L \;\middle|\; L \ge \text{VaR}_{\alpha}(L) \right]
 $$
 
 - **$\text{VaR}_{0.95}$**: The 95th percentile worst-case financial loss threshold across simulated TPA settlement and billing dispute scenarios.
@@ -568,11 +568,18 @@ $$
 Classifications are assigned via calibrated thresholds $\tau_j$ and uncertainty bounds:
 
 $$
-\hat{y}_j = \begin{cases} 1 & \text{if } P_{\text{blended}, j} \ge \tau_j \\ 0 & \text{otherwise} \end{cases}
+\hat{y}_j = \begin{cases}
+1, & \text{if } P_{\text{blended}, j} \ge \tau_j \\
+0, & \text{otherwise}
+\end{cases}
 $$
 
 $$
-\text{Confidence Tier} = \begin{cases} \text{High Confidence Violation} & \text{if } \mu_j \ge 0.55 \text{ and } \sigma_j \le 0.04 \\ \text{Ambiguous Borderline Review} & \text{if } \mu_j \ge 0.40 \text{ and } \sigma_j > 0.06 \\ \text{Confident Compliant} & \text{if } \mu_j \le 0.35 \text{ and } \sigma_j \le 0.04 \end{cases}
+\text{Confidence Tier} = \begin{cases}
+\text{High Confidence Violation}, & \text{if } \mu_j \ge 0.55 \text{ and } \sigma_j \le 0.04 \\
+\text{Ambiguous Borderline Review}, & \text{if } \mu_j \ge 0.40 \text{ and } \sigma_j > 0.06 \\
+\text{Confident Compliant}, & \text{if } \mu_j \le 0.35 \text{ and } \sigma_j \le 0.04
+\end{cases}
 $$
 
 ---
@@ -669,7 +676,10 @@ $$
 $$
 
 $$
-\mathcal{L}_{\text{Huber}}(y, \hat{y}) = \begin{cases} \frac{1}{2}(y - \hat{y})^2 & \text{for } |y - \hat{y}| \le \delta \\ \delta |y - \hat{y}| - \frac{1}{2}\delta^2 & \text{otherwise} \end{cases} \quad (\delta = 1.0)
+\mathcal{L}_{\text{Huber}}(y, \hat{y}) = \begin{cases}
+\frac{1}{2}(y - \hat{y})^2, & \text{for } |y - \hat{y}| \le \delta \\
+\delta |y - \hat{y}| - \frac{1}{2}\delta^2, & \text{otherwise}
+\end{cases} \quad (\delta = 1.0)
 $$
 
 ---
@@ -693,7 +703,11 @@ CuraVeris provides 7 production-grade ML pipelines in `backend/app/ml/pipelines/
 To train all models under strict memory budgets (peak RAM below 8GB), [`backend/ml_training/train_all_models.py`](./backend/ml_training/train_all_models.py) executes a single-pass streaming architecture with deterministic CRC32 partitioning:
 
 $$
-\text{Split}(\text{Bill ID}) = \begin{cases} \text{Train (70\%)} & \text{if } \text{CRC32}(\text{ID}) \pmod{100} < 70 \\ \text{Validation (15\%)} & \text{if } 70 \le \text{CRC32}(\text{ID}) \pmod{100} < 85 \\ \text{Test (15\%)} & \text{if } \text{CRC32}(\text{ID}) \pmod{100} \ge 85 \end{cases}
+\text{Split}(\text{Bill ID}) = \begin{cases}
+\text{Train (70\%)}, & \text{if } \text{CRC32}(\text{ID}) \pmod{100} < 70 \\
+\text{Validation (15\%)}, & \text{if } 70 \le \text{CRC32}(\text{ID}) \pmod{100} < 85 \\
+\text{Test (15\%)}, & \text{if } \text{CRC32}(\text{ID}) \pmod{100} \ge 85
+\end{cases}
 $$
 
 ```mermaid
