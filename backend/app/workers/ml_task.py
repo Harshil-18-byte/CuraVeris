@@ -44,7 +44,7 @@ def load_models():
         import xgboost as xgb
         xgb_path = model_path / "xgboost_model.json"
         if xgb_path.exists():
-            _xgb_model = xgb.XGBClassifier()
+            _xgb_model = xgb.Booster()
             _xgb_model.load_model(str(xgb_path))
             logger.info("XGBoost model loaded successfully")
         else:
@@ -57,7 +57,8 @@ def load_models():
         mlp_path = model_path / "mlp_model.pt"
         if mlp_path.exists():
             _mlp_model = torch.load(str(mlp_path), map_location="cpu")
-            _mlp_model.eval()
+            if hasattr(_mlp_model, "eval"):
+                _mlp_model.eval()
             logger.info("MLP model loaded successfully")
         else:
             logger.warning(f"MLP model not found at {mlp_path}. Using rule-based fallback.")
