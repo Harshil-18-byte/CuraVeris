@@ -51,6 +51,10 @@ Base = declarative_base()
 
 async def init_db():
     """Create tables if they do not exist."""
+    try:
+        import app.models  # noqa: F401
+    except Exception:
+        pass
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
