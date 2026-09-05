@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 const registerSchema = z
   .object({
@@ -133,9 +134,7 @@ export default function RegisterPage() {
       );
       router.push("/dashboard");
     } catch (err: any) {
-      setServerError(
-        err?.message || "Registration failed. Please check your details and try again."
-      );
+      setServerError(getErrorMessage(err));
     }
   };
 
