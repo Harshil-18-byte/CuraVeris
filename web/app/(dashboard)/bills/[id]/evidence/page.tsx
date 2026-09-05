@@ -1,7 +1,8 @@
 "use client";
 
-import React, { use } from "react";
+import React from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   ShieldCheck,
@@ -24,12 +25,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { evidenceApi, billsApi } from "@/lib/api";
 import { formatDate, formatTimeAgo } from "@/lib/utils";
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function EvidencePage({ params }: PageProps) {
-  const { id: billId } = use(params);
+export default function EvidencePage() {
+  const params = useParams();
+  const billId = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
 
   const { data: bill, isLoading: isBillLoading } = useQuery({
     queryKey: ["bill", billId],
