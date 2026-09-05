@@ -151,3 +151,7 @@ def generate_evidence(self, bill_id: str):
         raise self.retry(exc=exc)
     finally:
         loop.close()
+
+
+_generate_evidence_async = _run_evidence_async
+
