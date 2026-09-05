@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertTriangle,
-  Lock,
   Eye,
   EyeOff,
   Sparkles,
@@ -59,7 +58,7 @@ const LOGIN_MESSAGES = [
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setToken, setUser } = useAuthStore();
+  const { login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(false);
@@ -102,38 +101,31 @@ export default function LoginPage() {
     setErrorMessage(null);
     try {
       const res = await api.auth.login(data.username, data.password);
-      setToken(res.access_token);
-      setUser(res.user);
-      if (typeof window !== "undefined") {
-        window.location.href = "/dashboard";
-      } else {
-        router.replace("/dashboard");
-      }
+      login(
+        {
+          access_token: res.access_token,
+          refresh_token: res.refresh_token || res.access_token,
+        },
+        res.user
+      );
+      router.push("/dashboard");
     } catch (err: any) {
-      const status = err?.status || err?.response?.status;
-      const detail = err?.message || err?.response?.data?.detail;
-
-      if (status === 429 || (typeof detail === "string" && detail.includes("locked"))) {
+      const message = err?.message || "Unable to sign in. Please check your credentials.";
+      // 429 = rate limited / too many attempts
+      if (err?.status === 429) {
         setIsLocked(true);
-        setLockoutRemaining(12 * 60);
-        setErrorMessage("Your account is temporarily locked because of too many incorrect attempts. Please try again in 12 minutes.");
-      } else if (status === 401 || (typeof detail === "string" && (detail.includes("Incorrect") || detail.includes("Invalid")))) {
-        setErrorMessage("That email or password doesn't match. Please try again.");
+        setLockoutRemaining(60);
+        setErrorMessage("Too many attempts. Please wait before trying again.");
       } else {
-        setErrorMessage(
-          typeof detail === "string"
-            ? detail
-            : "Could not sign in. Please check your internet connection."
-        );
+        setErrorMessage(message);
       }
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-[#F5F7FB] selection:bg-[#DBF1F4] selection:text-[#202128]">
-      {/* LEFT PANEL (Grassfeld Soft Gradient Panel) */}
+      {/* LEFT PANEL */}
       <div className="lg:w-[42%] bg-gradient-to-br from-[#DBF1F4]/70 via-[#EDF0FB] to-[#F5F7FB] text-[#202128] p-8 lg:p-14 flex flex-col justify-between hidden lg:flex border-r border-black/[0.06] relative overflow-hidden">
-        {/* Ambient background glow */}
         <div className="absolute top-0 left-0 w-80 h-80 bg-white/60 rounded-full blur-3xl pointer-events-none" />
 
         <Logo href="/" showTagline={true} theme="light" size="md" />
@@ -195,7 +187,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* RIGHT PANEL (Clean White Form Card on Light Background) */}
+      {/* RIGHT PANEL */}
       <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 bg-[#F5F7FB] relative">
         <div className="w-full max-w-[420px] lg:hidden mb-8 flex items-center justify-between">
           <Logo href="/" showTagline={true} size="sm" />
@@ -204,9 +196,9 @@ export default function LoginPage() {
         <div className="w-full max-w-[420px] bg-white p-8 sm:p-10 rounded-[32px] border border-black/[0.06] shadow-[0_12px_40px_rgba(0,0,0,0.04)] space-y-6">
           {/* Header */}
           <div>
-            <h2 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#202128] tracking-tight">
+            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#202128] tracking-tight">
               Welcome back
-            </h2>
+            </h1>
             <p className="text-sm text-[#606470] mt-1.5 font-medium">
               Sign in to your patient portal
             </p>
@@ -238,6 +230,7 @@ export default function LoginPage() {
             <Input
               label="Email address or phone number"
               placeholder="e.g. rahul@example.com or 9876543210"
+              autoComplete="username"
               error={errors.username?.message}
               disabled={isSubmitting || isLocked}
               {...register("username")}
@@ -248,6 +241,7 @@ export default function LoginPage() {
                 label="Password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
+                autoComplete="current-password"
                 error={errors.password?.message}
                 disabled={isSubmitting || isLocked}
                 rightAddon={
@@ -271,7 +265,9 @@ export default function LoginPage() {
               <div className="mt-2 text-right">
                 <button
                   type="button"
-                  onClick={() => alert("Password reset link will be sent to your registered email.")}
+                  onClick={() =>
+                    alert("Password reset link will be sent to your registered email.")
+                  }
                   className="text-xs font-bold text-[#43A8B2] hover:text-[#202128] focus:outline-none"
                 >
                   Forgot password?
@@ -290,32 +286,9 @@ export default function LoginPage() {
               <span>Sign In</span>
               <ArrowRight className="w-4 h-4 ml-2" strokeWidth={2.2} />
             </Button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setToken("demo_token_patient_" + Date.now());
-                setUser({
-                  id: "usr-demo-patient-001",
-                  email: "patient.rahul@curaveris.ai",
-                  full_name: "Rahul Sharma",
-                  phone_verified: true,
-                  email_verified: true,
-                  dpdp_consent_given: true,
-                  role: "patient",
-                  is_active: true,
-                  created_at: new Date().toISOString(),
-                });
-                router.push("/dashboard");
-              }}
-              className="w-full h-11 rounded-full bg-[#DBF1F4] hover:bg-[#cbeaeep] text-[#202128] font-bold text-xs flex items-center justify-center gap-2 border border-[#43A8B2]/30 transition-all hover:scale-[1.01]"
-            >
-              <Sparkles className="w-4 h-4 text-[#43A8B2]" />
-              <span>Explore Interactive Demo (1-Click)</span>
-            </button>
           </form>
 
-          {/* Footer Navigation */}
+          {/* Footer */}
           <div className="pt-4 border-t border-black/[0.06] text-center text-xs text-[#606470] font-medium">
             Don&apos;t have an account?{" "}
             <Link
@@ -324,6 +297,12 @@ export default function LoginPage() {
             >
               Create an account
             </Link>
+          </div>
+
+          {/* Security badge */}
+          <div className="flex items-center justify-center gap-2 text-[11px] text-[#606470]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#43A8B2]" strokeWidth={2} />
+            <span>256-bit encrypted · DPDP 2023 compliant</span>
           </div>
         </div>
       </div>
