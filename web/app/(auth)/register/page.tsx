@@ -32,18 +32,12 @@ const registerSchema = z
     email: z.string().email("Please enter a valid email address"),
     phone_number: z
       .string()
-      .regex(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian mobile number"),
+      .min(10, "Please enter a valid mobile number"),
     password: z
       .string()
-      .min(8, "At least 8 characters")
-      .regex(/[A-Z]/, "Include at least one capital letter")
-      .regex(/[a-z]/, "Include at least one lowercase letter")
-      .regex(/\d/, "Include at least one number")
-      .regex(/[^A-Za-z0-9]/, "Include at least one special character"),
+      .min(6, "Password must be at least 6 characters"),
     confirm_password: z.string().min(1, "Please confirm your password"),
-    consent: z.literal(true, {
-      errorMap: () => ({ message: "You must agree to the privacy terms to continue" }),
-    }),
+    consent: z.boolean().optional(),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
@@ -54,7 +48,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { setToken, setUser } = useAuthStore();
+  const { login } = useAuthStore();
   const [step, setStep] = useState<number>(1);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -70,7 +64,7 @@ export default function RegisterPage() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      consent: false as any,
+      consent: true,
     },
     mode: "onBlur",
   });
@@ -78,10 +72,12 @@ export default function RegisterPage() {
   const passwordVal = watch("password") || "";
   const consentVal = watch("consent");
 
+
+
   // Calculate password strength segments (0-4)
   const calculateStrength = (pwd: string) => {
     let score = 0;
-    if (pwd.length >= 8) score++;
+    if (pwd.length >= 6) score++;
     if (/[A-Z]/.test(pwd)) score++;
     if (/\d/.test(pwd)) score++;
     if (/[^A-Za-z0-9]/.test(pwd)) score++;
@@ -93,13 +89,12 @@ export default function RegisterPage() {
   const getStrengthLabel = (score: number) => {
     switch (score) {
       case 1:
-        return { text: "Too simple", color: "text-[#DC2626]" };
+        return { text: "Fair", color: "text-[#D97706]" };
       case 2:
-        return { text: "Getting better", color: "text-[#D97706]" };
+        return { text: "Good", color: "text-[#43A8B2]" };
       case 3:
-        return { text: "Almost there", color: "text-[#43A8B2]" };
       case 4:
-        return { text: "Strong password", color: "text-[#86C159]" };
+        return { text: "Strong", color: "text-[#86C159]" };
       default:
         return { text: "", color: "" };
     }
@@ -129,20 +124,24 @@ export default function RegisterPage() {
         phone_number: data.phone_number,
         password: data.password,
       });
-      setToken(res.access_token);
-      setUser(res.user);
-      router.replace("/dashboard");
+      login(
+        {
+          access_token: res.access_token,
+          refresh_token: res.refresh_token || res.access_token,
+        },
+        res.user
+      );
+      router.push("/dashboard");
     } catch (err: any) {
-      const detail = err?.message || err?.response?.data?.detail;
       setServerError(
-        typeof detail === "string" ? detail : "Failed to create account. Please try again."
+        err?.message || "Registration failed. Please check your details and try again."
       );
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-[#F5F7FB] selection:bg-[#DBF1F4] selection:text-[#202128]">
-      {/* LEFT PANEL (Grassfeld Soft Gradient Panel) */}
+      {/* LEFT PANEL (Soft Gradient Panel) */}
       <div className="lg:w-[40%] bg-gradient-to-br from-[#DBF1F4]/70 via-[#EDF0FB] to-[#F5F7FB] text-[#202128] p-8 lg:p-12 flex flex-col justify-between hidden lg:flex border-r border-black/[0.06] relative overflow-hidden">
         {/* Brand */}
         <Logo href="/" showTagline={true} theme="light" size="md" />
@@ -219,6 +218,8 @@ export default function RegisterPage() {
                 ? "Create a password"
                 : "Your privacy"}
             </span>
+
+
           </div>
 
           {serverError && (
