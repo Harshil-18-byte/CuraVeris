@@ -47,18 +47,8 @@ export default function AccountPage() {
       setUser(updated);
       toast.success("Profile details updated successfully.");
       setIsEditModalOpen(false);
-    } catch {
-      // If offline/fallback, update local state directly
-      if (user) {
-        const updatedUser = {
-          ...user,
-          full_name: editFullName.trim(),
-          phone_number: editPhone.trim() || user.phone_number,
-        };
-        setUser(updatedUser);
-        toast.success("Profile details saved.");
-      }
-      setIsEditModalOpen(false);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update profile. Please try again.");
     } finally {
       setIsSaving(false);
     }
