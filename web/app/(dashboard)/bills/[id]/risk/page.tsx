@@ -32,13 +32,14 @@ import { formatCurrency } from "@/lib/utils";
 
 export default function FinancialRiskPage() {
   const params = useParams();
-  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "bill-cv-101";
+  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
   const [isInputModalOpen, setIsInputModalOpen] = useState(false);
 
   // Fetch Bill
   const billQuery = useQuery({
     queryKey: ["bill", billId],
     queryFn: () => api.bills.getById(billId),
+    enabled: !!billId,
     staleTime: 30 * 1000,
   });
 
@@ -46,11 +47,22 @@ export default function FinancialRiskPage() {
   const frmQuery = useQuery({
     queryKey: ["frm", billId],
     queryFn: () => api.frm.getAssessment(billId),
+    enabled: !!billId,
     staleTime: 30 * 1000,
+  });
+
+  // Fetch Loss Distribution
+  const lossDistQuery = useQuery({
+    queryKey: ["frm", "loss-distribution", billId],
+    queryFn: () => api.frm.getLossDistribution(billId),
+    enabled: !!billId,
+    staleTime: 30 * 1000,
+    retry: false,
   });
 
   const bill = billQuery.data;
   const assessment = frmQuery.data;
+  const lossDist = lossDistQuery.data;
 
   if (frmQuery.isLoading || billQuery.isLoading) {
     return (
@@ -114,16 +126,16 @@ export default function FinancialRiskPage() {
     return "bg-danger";
   };
 
-  // Mock distribution curve for VaR Chart
-  const varChartData = [
-    { amount: 10000, probability: 0.05, cumulative: 0.05 },
-    { amount: 25000, probability: 0.15, cumulative: 0.20 },
-    { amount: 40000, probability: 0.35, cumulative: 0.55 },
-    { amount: 55000, probability: 0.25, cumulative: 0.80 },
-    { amount: 70000, probability: 0.12, cumulative: 0.92 },
-    { amount: 85000, probability: 0.05, cumulative: 0.97 },
-    { amount: 100000, probability: 0.03, cumulative: 1.00 },
-  ];
+  // Build distribution chart data from real API distribution summary if available
+  const histogram =
+    lossDist?.el_distribution_summary?.histogram ||
+    assessment?.el_distribution_summary?.histogram ||
+    [];
+
+  const varChartData = histogram.map((bin) => ({
+    amount: Math.round((bin.bin_start + bin.bin_end) / 2),
+    probability: bin.frequency,
+  }));
 
   const stressScenarios = assessment.stress_scenarios || [];
   const recommendations = assessment.financial_recommendations || [];
@@ -445,31 +457,40 @@ export default function FinancialRiskPage() {
             </div>
 
             {/* Recharts Area Chart */}
-            <div className="h-[260px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={varChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                  <XAxis
-                    dataKey="amount"
-                    tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
-                    stroke="#94A3B8"
-                    fontSize={11}
-                  />
-                  <YAxis stroke="#94A3B8" fontSize={11} />
-                  <Tooltip
-                    formatter={(val: any) => [val, "Probability"]}
-                    labelFormatter={(l: any) => `Estimated Out of Pocket: ₹${Number(l).toLocaleString("en-IN")}`}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="probability"
-                    stroke="#2563EB"
-                    fill="#EFF6FF"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            {varChartData.length > 0 ? (
+              <div className="h-[260px] w-full pt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={varChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                    <XAxis
+                      dataKey="amount"
+                      tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
+                      stroke="#94A3B8"
+                      fontSize={11}
+                    />
+                    <YAxis stroke="#94A3B8" fontSize={11} />
+                    <Tooltip
+                      formatter={(val: any) => [val, "Probability"]}
+                      labelFormatter={(l: any) => `Estimated Out of Pocket: ₹${Number(l).toLocaleString("en-IN")}`}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="probability"
+                      stroke="#2563EB"
+                      fill="#EFF6FF"
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="p-8 text-center space-y-2 bg-bg-secondary rounded-lg border border-border-subtle">
+                <Info className="w-6 h-6 text-text-tertiary mx-auto" />
+                <p className="text-xs text-text-secondary">
+                  Detailed distribution curve is not available for this case yet.
+                </p>
+              </div>
+            )}
 
             {/* 2 Amber Explanatory Info Boxes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -506,9 +527,9 @@ export default function FinancialRiskPage() {
           <Card padding="md" className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             <div>
               <div className="w-16 h-16 rounded-full border-4 border-success flex items-center justify-center mx-auto text-success font-heading font-bold text-lg">
-                {assessment.prediction_confidence !== undefined
+                {assessment.prediction_confidence !== undefined && assessment.prediction_confidence !== null
                   ? `${Math.round(assessment.prediction_confidence * 100)}%`
-                  : "94%"}
+                  : "—"}
               </div>
               <h4 className="font-semibold text-xs text-text-primary mt-3">Confidence in our estimate</h4>
               <p className="text-[11px] text-text-tertiary mt-0.5">High consistency with past bills</p>
@@ -516,9 +537,9 @@ export default function FinancialRiskPage() {
 
             <div>
               <div className="w-16 h-16 rounded-full border-4 border-brand-accent flex items-center justify-center mx-auto text-brand-accent font-heading font-bold text-lg">
-                {assessment.data_quality_score !== undefined
+                {assessment.data_quality_score !== undefined && assessment.data_quality_score !== null
                   ? `${Math.round(assessment.data_quality_score * 100)}%`
-                  : "98%"}
+                  : "—"}
               </div>
               <h4 className="font-semibold text-xs text-text-primary mt-3">Information checked</h4>
               <p className="text-[11px] text-text-tertiary mt-0.5">All required bill details verified</p>
@@ -561,45 +582,11 @@ export default function FinancialRiskPage() {
                 </Card>
               ))
             ) : (
-              <>
-                <Card padding="sm" className="flex items-start gap-4">
-                  <div className="w-7 h-7 rounded-full bg-danger text-white flex items-center justify-center font-heading font-bold text-xs flex-shrink-0 mt-0.5">
-                    1
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-sm text-text-primary">
-                        Send a complaint letter to the hospital billing desk
-                      </h4>
-                      <Badge variant="danger" size="sm">
-                        High Priority
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-text-secondary mt-1 leading-relaxed">
-                      Give the hospital our ready complaint letter pointing out the items that exceed government price limits.
-                    </p>
-                  </div>
-                </Card>
-
-                <Card padding="sm" className="flex items-start gap-4">
-                  <div className="w-7 h-7 rounded-full bg-brand-accent text-white flex items-center justify-center font-heading font-bold text-xs flex-shrink-0 mt-0.5">
-                    2
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-sm text-text-primary">
-                        Ask your insurance company to re-check the deductions
-                      </h4>
-                      <Badge variant="accent" size="sm">
-                        Recommended
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-text-secondary mt-1 leading-relaxed">
-                      Provide the list of findings to your insurance claims officer so they do not wrongly deduct valid medical costs.
-                    </p>
-                  </div>
-                </Card>
-              </>
+              <Card padding="md" className="text-center py-6">
+                <p className="text-xs text-text-secondary">
+                  No automated hardship alerts or additional actions required for this bill.
+                </p>
+              </Card>
             )}
           </div>
         </section>
