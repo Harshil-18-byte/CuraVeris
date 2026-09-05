@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import {
   FileStack,
@@ -17,7 +18,7 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { SkeletonStat, SkeletonCard } from "@/components/ui/Skeleton";
+import { SkeletonStat, SkeletonCard, SkeletonText } from "@/components/ui/Skeleton";
 import { BillTable } from "@/components/bills/BillTable";
 import { CountUp } from "@/components/ui/CountUp";
 import { api } from "@/lib/api";
@@ -64,8 +65,8 @@ export default function DashboardPage() {
 
   return (
     <PageShell>
-      {/* Top Greeting Section (Grassfeld Pastel Hero Banner) */}
-      <div className="grassfeld-hero-card p-6 sm:p-8 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
+      {/* Top Greeting Section (Pastel Hero Banner) */}
+      <div className="curaveris-hero-card p-6 sm:p-8 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-3 py-1 bg-white/80 rounded-full text-[11px] font-bold text-[#202128] border border-black/[0.06] flex items-center gap-1.5 shadow-xs">
@@ -74,7 +75,12 @@ export default function DashboardPage() {
             </span>
           </div>
           <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#202128] tracking-tight">
-            Good {greetingTimeOfDay}, {user?.full_name ? user.full_name.split(" ")[0] : "Patient"}
+            Good {greetingTimeOfDay},{" "}
+            {user?.full_name ? (
+              user.full_name.split(" ")[0]
+            ) : (
+              <SkeletonText width="w-24" className="inline-block h-6 align-middle" />
+            )}
           </h1>
           <p className="text-xs sm:text-sm text-[#606470] mt-1 font-medium">{currentDateFormatted}</p>
         </div>
@@ -99,6 +105,15 @@ export default function DashboardPage() {
             <SkeletonStat />
             <SkeletonStat />
           </>
+        ) : billsQuery.isError ? (
+          <div className="col-span-full">
+            <Card padding="md">
+              <p className="text-sm font-bold text-danger">Failed to load dashboard metrics</p>
+              <Button size="sm" variant="secondary" onClick={() => billsQuery.refetch()} className="mt-2 rounded-full">
+                Retry
+              </Button>
+            </Card>
+          </div>
         ) : (
           <>
             {/* Stat 1 */}
