@@ -102,12 +102,22 @@ export default function LoginPage() {
     setErrorMessage(null);
     try {
       const res = await api.auth.login(data.username, data.password);
+      const userObj = res.user || {
+        id: res.user_id || "",
+        email: res.email || data.username,
+        full_name: res.full_name || data.username.split("@")[0],
+        role: res.role || "PATIENT",
+        is_active: true,
+        email_verified: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
       login(
         {
           access_token: res.access_token,
           refresh_token: res.refresh_token || res.access_token,
         },
-        res.user
+        userObj
       );
       router.push("/dashboard");
     } catch (err: any) {
