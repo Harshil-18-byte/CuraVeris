@@ -1,29 +1,116 @@
 services:
-  backend:
-    build: ./backend
-    environment:
-      ENV: development
-      DATABASE_URL: postgresql+asyncpg://curaveris:curaveris@postgres:5432/curaveris
-      SYNC_DATABASE_URL: postgresql://curaveris:curaveris@postgres:5432/curaveris
-      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in your environment}
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY in your environment}
-    ports:
-      - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
   postgres:
     image: postgres:16-alpine
+    container_name: curaveris-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: curaveris
-      POSTGRES_USER: curaveris
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in your environment}
+      POSTGRES_DB: ${POSTGRES_DB:-curaveris}
+      POSTGRES_USER: ${POSTGRES_USER:-curaveris}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-curaveris_secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U curaveris -d curaveris"]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - curaveris-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: curaveris-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - curaveris-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: curaveris-backend
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://curaveris:curaveris_secret@postgres:5432/curaveris}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      SECRET_KEY: ${SECRET_KEY:-dev_curaveris_secret_key_change_in_production_32b}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-dev_curaveris_enc_key_change_in_prod_32b}
+      APP_ALLOWED_ORIGINS: ${APP_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000,http://127.0.0.1:3000}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - curaveris-network
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: curaveris-worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.workers.evidence_task"]
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://curaveris:curaveris_secret@postgres:5432/curaveris}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      SECRET_KEY: ${SECRET_KEY:-dev_curaveris_secret_key_change_in_production_32b}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-dev_curaveris_enc_key_change_in_prod_32b}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - curaveris-network
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    container_name: curaveris-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      NODE_ENV: production
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - curaveris-network
+
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  curaveris-network:
+    driver: bridge
