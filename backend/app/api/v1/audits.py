@@ -43,7 +43,7 @@ async def get_bill_audit(
     findings = (await db.execute(findings_stmt)).scalars().all()
 
     audit_resp = AuditResponse.model_validate(audit)
-    audit_resp.findings = findings
+    audit_resp.findings = [AuditFindingResponse.model_validate(f) for f in findings]
     return audit_resp
 
 
