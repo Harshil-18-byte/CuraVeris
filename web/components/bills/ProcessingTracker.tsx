@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ProcessingStatus } from "@/types";
+import ProcessingEducation from "@/components/bills/ProcessingEducation";
 
 interface ProcessingTrackerProps {
   billId: string;
@@ -42,8 +43,6 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
   useEffect(() => {
     switch (initialStatus) {
       case "QUEUED":
-        setCurrentStep(1);
-        break;
       case "EXTRACTING":
         setCurrentStep(1);
         break;
@@ -71,6 +70,59 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
 
   const isComplete = initialStatus === "COMPLETED";
   const isFailed = initialStatus === "FAILED";
+
+  const getFailureGuidance = (reasonStr?: string | null) => {
+    if (!reasonStr) {
+      return {
+        title: "Something went wrong",
+        message: "An unexpected error occurred while processing your bill. Please try uploading again.",
+        action: "Try Again",
+      };
+    }
+
+    try {
+      const parsed = JSON.parse(reasonStr);
+      if (parsed.type === "OCR_LOW_QUALITY") {
+        return {
+          title: "We had trouble reading your bill",
+          message: parsed.suggestion || "Please try photographing pages with better lighting and upload again.",
+          action: "Try Again with Better Photo",
+        };
+      }
+      if (parsed.type === "FILE_CORRUPTED") {
+        return {
+          title: "Your file appears to be damaged",
+          message: "Please try downloading or re-scanning your bill and upload again.",
+          action: "Upload a New Copy",
+        };
+      }
+      if (parsed.type === "UNSUPPORTED_FORMAT") {
+        return {
+          title: "We cannot read this file format",
+          message: "Please convert your bill to a PDF or take a photo (JPG or PNG) and upload again.",
+          action: "Upload as PDF or Photo",
+        };
+      }
+    } catch {
+      // plain string
+    }
+
+    if (reasonStr.includes("OCR") || reasonStr.includes("read") || reasonStr.includes("quality")) {
+      return {
+        title: "We had trouble reading your bill",
+        message: "We had trouble reading the text on your bill. Please photograph with steady lighting and upload again.",
+        action: "Try Again with Clearer Photo",
+      };
+    }
+
+    return {
+      title: "Something went wrong",
+      message: reasonStr || "An unexpected error occurred. Please try uploading again.",
+      action: "Try Again",
+    };
+  };
+
+  const failureInfo = getFailureGuidance(failureReason);
 
   // SVG Circular progress computation for active state
   const radius = 34;
@@ -113,7 +165,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
         </div>
       )}
 
-      {/* 2. FAILED STATE */}
+      {/* 2. FAILED STATE WITH SPECIFIC GUIDANCE */}
       {isFailed && (
         <div className="space-y-6 animate-in fade-in-50 duration-200">
           <div className="w-20 h-20 rounded-full bg-red-500/10 border-2 border-red-400 flex items-center justify-center mx-auto text-red-400 shadow-[0_0_30px_rgba(248,113,113,0.3)]">
@@ -122,12 +174,10 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
 
           <div>
             <h2 className="font-heading font-bold text-2xl text-white">
-              Something went wrong while checking your bill.
+              {failureInfo.title}
             </h2>
-            <p className="text-xs text-neutral-400 mt-1.5 max-w-sm mx-auto font-normal">
-              {failureReason?.includes("read") || failureReason?.includes("OCR")
-                ? "We had trouble reading your bill. Please try uploading a clearer photo with better lighting."
-                : "Our team has been notified. Please try uploading again."}
+            <p className="text-xs text-neutral-400 mt-2 max-w-sm mx-auto font-normal leading-relaxed">
+              {failureInfo.message}
             </p>
           </div>
 
@@ -135,11 +185,11 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
             <Link href="/bills/upload" className="w-full sm:w-auto">
               <Button variant="primary" size="md" className="w-full sm:w-auto rounded-full">
                 <RefreshCw className="w-4 h-4 mr-2" strokeWidth={1.5} />
-                Try Again
+                {failureInfo.action}
               </Button>
             </Link>
             <Link href="/bills" className="w-full sm:w-auto">
-              <Button variant="ghost" size="md" className="w-full sm:w-auto rounded-full">
+              <Button variant="ghost" size="md" className="w-full sm:w-auto rounded-full text-white hover:bg-white/10">
                 Back to Bills
               </Button>
             </Link>
@@ -147,7 +197,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
         </div>
       )}
 
-      {/* 3. ACTIVE PROCESSING STATE */}
+      {/* 3. ACTIVE PROCESSING STATE WITH ROTATING EDUCATION CARDS */}
       {!isComplete && !isFailed && (
         <div className="space-y-8">
           {/* Custom SVG Circular Progress */}
@@ -187,7 +237,7 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
               We&apos;re checking your bill now
             </h2>
             <p className="text-xs text-neutral-400 mt-1">
-              Usually takes 3–8 minutes. We&apos;ll notify you when it&apos;s ready.
+              Usually takes 1–3 minutes. We&apos;ll notify you when it&apos;s ready.
             </p>
           </div>
 
@@ -242,10 +292,13 @@ export const ProcessingTracker: React.FC<ProcessingTrackerProps> = ({
             })}
           </div>
 
+          {/* Rotating Educational Cards during wait */}
+          <ProcessingEducation currentStatus={initialStatus} />
+
           {/* Time Estimate Pill */}
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs font-medium text-neutral-300">
             <Clock className="w-3.5 h-3.5 text-cyan-400" strokeWidth={1.5} />
-            <span>Usually takes 3–8 minutes. We&apos;ll notify you when it&apos;s ready.</span>
+            <span>Checking against NPPA, DPCO & CGHS rate databases in real-time</span>
           </div>
         </div>
       )}
