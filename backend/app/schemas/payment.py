@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 
 class CreateOrderRequest(BaseModel):
     bill_id: Optional[UUID] = None
-    amount: Decimal
+    amount: Optional[Decimal] = None
     currency: str = "INR"
 
 
