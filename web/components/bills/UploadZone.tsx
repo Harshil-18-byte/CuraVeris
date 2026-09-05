@@ -35,6 +35,7 @@ export const UploadZone: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const {
@@ -50,6 +51,7 @@ export const UploadZone: React.FC = () => {
 
   const handleFileChange = (file: File | null) => {
     setUploadError(null);
+    setUploadProgress(null);
     if (!file) return;
 
     // Validate type
@@ -88,24 +90,33 @@ export const UploadZone: React.FC = () => {
     }
 
     try {
+      setUploadProgress(0);
       const formData = new FormData();
       formData.append("file", selectedFile);
       if (data.hospital_name) formData.append("hospital_name", data.hospital_name);
-      if (data.total_billed_amount) formData.append("total_billed_amount", data.total_billed_amount.toString());
+      if (data.total_billed_amount)
+        formData.append("total_billed_amount", data.total_billed_amount.toString());
       if (data.admission_date) formData.append("admission_date", data.admission_date);
       if (data.discharge_date) formData.append("discharge_date", data.discharge_date);
       if (data.insurance_type) formData.append("insurance_type", data.insurance_type);
 
-      const res = await api.bills.upload(formData);
-      toast.success("Bill sent! We're checking the prices now.");
+      const res = await api.bills.upload(formData, (pct) => {
+        setUploadProgress(pct);
+      });
+      toast.success("Bill received! We're auditing it now.");
       router.push(`/bills/${res.bill_id}`);
     } catch (err: any) {
-      const detail = err?.message || err?.response?.data?.detail;
-      if (typeof detail === "string" && (detail.includes("duplicate") || detail.includes("already"))) {
-        setUploadError("Looks like you've already checked this bill.");
+      setUploadProgress(null);
+      const code = err?.code;
+      if (code === "BILL_003") {
+        setUploadError("This bill has already been uploaded. Check your bills list for existing results.");
+      } else if (code === "BILL_001") {
+        setUploadError("File exceeds the 50 MB size limit. Please compress and retry.");
+      } else if (code === "BILL_002") {
+        setUploadError("Unsupported file format. Please upload a PDF, JPG, PNG, or WEBP.");
       } else {
         setUploadError(
-          typeof detail === "string" ? detail : "Something went wrong while uploading. Please try again."
+          err?.message || "Upload failed. Please check your connection and try again."
         );
       }
     }
@@ -203,7 +214,7 @@ export const UploadZone: React.FC = () => {
 
           <Input
             label="Hospital or Clinic Name"
-            placeholder="e.g. Apollo Hospital, Fortis Healthcare, AIIMS"
+            placeholder="e.g. Hospital or clinic name"
             error={errors.hospital_name?.message}
             {...register("hospital_name")}
           />
@@ -258,7 +269,11 @@ export const UploadZone: React.FC = () => {
           className="w-full rounded-full bg-[#202128] hover:bg-black text-white font-bold shadow-md"
           isLoading={isSubmitting}
         >
-          Check This Bill
+          {uploadProgress !== null
+            ? uploadProgress < 100
+              ? `Uploading Bill (${uploadProgress}%)…`
+              : "Processing your bill…"
+            : "Check This Bill"}
         </Button>
       </form>
     </div>
