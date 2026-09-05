@@ -2,11 +2,13 @@ from typing import Optional
 import redis.asyncio as aioredis
 from app.core.config import settings
 
-# Initialize Redis client with SSL awareness
+# Initialize Redis client with SSL awareness and socket timeout
 redis_client = aioredis.from_url(
     settings.REDIS_URL,
     encoding="utf-8",
     decode_responses=True,
+    socket_connect_timeout=1.0,
+    socket_timeout=1.0,
     ssl_cert_reqs=None if settings.REDIS_URL.startswith("rediss://") else None,
 )
 
