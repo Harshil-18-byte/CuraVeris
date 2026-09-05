@@ -12,6 +12,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libpangocairo-1.0-0 \
+    libcairo2 \
+    libffi-dev \
     curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
