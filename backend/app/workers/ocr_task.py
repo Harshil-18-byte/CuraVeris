@@ -12,19 +12,12 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy import select, text
 from app.workers.celery_app import celery_app
 from app.core.config import settings
+from app.core.database import AsyncSessionLocal as SessionLocal
 from app.core.redis import publish
 from app.core.storage import storage_adapter
 from app.models.bill import Bill, BillLineItem
 
 logger = logging.getLogger(__name__)
-
-# Standalone async session maker for Celery task worker process
-async_engine = create_async_engine(
-    settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://").replace("postgres://", "postgresql+asyncpg://"),
-    pool_size=5,
-    max_overflow=5,
-)
-SessionLocal = async_sessionmaker(bind=async_engine, expire_on_commit=False)
 
 
 def _parse_line_items_from_text(raw_text: str) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
