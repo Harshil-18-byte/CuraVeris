@@ -81,7 +81,7 @@ export default function PricingPage() {
 
           <h1 className="font-heading font-extrabold text-4xl sm:text-6xl text-[#202128] leading-[1.1] tracking-tight max-w-3xl mx-auto">
             Transparent protection for every{" "}
-            <span className="grassfeld-gradient-text">patient budget.</span>
+            <span className="curaveris-gradient-text">patient budget.</span>
           </h1>
 
           <p className="text-base sm:text-xl text-[#606470] max-w-xl mx-auto font-medium">
