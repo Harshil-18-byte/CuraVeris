@@ -1,0 +1,75 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "bills": "My Bills",
+    "notifications": "Notifications",
+    "account": "Account",
+    "check_bill": "Check My Bill",
+    "sign_in": "Sign In",
+    "sign_out": "Sign Out",
+    "overview": "Overview",
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "security": "Security",
+    "contact": "Contact",
+    "demo": "See It In Action"
+  },
+  "upload": {
+    "title": "Check Your Hospital Bill",
+    "subtitle": "We check every charge against government-approved prices.",
+    "dropzone": "Drop your bill here, or tap to choose a file",
+    "accepted": "Photo, PDF, or image file · Up to 50MB",
+    "button": "Check This Bill",
+    "take_photo": "Take a Photo",
+    "choose_file": "Choose File",
+    "optional_details": "Add Details (Optional)",
+    "hospital_name": "Hospital Name",
+    "estimated_amount": "Estimated Amount",
+    "insurance_type": "Insurance Type"
+  },
+  "audit": {
+    "title": "Your Bill Check Results",
+    "overcharge_found": "You may have been overcharged by",
+    "confirmed_tab": "Overcharges We Found",
+    "assessment_tab": "Our Assessment",
+    "financial_tab": "Financial Impact",
+    "evidence_tab": "Proof Document",
+    "generate_complaint": "Create My Complaint Letter",
+    "pay_undisputed": "Pay Undisputed Amount",
+    "statutory_ref": "Statutory Reference",
+    "legal_basis": "Legal Basis",
+    "benchmark": "Government Ceiling",
+    "billed": "Hospital Billed"
+  },
+  "legal": {
+    "complaints_title": "Complaint Letters & Notices",
+    "complaints_sub": "These documents are generated from your audit results and are ready to send.",
+    "download_button": "Download",
+    "create_button": "Create This Letter",
+    "whatsapp_share": "Share on WhatsApp",
+    "lawyer_help_title": "Need professional legal help?",
+    "lawyer_help_desc": "For complex cases or if the hospital does not respond, patient rights advocates and consumer lawyers can take your case on contingency.",
+    "nalsa_link": "Free Legal Aid (NALSA)",
+    "helpline_link": "Consumer Helpline 1800-11-4000"
+  },
+  "dashboard": {
+    "greeting": "Patient Forensic Portal",
+    "bills_checked": "Bills Checked",
+    "audits_complete": "Audits Complete",
+    "detected_overcharges": "Detected Overcharges",
+    "dispute_documents": "Dispute Documents",
+    "monthly_trends_title": "Overcharges Found by Month",
+    "monthly_trends_sub": "How much you have recovered and identified across monthly hospital bills",
+    "recent_bills": "Recent Hospital Bills",
+    "live_activity": "Live Forensic Activity"
+  },
+  "errors": {
+    "network": "Unable to reach the server. Please wait a moment and try again.",
+    "timeout": "This is taking longer than expected. Please check your connection.",
+    "auth_invalid": "Incorrect email or password. Please try again.",
+    "auth_locked": "Your account is temporarily locked. Please try again in 15 minutes.",
+    "ocr_low_quality": "We had trouble reading your bill document. Please photograph with steady lighting and upload again.",
+    "file_damaged": "Your file appears to be damaged. Please download or re-scan your bill and upload again."
+  }
+}
