@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="base.css">
+</head>
+<body>
+
+<div class="letterhead">
+  <h1>GRIEVANCE PETITION — CENTRAL GOVERNMENT HEALTH SCHEME</h1>
+  <p>To be submitted to the Additional Director (CGHS) / Chief Medical Officer</p>
+</div>
+
+<div class="date-ref-block">
+  <p><strong>Date:</strong> {{ document_date }}</p>
+  <p><strong>CGHS Card No.:</strong> {{ cghs_card_number if cghs_card_number else '[CGHS Card Number]' }}</p>
+  <p><strong>Reference:</strong> CV/CGHS/{{ reference_number }}</p>
+</div>
+
+<div class="address-block">
+  <p><strong>To,</strong></p>
+  <p>The Additional Director / Chief Medical Officer (CGHS)</p>
+  <p>CGHS Wellness Centre / Regional Office</p>
+  <p>{{ cghs_office_city if cghs_office_city else '[City]' }}</p>
+</div>
+
+<div class="address-block">
+  <p><strong>From,</strong></p>
+  <p><strong>{{ patient_name }}</strong></p>
+  <p>CGHS Beneficiary / Dependent of CGHS Beneficiary</p>
+  <p>{{ patient_address }}</p>
+  <p>Phone: {{ patient_phone }}</p>
+  <p>Office / Ministry: {{ office_name if office_name else '[Employer Ministry / Department]' }}</p>
+  <p>Employee ID: {{ employee_id if employee_id else '[Employee ID]' }}</p>
+</div>
+
+<p class="subject">
+  SUBJECT: Grievance Against Overcharging by CGHS Empanelled Hospital —
+  {{ hospital_name }} — Bill No. {{ bill_reference }} —
+  Excess Charged: ₹{{ total_overcharge_formatted }}
+</p>
+
+<div class="body-text">
+
+<p>Sir / Madam,</p>
+
+<p>
+I am a CGHS beneficiary / dependent of a CGHS beneficiary holding
+CGHS Card No. {{ cghs_card_number if cghs_card_number else '[Card No.]' }}.
+I was treated at {{ hospital_name }}, which is empanelled under CGHS,
+{% if admission_date %}from {{ admission_date }} to {{ discharge_date }}{% endif %}.
+</p>
+
+<p>
+I wish to bring to your attention that the empanelled hospital has
+charged me amounts in excess of the CGHS package rates / rates notified
+by the Ministry of Health and Family Welfare. This is a direct violation
+of the terms and conditions of CGHS empanelment.
+</p>
+
+<p>
+An independent audit of my hospital bill has identified the following
+violations of CGHS rates:
+</p>
+
+<table class="findings-table">
+  <thead>
+    <tr>
+      <th>S.No.</th>
+      <th>Item / Procedure</th>
+      <th>Charged by Hospital (₹)</th>
+      <th>CGHS Approved Rate (₹)</th>
+      <th>Excess Charged (₹)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for finding in cghs_findings %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ finding.item_description }}</td>
+      <td class="amount">{{ finding.billed_amount_formatted }}</td>
+      <td class="amount">{{ finding.benchmark_amount_formatted }}</td>
+      <td class="amount">{{ finding.overcharge_amount_formatted }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="total-row">
+      <td colspan="4"><strong>Total Excess Charged Above CGHS Rates</strong></td>
+      <td class="amount"><strong>₹{{ total_overcharge_formatted }}</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="legal-basis">
+  <strong>CGHS Empanelment Conditions:</strong> Hospitals empanelled under
+  CGHS are contractually bound to charge only the rates notified in the CGHS
+  Rate Schedule for the respective city and empanelment category. Charging
+  above these rates from CGHS beneficiaries is a breach of the empanelment
+  agreement and may result in de-empanelment under CGHS rules.
+</div>
+
+<p>I respectfully request:</p>
+
+<p>
+<strong>1.</strong> An inquiry into the billing practices of
+{{ hospital_name }} in respect of my bill.
+</p>
+
+<p>
+<strong>2.</strong> Direction to the hospital to refund the excess
+amount of ₹{{ total_overcharge_formatted }} to me / to the CGHS fund
+as appropriate.
+</p>
+
+<p>
+<strong>3.</strong> Appropriate action against the hospital including
+review of its empanelment status if the excess charging is found
+to be systematic.
+</p>
+
+<p>
+<strong>4.</strong> Processing of my CGHS reimbursement claim at
+the correct CGHS rates without deducting amounts that are legitimately
+payable under CGHS.
+</p>
+
+<p>
+I enclose a copy of the CuraVeris audit report and evidence certificate
+in support of this grievance.
+</p>
+
+</div>
+
+<div class="evidence-box">
+  <strong>CuraVeris Audit Reference:</strong><br>
+  Evidence ID: {{ evidence_id }}<br>
+  Merkle Root: {{ merkle_root }}<br>
+  Audit Date: {{ evidence_issued_at }}
+</div>
+
+<div class="signature-block">
+  <p>Yours faithfully,</p>
+  <br><br>
+  <p>___________________________</p>
+  <p><strong>{{ patient_name }}</strong></p>
+  <p>CGHS Card No.: {{ cghs_card_number if cghs_card_number else '[Card No.]' }}</p>
+  <p>Date: {{ document_date }}</p>
+  <p>Place: {{ patient_city }}</p>
+</div>
+
+<p style="font-size:9pt; margin-top:16pt;">
+  <strong>Enclosures:</strong><br>
+  1. Copy of CGHS Card<br>
+  2. Original Hospital Bill<br>
+  3. CuraVeris Audit Report<br>
+  4. CuraVeris Evidence Certificate<br>
+  5. Prescriptions and medical records
+</p>
+
+<div class="disclaimer">
+  This grievance can also be filed online at cghs.nic.in under the
+  grievance portal. CGHS grievances may also be escalated to the
+  Centralised Public Grievance Redress and Monitoring System at pgportal.gov.in.
+  This document does not constitute legal advice.
+</div>
+
+</body>
+</html>
