@@ -345,3 +345,59 @@ export interface FRMAsyncResponse {
   status: "COMPUTING" | "COMPLETED" | "FAILED";
   message: string;
 }
+
+export interface MonthlyTrendItem {
+  month: string;
+  bills: number;
+  overcharge: number;
+}
+
+export interface UserStats {
+  bills_total: number;
+  audits_complete: number;
+  total_overcharge_found: number;
+  documents_generated: number;
+  monthly_trend: MonthlyTrendItem[];
+}
+
+export interface HospitalTrustScore {
+  name: string;
+  total_audits: number;
+  billing_trust_score: number;
+  total_overcharge_found: number;
+  overcharge_rate: number;
+}
+
+export interface BillComparisonResult {
+  bill_1: {
+    id: string;
+    hospital_name: string;
+    date: string;
+    total_billed: string;
+    overcharge: string;
+    risk_label?: string | null;
+    finding_count: number;
+  };
+  bill_2: {
+    id: string;
+    hospital_name: string;
+    date: string;
+    total_billed: string;
+    overcharge: string;
+    risk_label?: string | null;
+    finding_count: number;
+  };
+  comparison: {
+    billed_difference: string;
+    overcharge_difference: string;
+    same_hospital: boolean;
+  };
+}
+
+export interface OnboardingStatus {
+  bill_uploaded: boolean;
+  audit_complete: boolean;
+  notification_enabled: boolean;
+  profile_complete: boolean;
+  checklist_dismissed: boolean;
+}
