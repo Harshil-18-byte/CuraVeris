@@ -94,7 +94,7 @@ export default function ContactPage() {
 
           <h1 className="font-heading font-extrabold text-4xl sm:text-6xl text-[#202128] leading-[1.1] tracking-tight max-w-3xl mx-auto">
             Get in touch with our{" "}
-            <span className="grassfeld-gradient-text">forensic advocates.</span>
+            <span className="curaveris-gradient-text">forensic advocates.</span>
           </h1>
 
           <p className="text-base sm:text-xl text-[#606470] max-w-2xl mx-auto font-medium">
