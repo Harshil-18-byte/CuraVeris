@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="base.css">
+</head>
+<body>
+
+<div class="letterhead">
+  <h1>FORMAL DISPUTE — INSURANCE CLAIM SETTLEMENT</h1>
+  <p>CuraVeris Audit Reference: {{ audit_id }}</p>
+</div>
+
+<div class="date-ref-block">
+  <p><strong>Date:</strong> {{ document_date }}</p>
+  <p><strong>Policy Number:</strong> {{ policy_number }}</p>
+  <p><strong>Claim Number:</strong> {{ claim_number if claim_number else 'Pending' }}</p>
+  <p><strong>TPA Name:</strong> {{ tpa_name if tpa_name else 'Not Applicable' }}</p>
+</div>
+
+<div class="address-block">
+  <p><strong>To,</strong></p>
+  <p>The Grievance Officer</p>
+  <p><strong>{{ insurer_name }}</strong></p>
+  {% if tpa_name %}
+  <p>Through: {{ tpa_name }} (Third Party Administrator)</p>
+  {% endif %}
+  <p>{{ insurer_address if insurer_address else '[Insurer Address]' }}</p>
+</div>
+
+<div class="address-block">
+  <p><strong>From,</strong></p>
+  <p><strong>{{ patient_name }}</strong></p>
+  <p>Policy Holder: {{ policyholder_name }}</p>
+  <p>{{ patient_address }}</p>
+  <p>Phone: {{ patient_phone }}</p>
+</div>
+
+<p class="subject">
+  SUBJECT: Formal Dispute Against {% if claim_rejected %}Rejection of{% else %}Shortfall in{% endif %}
+  Insurance Claim — Policy No. {{ policy_number }} — Amount in Dispute:
+  ₹{{ total_overcharge_formatted }}
+</p>
+
+<div class="body-text">
+
+<p>Sir / Madam,</p>
+
+<p>
+I am the {% if is_policyholder %}policyholder{% else %}insured patient{% endif %}
+under Policy No. {{ policy_number }} issued by {{ insurer_name }}.
+I was {% if admission_date %}hospitalised at {{ hospital_name }} from
+{{ admission_date }} to {{ discharge_date }}{% else %}treated at
+{{ hospital_name }}{% endif %} and submitted a claim for ₹{{ total_billed_formatted }}.
+</p>
+
+{% if claim_rejected %}
+<p>
+My claim has been rejected / partially repudiated by your company /
+TPA on grounds that I dispute. I am writing to formally challenge
+this decision and to provide documentary evidence in support of
+my claim.
+</p>
+{% else %}
+<p>
+While processing my claim, certain items totalling
+₹{{ total_overcharge_formatted }} have been disallowed.
+I am writing to formally dispute certain of these disallowances
+as being contrary to IRDAI guidelines and my policy terms.
+</p>
+{% endif %}
+
+<p>
+I have had my hospital bill independently audited. The audit has
+identified that the following items were either wrongly disallowed
+or were charged by the hospital in violation of IRDAI guidelines
+on non-payable items — meaning the hospital should not have raised
+these charges at all:
+</p>
+
+<table class="findings-table">
+  <thead>
+    <tr>
+      <th>S.No.</th>
+      <th>Item</th>
+      <th>Amount Charged (₹)</th>
+      <th>Your Decision</th>
+      <th>Basis of Dispute</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for finding in findings %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ finding.item_description }}</td>
+      <td class="amount">{{ finding.billed_amount_formatted }}</td>
+      <td>{{ finding.insurer_decision if finding.insurer_decision else 'Disallowed' }}</td>
+      <td>{{ finding.dispute_basis }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="legal-basis">
+  <strong>IRDAI (Health Insurance) Regulations, 2016:</strong>
+  Under Regulation 27, insurers are required to settle claims fairly and
+  in accordance with the policy terms. Arbitrary disallowance of admissible
+  claims constitutes deficiency of service under the Consumer Protection Act, 2019.
+</div>
+
+<div class="legal-basis">
+  <strong>IRDAI Circular on Standardisation of Exclusions:</strong>
+  The IRDAI has issued guidelines standardising what may and may not be
+  excluded from health insurance claims. Items not appearing in the
+  approved exclusion list must be covered if they fall within the
+  scope of the policy.
+</div>
+
+<p>I formally request:</p>
+
+<p>
+<strong>1.</strong> A complete review of my claim with specific written
+reasons for each disallowance citing the exact policy clause and
+IRDAI provision relied upon.
+</p>
+
+<p>
+<strong>2.</strong> Settlement of the legitimately payable portion
+of my claim within 30 days as required by IRDAI regulations.
+</p>
+
+<p>
+<strong>3.</strong> If the hospital has billed items that are on the
+IRDAI non-payable list, I request your assistance in recovering
+those amounts directly from the hospital.
+</p>
+
+<p>
+Please note that if this dispute is not resolved within 30 days,
+I will file a complaint with the Insurance Ombudsman under the
+Insurance Ombudsman Rules, 2017, and if necessary approach the
+District Consumer Disputes Redressal Commission under the
+Consumer Protection Act, 2019.
+</p>
+
+</div>
+
+<div class="evidence-box">
+  <strong>Audit Evidence:</strong><br>
+  Evidence ID: {{ evidence_id }}<br>
+  Merkle Root: {{ merkle_root }}<br>
+  Audit Date: {{ evidence_issued_at }}
+</div>
+
+<div class="signature-block">
+  <p>Yours faithfully,</p>
+  <br><br>
+  <p>___________________________</p>
+  <p><strong>{{ patient_name }}</strong></p>
+  <p>Date: {{ document_date }}</p>
+</div>
+
+<div class="disclaimer">
+  Generated by CuraVeris. Not legal advice. Consult a qualified advocate for legal proceedings.
+</div>
+
+</body>
+</html>
