@@ -18,6 +18,7 @@ from fastapi import (
     Query,
     WebSocket,
     WebSocketDisconnect,
+    BackgroundTasks,
     status,
 )
 from celery import chain
@@ -38,18 +39,56 @@ from app.schemas.bill import (
 )
 from app.api.v1.auth import get_current_user
 from app.services.notification_service import create_notification
-from app.workers.ocr_task import process_bill_ocr
-from app.workers.audit_task import run_statutory_audit
-from app.workers.ml_task import run_ml_analysis
-from app.workers.evidence_task import generate_evidence
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bills", tags=["Bills"])
 
 
+async def run_pipeline_sync(bill_id_str: str):
+    """
+    Synchronous pipeline fallback when Celery worker is not running.
+    Runs all stages sequentially in the same process.
+    """
+    from app.workers.ocr_task import _run_ocr_async
+    from app.workers.audit_task import _run_audit_async
+    from app.workers.ml_task import _run_ml_async
+    from app.workers.frm_task import _run_frm_async
+    from app.workers.evidence_task import _run_evidence_async
+    from app.core.database import AsyncSessionLocal
+
+    logger.info(f"Starting pipeline execution for bill {bill_id_str}")
+    try:
+        await _run_ocr_async(bill_id_str)
+        logger.info(f"OCR completed for bill {bill_id_str}")
+        await _run_audit_async(bill_id_str)
+        logger.info(f"Statutory audit completed for bill {bill_id_str}")
+        await _run_ml_async(bill_id_str)
+        logger.info(f"ML risk analysis completed for bill {bill_id_str}")
+        try:
+            await _run_frm_async(bill_id_str, {})
+            logger.info(f"FRM VaR/CVaR baseline completed for bill {bill_id_str}")
+        except Exception as fe:
+            logger.warning(f"FRM baseline non-critical exception: {fe}")
+        await _run_evidence_async(bill_id_str)
+        logger.info(f"Cryptographic evidence completed for bill {bill_id_str}")
+    except Exception as e:
+        logger.error(f"Pipeline execution failed for bill {bill_id_str}: {e}", exc_info=True)
+        async with AsyncSessionLocal() as err_db:
+            try:
+                b_stmt = select(Bill).where(Bill.id == UUID(bill_id_str))
+                b_rec = (await err_db.execute(b_stmt)).scalar_one_or_none()
+                if b_rec and b_rec.processing_status not in ("COMPLETED", "FAILED"):
+                    b_rec.processing_status = "FAILED"
+                    b_rec.failure_reason = str(e)
+                    await err_db.commit()
+            except Exception as dbe:
+                logger.error(f"Failed to record failure status for {bill_id_str}: {dbe}")
+
+
 @router.post("/upload", response_model=BillUploadResponse, status_code=status.HTTP_201_CREATED)
 async def upload_bill(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     hospital_name: Optional[str] = Form(None),
     estimated_amount: Optional[str] = Form(None),
@@ -154,51 +193,15 @@ async def upload_bill(
     )
     await db.commit()
 
-    # 7. Launch processing pipeline (Instant background async execution)
-    async def _run_full_bill_pipeline_background(bill_id_str: str):
-        try:
-            from app.workers.ocr_task import _run_ocr_async
-            from app.workers.audit_task import _run_audit_async
-            from app.workers.ml_task import _run_ml_async
-            from app.workers.frm_task import _run_frm_async
-            from app.workers.evidence_task import _run_evidence_async
-
-            logger.info(f"Starting async pipeline for bill {bill_id_str}")
-            await _run_ocr_async(bill_id_str)
-            logger.info(f"OCR completed for bill {bill_id_str}")
-            await _run_audit_async(bill_id_str)
-            logger.info(f"Statutory audit completed for bill {bill_id_str}")
-            await _run_ml_async(bill_id_str)
-            logger.info(f"ML risk analysis completed for bill {bill_id_str}")
-            try:
-                await _run_frm_async(bill_id_str, {})
-                logger.info(f"FRM VaR/CVaR baseline completed for bill {bill_id_str}")
-            except Exception as fe:
-                logger.warning(f"FRM baseline calculation non-critical exception: {fe}")
-            await _run_evidence_async(bill_id_str)
-            logger.info(f"Cryptographic evidence completed for bill {bill_id_str}")
-        except Exception as e:
-            logger.error(f"Background bill pipeline error for {bill_id_str}: {e}", exc_info=True)
-            try:
-                from app.workers.ocr_task import SessionLocal
-                from app.models.bill import Bill
-                from uuid import UUID
-                async with SessionLocal() as err_db:
-                    b_stmt = select(Bill).where(Bill.id == UUID(bill_id_str))
-                    b_rec = (await err_db.execute(b_stmt)).scalar_one_or_none()
-                    if b_rec and b_rec.processing_status not in ("COMPLETED", "FAILED"):
-                        b_rec.processing_status = "FAILED"
-                        b_rec.failure_reason = str(e)
-                        await err_db.commit()
-            except Exception as dbe:
-                logger.error(f"Failed to record failure status for {bill_id_str}: {dbe}")
-
+    # 7. Launch processing pipeline (Try Celery, fallback to BackgroundTasks)
     try:
-        asyncio.create_task(_run_full_bill_pipeline_background(str(bill_id)))
+        from app.workers.ocr_task import process_bill_ocr
+        process_bill_ocr.delay(str(bill.id))
     except Exception as e:
-        logger.error(f"Failed to create background task for bill {bill_id}: {e}")
+        logger.warning(f"Celery dispatch failed: {e}. Using background task fallback.")
+        background_tasks.add_task(run_pipeline_sync, str(bill.id))
 
-    return BillUploadResponse(bill_id=bill_id, status="PROCESSING", message="Processing started")
+    return BillUploadResponse(bill_id=bill_id, status="QUEUED", message="Processing started")
 
 
 @router.get("", response_model=dict)
@@ -290,6 +293,15 @@ async def get_bill_status(
     if bill.user_id != current_user.id and current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
+    # If stuck in QUEUED for more than 5 minutes, warn the user
+    stuck_warning = None
+    if bill.processing_status == "QUEUED" and bill.created_at:
+        now = datetime.now(timezone.utc)
+        created = bill.created_at.replace(tzinfo=timezone.utc) if bill.created_at.tzinfo is None else bill.created_at
+        minutes_waiting = (now - created).total_seconds() / 60
+        if minutes_waiting > 5:
+            stuck_warning = "Processing is taking longer than expected. Our team has been notified."
+
     return BillStatusResponse(
         bill_id=bill.id,
         processing_status=bill.processing_status,
@@ -297,6 +309,7 @@ async def get_bill_status(
         processing_completed_at=bill.processing_completed_at,
         failure_reason=bill.failure_reason,
         retry_count=bill.retry_count,
+        stuck_warning=stuck_warning,
     )
 
 
