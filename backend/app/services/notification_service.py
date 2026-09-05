@@ -126,14 +126,18 @@ async def send_sms_notification(
                 return response.status_code in [200, 202]
 
         elif provider == "twilio" and getattr(settings, "TWILIO_ACCOUNT_SID", None):
-            from twilio.rest import Client
-            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-            client.messages.create(
-                body=message,
-                from_=settings.TWILIO_FROM_NUMBER,
-                to=f"+91{clean_phone}",
-            )
-            return True
+            import httpx
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                tw_response = await client.post(
+                    f"https://api.twilio.com/2010-04-01/Accounts/{settings.TWILIO_ACCOUNT_SID}/Messages.json",
+                    auth=(settings.TWILIO_ACCOUNT_SID, getattr(settings, "TWILIO_AUTH_TOKEN", "")),
+                    data={
+                        "From": getattr(settings, "TWILIO_FROM_NUMBER", ""),
+                        "To": f"+91{clean_phone}",
+                        "Body": message,
+                    },
+                )
+                return tw_response.status_code in [200, 201]
 
     except Exception as e:
         logger.warning(f"SMS dispatch skipped or provider unavailable: {e}")
