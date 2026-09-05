@@ -19,11 +19,12 @@ import { ProcessingStatus } from "@/types";
 
 export default function BillDetailPage() {
   const params = useParams();
-  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "bill-cv-101";
+  const billId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
 
   const { data: bill, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["bill", billId],
     queryFn: () => api.bills.getById(billId),
+    enabled: !!billId,
     refetchInterval: (query) => {
       const status = query.state.data?.processing_status;
       return status === "COMPLETED" || status === "FAILED" ? false : 15000;
