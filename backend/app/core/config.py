@@ -31,10 +31,12 @@ class Settings(BaseSettings):
 
     APP_ALLOWED_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",
+        "http://localhost:8081",
         "http://127.0.0.1:3000",
         "https://cura-veris.vercel.app",
         "https://curaveris.vercel.app",
         "https://your-vercel-app.vercel.app",
+        "https://your-render-frontend.onrender.com",
     ]
 
     DATABASE_URL: str = "sqlite+aiosqlite:///./test_curaveris.db"
