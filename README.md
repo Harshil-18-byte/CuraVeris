@@ -158,27 +158,42 @@ flowchart TD
 ## Product Surface & Core Capabilities
 
 - **Multi-Format Bill Ingestion**: Native acceptance and processing of PDF, PNG, and JPEG documents with OCR preprocessing and normalization.
+- **Zero-Auth Instant Demo Flow**: Pre-seeded real-world cardiac surgery audit accessible in <60 seconds without login at `/demo` with live statutory findings and instant petition generation.
 - **Line-Item Statutory Enforcement**: Item-level overcharge detection against CGHS 2024 schedules, NPPA implant caps, DPCO NLEM drug ceilings, and IRDAI 199 excluded consumables.
 - **Hybrid Machine Learning Ensemble**: Blends multi-output XGBoost with a PyTorch Deep MLP network across 8 statutory violation labels.
 - **SHAP Waterfall Attribution**: Additive feature decomposition explaining exactly which parameters and rates contributed to risk classifications.
-- **Inpatient Burn Rate & Bed-Blocking Monitor**: Monitors real-time daily burn velocity against ICMR and NHA clinical ALOS benchmarks.
-- **Shadow Billing & GST Exemption Enforcement**: Identifies illegal GST charged on healthcare services (CBIC Notif. 12/2017) and duplicate items billed on overlapping timestamps.
-- **PM-JAY Zero-Cash Protection**: Audits out-of-pocket charges against Ayushman Bharat beneficiaries with automatic 5x penalty computation.
-- **ICD-10 & SNOMED-CT Clinical Coding Engine**: Maps free-text medical notes and procedures into standardized clinical ontology codes.
+- **Razorpay Settlement for Undisputed Balance**: Direct checkout integration enabling patients to clear legitimate hospital liabilities while freezing and disputing unlawful overcharges.
+- **WhatsApp 1-Click Statutory Sharing**: Instant sharing of pre-drafted grievance petitions and notices with statutory citations.
+- **Hospital Billing Trust Score**: Crowdsourced transparency ratings and historical overcharge analytics across healthcare networks (`GET /api/v1/hospitals/trust-scores`).
+- **SMS Audit Alerts**: Automated completion alerts dispatched to patient numbers via MSG91 Flow or Twilio.
+- **Side-by-Side Bill Comparison**: Dual-stay procedure and tariff variance audit (`GET /api/v1/bills/compare`).
+- **Offline Mobile Capture**: Local device queueing for poor hospital connectivity with automatic background sync upon reconnection.
+- **Stage-Aware Educational Wait Experience**: Rotating statutory knowledge cards (NPPA caps, DPCO drug ceilings) explaining each verification phase in real time.
+- **Court-Ready Print Optimization**: A4 print stylesheets with running Section 65B headers, page numbers, and formal signature blocks.
+- **Onboarding Activation Checklist**: 3-step dynamic guidance tracking bill upload, audit completion, and SMS notification preferences.
+- **Specific Error Recovery UX**: Diagnostic feedback isolating problematic scan pages with actionable recapture recommendations.
+- **Legal Aid & Helpline Integration**: Direct escalation links to the National Legal Services Authority (NALSA) and National Consumer Helpline (1800-11-4000).
+- **i18n Multilanguage Foundation**: Complete localization structure (`web/messages/en.json`) ready for regional language rollouts.
 - **Section 65B Cryptographic Merkle Ledger**: Generates tamper-evident SHA-256 Merkle tree certificates with HMAC origin signatures admissible in Indian courts.
-- **Automated Legal Dispute Generator**: Produces ready-to-file legal petitions for Consumer Forums (DCDRC/SCDRC/NCDRC), Insurance Ombudsman, and emergency Anti-Detention Notices citing Bombay High Court precedent.
 - **DPDP Act 2023 Compliance**: Built-in Right to Erasure / Anonymization endpoint (`POST /api/v1/auth/anonymize-me`) and AES-256-GCM field encryption.
 
 ---
 
 ## Key Features & Subsystems
 
-### Bill Audit Engine
+### Bill Audit Engine & Instant Demo Flow
 
 - **Item-level statutory cross-referencing** against CGHS 2024 (1,900+ procedures), NPPA implant caps, DPCO 2013 drug ceilings, and IRDAI 199-item non-payable schedule.
+- **Instant Public Demonstration** at `/demo` executing against database records (`DEMO-2024-001`) with complete legal evidence trails.
 - **Composite risk score from 0 to 100** derived from violation count, overcharge magnitude, and model confidence.
 - **SHAP waterfall attribution** decomposing each contributing feature's additive impact on the final score.
 - **Shadow bill detection** — identifies duplicate line items and unlawful GST surcharges on exempt healthcare services.
+
+### Financial Settlement & Razorpay Integration
+
+- **Undisputed liability isolation**: automatically computes `max(0, total_billed - overcharge)`.
+- **Dynamic Razorpay checkout**: creates order in paise, validates cryptographically on webhook, and updates hospital ledger.
+- **Dashboard recovery analytics**: Recharts visualization of monthly overcharge recoveries (`GET /api/v1/users/me/stats`).
 
 ### Forensic ML Ensemble Architecture
 
@@ -187,24 +202,13 @@ flowchart TD
 - **Monte Carlo epistemic uncertainty estimation** across $K = 10$ stochastic forward passes.
 - **Deterministic production seeds** logged cryptographically to `training_history.json` for reproducibility.
 
-### Inpatient Financial Lifecycle
-
-- **Pre-admission package tariff** and NABH accreditation tier verification.
-- **Real-time inpatient burn rate monitoring**: flags daily expenditures deviating more than 30% from clinical ALOS benchmarks.
-- **Discharge overcharge tally** with item-level citation of specific statutory notifications.
-- **Post-discharge TPA shortfall** and FRM financial toxicity calculation.
-- **Emergency legal filing support** including Ombudsman petitions and anti-detention notices.
-
-### Legal Document Generation
+### Legal Document Generation & Section 65B Ledger
 
 - **Formal dispute letters** addressed to hospital administration with line-item citation of violated gazette notifications.
 - **Emergency anti-detention notice** citing Bombay High Court Criminal WP No. 2502/2000 and BNS Section 127.
 - **PM-JAY zero-cash violation notice** with automatic 5x penalty computation and SAFU referral.
-
-### Cryptographic Evidence
-
+- **WhatsApp share** and **court-ready A4 print styling** with running Section 65B certificate headers.
 - **Section 65B Merkle audit certificate** with SHA-256 pairwise tree hashing and HMAC-SHA256 origin signature.
-- **Tamper-evident**: modifying any billed amount invalidates the Merkle root and fails signature verification.
 
 ---
 
@@ -924,7 +928,11 @@ See [`docs/SECURITY.md`](./docs/SECURITY.md).
 | :--- | :--- | :--- |
 | `POST` | `/api/v1/auth/register` | Register new account with hashed credentials. |
 | `POST` | `/api/v1/auth/login` | Authenticate and receive JWT bearer token. |
+| `GET` | `/api/v1/users/me` | Fetch profile with 3-step onboarding state. |
+| `GET` | `/api/v1/users/me/stats` | Aggregate total bills, audits, and 6-month overcharge recovery trends. |
 | `POST` | `/api/v1/auth/anonymize-me` | DPDP Act 2023 Section 12 right to erasure. |
+| `GET` | `/api/v1/bills/demo/sample` | Public zero-auth endpoint delivering pre-seeded demo audit. |
+| `GET` | `/api/v1/bills/compare` | Side-by-side comparison of two hospital invoices. |
 | `POST` | `/api/v1/bills/upload` | Synchronous bill ingestion and audit. |
 | `POST` | `/api/v1/bills/upload-async` | Asynchronous ingestion with job status polling. |
 | `GET` | `/api/v1/bills/{bill_id}` | Retrieve full audit breakdown and overcharge tally. |
@@ -932,6 +940,10 @@ See [`docs/SECURITY.md`](./docs/SECURITY.md).
 | `GET` | `/api/v1/bills/{bill_id}/heatmap` | 2D forensic risk matrix across 5 violation axes. |
 | `GET` | `/api/v1/bills/{bill_id}/audit-certificate` | Section 65B Merkle block certificate. |
 | `POST` | `/api/v1/bills/verify-ledger` | Cryptographic authenticity verification. |
+| `POST` | `/api/v1/payments/create-order` | Calculate undisputed liability and generate Razorpay order. |
+| `POST` | `/api/v1/payments/verify` | Verify Razorpay payment signature and update ledger. |
+| `GET` | `/api/v1/hospitals/trust-scores` | Query aggregate billing transparency and overcharge ratings. |
+| `POST` | `/api/v1/hospitals/rate` | Submit patient billing experience rating. |
 | `POST` | `/api/v1/bills/resolve-icd10` | ICD-10 / SNOMED mapping and ALOS audit. |
 | `POST` | `/api/v1/bills/financial-toxicity` | FRM income shock and DSTI calculation. |
 | `POST` | `/api/v1/bills/interim-admission-check` | Daily burn rate vs. clinical ALOS benchmark. |
