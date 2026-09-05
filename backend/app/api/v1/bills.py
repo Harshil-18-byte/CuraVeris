@@ -1,6 +1,7 @@
 import asyncio
 import io
 import json
+import logging
 import re
 import uuid
 from datetime import datetime, timezone
@@ -41,6 +42,8 @@ from app.workers.ocr_task import process_bill_ocr
 from app.workers.audit_task import run_statutory_audit
 from app.workers.ml_task import run_ml_analysis
 from app.workers.evidence_task import generate_evidence
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bills", tags=["Bills"])
 
