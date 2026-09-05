@@ -8,6 +8,27 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 - `MINOR`: New features added in a backward-compatible manner.
 - `PATCH`: Bug fixes, documentation improvements, dependency updates.
 
+## [2.2.0]
+
+### Added
+
+- **Pre-Audited Demo Bill Flow (`app/scripts/seed_demo_bill.py`, `app/api/v1/bills.py`, `web/app/demo/page.tsx`)**: Zero-auth instant public demonstration delivering pre-seeded cardiac surgery audit (`DEMO-2024-001`) with full statutory findings (NPPA, CGHS, IRDAI, GST), SHAP feature explanations, Section 65B Merkle certificate, complaint drafting modal, and text export in <60 seconds.
+- **Razorpay Settlement for Undisputed Balance (`app/api/v1/payments.py`, `web/components/payment/PayButton.tsx`)**: Calculates non-disputed liability (`max(0, total_billed - overcharge)`), generates official Razorpay orders, verifies HMAC-SHA256 payment signatures, and updates billing state.
+- **WhatsApp 1-Click Statutory Sharing (`web/components/legal/WhatsAppShare.tsx`)**: One-tap pre-populated WhatsApp sharing of formal dispute notices, Ombudsman petitions, and anti-detention notices with statutory citations.
+- **Dashboard Analytics Recovery Chart (`app/api/v1/users.py`, `web/components/dashboard/OverchargeChart.tsx`)**: Recharts monthly overcharge recovery bar chart pulling aggregated real data across 6 months (`GET /api/v1/users/me/stats`).
+- **Hospital Billing Trust Scores (`app/models/hospital_rating.py`, `app/api/v1/hospitals.py`)**: Crowdsourced 1-5 star billing transparency rating prompt with overcharge correlation and network-wide score aggregation (`GET /api/v1/hospitals/trust-scores`).
+- **SMS Audit Completion Alerts (`app/services/notification_service.py`, `app/workers/evidence_task.py`)**: Automated non-sensitive SMS notification dispatch to verified patient phone numbers via MSG91 Flow or Twilio.
+- **Side-by-Side Bill Comparison (`app/api/v1/bills.py`, `web/components/bills/BillComparisonModal.tsx`)**: Dual-invoice comparison of billed amounts, detected overcharges, risk scores, and variance (`GET /api/v1/bills/compare`).
+- **Offline Bill Capture (`clients/mobile/src/screens/UploadBillScreen.tsx`)**: NetInfo network listener and local AsyncStorage queueing with automatic sync upon reconnection.
+- **Stage-Aware Educational Wait Experience (`web/components/bills/ProcessingEducation.tsx`)**: Rotating statutory knowledge cards explaining each audit phase (NPPA caps, DPCO ceilings, CGHS package rules).
+- **Court-Ready Print Optimization (`app/legal_docs/templates/base.css`)**: `@media print` A4 formatting, running Section 65B headers, page counters (`Page X of Y`), and formal cause title blocks.
+- **3-Step Onboarding Checklist (`web/components/onboarding/OnboardingChecklist.tsx`)**: Dynamic patient activation tracking bill upload, audit completion, and profile verification.
+- **Structured Error Recovery UX (`app/workers/ocr_task.py`, `web/components/bills/ProcessingTracker.tsx`)**: Structured JSON failure codes (`OCR_LOW_QUALITY`, `FILE_CORRUPTED`, `UNSUPPORTED_FORMAT`) with actionable recapture advice.
+- **Legal Aid & Helpline Integration (`web/app/(dashboard)/bills/[id]/documents/page.tsx`)**: Direct links to NALSA Free Legal Aid and National Consumer Helpline (1800-11-4000).
+- **Multilanguage Localization Foundation (`web/messages/en.json`)**: Centralized i18n dictionary for all user-facing interface strings.
+
+---
+
 ## [2.1.0]
 
 ### Added
