@@ -190,15 +190,6 @@ apiClient.interceptors.response.use(
 
       if (!refreshToken) {
         isRefreshing = false;
-        if (typeof window !== "undefined") {
-          localStorage.clear();
-          if (
-            window.location.pathname !== "/login" &&
-            window.location.pathname !== "/register"
-          ) {
-            window.location.href = "/login";
-          }
-        }
         return Promise.reject(normalizeError(error));
       }
 
@@ -218,12 +209,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
-        if (typeof window !== "undefined") {
-          localStorage.clear();
-          if (window.location.pathname !== "/login") {
-            window.location.href = "/login";
-          }
-        }
         return Promise.reject(normalizeError(error));
       } finally {
         isRefreshing = false;
@@ -281,6 +266,8 @@ export const authApi = {
         : email_or_phone;
     return apiClient.post("/auth/login", payload).then((r) => r.data);
   },
+
+  demoLogin: () => apiClient.post("/auth/demo-login").then((r) => r.data),
 
   refresh: (refreshToken: string) =>
     apiClient
