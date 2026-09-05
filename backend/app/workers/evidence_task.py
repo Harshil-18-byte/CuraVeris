@@ -116,6 +116,23 @@ async def _run_evidence_async(bill_id_str: str) -> str:
             entity_id=audit.id,
         )
 
+        # Dispatch SMS alert if user has verified phone
+        try:
+            from app.models.user import User
+            from app.services.notification_service import send_sms_notification
+            user_stmt = select(User).where(User.id == bill.user_id)
+            user_obj = (await db.execute(user_stmt)).scalar_one_or_none()
+            if user_obj and user_obj.phone_number:
+                await send_sms_notification(
+                    user_obj.phone_number,
+                    "CuraVeris: Your bill audit is complete. "
+                    "We found potential statutory overcharges. "
+                    "Open the app to see your results and dispute letters. "
+                    "Reply STOP to opt out.",
+                )
+        except Exception as sms_err:
+            logger.warning(f"SMS notification could not be sent: {sms_err}")
+
         await db.commit()
         await publish(f"bill_status:{bill_id_str}", json.dumps({
             "status": "COMPLETED",
