@@ -5,7 +5,15 @@ import logging
 from datetime import datetime, date
 from pathlib import Path
 from uuid import UUID
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+try:
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+    HAS_JINJA2 = True
+except Exception:
+    HAS_JINJA2 = False
+    Environment = None
+    FileSystemLoader = None
+    select_autoescape = None
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -371,6 +379,9 @@ async def generate_legal_document(
         extra_inputs=extra_inputs,
         doc_type=doc_type,
     )
+
+    if not HAS_JINJA2 or Environment is None:
+        raise RuntimeError("Jinja2 package is required for legal document rendering.")
 
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
