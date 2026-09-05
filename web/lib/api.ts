@@ -84,18 +84,26 @@ export interface UpdateUserRequest {
 
 // ─── Axios Instance ────────────────────────────────────────────────────────────
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const getBaseUrl = (): string => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && envUrl.trim() !== "") {
+    return envUrl.replace(/\/+$/, "") + "/api/v1";
+  }
 
-if (!API_URL && typeof window !== "undefined") {
-  console.error(
-    "NEXT_PUBLIC_API_URL is not set. " +
-    "Add it to Vercel environment variables. " +
-    "Current value:",
-    API_URL
-  );
-}
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
+    if (isLocalhost) {
+      return "http://localhost:8000/api/v1";
+    }
+    // Deployed on Vercel / Cloud — talk directly to production Render backend
+    return "https://curaveris.onrender.com/api/v1";
+  }
 
-const BASE_URL = (API_URL ? API_URL.replace(/\/+$/, "") : "http://localhost:8000") + "/api/v1";
+  return "https://curaveris.onrender.com/api/v1";
+};
+
+const BASE_URL = getBaseUrl();
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: BASE_URL,
