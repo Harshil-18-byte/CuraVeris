@@ -153,7 +153,7 @@ async def _run_ocr_async(bill_id_str: str) -> str:
                     import urllib.request
                     url = await storage_adapter.generate_presigned_url(bill.file_key)
                     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-                    with urllib.request.urlopen(req) as response:
+                    with urllib.request.urlopen(req, timeout=3.0) as response:
                         pdf_bytes = io.BytesIO(response.read())
                         extracted_text = pdf_extract(pdf_bytes)
                 except Exception as e:
