@@ -295,7 +295,7 @@ export default function LandingPage() {
                 className="w-full sm:w-auto h-[54px] px-7 text-sm sm:text-base font-bold shadow-[0_8px_24px_rgba(67,168,178,0.25)] bg-[#43A8B2] hover:bg-[#38919a] text-white rounded-full flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>See It In Action</span>
+                <span>Try With a Sample Bill</span>
               </button>
             </Link>
             <Link href="/bills/upload" className="w-full sm:w-auto">
