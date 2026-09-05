@@ -12,12 +12,28 @@ interface RiskGaugeProps {
 }
 
 export const RiskGauge: React.FC<RiskGaugeProps> = ({
-  score = 0,
+  score,
   label = "LOW",
   uncertaintyLower,
   uncertaintyUpper,
 }) => {
-  const numericScore = Math.min(Math.max(Number(score || 0) * 100, 0), 100);
+  if (score === null || score === undefined) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center space-y-2">
+        <span className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+          Risk Assessment
+        </span>
+        <p className="font-heading font-bold text-sm text-text-primary">
+          AI risk score not available
+        </p>
+        <p className="text-xs text-text-secondary max-w-xs">
+          Only deterministic rule-based checks were applied for this bill.
+        </p>
+      </div>
+    );
+  }
+
+  const numericScore = Math.min(Math.max(Number(score) * 100, 0), 100);
 
   // SVG Dial Math
   const size = 200;
