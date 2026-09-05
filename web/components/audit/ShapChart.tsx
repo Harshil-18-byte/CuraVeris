@@ -9,42 +9,21 @@ interface ShapChartProps {
 }
 
 export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
-  // Default factors if not generated
-  const factors: ShapExplanation[] =
-    shapValues && shapValues.length > 0
-      ? shapValues.slice(0, 5)
-      : [
-          {
-            feature_label: "Total extra charges compared to the bill size",
-            shap_value: 0.28,
-            direction: "INCREASES_RISK",
-            explanation: "The amount of extra charges is large compared to the overall bill.",
-          },
-          {
-            feature_label: "Medicines charged above government price caps",
-            shap_value: 0.19,
-            direction: "INCREASES_RISK",
-            explanation: "Some essential medicines cost more than government-mandated price limits.",
-          },
-          {
-            feature_label: "Items charged separately that should be included",
-            shap_value: 0.14,
-            direction: "INCREASES_RISK",
-            explanation: "Certain routine supplies were billed on top of regular room charges.",
-          },
-          {
-            feature_label: "Hospital room charges within normal range",
-            shap_value: -0.09,
-            direction: "DECREASES_RISK",
-            explanation: "Room rent rates align with standard benchmarks for this category.",
-          },
-          {
-            feature_label: "Standard routine lab test charges",
-            shap_value: -0.05,
-            direction: "DECREASES_RISK",
-            explanation: "Blood tests and lab investigations are priced fairly.",
-          },
-        ];
+  if (!shapValues || shapValues.length === 0) {
+    return (
+      <div className="p-8 text-center space-y-2">
+        <Info className="w-8 h-8 text-[#606470] mx-auto opacity-50" strokeWidth={1.5} />
+        <h4 className="font-heading font-bold text-sm text-[#202128]">
+          AI analysis was not available for this bill
+        </h4>
+        <p className="text-xs text-[#606470] max-w-xs mx-auto">
+          Deterministic statutory price benchmarks were applied directly.
+        </p>
+      </div>
+    );
+  }
+
+  const factors: ShapExplanation[] = shapValues.slice(0, 5);
 
   return (
     <div className="p-6 space-y-4 text-left">
