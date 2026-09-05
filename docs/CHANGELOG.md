@@ -8,6 +8,17 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 - `MINOR`: New features added in a backward-compatible manner.
 - `PATCH`: Bug fixes, documentation improvements, dependency updates.
 
+## [2.1.0] — 2026-09-05
+
+### Added
+
+- **6-Template Statutory Legal Document Generation Suite (`app/api/v1/legal_docs.py`, `app/services/legal_doc_service.py`)**: Instant PDF legal petitions and statutory dispute notices (Hospital Complaints, Article 21 Anti-Detention Notices, Insurance Claim Disputes, Insurance Ombudsman Rule 14 Petitions, Consumer Protection Act 2019 Petitions, and CGHS Grievances) compiled dynamically with ReportLab, Jinja2, and SHA-256 tamper-evident integrity hashes.
+- **Render Production Deployment & Multi-Python Runtime Hardening**: Fully unified live deployment at `curaveris.onrender.com` with Neon Serverless PostgreSQL and Upstash Redis broker, secured with dynamic SSL/TLS rediss scheme handling and Python 3.11–3.14 dependency compatibility.
+- **Real-Time Asynchronous Bill Processing & WebSocket Synchronization**: Hardened Celery background processing workers with sub-second polling/WebSocket synchronization in the Next.js client (`useBillStatusSocket.ts`) and resilient background fallback.
+- **Universal Zero-Metadata Documentation Audit**: Complete repository-wide documentation sweep eliminating all frontmatter metadata and standardizing mathematical KaTeX LaTeX notations across all documentation artifacts.
+
+---
+
 ## [2.0.0] — 2026-08-31
 
 ### Added
