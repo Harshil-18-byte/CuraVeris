@@ -59,7 +59,7 @@ async def _run_frm_async(bill_id_str: str, user_financial_inputs: Dict[str, Any]
             priority="NORMAL",
             entity_type="AUDIT",
             entity_id=audit.id,
-            metadata={
+            meta_payload={
                 "bill_id": str(bill.id),
                 "assessment_id": str(assessment.id),
                 "expected_loss": float(assessment.expected_loss or 0),
