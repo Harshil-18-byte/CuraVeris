@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="base.css">
+</head>
+<body>
+
+<div class="notice-header">
+  LEGAL NOTICE UNDER THE CONSUMER PROTECTION ACT, 2019
+</div>
+
+<div class="date-ref-block">
+  <p><strong>Date:</strong> {{ document_date }}</p>
+  <p><strong>Notice No.:</strong> CV/CC/{{ reference_number }}</p>
+  <p><strong>Sent via:</strong> Registered Post / Speed Post with Acknowledgement Due</p>
+</div>
+
+<div class="address-block">
+  <p><strong>To,</strong></p>
+  <p>1. The Medical Superintendent / CEO</p>
+  <p><strong>{{ hospital_name }}</strong></p>
+  <p>{{ hospital_address }}</p>
+  {% if insurer_name %}
+  <br>
+  <p>2. The Grievance Officer</p>
+  <p><strong>{{ insurer_name }}</strong></p>
+  {% endif %}
+</div>
+
+<div class="address-block">
+  <p><strong>From,</strong></p>
+  <p>Advocate / Authorised Representative on behalf of:</p>
+  <p><strong>{{ patient_name }}</strong></p>
+  <p>{{ patient_address }}</p>
+  <p>(Hereinafter referred to as "the Complainant")</p>
+</div>
+
+<p class="subject">
+  SUBJECT: Legal Notice Prior to Filing of Consumer Complaint —
+  Deficiency of Service and Unfair Trade Practice in Medical Billing —
+  Claim for Refund of ₹{{ total_overcharge_formatted }} and Compensation
+</p>
+
+<div class="body-text">
+
+<p>Sir / Madam,</p>
+
+<p>
+Under instructions from my client / on my own behalf, I serve upon
+you this legal notice prior to filing a complaint before the
+District Consumer Disputes Redressal Commission under the
+Consumer Protection Act, 2019.
+</p>
+
+<p>
+My client {{ patient_name }} availed of medical services at
+{{ hospital_name }}{% if admission_date %} from {{ admission_date }}
+to {{ discharge_date }}{% endif %} and was issued a bill for
+₹{{ total_billed_formatted }}.
+</p>
+
+<p>
+An independent audit of this bill conducted by CuraVeris has
+established that the bill contains <strong>{{ finding_count }}
+violations</strong> of applicable statutory pricing regulations
+totalling <strong>₹{{ total_overcharge_formatted }}</strong>.
+These constitute:
+</p>
+
+<p>
+(a) <strong>Deficiency of Service</strong> under Section 2(11) of
+the Consumer Protection Act, 2019 — being failure to maintain
+adequate standards in billing and charging amounts in excess of
+statutory limits.
+</p>
+
+<p>
+(b) <strong>Unfair Trade Practice</strong> under Section 2(47) of
+the Consumer Protection Act, 2019 — being the adoption of deceptive
+practices in billing, including charging prices in excess of
+government-mandated ceilings.
+</p>
+
+<table class="findings-table">
+  <thead>
+    <tr>
+      <th>S.No.</th>
+      <th>Item</th>
+      <th>Billed (₹)</th>
+      <th>Legal Maximum (₹)</th>
+      <th>Excess (₹)</th>
+      <th>Law Violated</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for finding in findings %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ finding.item_description }}</td>
+      <td class="amount">{{ finding.billed_amount_formatted }}</td>
+      <td class="amount">{{ finding.benchmark_amount_formatted }}</td>
+      <td class="amount">{{ finding.overcharge_amount_formatted }}</td>
+      <td>{{ finding.statutory_reference_plain }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="total-row">
+      <td colspan="4"><strong>Total Excess Charged</strong></td>
+      <td class="amount"><strong>₹{{ total_overcharge_formatted }}</strong></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+I / my client hereby demand that within <strong>15 days</strong>
+of receipt of this notice you:
+</p>
+
+<p>
+<strong>1.</strong> Refund the sum of ₹{{ total_overcharge_formatted }}
+representing the excess amount charged in violation of applicable law.
+</p>
+
+<p>
+<strong>2.</strong> Pay compensation of ₹{{ compensation_amount_formatted }}
+for the harassment, mental agony, and financial hardship caused to my client.
+</p>
+
+<p>
+<strong>3.</strong> Pay the costs of this notice and any subsequent proceedings.
+</p>
+
+<p>
+<strong>TAKE NOTICE</strong> that in the event you fail to comply with
+the above demands within 15 days, my client shall file a consumer
+complaint before the District Consumer Disputes Redressal Commission,
+{{ patient_city }}, without any further notice to you. The complaint
+shall seek refund of ₹{{ total_overcharge_formatted }}, compensation,
+and costs, and shall be accompanied by the CuraVeris audit report
+and evidence certificate as exhibits.
+</p>
+
+<p>
+The cost of filing fees before the Consumer Commission shall also be
+recovered from you. My client reserves all rights and remedies
+available in law.
+</p>
+
+</div>
+
+<div class="evidence-box">
+  <strong>Exhibit A — CuraVeris Audit Evidence:</strong><br>
+  Evidence ID: {{ evidence_id }}<br>
+  Merkle Root: {{ merkle_root }}<br>
+  Date of Audit: {{ evidence_issued_at }}
+</div>
+
+<div class="signature-block">
+  <p>Issued by,</p>
+  <br><br>
+  <p>___________________________</p>
+  <p><strong>{{ patient_name }}</strong></p>
+  <p>Date: {{ document_date }}</p>
+  <p>Place: {{ patient_city }}</p>
+</div>
+
+<div class="disclaimer">
+  This notice is generated by CuraVeris based on a statutory audit of the hospital bill.
+  Filing a consumer complaint is free for claims up to ₹5 lakhs at the District
+  Consumer Disputes Redressal Commission. This document does not constitute legal advice.
+</div>
+
+</body>
+</html>
