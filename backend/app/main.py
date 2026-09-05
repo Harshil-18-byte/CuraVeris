@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO if not settings.APP_DEBUG else logging.DE
 logger = logging.getLogger("curaveris")
 
 # Optional Sentry initialization
-if settings.SENTRY_DSN:
+if settings.SENTRY_DSN and (settings.SENTRY_DSN.startswith("http://") or settings.SENTRY_DSN.startswith("https://")):
     try:
         import sentry_sdk
         from sentry_sdk.integrations.fastapi import FastApiIntegration
