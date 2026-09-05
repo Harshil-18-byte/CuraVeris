@@ -9,12 +9,14 @@ try:
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
     from reportlab.pdfgen import canvas
     HAS_REPORTLAB = True
+    _BaseCanvas = canvas.Canvas
 except Exception:
     HAS_REPORTLAB = False
     canvas = None
+    _BaseCanvas = object
 
 
-class NumberedCanvas(canvas.Canvas):
+class NumberedCanvas(_BaseCanvas):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._saved_page_states = []

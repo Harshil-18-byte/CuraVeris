@@ -13,10 +13,22 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.multioutput import MultiOutputClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, f1_score, precision_score, recall_score
+try:
+    from sklearn.model_selection import train_test_split
+    from sklearn.multioutput import MultiOutputClassifier
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import classification_report, f1_score, precision_score, recall_score
+    HAS_SKLEARN = True
+except Exception:
+    HAS_SKLEARN = False
+    train_test_split = None
+    MultiOutputClassifier = None
+    RandomForestClassifier = None
+    classification_report = None
+    f1_score = None
+    precision_score = None
+    recall_score = None
+
 try:
     import xgboost as xgb
     HAS_XGB = True

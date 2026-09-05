@@ -6,9 +6,17 @@ and provides Epistemic Uncertainty Estimation via Monte Carlo Dropout inference.
 import os
 from typing import Dict, Any, List, Tuple, Optional
 import numpy as np
-from sklearn.neural_network import MLPClassifier
-from sklearn.multioutput import MultiOutputClassifier
-from sklearn.preprocessing import StandardScaler
+try:
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.multioutput import MultiOutputClassifier
+    from sklearn.preprocessing import StandardScaler
+    HAS_SKLEARN = True
+except Exception:
+    MLPClassifier = None
+    MultiOutputClassifier = None
+    StandardScaler = None
+    HAS_SKLEARN = False
+
 from app.ml.dataset_generator import FLAG_NAMES
 
 
@@ -21,23 +29,27 @@ class DeepRiskNeuralNetwork:
     """
     def __init__(self, random_state: int = 42, max_iter: int = 450, alpha: float = 1e-4):
         self.random_state = random_state
-        self.scaler = StandardScaler()
-        self.mlp = MultiOutputClassifier(
-            MLPClassifier(
-                hidden_layer_sizes=(256, 128, 64, 32),
-                activation="relu",
-                solver="adam",
-                alpha=alpha,
-                batch_size=64,
-                learning_rate="adaptive",
-                learning_rate_init=0.002,
-                max_iter=max_iter,
-                early_stopping=True,
-                validation_fraction=0.15,
-                n_iter_no_change=20,
-                random_state=random_state
+        if HAS_SKLEARN and StandardScaler and MultiOutputClassifier and MLPClassifier:
+            self.scaler = StandardScaler()
+            self.mlp = MultiOutputClassifier(
+                MLPClassifier(
+                    hidden_layer_sizes=(256, 128, 64, 32),
+                    activation="relu",
+                    solver="adam",
+                    alpha=alpha,
+                    batch_size=64,
+                    learning_rate="adaptive",
+                    learning_rate_init=0.002,
+                    max_iter=max_iter,
+                    early_stopping=True,
+                    validation_fraction=0.15,
+                    n_iter_no_change=20,
+                    random_state=random_state
+                )
             )
-        )
+        else:
+            self.scaler = None
+            self.mlp = None
         self.is_fitted = False
 
     def fit(self, X: np.ndarray, Y: np.ndarray):
