@@ -9,5 +9,3 @@ layout.buildDirectory.set(File(buildBaseDir, "root"))
 subprojects {
     layout.buildDirectory.set(File(buildBaseDir, name))
 }
-
-
