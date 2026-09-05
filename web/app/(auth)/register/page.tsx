@@ -125,12 +125,22 @@ export default function RegisterPage() {
         phone_number: data.phone_number,
         password: data.password,
       });
+      const userObj = res.user || {
+        id: res.user_id || "",
+        email: res.email || data.email,
+        full_name: res.full_name || data.full_name,
+        role: res.role || "PATIENT",
+        is_active: true,
+        email_verified: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
       login(
         {
           access_token: res.access_token,
           refresh_token: res.refresh_token || res.access_token,
         },
-        res.user
+        userObj
       );
       router.push("/dashboard");
     } catch (err: any) {
