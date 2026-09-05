@@ -406,6 +406,49 @@ export const frmApi = {
       .then((r) => r.data),
 };
 
+// ─── Legal Documents API ───────────────────────────────────────────────────────
+
+export interface LegalDocumentItem {
+  document_type: string;
+  display_name: string;
+  status: string;
+  document_id: string | null;
+  generated_at: string | null;
+}
+
+export interface LegalDocumentListResponse {
+  documents: LegalDocumentItem[];
+}
+
+export interface GenerateLegalDocResponse {
+  id: string;
+  bill_id: string;
+  document_type: string;
+  display_name: string;
+  status: string;
+  generated_at: string | null;
+  file_hash_sha256: string;
+}
+
+export interface DownloadLegalDocResponse {
+  download_url: string;
+  expires_in_seconds: number;
+}
+
+export const legalDocsApi = {
+  list: (billId: string): Promise<LegalDocumentListResponse> =>
+    apiClient.get(`/bills/${billId}/legal-documents`).then((r) => r.data),
+
+  generate: (
+    billId: string,
+    payload: { document_type: string; [key: string]: any }
+  ): Promise<GenerateLegalDocResponse> =>
+    apiClient.post(`/bills/${billId}/legal-documents`, payload).then((r) => r.data),
+
+  getDownloadUrl: (docId: string): Promise<DownloadLegalDocResponse> =>
+    apiClient.get(`/legal-documents/${docId}/download`).then((r) => r.data),
+};
+
 // ─── Unified API object (backward compatibility) ───────────────────────────────
 
 export const api = {
@@ -417,6 +460,8 @@ export const api = {
   evidence: evidenceApi,
   users: usersApi,
   frm: frmApi,
+  legalDocs: legalDocsApi,
 };
 
 export default apiClient;
+
