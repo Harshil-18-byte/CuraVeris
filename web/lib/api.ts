@@ -81,13 +81,22 @@ export interface UpdateUserRequest {
 
 // ─── Axios Instance ────────────────────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL
-  ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-  : "http://localhost:8000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL && typeof window !== "undefined") {
+  console.error(
+    "NEXT_PUBLIC_API_URL is not set. " +
+    "Add it to Vercel environment variables. " +
+    "Current value:",
+    API_URL
+  );
+}
+
+const BASE_URL = (API_URL ? API_URL.replace(/\/+$/, "") : "http://localhost:8000") + "/api/v1";
 
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE,
-  timeout: 30000,
+  baseURL: BASE_URL,
+  timeout: 60000, // 60 seconds — Render free tier can take 30-60s to wake up
   headers: {
     "Content-Type": "application/json",
   },
@@ -111,7 +120,7 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// ─── Response Interceptor: 401 Refresh + Error Normalization ──────────────────
+// ─── Response Interceptor: Wakeup Retry + 401 Refresh + Error Normalization ─────
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -130,11 +139,25 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & {
+    const originalRequest = error.config as (InternalAxiosRequestConfig & {
       _retry?: boolean;
-    };
+      _wakeRetry?: boolean;
+    }) | undefined;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Retry once for Render spin-up timeouts or initial network disconnects
+    const isTimeout =
+      error.code === "ECONNABORTED" ||
+      Boolean(error.message && error.message.toLowerCase().includes("timeout"));
+    const isNetworkError = !error.response && error.code === "ERR_NETWORK";
+
+    if (originalRequest && (isTimeout || isNetworkError) && !originalRequest._wakeRetry) {
+      originalRequest._wakeRetry = true;
+      // Wait 3 seconds then retry once — gives Render time to wake
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      return apiClient(originalRequest);
+    }
+
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise<string>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -169,7 +192,7 @@ apiClient.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(`${API_BASE}/auth/refresh`, {
+        const response = await axios.post(`${BASE_URL}/auth/refresh`, {
           refresh_token: refreshToken,
         });
         const { access_token, refresh_token } = response.data;
