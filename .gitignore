@@ -74,7 +74,9 @@ clients/android/.gradle/
 data/
 reference_data/
 ml_models/
-models/
+/models/
+!backend/app/models/
 backend/data/
 backend/ml_training/tmp/
+
 
