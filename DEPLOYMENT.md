@@ -169,6 +169,38 @@ docker compose exec api python ml_training/train_all_models.py
 
 ---
 
+## Cloud Deployment (Render & Vercel)
+
+### Render Backend Service (curaveris-api)
+
+The backend and Celery workers deploy via 
+ender.yaml:
+1. **Web Service (curaveris-api)**:
+   - 
+ootDir: backend
+   - uildCommand: pip install -r requirements.txt
+   - preDeployCommand: python -m app.scripts.seed_demo_bill (automatically seeds sample bill for instant public /demo flow).
+   - startCommand: uvicorn app.main:app --host 0.0.0.0 --port 
+   - healthCheckPath: /health
+
+2. **Background Worker (curaveris-worker)**:
+   - 
+ootDir: backend
+   - uildCommand: pip install -r requirements.txt
+   - startCommand: celery -A app.workers.celery_app.celery worker --loglevel=info -Q bill_processing,notifications,default --concurrency=2
+
+### Vercel Frontend Deployment (web)
+
+The Next.js 14 frontend deploys to Vercel:
+- **Root Directory**: web
+- **Build Command**: 
+pm run build
+- **Environment Variables**:
+  - NEXT_PUBLIC_API_URL: URL of the Render backend (e.g. https://curaveris-api.onrender.com)
+  - NEXT_PUBLIC_RAZORPAY_KEY_ID: Razorpay Key ID
+
+---
+
 ## Bare-Metal / VM Deployment
 
 ```bash
