@@ -7,6 +7,7 @@ import { UploadCloud, Search } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/Button";
 import { BillTable } from "@/components/bills/BillTable";
+import BillComparisonModal from "@/components/bills/BillComparisonModal";
 import { api } from "@/lib/api";
 
 export default function BillsListPage() {
@@ -49,22 +50,40 @@ export default function BillsListPage() {
     { label: "Failed", value: "FAILED" },
   ];
 
+  const [compareOpen, setCompareOpen] = useState(false);
+
   return (
     <PageShell
       title="Your Bills"
       description="View all the bills you've uploaded and check your results."
       action={
-        <Link href="/bills/upload">
-          <button
-            type="button"
-            className="h-10 px-5 bg-[#202128] hover:bg-black text-white font-bold text-xs rounded-full shadow-md flex items-center gap-2 transition-all hover:scale-[1.02]"
-          >
-            <UploadCloud className="w-4 h-4" strokeWidth={2} />
-            <span>Check a Bill</span>
-          </button>
-        </Link>
+        <div className="flex items-center gap-2">
+          {allBills.filter((b) => b.processing_status === "COMPLETED").length >= 2 && (
+            <button
+              type="button"
+              onClick={() => setCompareOpen(true)}
+              className="h-10 px-4 bg-white hover:bg-[#F8F9FA] text-[#202128] font-bold text-xs rounded-full border border-black/[0.08] shadow-xs flex items-center gap-1.5 transition-all"
+            >
+              <span>Compare Bills</span>
+            </button>
+          )}
+          <Link href="/bills/upload">
+            <button
+              type="button"
+              className="h-10 px-5 bg-[#202128] hover:bg-black text-white font-bold text-xs rounded-full shadow-md flex items-center gap-2 transition-all hover:scale-[1.02]"
+            >
+              <UploadCloud className="w-4 h-4" strokeWidth={2} />
+              <span>Check a Bill</span>
+            </button>
+          </Link>
+        </div>
       }
     >
+      <BillComparisonModal
+        bills={allBills}
+        isOpen={compareOpen}
+        onClose={() => setCompareOpen(false)}
+      />
       <div className="space-y-4">
         {/* Controls: Search + Status Filter Chips + Sort */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
