@@ -17,6 +17,7 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/lib/api";
+import { getErrorMessage } from "@/lib/errors";
 
 const uploadFormSchema = z.object({
   hospital_name: z.string().min(2, "Please enter the hospital name"),
@@ -107,18 +108,7 @@ export const UploadZone: React.FC = () => {
       router.push(`/bills/${res.bill_id}`);
     } catch (err: any) {
       setUploadProgress(null);
-      const code = err?.code;
-      if (code === "BILL_003") {
-        setUploadError("This bill has already been uploaded. Check your bills list for existing results.");
-      } else if (code === "BILL_001") {
-        setUploadError("File exceeds the 50 MB size limit. Please compress and retry.");
-      } else if (code === "BILL_002") {
-        setUploadError("Unsupported file format. Please upload a PDF, JPG, PNG, or WEBP.");
-      } else {
-        setUploadError(
-          err?.message || "Upload failed. Please check your connection and try again."
-        );
-      }
+      setUploadError(getErrorMessage(err));
     }
   };
 
