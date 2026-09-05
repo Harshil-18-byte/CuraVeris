@@ -155,6 +155,7 @@ async def upload_bill(
             from app.workers.ocr_task import _run_ocr_async
             from app.workers.audit_task import _run_audit_async
             from app.workers.ml_task import _run_ml_async
+            from app.workers.frm_task import _run_frm_async
             from app.workers.evidence_task import _run_evidence_async
 
             logger.info(f"Starting async pipeline for bill {bill_id_str}")
@@ -164,6 +165,11 @@ async def upload_bill(
             logger.info(f"Statutory audit completed for bill {bill_id_str}")
             await _run_ml_async(bill_id_str)
             logger.info(f"ML risk analysis completed for bill {bill_id_str}")
+            try:
+                await _run_frm_async(bill_id_str, {})
+                logger.info(f"FRM VaR/CVaR baseline completed for bill {bill_id_str}")
+            except Exception as fe:
+                logger.warning(f"FRM baseline calculation non-critical exception: {fe}")
             await _run_evidence_async(bill_id_str)
             logger.info(f"Cryptographic evidence completed for bill {bill_id_str}")
         except Exception as e:
