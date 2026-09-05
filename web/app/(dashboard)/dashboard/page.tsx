@@ -2,7 +2,6 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import {
   FileStack,
@@ -14,6 +13,7 @@ import {
   Bell,
   Clock,
   Sparkles,
+  TrendingUp,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card } from "@/components/ui/Card";
@@ -24,6 +24,8 @@ import { CountUp } from "@/components/ui/CountUp";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { formatCurrency, formatTimeAgo } from "@/lib/utils";
+import OnboardingChecklist from "@/components/onboarding/OnboardingChecklist";
+import OverchargeChart from "@/components/dashboard/OverchargeChart";
 
 export default function DashboardPage() {
   const user = useAuthStore((state) => state.user);
@@ -41,6 +43,18 @@ export default function DashboardPage() {
     staleTime: 30 * 1000,
   });
 
+  const statsQuery = useQuery({
+    queryKey: ["user-stats"],
+    queryFn: () => api.users.getStats(),
+    staleTime: 60 * 1000,
+  });
+
+  const meQuery = useQuery({
+    queryKey: ["user-me-full"],
+    queryFn: () => api.users.getMe(),
+    staleTime: 60 * 1000,
+  });
+
   const notificationsQuery = useQuery({
     queryKey: ["notifications", "preview"],
     queryFn: () => api.notifications.list({ page: 1, per_page: 5 }),
@@ -48,12 +62,14 @@ export default function DashboardPage() {
   });
 
   const bills = billsQuery.data?.items ?? [];
-  const totalBills = billsQuery.data?.total ?? 0;
-  const auditsComplete = bills.filter((b) => b.processing_status === "COMPLETED").length;
-  const totalOvercharge = bills.reduce(
+  const stats = statsQuery.data;
+  const totalBills = stats?.bills_total ?? billsQuery.data?.total ?? 0;
+  const auditsComplete = stats?.audits_complete ?? bills.filter((b) => b.processing_status === "COMPLETED").length;
+  const totalOvercharge = stats?.total_overcharge_found ?? bills.reduce(
     (sum, b) => sum + (b.total_overcharge ?? 0),
     0
   );
+  const docsGenerated = stats?.documents_generated ?? auditsComplete;
   const notifications = notificationsQuery.data?.items ?? [];
 
   const currentDateFormatted = new Intl.DateTimeFormat("en-IN", {
@@ -95,6 +111,11 @@ export default function DashboardPage() {
           </button>
         </Link>
       </div>
+
+      {/* Onboarding Checklist for new users */}
+      {meQuery.data?.onboarding && (
+        <OnboardingChecklist onboarding={meQuery.data.onboarding} />
+      )}
 
       {/* Stat Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -168,19 +189,38 @@ export default function DashboardPage() {
             <Card variant="bento" padding="sm" className="p-5 bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#606470] uppercase tracking-wider">
-                  Legal Dispute Notices
+                  Dispute Documents
                 </span>
                 <div className="w-10 h-10 rounded-2xl bg-[#DBF1F4] flex items-center justify-center p-1.5">
                   <img src="/assets/scraped/icon_share_3d.png" alt="Notices" className="w-full h-full object-contain" />
                 </div>
               </div>
               <p className="font-heading font-extrabold text-3xl text-[#202128] mt-3">
-                <CountUp end={auditsComplete} />
+                <CountUp end={docsGenerated} />
               </p>
               <span className="text-[11px] text-[#606470] mt-1 block font-medium">Section 65B certified</span>
             </Card>
           </>
         )}
+      </div>
+
+      {/* Monthly Overcharges Trends Chart */}
+      <div className="bg-white border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] rounded-3xl p-6 mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h2 className="font-heading font-bold text-base sm:text-lg text-[#202128]">
+              Overcharges Found by Month
+            </h2>
+            <p className="text-xs text-[#606470] mt-0.5">
+              How much you have recovered and identified across monthly hospital bills
+            </p>
+          </div>
+          <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#43A8B2] bg-[#DBF1F4]/60 px-3 py-1 rounded-full">
+            <TrendingUp className="w-3.5 h-3.5" />
+            Statutory Recovery
+          </span>
+        </div>
+        <OverchargeChart data={stats?.monthly_trend} />
       </div>
 
       {/* Main Grid: Left Column 65% / Right Column 35% */}
