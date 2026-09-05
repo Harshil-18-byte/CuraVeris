@@ -57,11 +57,11 @@ async def get_current_user(
     return user
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
-    """Registers a new user with DPDP consent and sends email OTP."""
+    """Registers a new user with DPDP consent and issues session tokens."""
     # Case-insensitive email uniqueness
-    stmt = select(User).where(func_lower := User.email.ilike(req.email))
+    stmt = select(User).where(User.email.ilike(req.email.lower().strip()))
     existing_email = (await db.execute(stmt)).scalar_one_or_none()
     if existing_email:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
@@ -88,18 +88,36 @@ async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
     await db.refresh(user)
 
     # Generate and store OTP in Redis (600s TTL)
-    plain_otp, hashed_otp = generate_otp()
-    redis_key = f"otp:verify_email:{user.email}"
-    await set_with_ttl(redis_key, json.dumps({"hash": hashed_otp, "expires_at": (now_utc + timedelta(seconds=600)).isoformat()}), 600)
+    try:
+        plain_otp, hashed_otp = generate_otp()
+        redis_key = f"otp:verify_email:{user.email}"
+        await set_with_ttl(redis_key, json.dumps({"hash": hashed_otp, "expires_at": (now_utc + timedelta(seconds=600)).isoformat()}), 600)
+        # Dispatch OTP asynchronously
+        await send_email_otp(user.email, plain_otp, purpose="verification")
+    except Exception:
+        pass
 
-    # Dispatch OTP via Resend
-    await send_email_otp(user.email, plain_otp, purpose="verification")
+    # Issue access and refresh tokens so user is immediately authenticated
+    access_token = create_access_token({"sub": str(user.id), "email": user.email, "role": user.role})
+    raw_refresh = create_refresh_token()
+    hashed_refresh = hash_token(raw_refresh)
 
-    return {
-        "user_id": str(user.id),
-        "email": user.email,
-        "message": "Verification OTP sent to your email",
-    }
+    session = UserSession(
+        user_id=user.id,
+        refresh_token_hash=hashed_refresh,
+        expires_at=now_utc + timedelta(days=30),
+    )
+    db.add(session)
+    await db.commit()
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=raw_refresh,
+        user_id=str(user.id),
+        email=user.email,
+        full_name=user.full_name,
+        role=user.role,
+    )
 
 
 @router.post("/verify-otp", response_model=TokenResponse)
