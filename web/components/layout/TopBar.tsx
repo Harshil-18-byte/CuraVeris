@@ -119,9 +119,9 @@ export const TopBar: React.FC = () => {
             >
               <div className="px-3 py-2.5 border-b border-black/[0.05] mb-1">
                 <p className="text-sm font-bold text-[#202128] truncate">
-                  {user?.full_name || "Patient Account"}
+                  {user?.full_name || "—"}
                 </p>
-                <p className="text-xs text-[#202128]/50 truncate">{user?.email}</p>
+                <p className="text-xs text-[#202128]/50 truncate">{user?.email || "—"}</p>
               </div>
 
               <DropdownMenu.Item asChild>
