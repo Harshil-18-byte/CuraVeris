@@ -244,9 +244,36 @@ async def _run_ocr_async(bill_id_str: str) -> str:
         except Exception as err:
             logger.error(f"OCR Task failed: {err}", exc_info=True)
             bill.processing_status = "FAILED"
-            bill.failure_reason = str(err)
+            err_msg = str(err)
+            if "OCR" in err_msg or "quality" in err_msg.lower() or "read" in err_msg.lower():
+                structured_reason = json.dumps({
+                    "type": "OCR_LOW_QUALITY",
+                    "failed_pages": [1],
+                    "suggestion": "We had trouble reading your bill document. Please try photographing with better lighting and upload again.",
+                    "technical": err_msg,
+                })
+            elif "corrupt" in err_msg.lower() or "damaged" in err_msg.lower():
+                structured_reason = json.dumps({
+                    "type": "FILE_CORRUPTED",
+                    "suggestion": "Your file appears to be damaged. Please download or re-scan your bill and upload again.",
+                    "technical": err_msg,
+                })
+            elif "format" in err_msg.lower() or "mime" in err_msg.lower():
+                structured_reason = json.dumps({
+                    "type": "UNSUPPORTED_FORMAT",
+                    "suggestion": "We cannot read this file format. Please convert your bill to a PDF or take a photo (JPG or PNG) and upload again.",
+                    "technical": err_msg,
+                })
+            else:
+                structured_reason = json.dumps({
+                    "type": "OCR_LOW_QUALITY",
+                    "suggestion": "We had trouble reading your bill. Please try uploading a clearer photo with good lighting.",
+                    "technical": err_msg,
+                })
+
+            bill.failure_reason = structured_reason
             await db.commit()
-            await publish(f"bill_status:{bill_id_str}", json.dumps({"status": "FAILED", "reason": str(err)}))
+            await publish(f"bill_status:{bill_id_str}", json.dumps({"status": "FAILED", "reason": structured_reason}))
             raise err
 
 
