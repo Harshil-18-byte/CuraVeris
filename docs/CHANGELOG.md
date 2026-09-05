@@ -8,30 +8,30 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 - `MINOR`: New features added in a backward-compatible manner.
 - `PATCH`: Bug fixes, documentation improvements, dependency updates.
 
-## [2.1.0] — 2026-09-05
+## \[2.1.0\] — 2026-09-05
 
 ### Added
 
-- **6-Template Statutory Legal Document Generation Suite (`app/api/v1/legal_docs.py`, `app/services/legal_doc_service.py`)**: Instant PDF legal petitions and statutory dispute notices (Hospital Complaints, Article 21 Anti-Detention Notices, Insurance Claim Disputes, Insurance Ombudsman Rule 14 Petitions, Consumer Protection Act 2019 Petitions, and CGHS Grievances) compiled dynamically with ReportLab, Jinja2, and SHA-256 tamper-evident integrity hashes.
+- **6-Template Statutory Legal Document Generation Suite (**`app/api/v1/legal_docs.py`**,** `app/services/legal_doc_service.py`**)**: Instant PDF legal petitions and statutory dispute notices (Hospital Complaints, Article 21 Anti-Detention Notices, Insurance Claim Disputes, Insurance Ombudsman Rule 14 Petitions, Consumer Protection Act 2019 Petitions, and CGHS Grievances) compiled dynamically with ReportLab, Jinja2, and SHA-256 tamper-evident integrity hashes.
 - **Render Production Deployment & Multi-Python Runtime Hardening**: Fully unified live deployment at `curaveris.onrender.com` with Neon Serverless PostgreSQL and Upstash Redis broker, secured with dynamic SSL/TLS rediss scheme handling and Python 3.11–3.14 dependency compatibility.
 - **Real-Time Asynchronous Bill Processing & WebSocket Synchronization**: Hardened Celery background processing workers with sub-second polling/WebSocket synchronization in the Next.js client (`useBillStatusSocket.ts`) and resilient background fallback.
 - **Universal Zero-Metadata Documentation Audit**: Complete repository-wide documentation sweep eliminating all frontmatter metadata and standardizing mathematical KaTeX LaTeX notations across all documentation artifacts.
 
 ---
 
-## [2.0.0] — 2026-08-31
+## \[2.0.0\] — 2026-08-31
 
 ### Added
 
 - **Multi-Platform Next.js 14 Web Application**: Production-ready App Router web portal with authenticated dashboard, bill upload & OCR itemization, line-by-line statutory comparison, and instant legal dispute petition downloads.
-- **Comprehensive ML & DL Architecture Documentation (`MODELS.md`)**: Full architectural reference covering LayoutLMv3 Base, SentenceTransformers semantic retrieval, 32-dim multi-label XGBoost, PyTorch Deep MLP with 10-pass Monte Carlo epistemic uncertainty estimation, and INT8 ONNX mobile quantization benchmarks.
+- **Comprehensive ML & DL Architecture Documentation (**`MODELS.md`**)**: Full architectural reference covering LayoutLMv3 Base, SentenceTransformers semantic retrieval, 32-dim multi-label XGBoost, PyTorch Deep MLP with 10-pass Monte Carlo epistemic uncertainty estimation, and INT8 ONNX mobile quantization benchmarks.
 - **Vercel Deployment & 404 Resolution Infrastructure**: Root and subproject `vercel.json` configurations, Next.js API proxy rewrites (`/api/v1/:path*`), and custom `not-found.tsx` error recovery page.
 - **Clean Documentation Standard**: Standardized documentation across all project `.md` files with zero metadata frontmatter clutter.
-- **Hardened Cloudflare R2 / AWS S3 Async Storage Adapter (`app/core/storage.py`)**: Graceful dynamic exception handling for `botocore.exceptions.ClientError`.
+- **Hardened Cloudflare R2 / AWS S3 Async Storage Adapter (**`app/core/storage.py`**)**: Graceful dynamic exception handling for `botocore.exceptions.ClientError`.
 
 ---
 
-## [1.6.0] — 2026-08-30
+## \[1.6.0\] — 2026-08-30
 
 ### Added
 
@@ -39,25 +39,25 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html): `
 - **Neon Serverless PostgreSQL Database**: Integrated connection pooling (`postgresql+asyncpg://`) and dynamic PR Database Branching workflow (`.github/workflows/neon_workflow.yml`).
 - **Upstash Redis Broker & Celery Workers**: Distributed asynchronous document OCR, risk engine evaluation, and audit report generation.
 - **Resend Email Integration**: Automated transactional email pipeline for statutory medical dispute notices and Section 65B audit reports.
-- **6-Model Unified Production Training Pipeline (`run_real_production_training.py`)**: Trained XGBoost, Deep MLP, ChromaDB BioBERT vector store, and probability calibration gates over 3,293 master bills.
+- **6-Model Unified Production Training Pipeline (**`run_real_production_training.py`**)**: Trained XGBoost, Deep MLP, ChromaDB BioBERT vector store, and probability calibration gates over 3,293 master bills.
 
 ---
 
-## [1.5.0] — 2026-08-26
+## \[1.5.0\] — 2026-08-26
 
 ### Added
 
-- **CuraVeris-4B & CuraVeris-1B Custom Transformer Models (`ml_training/models/curaveris_4b.py`, `curaveris_1b.py`)**: Custom 4.07B and 1.05B dense decoder Transformers written and trained from scratch with RoPE ($\theta=10000.0$), SwiGLU feed-forward networks, and Grouped Query Attention (GQA).
-- **Multi-Task Scratch Training Pipelines (`ml_training/training/train_4b_from_scratch.py`, `train_1b_from_scratch.py`)**: Joint training objective combining Causal LM cross-entropy, 7-class Multi-Label Focal Loss ($\gamma=2.0, \alpha=0.25$), and continuous restitution Huber regression.
-- **Dynamic INT8 & ONNX Runtime Mobile Exporters (`ml_training/models/export_4b_quantized.py`, `export_1b_quantized.py`)**: Post-training quantization for low-latency mobile and server inference.
-- **Two-Track Hybrid Pipeline (`ml_training/inference/audit_pipeline.py`)**: Track A (Specialized 4B transformer reasoning) + Track B (Zero-hallucination deterministic symbolic rule engine, BM25 + Bi-Encoder retrieval, and temporal cross-encoder reranker).
-- **Enterprise Security Hardening Engine (`app/core/security_hardening.py`)**: Magic bytes header inspection (`%PDF`, `\x89PNG`, `\xff\xd8\xff`, `RIFF`), payload size limit enforcement ($\le 25\text{MB}$), path traversal sanitization, and deterministic SHA-256 tamper-evident integrity hashing.
-- **Developer Observability & Model Registry APIs (`app/api/dev.py`)**: Real-time endpoints for `/api/v1/dev/curaveris-4b`, `/api/v1/dev/curaveris-1b`, and `/api/v1/dev/security-status`.
+- **CuraVeris-4B & CuraVeris-1B Custom Transformer Models (**`ml_training/models/curaveris_4b.py`**,** `curaveris_1b.py`**)**: Custom 4.07B and 1.05B dense decoder Transformers written and trained from scratch with RoPE ($\theta=10000.0$), SwiGLU feed-forward networks, and Grouped Query Attention (GQA).
+- **Multi-Task Scratch Training Pipelines (**`ml_training/training/train_4b_from_scratch.py`**,** `train_1b_from_scratch.py`**)**: Joint training objective combining Causal LM cross-entropy, 7-class Multi-Label Focal Loss ($\gamma=2.0, \alpha=0.25$), and continuous restitution Huber regression.
+- **Dynamic INT8 & ONNX Runtime Mobile Exporters (**`ml_training/models/export_4b_quantized.py`**,** `export_1b_quantized.py`**)**: Post-training quantization for low-latency mobile and server inference.
+- **Two-Track Hybrid Pipeline (**`ml_training/inference/audit_pipeline.py`**)**: Track A (Specialized 4B transformer reasoning) + Track B (Zero-hallucination deterministic symbolic rule engine, BM25 + Bi-Encoder retrieval, and temporal cross-encoder reranker).
+- **Enterprise Security Hardening Engine (**`app/core/security_hardening.py`**)**: Magic bytes header inspection (`%PDF`, `\x89PNG`, `\xff\xd8\xff`, `RIFF`), payload size limit enforcement ($\le 25\text{MB}$), path traversal sanitization, and deterministic SHA-256 tamper-evident integrity hashing.
+- **Developer Observability & Model Registry APIs (**`app/api/dev.py`**)**: Real-time endpoints for `/api/v1/dev/curaveris-4b`, `/api/v1/dev/curaveris-1b`, and `/api/v1/dev/security-status`.
 - **Master Test Suite Expansion**: Added `tests/test_curaveris_1b_model.py`, `tests/test_curaveris_4b_model.py`, and `tests/test_security_and_4b_telemetry.py` expanding test coverage to **62/62 tests (100% passing)**.
 
 ---
 
-## [1.4.0] — 2026-08-26
+## \[1.4.0\] — 2026-08-26
 
 ### Added
 
