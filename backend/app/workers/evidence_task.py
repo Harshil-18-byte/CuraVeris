@@ -3,10 +3,10 @@ import json
 import logging
 from datetime import datetime, timezone
 from uuid import UUID
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import select
 from app.workers.celery_app import celery_app
 from app.core.config import settings
+from app.core.database import AsyncSessionLocal as SessionLocal
 from app.core.redis import publish
 from app.models.bill import Bill, BillLineItem
 from app.models.audit import Audit, AuditFinding
@@ -15,13 +15,6 @@ from app.crypto.evidence import build_evidence_payload
 from app.services.notification_service import create_notification
 
 logger = logging.getLogger(__name__)
-
-async_engine = create_async_engine(
-    settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://").replace("postgres://", "postgresql+asyncpg://"),
-    pool_size=5,
-    max_overflow=5,
-)
-SessionLocal = async_sessionmaker(bind=async_engine, expire_on_commit=False)
 
 
 async def _run_evidence_async(bill_id_str: str) -> str:
