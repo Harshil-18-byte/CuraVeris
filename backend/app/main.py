@@ -51,9 +51,12 @@ app = FastAPI(
 origins_list = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "http://localhost:8081",
     "http://127.0.0.1:3000",
-    "https://*.vercel.app",
+    "http://127.0.0.1:3001",
     "https://curaveris.vercel.app",
+    "https://cura-veris.vercel.app",
+    "https://curaveris-web.vercel.app",
 ]
 if isinstance(settings.APP_ALLOWED_ORIGINS, list):
     origins_list.extend(settings.APP_ALLOWED_ORIGINS)
@@ -63,6 +66,7 @@ elif isinstance(settings.APP_ALLOWED_ORIGINS, str) and settings.APP_ALLOWED_ORIG
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins_list,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|.*\.vercel\.app|.*\.onrender\.com)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=[
@@ -75,7 +79,7 @@ app.add_middleware(
         "X-Requested-With",
     ],
     expose_headers=["X-Request-ID"],
-    max_age=600,
+    max_age=86400,
 )
 
 # Prometheus metrics instrumentator
