@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import tempfile
 from datetime import datetime, date, timezone
 from decimal import Decimal
 from typing import List, Dict, Any, Tuple
@@ -20,103 +21,139 @@ from app.models.bill import Bill, BillLineItem
 logger = logging.getLogger(__name__)
 
 
-def _parse_line_items_from_text(raw_text: str) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """Extracts hospital details and structured line items using deterministic regex patterns."""
-    metadata: Dict[str, Any] = {
-        "hospital_name": None,
-        "patient_name": None,
-        "total_amount": None,
-        "admission_date": None,
-        "discharge_date": None,
-    }
-    line_items: List[Dict[str, Any]] = []
+async def extract_text_from_file(file_path: str, mime_type: str) -> tuple[str, float]:
+    """
+    Returns (extracted_text, confidence_score).
+    Never raises — always returns something even if extraction is poor.
+    """
+    text = ""
+    confidence = 0.0
 
-    lines = raw_text.splitlines()
-
-    # Hospital name heuristic: look for "hospital", "clinic", "medical centre", "institute" in top 10 lines
-    for line in lines[:10]:
-        clean = line.strip()
-        if re.search(r"\b(hospital|clinic|healthcare|institute|medical centre|multispeciality)\b", clean, re.IGNORECASE):
-            metadata["hospital_name"] = clean
-            break
-
-    # Date pattern extraction
-    date_matches = re.findall(r"\b(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})\b", raw_text)
-    if date_matches:
+    # Method 1: pdfminer for text-based PDFs
+    if "pdf" in mime_type.lower():
         try:
-            # Parse first valid date as admission date
-            d_str = date_matches[0].replace("-", "/")
-            parts = [int(p) for p in d_str.split("/")]
-            if len(parts) == 3:
-                year = parts[2] if parts[2] > 100 else 2000 + parts[2]
-                metadata["admission_date"] = date(year, parts[1], parts[0])
-        except Exception:
-            pass
+            from pdfminer.high_level import extract_text as pdfminer_extract
+            text = pdfminer_extract(file_path)
+            if text and len(text.strip()) > 100:
+                confidence = 0.90
+                logger.info(f"pdfminer extracted {len(text)} chars")
+                return text.strip(), confidence
+        except Exception as e:
+            logger.warning(f"pdfminer failed: {e}")
 
-    # Line item regex scanner: matches patterns with description followed by optional quantity, rate, amount
-    seq = 1
-    for line in lines:
-        clean = line.strip()
-        if not clean or len(clean) < 4:
+    # Method 2: Tesseract OCR
+    try:
+        import pytesseract
+        from PIL import Image
+
+        if "pdf" in mime_type.lower():
+            try:
+                import fitz  # PyMuPDF
+                doc = fitz.open(file_path)
+                all_text = []
+                for page_num in range(min(len(doc), 10)):  # Max 10 pages
+                    page = doc[page_num]
+                    mat = fitz.Matrix(300 / 72, 300 / 72)  # 300 DPI
+                    pix = page.get_pixmap(matrix=mat)
+                    img_path = f"/tmp/curaveris_page_{page_num}.png"
+                    pix.save(img_path)
+                    page_text = pytesseract.image_to_string(
+                        Image.open(img_path),
+                        lang="eng",
+                        config="--oem 3 --psm 6",
+                    )
+                    all_text.append(page_text)
+                    if os.path.exists(img_path):
+                        os.remove(img_path)
+                text = "\n".join(all_text)
+            except Exception as fe:
+                logger.warning(f"PyMuPDF + Tesseract failed: {fe}")
+        else:
+            img = Image.open(file_path)
+            text = pytesseract.image_to_string(
+                img,
+                lang="eng",
+                config="--oem 3 --psm 6",
+            )
+
+        confidence = 0.70 if len(text.strip()) > 50 else 0.30
+        logger.info(f"Tesseract extracted {len(text)} chars with confidence {confidence}")
+        if text and len(text.strip()) > 20:
+            return text.strip(), confidence
+
+    except Exception as e:
+        logger.warning(f"Tesseract failed: {e}")
+
+    # Method 3: Return empty with low confidence — do not crash
+    logger.error(f"All OCR methods failed for {file_path}. Returning empty text.")
+    return text.strip() if text else "", confidence
+
+
+def parse_line_items_from_text(text: str) -> list[dict]:
+    """
+    Parse line items from OCR text.
+    Returns empty list if parsing fails — never raises.
+    """
+    if not text or len(text.strip()) < 20:
+        return []
+
+    line_items = []
+
+    # Pattern: look for lines with a description and an amount
+    # Matches lines like: "MRI Brain 4500.00" or "Paracetamol 500mg x10 85.00"
+    amount_pattern = re.compile(
+        r"(.+?)\s+(?:Rs\.?|₹|INR)?\s*([\d,]+\.?\d{0,2})\s*$",
+        re.MULTILINE | re.IGNORECASE,
+    )
+
+    for i, match in enumerate(amount_pattern.finditer(text)):
+        description = match.group(1).strip()
+        amount_str = match.group(2).replace(",", "")
+
+        # Skip very short descriptions or headers
+        if len(description) < 3:
+            continue
+        if any(word in description.lower() for word in ["total", "subtotal", "grand", "amount"]):
             continue
 
-        # Look for currency amount at the end of line: e.g. "ECG 1 150.00" or "DES Stent Rs 65000"
-        amount_match = re.search(r"(?:rs\.?|inr|₹)?\s*([\d,]+\.?\d{0,2})\s*$", clean, re.IGNORECASE)
-        if amount_match:
-            try:
-                amt_str = amount_match.group(1).replace(",", "")
-                amount = Decimal(amt_str)
-                if amount > 0 and amount < Decimal("10000000"):
-                    desc = clean[:amount_match.start()].strip()
-                    desc = re.sub(r"^[\d\.\-\)\*]+\s*", "", desc)  # remove leading numbering
-                    
-                    if len(desc) > 2 and not desc.lower().startswith("total") and not desc.lower().startswith("subtotal"):
-                        # Infer category
-                        cat = "other"
-                        desc_low = desc.lower()
-                        if any(w in desc_low for w in ["stent", "implant", "lens", "iol", "pacemaker"]):
-                            cat = "implant"
-                        elif any(w in desc_low for w in ["tab", "inj", "cap", "mg", "syrup", "infusion", "saline", "paracetamol"]):
-                            cat = "drug"
-                        elif any(w in desc_low for w in ["ecg", "x-ray", "xray", "mri", "ct scan", "cbc", "ultrasound", "test", "panel"]):
-                            cat = "diagnostic"
-                        elif any(w in desc_low for w in ["surgery", "angioplasty", "replacement", "repair", "ot charges"]):
-                            cat = "procedure"
-                        elif any(w in desc_low for w in ["icu", "room", "bed", "ward"]):
-                            cat = "room"
-                        elif any(w in desc_low for w in ["consultation", "doctor", "specialist"]):
-                            cat = "consultation"
-
-                        # Extract GST if stated
-                        gst_val = Decimal("0.0")
-                        gst_match = re.search(r"gst\s*@?\s*(\d+\.?\d*)%", clean, re.IGNORECASE)
-                        if gst_match:
-                            try:
-                                gst_val = Decimal(gst_match.group(1))
-                            except Exception:
-                                pass
-
-                        line_items.append({
-                            "item_sequence": seq,
-                            "raw_description": desc,
-                            "normalized_name": desc,
-                            "category": cat,
-                            "quantity": Decimal("1.0"),
-                            "unit_price": amount,
-                            "total_price": amount,
-                            "gst_rate_applied": gst_val,
-                            "extraction_confidence": Decimal("0.95"),
-                            "page_number": 1,
-                        })
-                        seq += 1
-            except Exception:
+        try:
+            amount = float(amount_str)
+            if amount <= 0 or amount > 10000000:  # Sanity check
                 continue
+            line_items.append({
+                "item_sequence": i + 1,
+                "raw_description": description,
+                "normalized_name": description,
+                "category": _guess_category(description),
+                "total_price": Decimal(str(amount)),
+                "unit_price": Decimal(str(amount)),
+                "quantity": Decimal("1.0"),
+                "gst_rate_applied": Decimal("0.0"),
+                "extraction_confidence": Decimal("0.60"),
+                "page_number": 1,
+            })
+        except (ValueError, Exception):
+            continue
 
-    # Estimate total billed amount
-    if line_items:
-        metadata["total_amount"] = sum(item["total_price"] for item in line_items)
+    logger.info(f"Parsed {len(line_items)} line items from OCR text")
+    return line_items
 
-    return line_items, metadata
+
+def _guess_category(description: str) -> str:
+    description_lower = description.lower()
+    if any(w in description_lower for w in ["tablet", "capsule", "injection", "syrup", "mg", "ml dose", "tab", "inj", "cap"]):
+        return "drug"
+    if any(w in description_lower for w in ["stent", "implant", "prosthesis", "lens", "iol", "pacemaker"]):
+        return "implant"
+    if any(w in description_lower for w in ["room", "ward", "icu", "bed", "accommodation"]):
+        return "room"
+    if any(w in description_lower for w in ["consultation", "visit", "opinion", "review", "doctor"]):
+        return "consultation"
+    if any(w in description_lower for w in ["mri", "ct", "xray", "x-ray", "scan", "ecg", "echo", "blood", "urine", "test", "cbc"]):
+        return "diagnostic"
+    if any(w in description_lower for w in ["surgery", "operation", "procedure", "bypass", "angio", "ot charges"]):
+        return "procedure"
+    return "other"
 
 
 async def _run_ocr_async(bill_id_str: str) -> str:
@@ -137,28 +174,22 @@ async def _run_ocr_async(bill_id_str: str) -> str:
         try:
             # Fetch file bytes from storage adapter
             raw_bytes = await storage_adapter.get_file_bytes(bill.file_key)
-            is_pdf = bill.file_mime_type == "application/pdf" or bill.file_name_original.lower().endswith(".pdf")
-            
-            # Text extraction attempt
-            if is_pdf and raw_bytes:
-                try:
-                    from pdfminer.high_level import extract_text as pdf_extract
-                    pdf_bytes = io.BytesIO(raw_bytes)
-                    extracted_text = pdf_extract(pdf_bytes)
-                except Exception as e:
-                    logger.warning(f"PDFMiner extraction failed: {e}")
+            mime = bill.file_mime_type or "application/pdf"
 
-            # If image or text extraction yielded short/empty text, attempt OCR / decoding
-            if len(extracted_text.strip()) < 20 and raw_bytes:
-                try:
-                    import pytesseract
-                    from PIL import Image
-                    image = Image.open(io.BytesIO(raw_bytes))
-                    extracted_text = pytesseract.image_to_string(image)
-                except Exception as oe:
-                    logger.debug(f"Pytesseract not available or failed: {oe}")
+            if raw_bytes:
+                # Write to temp file for extraction tools
+                suffix = ".pdf" if "pdf" in mime.lower() else ".png"
+                with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp_file:
+                    tmp_file.write(raw_bytes)
+                    tmp_path = tmp_file.name
 
-            # Graceful fallback if OCR could not extract sufficient text
+                try:
+                    extracted_text, _ = await extract_text_from_file(tmp_path, mime)
+                finally:
+                    if os.path.exists(tmp_path):
+                        os.remove(tmp_path)
+
+            # Fallback text if extraction produces nothing
             if len(extracted_text.strip()) < 20:
                 extracted_text = (
                     f"Hospital Invoice {bill.file_name_original}\n"
@@ -169,10 +200,9 @@ async def _run_ocr_async(bill_id_str: str) -> str:
                     f"Coronary Drug Eluting Stent DES 1 65000.00"
                 )
 
-            line_items_data, meta = _parse_line_items_from_text(extracted_text)
+            line_items_data = parse_line_items_from_text(extracted_text)
 
             if not line_items_data:
-                # Default minimum line item to allow audit to progress
                 line_items_data = [{
                     "item_sequence": 1,
                     "raw_description": "Inpatient Medical Care & Accommodation",
@@ -203,15 +233,8 @@ async def _run_ocr_async(bill_id_str: str) -> str:
                 )
                 db.add(db_item)
 
-            if meta.get("hospital_name") and not bill.hospital_name:
-                bill.hospital_name = meta["hospital_name"]
-            if meta.get("total_amount") and not bill.total_billed_amount:
-                bill.total_billed_amount = meta["total_amount"]
-            else:
+            if not bill.total_billed_amount:
                 bill.total_billed_amount = sum(it["total_price"] for it in line_items_data)
-
-            if meta.get("admission_date") and not bill.admission_date:
-                bill.admission_date = meta["admission_date"]
 
             bill.processing_status = "AUDITING"
             await db.commit()
@@ -219,6 +242,7 @@ async def _run_ocr_async(bill_id_str: str) -> str:
             return bill_id_str
 
         except Exception as err:
+            logger.error(f"OCR Task failed: {err}", exc_info=True)
             bill.processing_status = "FAILED"
             bill.failure_reason = str(err)
             await db.commit()
