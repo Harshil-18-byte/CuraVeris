@@ -58,19 +58,24 @@ async def upload_bill(
     db: AsyncSession = Depends(get_db),
 ):
     """Uploads a hospital bill document and triggers the async OCR and statutory audit pipeline."""
-    # 1. Rate limiting check (10 uploads per hour)
-    redis_client = await get_redis()
-    rate_key = f"upload_rate:{current_user.id}"
-    upload_count = await redis_client.incr(rate_key)
-    if upload_count == 1:
-        await redis_client.expire(rate_key, 3600)
-    elif upload_count > 10:
-        ttl = await redis_client.ttl(rate_key)
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=f"Upload rate limit exceeded. Please retry after {ttl} seconds.",
-            headers={"Retry-After": str(ttl)},
-        )
+    # 1. Rate limiting check (10 uploads per hour, non-blocking if Redis is down)
+    try:
+        redis_client = await get_redis()
+        rate_key = f"upload_rate:{current_user.id}"
+        upload_count = await redis_client.incr(rate_key)
+        if upload_count == 1:
+            await redis_client.expire(rate_key, 3600)
+        elif upload_count > 10:
+            ttl = await redis_client.ttl(rate_key)
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Upload rate limit exceeded. Please retry after {ttl} seconds.",
+                headers={"Retry-After": str(ttl)},
+            )
+    except HTTPException:
+        raise
+    except Exception as re_err:
+        logger.warning(f"Redis rate limiting bypassed: {re_err}")
 
     # 2. File size & magic bytes validation
     content = await file.read()
