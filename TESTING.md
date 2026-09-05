@@ -39,15 +39,19 @@ backend/
     test_security_and_4b_telemetry.py     <- Magic bytes validation, path traversal, 4B/1B observability
     test_curation_leak_prevention.py      <- Scans public DB reads to ensure internal curation fields are never leaked
     test_taxonomy_compliance.py           <- Compares ML outputs against approved regulatory taxonomy schedules
+    test_demo_flow.py                     <- Demo bill seed validation and zero-auth demo endpoint tests
+    test_payment_settlement.py            <- Razorpay undisputed order calculation and signature verification tests
+    test_hospital_ratings.py              <- Hospital billing trust score aggregation and crowdsourced rating tests
+    test_bill_comparison.py               <- Dual-stay bill comparison and variance computation tests
 ```
 
 ### Web Client & E2E Testing:
+
 ```text
 clients/web/
   e2e/
     empty_results.spec.ts                 <- Playwright E2E tests for empty-result scenarios & telemetry assertions
 ```
-
 
 ---
 
