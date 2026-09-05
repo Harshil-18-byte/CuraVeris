@@ -196,7 +196,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F7FB] text-[#202128] flex flex-col selection:bg-[#DBF1F4] selection:text-[#202128] relative overflow-x-hidden font-sans">
-      {/* 1. FLOATING NAVIGATION BAR (Grassfeld Exact Spec) */}
+      {/* 1. FLOATING NAVIGATION BAR */}
       <header className="sticky top-4 z-50 max-w-[1280px] mx-auto w-[94%] sm:w-full px-2 sm:px-4">
         <div className="h-[66px] rounded-full bg-white/90 backdrop-blur-2xl border border-black/[0.06] px-5 sm:px-8 flex items-center justify-between shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
           {/* Brand Logo */}
@@ -266,10 +266,10 @@ export default function LandingPage() {
             <span>THE STATUTORY FORENSIC APP FOR YOUR HOSPITAL BILLS</span>
           </div>
 
-          {/* Main Giant Headline with Grassfeld Gradient */}
+          {/* Main Giant Headline with CuraVeris Gradient */}
           <h1 className="font-heading font-extrabold text-4xl sm:text-6xl lg:text-[72px] text-[#202128] leading-[1.08] sm:leading-[1.04] tracking-[-0.035em] max-w-4xl mx-auto">
             The AI forensic app that keeps hospital bills{" "}
-            <span className="grassfeld-gradient-text">
+            <span className="curaveris-gradient-text">
               on track.
             </span>
           </h1>
@@ -503,7 +503,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grassfeld-hero-card p-6 sm:p-10 lg:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.06)] relative overflow-hidden">
+          <div className="curaveris-hero-card p-6 sm:p-10 lg:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.06)] relative overflow-hidden">
             {/* 7 Tab Pills */}
             <div className="flex items-center justify-start sm:justify-center overflow-x-auto gap-2 pb-6 border-b border-black/[0.06] no-scrollbar">
               <div className="p-1.5 rounded-full bg-[#EDF0FB] border border-black/[0.03] inline-flex items-center gap-1.5">
@@ -904,7 +904,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 4. STATUTORY MARQUEE CAROUSEL (Infinite Scroll Grassfeld Animation) */}
+      {/* 4. STATUTORY MARQUEE CAROUSEL (Infinite Scroll Animation) */}
       <section className="relative z-10 py-7 border-y border-black/[0.05] bg-white overflow-hidden">
         <p className="text-center text-[11px] font-extrabold text-[#606470] uppercase tracking-widest mb-4">
           Audited statutory limits: 800+ Official Price Caps & Package Rules
@@ -1321,7 +1321,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 11. REAL STORIES / VIDEO TESTIMONIALS (Grassfeld Ice Blue Container) */}
+      {/* 11. REAL STORIES / VIDEO TESTIMONIALS (Ice Blue Container) */}
       <section className="relative z-10 py-16 sm:py-24 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-[#DDECFD] rounded-[36px] p-8 sm:p-14 space-y-10 shadow-[0_12px_40px_rgba(0,0,0,0.03)]">
@@ -1403,7 +1403,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 12. FAQ ACCORDION SECTION (Grassfeld Style) */}
+      {/* 12. FAQ ACCORDION SECTION */}
       <section className="relative z-10 py-16 sm:py-24 bg-[#F5F7FB]">
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center space-y-3">
@@ -1447,10 +1447,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 13. FINAL HIGH-IMPACT CTA BANNER (Grassfeld Pastel Gradient Banner) */}
+      {/* 13. FINAL HIGH-IMPACT CTA BANNER (Pastel Gradient Banner) */}
       <section className="relative z-10 py-12 sm:py-20 bg-white border-t border-black/[0.05]">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grassfeld-hero-card p-8 sm:p-14 text-center space-y-6 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
+          <div className="curaveris-hero-card p-8 sm:p-14 text-center space-y-6 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
             <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-[#202128] tracking-tight max-w-2xl mx-auto">
               Ready to verify your hospital bill?
             </h2>
@@ -1481,7 +1481,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 14. OBSIDIAN FOOTER (Grassfeld Exact Dark Footer) */}
+      {/* 14. OBSIDIAN FOOTER */}
       <footer className="relative z-10 bg-[#1B1C20] text-white py-12 sm:py-16 border-t border-black/[0.06]">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-white/10">
