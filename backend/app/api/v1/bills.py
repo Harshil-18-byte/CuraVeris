@@ -152,19 +152,24 @@ async def upload_bill(
             from app.workers.ocr_task import _run_ocr_async
             from app.workers.audit_task import _run_audit_async
             from app.workers.ml_task import _run_ml_async
-            from app.workers.evidence_task import _generate_evidence_async
+            from app.workers.evidence_task import _run_evidence_async
 
+            logger.info(f"Starting async pipeline for bill {bill_id_str}")
             await _run_ocr_async(bill_id_str)
+            logger.info(f"OCR completed for bill {bill_id_str}")
             await _run_audit_async(bill_id_str)
+            logger.info(f"Statutory audit completed for bill {bill_id_str}")
             await _run_ml_async(bill_id_str)
-            await _generate_evidence_async(bill_id_str)
+            logger.info(f"ML risk analysis completed for bill {bill_id_str}")
+            await _run_evidence_async(bill_id_str)
+            logger.info(f"Cryptographic evidence completed for bill {bill_id_str}")
         except Exception as e:
-            pass
+            logger.error(f"Background bill pipeline error for {bill_id_str}: {e}", exc_info=True)
 
     try:
         asyncio.create_task(_run_full_bill_pipeline_background(str(bill_id)))
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"Failed to create background task for bill {bill_id}: {e}")
 
     return BillUploadResponse(bill_id=bill_id, status="PROCESSING", message="Processing started")
 
