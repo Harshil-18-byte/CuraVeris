@@ -139,3 +139,16 @@ def _compute_histogram(data: np.ndarray, bins: int) -> List[Dict[str, Any]]:
         }
         for i in range(len(counts))
     ]
+
+
+class VaRCVaREngine:
+    """Wrapper class providing object-oriented and static access to VaR / CVaR Monte Carlo engine."""
+
+    @staticmethod
+    def compute(inputs: VaRInputs) -> VaRResult:
+        return compute_var_cvar(inputs)
+
+    @staticmethod
+    def compute_var_cvar(inputs: VaRInputs) -> VaRResult:
+        return compute_var_cvar(inputs)
+
