@@ -74,32 +74,24 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   initialize: async () => {
     set({ isLoading: true });
+
     if (typeof window === "undefined") {
       set({ isLoading: false });
       return;
     }
 
     const token = localStorage.getItem("cv_access_token");
-    let cachedUser: User | null = null;
-    try {
-      const stored = localStorage.getItem("cv_user");
-      if (stored) {
-        cachedUser = JSON.parse(stored);
-      }
-    } catch {
-      // ignore parse error
-    }
 
     if (!token) {
+      // No token — not authenticated
       set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
       return;
     }
 
     try {
+      // Validate token with real API call
       const user = await api.users.getMe();
-      if (typeof window !== "undefined") {
-        localStorage.setItem("cv_user", JSON.stringify(user));
-      }
+      localStorage.setItem("cv_user", JSON.stringify(user));
       set({
         user,
         accessToken: token,
@@ -107,38 +99,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false,
       });
     } catch {
-      if (cachedUser) {
-        set({
-          user: cachedUser,
-          accessToken: token,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-      } else if (token.startsWith("demo_")) {
-        const fallbackUser: User = {
-          id: "user-" + Date.now(),
-          email: "patient@curaveris.ai",
-          full_name: "Patient Account",
-          role: "patient",
-          phone_verified: true,
-          email_verified: true,
-          dpdp_consent_given: true,
-          is_active: true,
-          created_at: new Date().toISOString(),
-        };
-        localStorage.setItem("cv_user", JSON.stringify(fallbackUser));
-        set({
-          user: fallbackUser,
-          accessToken: token,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-      } else {
-        localStorage.removeItem("cv_access_token");
-        localStorage.removeItem("cv_refresh_token");
-        localStorage.removeItem("cv_user");
-        set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
-      }
+      // Token is invalid or expired and could not be refreshed
+      // (The response interceptor handles 401 refresh automatically.
+      //  If we reach here, refresh also failed.)
+      localStorage.removeItem("cv_access_token");
+      localStorage.removeItem("cv_refresh_token");
+      localStorage.removeItem("cv_user");
+      set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));
