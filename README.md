@@ -1,6 +1,20 @@
-# CuraVeris
+<div align="center">
 
-## Healthcare Financial Verification & Reconciliation Engine
+<img src="docs/images/logo.png" alt="CuraVeris Logo" width="140" />
+
+# CuraVeris // Healthcare Financial Verification & Reconciliation Engine
+
+## Governed Autonomous Healthcare Financial Intelligence with Section 65B Cryptographic Ledger, Deterministic Statutory Gating, and Multi-Modal Forensic Auditing
+
+[![Protocol](https://img.shields.io/badge/Protocol-Section%2065B%20%2F%20ABDM--M3-0284c7?style=flat-square)](#statutory-framework--legal-grounding)
+[![Statutory Master](https://img.shields.io/badge/Statutory%20Master-NPPA%20%2F%20CGHS%20%2F%20DPCO-16a34a?style=flat-square)](#statutory-framework--legal-grounding)
+[![ML Intelligence](https://img.shields.io/badge/ML%20Intelligence-LayoutLMv3%20%7C%20XGBoost%20%7C%20Deep%20MLP-8b5cf6?style=flat-square)](#machine-learning-ensemble--ai-architecture)
+[![Defense](https://img.shields.io/badge/Defense-Section%2065B%20Merkle%20Ledger-e11d48?style=flat-square)](#cryptographic-audit-ledger-section-65b)
+[![Architecture](https://img.shields.io/badge/Architecture-Explainable%20%7C%20Bounded%20%7C%20Gated-ea580c?style=flat-square)](#system-architecture--data-flow)
+
+</div>
+
+---
 
 **Know what you actually owe.**
 
