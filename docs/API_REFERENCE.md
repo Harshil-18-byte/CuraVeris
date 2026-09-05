@@ -631,3 +631,108 @@ Returns real-time defense-in-depth security posture, HSTS, rate limiting, and ma
   "audit_trail_integrity": "SHA-256 Tamper-Proof Chain"
 }
 ```
+
+---
+
+## 6. Legal Document Generation & Statutory Dispute Notices
+
+### 6.1 List Available Document Types
+
+Returns all 6 supported statutory legal document templates and required field metadata.
+
+- **Method**: `GET`
+- **Path**: `/api/v1/bills/{bill_id}/legal-documents/types`
+- **Auth**: Required (`Bearer <token>`)
+- **Response**: `200 OK`
+
+```json
+{
+  "document_types": [
+    {
+      "type": "HOSPITAL_COMPLAINT",
+      "display_name": "Formal Complaint to Hospital Medical Superintendent",
+      "required_inputs": ["patient_address", "hospital_address"]
+    },
+    {
+      "type": "ANTI_DETENTION",
+      "display_name": "Immediate Anti-Detention Notice (Article 21 / Bombay HC Precedent)",
+      "required_inputs": ["relationship"]
+    },
+    {
+      "type": "INSURANCE_DISPUTE",
+      "display_name": "Insurance Claim Rejection & Deduction Dispute Letter",
+      "required_inputs": ["insurer_name", "policy_number", "claim_number"]
+    },
+    {
+      "type": "OMBUDSMAN_PETITION",
+      "display_name": "Statutory Petition to Insurance Ombudsman (Rule 14)",
+      "required_inputs": ["insurer_name", "policy_number", "ombudsman_jurisdiction"]
+    },
+    {
+      "type": "CONSUMER_COURT",
+      "display_name": "Consumer Commission Complaint (CPA 2019 Section 35)",
+      "required_inputs": ["patient_city", "hospital_address"]
+    },
+    {
+      "type": "CGHS_GRIEVANCE",
+      "display_name": "CGHS Additional Director Grievance Petition",
+      "required_inputs": ["cghs_card_number", "cghs_office_city"]
+    }
+  ]
+}
+```
+
+---
+
+### 6.2 Generate Statutory Legal Document
+
+Compiles a validated, evidence-backed legal PDF petition populated with exact statutory audit findings.
+
+- **Method**: `POST`
+- **Path**: `/api/v1/bills/{bill_id}/legal-documents`
+- **Auth**: Required (`Bearer <token>`)
+- **Payload**:
+```json
+{
+  "document_type": "HOSPITAL_COMPLAINT",
+  "patient_address": "Flat 402, Sunshine Heights, Andheri West",
+  "patient_city": "Mumbai",
+  "hospital_address": "Apollo Hospitals, Sector 26, Belapur"
+}
+```
+- **Response**: `201 Created`
+
+```json
+{
+  "id": "7b8f9e01-2345-6789-abcd-ef0123456789",
+  "bill_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "document_type": "HOSPITAL_COMPLAINT",
+  "document_name": "Hospital_Complaint_20260905_180000.pdf",
+  "storage_key": "legal_docs/user123/bill456/Hospital_Complaint_20260905_180000.pdf",
+  "file_hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "status": "READY",
+  "download_url": "/api/v1/bills/3fa85f64-5717-4562-b3fc-2c963f66afa6/legal-documents/7b8f9e01-2345-6789-abcd-ef0123456789/download",
+  "created_at": "2026-09-05T18:00:00Z"
+}
+```
+
+---
+
+### 6.3 List Generated Documents for Bill
+
+- **Method**: `GET`
+- **Path**: `/api/v1/bills/{bill_id}/legal-documents`
+- **Auth**: Required (`Bearer <token>`)
+- **Response**: `200 OK`
+
+---
+
+### 6.4 Download Legal Document PDF
+
+Streams the generated, signed legal PDF file.
+
+- **Method**: `GET`
+- **Path**: `/api/v1/bills/{bill_id}/legal-documents/{doc_id}/download`
+- **Auth**: Required (`Bearer <token>`)
+- **Response**: `200 OK` (`application/pdf`) or `307 Temporary Redirect` (Presigned S3/R2 URL)
+
