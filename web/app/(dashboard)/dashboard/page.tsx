@@ -112,10 +112,129 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Onboarding Checklist for new users */}
-      {meQuery.data?.onboarding && (
-        <OnboardingChecklist onboarding={meQuery.data.onboarding} />
-      )}
+      {/* DEMO ACCOUNT FEATURES SECTION */}
+      <div className="mb-8 p-6 rounded-[28px] bg-gradient-to-br from-[#DBF1F4]/40 via-white to-[#EDF0FB]/40 border border-[#43A8B2]/30 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#43A8B2] text-white flex items-center justify-center shadow-xs">
+              <Sparkles className="w-5 h-5" strokeWidth={2.2} />
+            </div>
+            <div>
+              <h2 className="font-heading font-extrabold text-lg text-[#202128]">
+                Interactive Demo Account Features
+              </h2>
+              <p className="text-xs text-[#606470]">
+                Explore all forensic audit, legal dispute, and financial risk tools with our pre-loaded real-world hospital dataset.
+              </p>
+            </div>
+          </div>
+          <span className="self-start sm:self-auto px-3.5 py-1 bg-[#DBF1F4] text-[#202128] rounded-full text-xs font-bold border border-[#43A8B2]/30 shadow-2xs">
+            Live Demo Mode
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-2">
+          {/* Feature 1: Forensic Audit */}
+          <Link
+            href="/bills/11111111-1111-1111-1111-111111111111/audit"
+            className="p-4 bg-white rounded-2xl border border-black/[0.06] hover:border-[#43A8B2] hover:shadow-md transition-all group flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold text-[#43A8B2] uppercase tracking-wider">
+                  Audit Report
+                </span>
+                <ShieldCheck className="w-4 h-4 text-[#43A8B2] group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="font-heading font-bold text-sm text-[#202128] group-hover:text-[#43A8B2] transition-colors">
+                ₹18,576 Overcharges Found
+              </h3>
+              <p className="text-[11px] text-[#606470] mt-1 leading-relaxed">
+                See 5 violations: NPPA stent cap violation, CGHS echocardiogram rate, and IRDAI non-payables.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#202128] mt-3 group-hover:underline">
+              <span>View Audit Findings</span>
+              <ArrowRight className="w-3 h-3 text-[#43A8B2]" />
+            </span>
+          </Link>
+
+          {/* Feature 2: Legal Letters */}
+          <Link
+            href="/bills/11111111-1111-1111-1111-111111111111/documents"
+            className="p-4 bg-white rounded-2xl border border-black/[0.06] hover:border-[#43A8B2] hover:shadow-md transition-all group flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold text-[#43A8B2] uppercase tracking-wider">
+                  Legal Notices
+                </span>
+                <FileText className="w-4 h-4 text-[#43A8B2] group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="font-heading font-bold text-sm text-[#202128] group-hover:text-[#43A8B2] transition-colors">
+                6 Printable Complaint Letters
+              </h3>
+              <p className="text-[11px] text-[#606470] mt-1 leading-relaxed">
+                Generate ready-to-file notices for Hospital Management, Anti-Detention, Ombudsman, and Consumer Court.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#202128] mt-3 group-hover:underline">
+              <span>Generate Notices</span>
+              <ArrowRight className="w-3 h-3 text-[#43A8B2]" />
+            </span>
+          </Link>
+
+          {/* Feature 3: Financial Risk & FRM */}
+          <Link
+            href="/bills/11111111-1111-1111-1111-111111111111/risk"
+            className="p-4 bg-white rounded-2xl border border-black/[0.06] hover:border-[#43A8B2] hover:shadow-md transition-all group flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold text-[#43A8B2] uppercase tracking-wider">
+                  Financial Modeling
+                </span>
+                <TrendingUp className="w-4 h-4 text-[#43A8B2] group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="font-heading font-bold text-sm text-[#202128] group-hover:text-[#43A8B2] transition-colors">
+                Monte Carlo VaR & Stress Tests
+              </h3>
+              <p className="text-[11px] text-[#606470] mt-1 leading-relaxed">
+                Simulate 10,000 scenarios, insolvency horizon, Expected Loss (PD × LGD × EAD), and liquidity gaps.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#202128] mt-3 group-hover:underline">
+              <span>Open FRM Analytics</span>
+              <ArrowRight className="w-3 h-3 text-[#43A8B2]" />
+            </span>
+          </Link>
+
+          {/* Feature 4: Evidence Certificate */}
+          <Link
+            href="/bills/11111111-1111-1111-1111-111111111111/evidence"
+            className="p-4 bg-white rounded-2xl border border-black/[0.06] hover:border-[#43A8B2] hover:shadow-md transition-all group flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold text-[#43A8B2] uppercase tracking-wider">
+                  Legal Evidence
+                </span>
+                <ShieldCheck className="w-4 h-4 text-[#43A8B2] group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="font-heading font-bold text-sm text-[#202128] group-hover:text-[#43A8B2] transition-colors">
+                Section 65B Certificate
+              </h3>
+              <p className="text-[11px] text-[#606470] mt-1 leading-relaxed">
+                Verify cryptographic SHA-256 Merkle root and court-admissible audit seal.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#202128] mt-3 group-hover:underline">
+              <span>Verify Evidence</span>
+              <ArrowRight className="w-3 h-3 text-[#43A8B2]" />
+            </span>
+          </Link>
+        </div>
+      </div>
 
       {/* Stat Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
