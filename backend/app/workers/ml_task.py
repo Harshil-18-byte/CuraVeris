@@ -6,24 +6,16 @@ import math
 from decimal import Decimal
 from pathlib import Path
 from uuid import UUID
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy import select, update
 from datetime import datetime
-
 from app.workers.celery_app import celery_app
 from app.core.config import settings
+from app.core.database import AsyncSessionLocal as SessionLocal
 from app.core.redis import publish
 from app.models.bill import Bill, BillLineItem
 from app.models.audit import Audit, AuditFinding
 
 logger = logging.getLogger(__name__)
-
-async_engine = create_async_engine(
-    settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://").replace("postgres://", "postgresql+asyncpg://"),
-    pool_size=5,
-    max_overflow=5,
-)
-SessionLocal = async_sessionmaker(bind=async_engine, expire_on_commit=False)
 
 _xgb_model = None
 _mlp_model = None
