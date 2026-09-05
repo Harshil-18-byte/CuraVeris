@@ -28,15 +28,15 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
   return (
     <div className="p-6 space-y-4 text-left">
       <div>
-        <h3 className="font-heading font-semibold text-base text-white">
+        <h3 className="font-heading font-bold text-base text-[#202128]">
           What affected this result
         </h3>
-        <p className="text-xs text-neutral-400 mt-0.5">
+        <p className="text-xs text-[#606470] mt-0.5 font-medium">
           These factors had the biggest impact on our estimate:
         </p>
       </div>
 
-      <div className="space-y-3.5 pt-2">
+      <div className="space-y-3 pt-2">
         {factors.map((factor, idx) => {
           const isRiskRaising =
             factor.direction === "INCREASES_RISK" || factor.shap_value > 0;
@@ -44,36 +44,38 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
           return (
             <div
               key={idx}
-              className="flex items-start gap-3.5 p-3.5 bg-[#0B0E17]/80 rounded-2xl border border-white/[0.08] shadow-inner"
+              className="flex items-start gap-3.5 p-3.5 bg-[#F5F7FB] rounded-2xl border border-black/[0.05] shadow-xs"
             >
               {/* Direction Indicator */}
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                  isRiskRaising ? "bg-red-500/15 text-red-400 border border-red-500/30" : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                  isRiskRaising
+                    ? "bg-red-50 text-red-600 border border-red-200"
+                    : "bg-emerald-50 text-emerald-600 border border-emerald-200"
                 }`}
               >
                 {isRiskRaising ? (
-                  <TrendingUp className="w-3.5 h-3.5" strokeWidth={2} />
+                  <TrendingUp className="w-3.5 h-3.5" strokeWidth={2.5} />
                 ) : (
-                  <TrendingDown className="w-3.5 h-3.5" strokeWidth={2} />
+                  <TrendingDown className="w-3.5 h-3.5" strokeWidth={2.5} />
                 )}
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-xs font-semibold text-white">
+                  <h4 className="text-xs font-bold text-[#202128]">
                     {factor.feature_label}
                   </h4>
                   <span
-                    className={`text-[11px] font-semibold ${
-                      isRiskRaising ? "text-red-400" : "text-emerald-400"
+                    className={`text-[11px] font-bold ${
+                      isRiskRaising ? "text-red-600" : "text-emerald-600"
                     }`}
                   >
                     {isRiskRaising ? "Made concern higher" : "Made concern lower"}
                   </span>
                 </div>
-                <p className="text-[11px] text-neutral-400 mt-1 leading-normal">
+                <p className="text-[11px] text-[#606470] mt-1 leading-normal font-medium">
                   {factor.explanation || (isRiskRaising
                     ? "Charges on this item differ from standard government pricing patterns."
                     : "This item matches expected pricing benchmarks for this hospital.")}
@@ -85,9 +87,9 @@ export const ShapChart: React.FC<ShapChartProps> = ({ shapValues }) => {
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-4 p-3.5 bg-white/5 border border-white/10 rounded-2xl text-xs text-neutral-400 italic leading-relaxed flex items-start gap-2">
-        <Info className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
-        <span>
+      <div className="mt-4 p-3.5 bg-[#EDF0FB] border border-black/[0.04] rounded-2xl text-xs text-[#606470] leading-relaxed flex items-start gap-2">
+        <Info className="w-4 h-4 text-[#43A8B2] flex-shrink-0 mt-0.5" strokeWidth={1.5} />
+        <span className="font-medium">
           We compared your bill to thousands of similar hospital bills across India to find these patterns.
         </span>
       </div>
