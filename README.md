@@ -1,3 +1,19 @@
+---
+{
+  "id": "file_xehvba7n",
+  "filetype": "document",
+  "filename": "README",
+  "created_at": "2026-09-05T11:41:06.505Z",
+  "updated_at": "2026-09-05T11:41:06.505Z",
+  "meta": {
+    "location": "/",
+    "tags": [],
+    "categories": [],
+    "description": "",
+    "source": "markdown"
+  }
+}
+---
 # CuraVeris
 
 ## Healthcare Financial Verification & Reconciliation Engine
@@ -480,7 +496,7 @@ Evaluates financial resilience under 5 macroeconomic and clinical shock scenario
 
 ### 4. Value at Risk (VaR) & Conditional VaR (CVaR)
 
-5,000-sample Monte Carlo distribution characterizing the 90th, 95th, and tail-expectation catastrophic loss boundaries:
+10,000-sample Monte Carlo stochastic simulation characterizing the 90th, 95th, and tail-expectation catastrophic loss boundaries across joint Probability of Default (Beta-distributed $\text{PD} \sim \text{Beta}(\alpha, \beta)$), Loss Given Default ($\text{LGD} \sim 1 - \text{Beta}(2, 3)$), and insurance deduction variance:
 
 $$
 \text{VaR}_{\alpha}(L) = F_L^{-1}(\alpha) = \inf \left\{ x \in \mathbb{R} : P(L \le x) \ge \alpha \right\}
@@ -490,9 +506,12 @@ $$
 \text{CVaR}_{\alpha}(L) = \frac{1}{1 - \alpha} \int_{\alpha}^{1} \text{VaR}_{u}(L) \, du = \mathbb{E}\left[ L \mid L \ge \text{VaR}_{\alpha}(L) \right]
 $$
 
+- **$\text{VaR}_{0.95}$**: The 95th percentile worst-case financial loss threshold across simulated TPA settlement and billing dispute scenarios.
+- **$\text{CVaR}_{0.95}$ (Expected Shortfall)**: The conditional average loss in scenarios where the loss exceeds the $\text{VaR}_{0.95}$ threshold (un-diversifiable tail risk).
+
 ### 5. Model Risk Management
 
-Adheres to Federal Reserve SR 11-7 / OCC 2011-12 validation standards with out-of-distribution (OOD) detection and automated human-in-the-loop review triggers.
+Adheres to Federal Reserve SR 11-7 / OCC 2011-12 validation standards with out-of-distribution (OOD) detection, parametric training bounds checking, and automated human-in-the-loop review triggers.
 
 ---
 
