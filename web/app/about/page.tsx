@@ -80,7 +80,7 @@ export default function AboutPage() {
 
           <h1 className="font-heading font-extrabold text-4xl sm:text-6xl text-[#202128] leading-[1.1] tracking-tight max-w-3xl mx-auto">
             Restoring statutory transparency to{" "}
-            <span className="grassfeld-gradient-text">healthcare billing.</span>
+            <span className="curaveris-gradient-text">healthcare billing.</span>
           </h1>
 
           <p className="text-base sm:text-xl text-[#606470] max-w-2xl mx-auto font-medium">
